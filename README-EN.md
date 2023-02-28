@@ -12,7 +12,7 @@
 
 ## Introduction
 
-The bedrock version server based on BDS, open source of the addons R&D by NIA Group (including some codes using script-api) & almost our plugins runing on LiteLoader.
+The bedrock version server based on BDS, open source of the addons R&D by NIA Group (including some codes using script-api) & almost our plugins running on LiteLoader.
 
 We arenot professional extremely, some problems may be here like bug, none standard & logical confusion. We are glad to welcome everyone PR., and we will also carefully review, study & reply to each PR.
 
