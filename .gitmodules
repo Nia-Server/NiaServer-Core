@@ -1,0 +1,3 @@
+[submodule "CppDLL"]
+	path = CppDLL
+	url = https://github.com/jiansyuan/NIAServerPlugin.git
