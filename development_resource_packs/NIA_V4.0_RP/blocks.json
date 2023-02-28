@@ -1,0 +1,6 @@
+{
+    "random_ore" : {
+        "sound" : "stone",
+        "textures" : "random_ore"
+    }
+}

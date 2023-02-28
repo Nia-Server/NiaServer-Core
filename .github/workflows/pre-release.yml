@@ -1,0 +1,32 @@
+name: Zip and Pre-Release
+on:
+  push:
+    tags:
+      - 'v*.*.*-pre-*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Archive Release1
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          directory: 'development_behavior_packs/NIA_V4.0_BP'
+          path: '.'
+          filename: NIAV4BP-${{ github.ref_name }}.zip
+      - name: Archive Release2
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          directory: 'development_resource_packs/NIA_V4.0_RP'
+          path: '.'
+          filename: NIAV4RP-${{ github.ref_name }}.zip
+      - name: Upload Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          prerelease: true
+          artifacts: "development_behavior_packs/NIA_V4.0_BP/NIAV4BP-${{ github.ref_name }}.zip,development_resource_packs/NIA_V4.0_RP/NIAV4RP-${{ github.ref_name }}.zip"
+          bodyFile: "CHANGELOG-PRE.md"
+          generateReleaseNotes: true
+          token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,15 @@
+{
+    "format_version": "1.19.40",
+    "minecraft:block": {
+        "description": {
+            "identifier": "nia:random_ore"
+        },
+        "components": {
+            "minecraft:loot": "loot_tables/blocks/random_ore.json",
+            "minecraft:destructible_by_mining": {
+                "seconds_to_destroy": 3
+            },
+            "minecraft:light_emission": 5
+        }
+    }
+}

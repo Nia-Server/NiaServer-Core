@@ -1,0 +1,37 @@
+{
+	"format_version": 2,
+	"header": {
+	  "name": "[DEV]NIA V4.0 BP",
+	  "description": "§cThis is an addons which support the function of NIA Server",
+	  "uuid": "cab0bbe3-eb10-465e-b1de-b09facc076c8",
+	  "version": [ 4, 2, 11 ],
+	  "min_engine_version": [ 1, 19, 6 ]
+	},
+	"modules": [
+		{
+			"language": "javascript",
+			"type": "script",
+			"description": "gametest module",
+			"uuid": "92cd3fe1-e764-425a-aa40-a7e4d7760922",
+			"entry": "scripts/main.js",
+			"version": [ 1, 0, 0 ]
+		}
+	],
+	"dependencies": [
+		{
+			"module_name": "@minecraft/server",
+			"version": "1.1.0-beta"
+		},
+		{
+			"module_name": "@minecraft/server-ui",
+			"version": "1.0.0-beta"
+		},
+		{
+			"module_name": "@minecraft/server-gametest",
+			"version": "1.0.0-beta"
+		}
+	],
+	"metadata": {
+	  "authors": ["NIANIANKNIA"]
+	}
+}
