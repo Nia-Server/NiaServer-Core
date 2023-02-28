@@ -1,4 +1,4 @@
-# NIA服务器v4.0--基岩版空岛服务器
+# NIA Server v4.0--Bedrock Skyblock Server
 
 [![wakatime](https://wakatime.com/badge/user/a2d785d3-a26c-467b-9112-333ba2bee9e8/project/9ae0abd5-b1ad-4199-bd66-0fba1a96ac45.svg?style=for-the-badge)](https://wakatime.com/badge/user/a2d785d3-a26c-467b-9112-333ba2bee9e8/project/9ae0abd5-b1ad-4199-bd66-0fba1a96ac45)
 [![status](https://img.shields.io/github/actions/workflow/status/NIANIANKNIA/NIASERVER-V4/main.yml?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/actions)
@@ -10,27 +10,27 @@
 
 ![NIASERVER-V4](https://socialify.git.ci/NIANIANKNIA/NIASERVER-V4/image?description=1&descriptionEditable=%E4%B8%80%E4%B8%AA%E5%9F%BA%E4%BA%8EBDS%E7%9A%84Minecraft%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%81&font=Rokkitt&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.top%2Flogo.png&name=1&owner=1&pattern=Signal&pulls=1&stargazers=1&theme=Auto)
 
-## 写在前面
+## Introduction
 
-一个基于BDS的基岩版服务器，这里开源了由服务器开发团队制作的addons（包括基于script-api的脚本）、大部分运行于LiteLoader的插件（部分LiteLoader插件源码可以点击前往 [NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin) 查看）
+The bedrock version server based on BDS, open source of the addons R&D by NIA Group (including some codes using script-api) & almost our plugins running on LiteLoader.
 
-我们并不是专业的开发人员，所以难免会出现部分bug、代码不规范、逻辑混乱等错误，也欢迎各位大佬pr，我们也一定会仔细查看、学习、回复每一条pr
+We arenot professional extremely, some problems may be here like bug, none standard & logical confusion. We are glad to welcome everyone PR., and we will also carefully review, study & reply to each PR.
 
-虽然可能你并不能立马上手使用这个addons（由于每个服务器游戏机制不同，我们服务器的玩法设定可能不满足您的要求），但我们也希望这个addons也可以给您带来某些方面的启发，或者您自行修改来适配自己的服务器
+Though you may not use this addons right away on your local system without revising (due to the different game mechanics of each server) , but we hope that the addons & plugins may inspirate you, or be revised by yourself to adapt own server.
 
-**最后，希望这个项目&&服务器在大家的共同推进下发展的越来越好，如果本项目确实对您有所帮助，不妨点个star吧！**
+**Hope the project & server in the common development of the better & better. If the project does help you, CLICK A STAR PLZ!**
 
 
-## 部分文件夹说明
+## Folder Description
 
-- development_behavior_packs文件夹 存储了服务器所使用的行为包的相关文件
-- development_resource_packs文件夹 存储了服务器所使用的资源包的相关文件
-- CppDll文件夹 指向了服务器自主开发的dll格式插件开源项目地址[NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin)。
-- plugins文件夹 存储了服务器所使用的插件(将于近期上线)
+- development_behavior_packs:  Stores the behavior packs used by the server. 
+- development_resource_packs: Stores the resource packs used by the server.
+- CppDll Folder: Points to the open source project address og the dll format plugin:[NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin) independently developed by the server.
+- plugins Folder: Stores all plugins the server using.(coming soon)
 
 **但是我并不推荐您直接下载里面的文件，因为里面的文件很可能仍处于开发状态中！您可以前往release界面下载经过测试的资源包、行为包、插件等**
 
-## 使用说明
+## Instruction
 
 为了更加稳定的运行，推荐您直接前往[release](https://github.com/NIANIANKNIA/NIASERVER-V4/releases/latest)页面下载打包好的资源包、行为包
 
