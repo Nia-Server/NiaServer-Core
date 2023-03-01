@@ -4,13 +4,17 @@
 [![status](https://img.shields.io/github/actions/workflow/status/NIANIANKNIA/NIASERVER-V4/main.yml?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/actions)
 [![GitHub Release Date](https://img.shields.io/github/release-date/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/releases)
 [![Latest Release](https://img.shields.io/github/v/release/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/releases/latest)
-[![GitHub last commit](https://img.shields.io/github/last-commit/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)]((https://github.com/NIANIANKNIA/NIASERVER-V4/commits))
+[![GitHub last commit](https://img.shields.io/github/last-commit/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/commits)
 [![QQ GROUNP](https://img.shields.io/badge/QQ%20GROUNP-724360499-blue?style=for-the-badge)](https://jq.qq.com/?_wv=1027&k=uk57fVr0)
 [![website](https://img.shields.io/badge/website-docs.mcnia.top-blue?style=for-the-badge)](https://docs.mcnia.top)
 
-![NIASERVER-V4](https://socialify.git.ci/NIANIANKNIA/NIASERVER-V4/image?description=1&descriptionEditable=%E4%B8%80%E4%B8%AA%E5%9F%BA%E4%BA%8EBDS%E7%9A%84Minecraft%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%81&font=Rokkitt&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.top%2Flogo.png&name=1&owner=1&pattern=Signal&pulls=1&stargazers=1&theme=Auto)
+![NIASERVER-V4](https://socialify.git.ci/NIANIANKNIA/NIASERVER-V4/image?description=1&descriptionEditable=A%20BDS-based%20Minecraft%20server!&font=KoHo&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.top%2Flogo.png&name=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Auto)
+
+**language: [简体中文](README.md) | English**
 
 ## Introduction
+
+**Since the NIA server currently only provides game servers in China, the addons language are all Chinese at the moment. But you don't have to worry too much, a version with multi-language support is already in the making, so stay tuned!**
 
 The bedrock version server based on BDS, open source of the addons R&D by NIA Group (including some codes using script-api) & almost our plugins running on LiteLoader.
 
@@ -23,28 +27,28 @@ Though you may not use this addons right away on your local system without revis
 
 ## Folder Description
 
-- development_behavior_packs:  Stores the behavior packs used by the server. 
+- development_behavior_packs:  Stores the behavior packs used by the server.
 - development_resource_packs: Stores the resource packs used by the server.
 - CppDll Folder: Points to the open source project address og the dll format plugin:[NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin) independently developed by the server.
 - plugins Folder: Stores all plugins the server using.(coming soon)
 
-**但是我并不推荐您直接下载里面的文件，因为里面的文件很可能仍处于开发状态中！您可以前往release界面下载经过测试的资源包、行为包、插件等**
+**But I don't recommend downloading the files directly, because they are probably still in development! You can go to the release to download tested resource packs, behavior packs, plugins, etc.**
 
 ## Instruction
 
-为了更加稳定的运行，推荐您直接前往[release](https://github.com/NIANIANKNIA/NIASERVER-V4/releases/latest)页面下载打包好的资源包、行为包
+For more stable operation, we recommend you to go directly to the [release](https://github.com/NIANIANKNIA/NIASERVER-V4/releases/latest) page to download the packaged resource package and behavior package
 
-其中`BP`代表行为包，`RP`代表资源包
+Where `BP` stands for Behavior Package and `RP` stands for Resource Package
 
-您可以根据您自己的需求下载相应的zip文件
+You can download the zip file according to your own needs
 
-在完成配置之后将行为包以及资源包分别解压至`development_behavior_packs`文件夹、`development_resource_packs`文件夹即可使用！
+After completing the configuration, extract the behavior packs and resource packs to the `development_behavior_packs` and `development_resource_packs` folders respectively and you're ready to go!
 
-## Bug反馈/提建议
+## Bug feedback&&suggestions!
 
-如果您在使用过程中遇到了问题、bug，或者拥有好的建议您都可以前往[issues](https://github.com/NIANIANKNIA/NIASERVER-V4/issues)反馈，我会在看到后第一时间回复！
+If you encounter problems, bugs, or have good suggestions in the use of the process can go to [issues](https://github.com/NIANIANKNIA/NIASERVER-V4/issues) feedback, I will see the first time to reply!
 
-## 服务器开发者名单 （排名不分先后）
+## Server Developer List
 
 @NIANIANKNIA
 
@@ -70,14 +74,13 @@ Though you may not use this addons right away on your local system without revis
 
 ...
 
-## 许可证
+## License
 
-您必须接受 Minecraft 的最终用户许可协议(EULA).
+You must accept the End User License Agreement (EULA) for Minecraft.
 
-- 它意味着**请勿将任何违反 EULA 的内容用于商业用途**
-- 接受这个**许可证**意味着您也**接受了**[Minecraft EULA](https://account.mojang.com/terms)
-- 如果您违反了 **EULA**，任何法律责任都与开发者**无关**
-- **开发者不对您负责，开发者没有义务为你编写代码、为你使用造成的任何后果负责**
+- It means **please do not use any content that violates the EULA for commercial purposes**
+- Accepting this **license** means that you also **accept** the **[Minecraft EULA](https://account.mojang.com/terms)
+- If you violate the **EULA**, any legal liability is not the developer's** responsibility**
+- **Developers are not responsible for you, and developers are not obligated to write code for you or be responsible for any consequences of your use**
 
-另外，您需要遵守本项目的[`AGPL-3.0`](www.gnu.org/licenses/agpl-3.0)开源许可证条款, 以及本项目所有子项目使用的相关开源协议
-
+In addition, you are required to abide by the terms of the [`AGPL-3.0`](https://github.com/NIANIANKNIA/NIASERVER-V4/blob/main/LICENSE) open source license for this project, and the relevant open source agreements used by all subprojects of this project

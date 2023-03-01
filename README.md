@@ -4,11 +4,13 @@
 [![status](https://img.shields.io/github/actions/workflow/status/NIANIANKNIA/NIASERVER-V4/main.yml?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/actions)
 [![GitHub Release Date](https://img.shields.io/github/release-date/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/releases)
 [![Latest Release](https://img.shields.io/github/v/release/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/releases/latest)
-[![GitHub last commit](https://img.shields.io/github/last-commit/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)]((https://github.com/NIANIANKNIA/NIASERVER-V4/commits))
+[![GitHub last commit](https://img.shields.io/github/last-commit/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/commits)
 [![QQ GROUNP](https://img.shields.io/badge/QQ%20GROUNP-724360499-blue?style=for-the-badge)](https://jq.qq.com/?_wv=1027&k=uk57fVr0)
 [![website](https://img.shields.io/badge/website-docs.mcnia.top-blue?style=for-the-badge)](https://docs.mcnia.top)
 
-![NIASERVER-V4](https://socialify.git.ci/NIANIANKNIA/NIASERVER-V4/image?description=1&descriptionEditable=%E4%B8%80%E4%B8%AA%E5%9F%BA%E4%BA%8EBDS%E7%9A%84Minecraft%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%81&font=Rokkitt&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.top%2Flogo.png&name=1&owner=1&pattern=Signal&pulls=1&stargazers=1&theme=Auto)
+![NIASERVER-V4](https://socialify.git.ci/NIANIANKNIA/NIASERVER-V4/image?description=1&descriptionEditable=%E4%B8%80%E4%B8%AA%E5%9F%BA%E4%BA%8EBDS%E7%9A%84Minecraft%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%81&font=KoHo&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.top%2Flogo.png&name=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Auto)
+
+**语言: 简体中文 | [English](README-EN.md)**
 
 ## 写在前面
 
@@ -39,6 +41,8 @@
 您可以根据您自己的需求下载相应的zip文件
 
 在完成配置之后将行为包以及资源包分别解压至`development_behavior_packs`文件夹、`development_resource_packs`文件夹即可使用！
+
+**具体的配置教程将在近期上线**
 
 ## Bug反馈/提建议
 
@@ -79,5 +83,5 @@
 - 如果您违反了 **EULA**，任何法律责任都与开发者**无关**
 - **开发者不对您负责，开发者没有义务为你编写代码、为你使用造成的任何后果负责**
 
-另外，您需要遵守本项目的[`AGPL-3.0`](www.gnu.org/licenses/agpl-3.0)开源许可证条款, 以及本项目所有子项目使用的相关开源协议
+另外，您需要遵守本项目的[`AGPL-3.0`](https://github.com/NIANIANKNIA/NIASERVER-V4/blob/main/LICENSE)开源许可证条款, 以及本项目所有子项目使用的相关开源协议
 
