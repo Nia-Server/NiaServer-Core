@@ -1,4 +1,5 @@
 import {world} from '@minecraft/server';
+import {cfg} from './config.js'
 /**
  * 将Msg消息广播至整个游戏
  * @param {string} Msg
@@ -130,9 +131,7 @@ world.events.beforeChat.subscribe(t => {
                 case "-a":
                     hasCommand = true;
                     // set dynamic property
-                    world.setDynamicProperty("TESTData", "这是一个测试字符串！");
-                    Broadcast(world.getDynamicProperty("TESTData").toString())
-                    Tell("§c>> 注意本指令为调试指令，不要在正式生产环境中使用本指令！",t.sender.nameTag);
+                    Tell("§c>> 注意本指令为调试指令，不要在正式生产环境中使用本指令！" + cfg.test,t.sender.nameTag);
                     break;
                 case "-RN":
                     hasCommand = true;

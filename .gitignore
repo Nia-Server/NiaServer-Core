@@ -1,26 +1,18 @@
-# file 不需要提交的文件
-*.zip
-allowlist.json
-bedrock_server.exe
-bedrock_server.pdb
-bedrock_server_how_to.html
-bedrock_server_mod.exe
-LiteLoader.dll
-LLPeEditor.exe
-LLPreLoader.dll
-permissions.json
-release-notes.txt
-server.properties
-valid_known_packs.json
+/*
 
-# dir 不需要提交的目录
-/backup
-/behavior_packs
-/config
-/definitions
-/development_skin_packs
-/logs
-/plugins
-/resource_packs
-/world_templates
-/worlds
+!/development_behavior_packs
+!/development_rescourse_packs
+!/NIAServerPlugin
+
+!/plugins/
+/plugins/*
+!/plugins/NBan.js
+!/plugins/KillItem.js
+
+!.gitignore
+!.gitmodules
+!CHANGELOG-PRE.md
+!CHANGELOG.md
+!LICENSE
+!README-EN.md
+!README.md

@@ -15,6 +15,7 @@ import {ShopGUI} from './shop.js'
 import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution} from './customFunction.js'
 import './chat.js'
 import { OxygenGUI } from './oxygen.js';
+import { cfg } from './config.js';
 
 
 

@@ -79,8 +79,8 @@ If you encounter problems, bugs, or have good suggestions in the use of the proc
 You must accept the End User License Agreement (EULA) for Minecraft.
 
 - It means **please do not use any content that violates the EULA for commercial purposes**
-- Accepting this **license** means that you also **accept** the **[Minecraft EULA](https://account.mojang.com/terms)
-- If you violate the **EULA**, any legal liability is not the developer's** responsibility**
+- Accepting this **license** means that you also **accept** the **[Minecraft EULA](https://account.mojang.com/terms)**
+- If you violate the **EULA**, any legal liability **is not the developer's responsibility**
 - **Developers are not responsible for you, and developers are not obligated to write code for you or be responsible for any consequences of your use**
 
 In addition, you are required to abide by the terms of the [`AGPL-3.0`](https://github.com/NIANIANKNIA/NIASERVER-V4/blob/main/LICENSE) open source license for this project, and the relevant open source agreements used by all subprojects of this project
