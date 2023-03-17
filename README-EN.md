@@ -27,10 +27,10 @@ Though you may not use this addons right away on your local system without revis
 
 ## Folder Description
 
-- development_behavior_packs:  Stores the behavior packs used by the server.
-- development_resource_packs: Stores the resource packs used by the server.
-- CppDll Folder: Points to the open source project address og the dll format plugin:[NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin) independently developed by the server.
-- plugins Folder: Stores all plugins the server using.(coming soon)
+- `development_behavior_packs` Folder:  Stores the behavior packs used by the server.
+- `development_resource_packs` Folder: Stores the resource packs used by the server.
+- `NiaServerPlugin` Folder: Points to the open source project address og the dll format plugin:[NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin) independently developed by the server.
+- `plugins` Folder: Stores all plugins the server using.
 
 **But I don't recommend downloading the files directly, because they are probably still in development! You can go to the release to download tested resource packs, behavior packs, plugins, etc.**
 

@@ -9,7 +9,7 @@ const config = {
     "USETpa": true,
     "USEHome": true,
     "MoneyScoreboardName": "money",
-    "MoneyScoreboardName": "能源币",
+    "MoneyShowName": "能源币",
     "TimeScoreboardName":"time",
     "OPTAG": "op",
     "OPMENUPassword": "123456",

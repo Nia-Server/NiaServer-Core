@@ -5,15 +5,15 @@
 //本脚本仅仅用于学习用途
 //严禁任何个人、组织严禁在未经授权的情况下使用本脚本盈利
 //脚本名称：NIA服务器V4运行核心脚本
-//脚本版本：v4.2.11（BETA）
 ////////////////////////////////////////////////////////////////////////////
 
 
-import {world,BlockLocation,DynamicPropertiesDefinition,system} from '@minecraft/server';
+import {system, world} from '@minecraft/server';
 import {ActionFormData,ModalFormData,MessageFormData} from '@minecraft/server-ui'
 import {ShopGUI} from './shop.js'
 import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution} from './customFunction.js'
 import './chat.js'
+import './menu/main.js'
 import { OxygenGUI } from './oxygen.js';
 import { cfg } from './config.js';
 
@@ -1345,18 +1345,7 @@ world.events.playerSpawn.subscribe(event => {
 //     }
 // })
 
-
-
-//控制每时每刻执行的事件！
-world.events.tick.subscribe(t => {
-    // let run_time = Date.now()
-    // run_time = Date.now() - run_time
-    // world.setDynamicProperty("tps", world.getDynamicProperty("tps") + 1);
-    // if (t.currentTick % 200 == 0) {
-    //     Broadcast((world.getDynamicProperty("tps")/10).toString())
-    //     world.setDynamicProperty("tps", 0);
-    // }
-    //Broadcast(world.getDynamicProperty("CDKData").toString())
+system.runInterval(() => {
     RunCmd(`gamemode a @a[tag=!op,tag=!mining,m=!a,x=559,y=67,z=562,r=700]`)
     RunCmd(`tag @a remove mining`)
     RunCmd(`tag @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] add mining`)
@@ -1371,349 +1360,348 @@ world.events.tick.subscribe(t => {
     // RunCmd(`scoreboard players add @a time 0`)
     // RunCmd(`scoreboard players add @a money 0`)
     // RunCmd(`scoreboard players add @a AnoxicTime 0`)
+}, 1);
+
+system.runInterval(() => {
     let players = world.getPlayers()
     let playerList = Array.from(players);
-    //每秒钟执行的事件
-    if (t.currentTick % 20 == 0) {
-        let TIME = new Date();
-        // Broadcast(TIME.toLocaleString())
-        if (TIME.getMinutes() == 0 && TIME.getSeconds() == 0 ) {
-            let RN = parseInt(getNumberInNormalDistribution(100,20))
-            //防止物价指数出现极端数值
-            if (RN <= 20 || RN >= 180) {
-                RN = 100
-            }
-            RunCmd(`scoreboard players set RN DATA ${RN}`);
-            RunCmd(`title @a title §c物价指数发生变动！`)
-            RunCmd(`title @a subtitle §7物价指数由 §l§e${GetScore("DATA","RN") / 100} §r§7变为 §l§e${RN / 100}`)
-            RunCmd(`backup`);
-            Broadcast(`§a>> 服务器自动备份中！可能出现卡顿，请勿在此时进行较大负载活动！`)
-            if (TIME.getHours() == 16) {
-                //每天更新数据文件
-                RunCmd(`tite @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] title §c矿场已更新！`)
-                RunCmd(`tite @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] subtitle §7请重新花费体力进入！`)
-                RunCmd(`tp @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] 702 82 554`)
-                RunCmd(`scoreboard objectives remove miningTime`)
-                RunCmd(`scoreboard objectives add miningTime dummy 采矿时间`)
-                RunCmd(`spawnores OreChunk1 813 3 568 725 68 539`)
-                let ScoreBoards = world.scoreboard.getObjectives()
-                for (let i = 0; i < ScoreBoards.length; i++) {
-                    if (ScoreBoards[i].id.slice(0,2) == "R:") {
-                        RunCmd(`scoreboard objectives remove "${ScoreBoards[i].id}"`)
-                    }
-                }
-                Broadcast(`§a>> 服务器时间已更新！矿场已更新！`)
-            }
+    let TIME = new Date();
+    // Broadcast(TIME.toLocaleString())
+    if (TIME.getMinutes() == 0 && TIME.getSeconds() == 0 ) {
+        let RN = parseInt(getNumberInNormalDistribution(100,20))
+        //防止物价指数出现极端数值
+        if (RN <= 20 || RN >= 180) {
+            RN = 100
         }
-        if (TIME.getSeconds() == 0) {
-            for (let playername in posData) {
-                posData[playername].num = 0
+        RunCmd(`scoreboard players set RN DATA ${RN}`);
+        RunCmd(`title @a title §c物价指数发生变动！`)
+        RunCmd(`title @a subtitle §7物价指数由 §l§e${GetScore("DATA","RN") / 100} §r§7变为 §l§e${RN / 100}`)
+        RunCmd(`backup`);
+        Broadcast(`§a>> 服务器自动备份中！可能出现卡顿，请勿在此时进行较大负载活动！`)
+        if (TIME.getHours() == 16) {
+            //每天更新数据文件
+            RunCmd(`tite @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] title §c矿场已更新！`)
+            RunCmd(`tite @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] subtitle §7请重新花费体力进入！`)
+            RunCmd(`tp @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] 702 82 554`)
+            RunCmd(`scoreboard objectives remove miningTime`)
+            RunCmd(`scoreboard objectives add miningTime dummy 采矿时间`)
+            RunCmd(`spawnores OreChunk1 813 3 568 725 68 539`)
+            let ScoreBoards = world.scoreboard.getObjectives()
+            for (let i = 0; i < ScoreBoards.length; i++) {
+                if (ScoreBoards[i].id.slice(0,2) == "R:") {
+                    RunCmd(`scoreboard objectives remove "${ScoreBoards[i].id}"`)
+                }
             }
-            RunCmd(`scoreboard players add @a time 1`);
-            RunCmd(`scoreboard players add @a[scores={stamina=..159}] stamina 1`);
-            for (let i = 0; i < playerList.length; i++) {
-                RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume}`);
-                if (playerList[i].dimension.id == "minecraft:nether" && GetScore("equLevel",playerList[i].nameTag) <= 8) {
-                    RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume}`)
-                }
-                if (playerList[i].dimension.id == "minecraft:the_end" && GetScore("equLevel",playerList[i].nameTag) <= 13) {
-                    RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume * 2}`)
-                }
-                if (playerList[i].hasTag("fly") && GetScore("equLevel",playerList[i].nameTag) >= 13) {
-                    RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume * 99}`)
-                }
-            }
+            Broadcast(`§a>> 服务器时间已更新！矿场已更新！`)
         }
+    }
+    if (TIME.getSeconds() == 0) {
+        for (let playername in posData) {
+            posData[playername].num = 0
+        }
+        RunCmd(`scoreboard players add @a time 1`);
+        RunCmd(`scoreboard players add @a[scores={stamina=..159}] stamina 1`);
         for (let i = 0; i < playerList.length; i++) {
-            if (playerList[i].dimension.id == "minecraft:the_end" || playerList[i].dimension.id == "minecraft:nether") {
-                playerList[i].removeTag("fly")
-                RunCmd(`ability @a[name="${playerList[i].nameTag}",tag=!op] mayfly false`)
-            }
-            if (!playerList[i].hasTag("shown")) {
-                playerList[i].addTag("showing")
-                // RunCmd(`tag "${playerList[i].nameTag}" add showing`)
-            }
-            //这里控制玩家氧气值不超过100%
-            if (GetScore("oxygen",playerList[i].nameTag) > equLevelData[GetScore("equLevel",playerList[i].nameTag)].max) {
-                RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] oxygen ${equLevelData[GetScore("equLevel",playerList[i].nameTag)].max}`)
-            }
-            //这里控制玩家氧气值不低于0
-            if (GetScore("oxygen",playerList[i].nameTag) < 0) {
-                RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] oxygen 0`)
-            }
-            //生命恢复
-            if (GetScore("oxygen",playerList[i].nameTag) > 3500 && GetScore("equLevel",playerList[i].nameTag) < 14) {
-                RunCmd(`effect "${playerList[i].nameTag}" regeneration 15 0 true`)
-            } else if (GetScore("oxygen",playerList[i].nameTag) > 3500 && GetScore("equLevel",playerList[i].nameTag) >= 14) {
-                RunCmd(`effect "${playerList[i].nameTag}" regeneration 15 1 true`)
-            }
-            //夜视
-            if (GetScore("equLevel",playerList[i].nameTag) > 16) {
-                RunCmd(`effect "${playerList[i].nameTag}" night_vision 15 0 true`)
-            }
-            //力量
-            if (GetScore("oxygen",playerList[i].nameTag) > 4800 && GetScore("equLevel",playerList[i].nameTag) < 16) {
-                RunCmd(`effect "${playerList[i].nameTag}" strength 15 0 true`)
-            } else if (GetScore("oxygen",playerList[i].nameTag) > 4800 && GetScore("equLevel",playerList[i].nameTag) >= 16) {
-                RunCmd(`effect "${playerList[i].nameTag}" strength 15 1 true`)
-            }
+            RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume}`);
             if (playerList[i].dimension.id == "minecraft:nether" && GetScore("equLevel",playerList[i].nameTag) <= 8) {
-                RunCmd(`effect "${playerList[i].nameTag}" slowness 15 0 true`)
-                RunCmd(`effect "${playerList[i].nameTag}" weakness 15 2 true`)
+                RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume}`)
             }
             if (playerList[i].dimension.id == "minecraft:the_end" && GetScore("equLevel",playerList[i].nameTag) <= 13) {
-                RunCmd(`effect "${playerList[i].nameTag}" slowness 15 0 true`)
-                RunCmd(`effect "${playerList[i].nameTag}" weakness 15 3 true`)
+                RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume * 2}`)
             }
-            if (playerList[i].hasTag("GetIsland")) {
-                guiAPI.CreIsland(playerList[i])
-                RunCmd(`tag ${playerList[i].nameTag} remove GetIsland`)
-            }
-            // Broadcast(`§c[NKillHacker]§r\nspeed:${((Math.pow(playerList[i].velocity.x,2) + Math.pow(playerList[i].velocity.y,2) + Math.pow(playerList[i].velocity.z,2))).toFixed(5)} \npos:${playerList[i].location.x.toFixed(4)} ${playerList[i].location.y.toFixed(4)} ${playerList[i].location.z.toFixed(4)}`)
-            let pos = {}
-            if (posData[playerList[i].nameTag]) {
-                //Broadcast((Math.pow(playerList[i].location.x.toFixed(4) - posData[playerList[i].nameTag].x,2) + Math.pow(playerList[i].location.y.toFixed(4) - posData[playerList[i].nameTag].y,2) + Math.pow(playerList[i].location.z.toFixed(4) - posData[playerList[i].nameTag].z,2)).toString())
-                if (((Math.pow(playerList[i].velocity.x,2) + Math.pow(playerList[i].velocity.y,2) + Math.pow(playerList[i].velocity.z,2))) >= 0.045 && (Math.pow(playerList[i].location.x.toFixed(4) - posData[playerList[i].nameTag].x,2) + Math.pow(playerList[i].location.y.toFixed(4) - posData[playerList[i].nameTag].y,2) + Math.pow(playerList[i].location.z.toFixed(4) - posData[playerList[i].nameTag].z,2)) <= 0.5) {
-                    world.getDimension("overworld").runCommandAsync(`tellraw @a[tag=op] {\"rawtext\":[{\"text\":\"§c>> 疑似 §e${playerList[i].nameTag} §c正在使用自由视角，如果本消息短期多次出现建议前往查看！注意：本消息可能是个误判！以下为该玩家的异常数据§r\nspeed:${((Math.pow(playerList[i].velocity.x,2) + Math.pow(playerList[i].velocity.y,2) + Math.pow(playerList[i].velocity.z,2))).toFixed(3)} \npos:${playerList[i].location.x.toFixed(3)} ${playerList[i].location.y.toFixed(3)} ${playerList[i].location.z.toFixed(3)}\ndistance:${(Math.pow(playerList[i].location.x.toFixed(4) - posData[playerList[i].nameTag].x,2) + Math.pow(playerList[i].location.y.toFixed(4) - posData[playerList[i].nameTag].y,2) + Math.pow(playerList[i].location.z.toFixed(4) - posData[playerList[i].nameTag].z,2)).toFixed(3).toString()}\"}]}`);
-                    posData[playerList[i].nameTag].num++
-                    if (posData[playerList[i].nameTag].num >= 8) {
-                        posData[playerList[i].nameTag].num = 0
-                        RunCmd(`ban ${playerList[i].nameTag} 1 违规使用自由视角(灵魂出窍)`)
-                    }
-                    //RunCmd(`ban ${playerList[i].nameTag} 1 违规使用自由视角(灵魂出窍)`)
-                }
-                posData[playerList[i].nameTag].x = playerList[i].location.x.toFixed(4)
-                posData[playerList[i].nameTag].y = playerList[i].location.y.toFixed(4)
-                posData[playerList[i].nameTag].z = playerList[i].location.z.toFixed(4)
-            } else {
-                //Broadcast("1")
-                pos.num = 0
-                pos.x = playerList[i].location.x.toFixed(4)
-                pos.y = playerList[i].location.y.toFixed(4)
-                pos.z = playerList[i].location.z.toFixed(4)
-                posData[playerList[i].nameTag] = pos
-            }
-            if ((Math.pow(playerList[i].velocity.x,2) + Math.pow(playerList[i].velocity.y,2) + Math.pow(playerList[i].velocity.z,2)) > 0.07 && GetScore("equLevel",playerList[i].nameTag) <= 10) {
-                RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -1`);
-            }
-            //  Broadcast(`${Math.pow(playerList[i].velocity.x,2) + Math.pow(playerList[i].velocity.y,2) + Math.pow(playerList[i].velocity.z,2)}`)
-            if (GetScore("oxygen",playerList[i].nameTag) <= 0) {
-                RunCmd(`scoreboard players add @a[name="${playerList[i].nameTag}"] AnoxicTime 1`)
-            } else {
-                RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] AnoxicTime 0`)
-            }
-            if (GetScore("AnoxicTime",playerList[i].nameTag) == 1) {
-                RunCmd(`title "${playerList[i].nameTag}" title §c您已缺氧！`)
-                RunCmd(`title "${playerList[i].nameTag}" subtitle §7请及时补充氧气！`)
-                Tell("§c>> 您已进入缺氧状态！请及时补充氧气，否则会导致死亡！5秒后系统将自动打开氧气购买界面！",playerList[i].nameTag)
-            }
-            if (GetScore("AnoxicTime",playerList[i].nameTag) == 6) {
-                OxygenGUI.OxygenBuy(playerList[i])
-            }
-            if (GetScore("oxygen",playerList[i].nameTag) <= 200) {
-                RunCmd(`effect "${playerList[i].nameTag}" slowness 15 0`)
-                RunCmd(`effect "${playerList[i].nameTag}" weakness 15 2`)
-            }
-            if (GetScore("AnoxicTime",playerList[i].nameTag) >= 60) {
-                RunCmd(`effect "${playerList[i].nameTag}" blindness 15 0`)
-                RunCmd(`effect "${playerList[i].nameTag}" mining_fatigue 15 2`)
-                RunCmd(`effect "${playerList[i].nameTag}" nausea 15 0`)
-            }
-            //缺氧达到一定时间后直接进行死亡程序
-            if (GetScore("AnoxicTime",playerList[i].nameTag) >= 240) {
-                RunCmd(`kill "${playerList[i].nameTag}"`)
-                Tell("§c>> 我们很遗憾的通知您，由于您缺氧过长时间，昏倒在家中...幸亏您被巡逻机器人及时发现并送到了医院，才救回一条命...",playerList[i].nameTag)
-                RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] oxygen 200`)
-                RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] AnoxicTime 0`)
-                RunCmd(`scoreboard players add @a[name="${playerList[i].nameTag}"] money -50`)
-                Tell("§r======================\n§cNIA服务器医院 账单§r\n======================§c\n氧气费用 --- 20 能源币\n诊疗费用 --- 20 能源币\n转运费用 --- 10 能源币\n合计费用 --- 50 能源币§r\n======================",playerList[i].nameTag)
-                Tell("§r===============================\n§cNIA服务器自动扣费通知§r\n===============================§c\n50 能源币 已自动从您账户扣除\n如果您发现账户余额为负请及时补齐\n否则可能影响您的信誉值！§r\n===============================",playerList[i].nameTag)
-            }
-            ///////////////////////////////////
-            let titleActionbar = "";
-            if(playerList[i].hasTag("ShowActionbar")) {
-                if (playerList[i].hasTag("fly")) {
-                    titleActionbar = "§c飞行模式§r "
-                }
-                //
-                if (playerList[i].hasTag("ShowOxygenName")) {
-                    titleActionbar = titleActionbar + "氧气值："
-                }
-                //
-                if (playerList[i].hasTag("ShowOxygen1") || playerList[i].hasTag("ShowOxygen2") || playerList[i].hasTag("ShowOxygen3") || playerList[i].hasTag("ShowOxygen4")) {
-                    let percent = (GetScore("oxygen",playerList[i].nameTag) / equLevelData[GetScore("equLevel",playerList[i].nameTag)].max)
-                    if (playerList[i].hasTag("ShowOxygen1")) {
-                        switch (true) {
-                            case percent >= 1:
-                                titleActionbar = titleActionbar + "§e[§a||||||||||||||||||||§6100.00%§e]"
-                                break;
-                            case percent >= 0.95:
-                                titleActionbar = titleActionbar + `§e[§a|||||||||||||||||||§6${(percent * 100).toFixed(2)}%§7§e]`
-                                break;
-                            case percent >= 0.9:
-                                titleActionbar = titleActionbar + `§e[§a||||||||||||||||||§6${(percent * 100).toFixed(2)}%§7|§e]`
-                                break;
-                            case percent >= 0.85:
-                                titleActionbar = titleActionbar + `§e[§a|||||||||||||||||§6${(percent * 100).toFixed(2)}%§7||§e]`
-                                break;
-                            case percent >= 0.8:
-                                titleActionbar = titleActionbar + `§e[§a||||||||||||||||§6${(percent * 100).toFixed(2)}%§7|||§e]`
-                                break;
-                            case percent >= 0.75:
-                                titleActionbar = titleActionbar + `§e[§a|||||||||||||||§6${(percent * 100).toFixed(2)}%§7||||§e]`
-                                break;
-                            case percent >= 0.7:
-                                titleActionbar = titleActionbar + `§e[§a||||||||||||||§6${(percent * 100).toFixed(2)}%§7|||||§e]`
-                                break;
-                            case percent >= 0.65:
-                                titleActionbar = titleActionbar + `§e[§a|||||||||||||§6${(percent * 100).toFixed(2)}%§7||||||§e]`
-                                break;
-                            case percent >= 0.6:
-                                titleActionbar = titleActionbar + `§e[§a||||||||||||§6${(percent * 100).toFixed(2)}%§7|||||||§e]`
-                                break;
-                            case percent >= 0.55:
-                                titleActionbar = titleActionbar + `§e[§a|||||||||||§6${(percent * 100).toFixed(2)}%§7||||||||§e]`
-                                break;
-                            case percent >= 0.5:
-                                titleActionbar = titleActionbar + `§e[§a||||||||||§6${(percent * 100).toFixed(2)}%§7|||||||||§e]`
-                                break;
-                            case percent >= 0.45:
-                                titleActionbar = titleActionbar + `§e[§a|||||||||§6${(percent * 100).toFixed(2)}%§7||||||||||§e]`
-                                break;
-                            case percent >= 0.4:
-                                titleActionbar = titleActionbar + `§e[§a||||||||§6${(percent * 100).toFixed(2)}%§7|||||||||||§e]`
-                                break;
-                            case percent >= 0.35:
-                                titleActionbar = titleActionbar + `§e[§a|||||||§6${(percent * 100).toFixed(2)}%§7||||||||||||§e]`
-                                break;
-                            case percent >= 0.3:
-                                titleActionbar = titleActionbar + `§e[§a||||||§6${(percent * 100).toFixed(2)}%§7|||||||||||||§e]`
-                                break;
-                            case percent >= 0.25:
-                                titleActionbar = titleActionbar + `§e[§a|||||§6${(percent * 100).toFixed(2)}%§7||||||||||||||§e]`
-                                break;
-                            case percent >= 0.2:
-                                titleActionbar = titleActionbar + `§e[§c||||§c${(percent * 100).toFixed(2)}%§7|||||||||||||||§e]`
-                                break;
-                            case percent >= 0.15:
-                                titleActionbar = titleActionbar + `§e[§c|||§c${(percent * 100).toFixed(2)}%§7||||||||||||||||§e]`
-                                break;
-                            case percent >= 0.1:
-                                titleActionbar = titleActionbar + `§e[§c||§c${(percent * 100).toFixed(2)}%§7|||||||||||||||||§e]`
-                                break;
-                            case percent >= 0.05:
-                                titleActionbar = titleActionbar + `§e[§c|§c${(percent * 100).toFixed(2)}%§7||||||||||||||||||§e]`
-                                break;
-                            case percent >= 0:
-                                titleActionbar = titleActionbar + `§e[§c${(percent * 100).toFixed(2)}%§7|||||||||||||||||||§e]`
-                                break;
-                            case percent < 0:
-                                titleActionbar = titleActionbar + `§e[§c0.00%§7|||||||||||||||||||§e]`
-                                break;
-                        }
-                    } else if (playerList[i].hasTag("ShowOxygen2")) {
-                        switch (true) {
-                            case percent >= 1:
-                                titleActionbar = titleActionbar + "§e[§a||||||||||||||||||||§e] §6100.00%"
-                                break;
-                            case percent >= 0.95:
-                                titleActionbar = titleActionbar + `§e[§a|||||||||||||||||||§6|§e] §6${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.9:
-                                titleActionbar = titleActionbar + `§e[§a||||||||||||||||||§6|§7|§e] §6${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.85:
-                                titleActionbar = titleActionbar + `§e[§a|||||||||||||||||§6|§7||§e] §6${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.8:
-                                titleActionbar = titleActionbar + `§e[§a||||||||||||||||§6|§7|||§e] §6${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.75:
-                                titleActionbar = titleActionbar + `§e[§a|||||||||||||||§6|§7||||§e] §6${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.7:
-                                titleActionbar = titleActionbar + `§e[§a||||||||||||||§6|§7|||||§e] §6${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.65:
-                                titleActionbar = titleActionbar + `§e[§a|||||||||||||§6|§7||||||§e] §6${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.6:
-                                titleActionbar = titleActionbar + `§e[§a||||||||||||§6|§7|||||||§e] §6${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.55:
-                                titleActionbar = titleActionbar + `§e[§a|||||||||||§6|§7||||||||§e] §6${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.5:
-                                titleActionbar = titleActionbar + `§e[§a||||||||||§6|§7|||||||||§e] §6${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.45:
-                                titleActionbar = titleActionbar + `§e[§a|||||||||§6|§7||||||||||§e] §6${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.4:
-                                titleActionbar = titleActionbar + `§e[§a||||||||§6|§7|||||||||||§e] §6${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.35:
-                                titleActionbar = titleActionbar + `§e[§a|||||||§6|§7||||||||||||§e] §6${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.3:
-                                titleActionbar = titleActionbar + `§e[§a||||||§6|§7|||||||||||||§e] §6${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.25:
-                                titleActionbar = titleActionbar + `§e[§a|||||§6|§7||||||||||||||§e] §6${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.2:
-                                titleActionbar = titleActionbar + `§e[§c||||§6|§7|||||||||||||||§e] §c${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.15:
-                                titleActionbar = titleActionbar + `§e[§c|||§6|§7||||||||||||||||§e] §c${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.1:
-                                titleActionbar = titleActionbar + `§e[§c||§6|§7|||||||||||||||||§e] §c${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0.05:
-                                titleActionbar = titleActionbar + `§e[§c|§6|§7||||||||||||||||||§e] §c${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent >= 0:
-                                titleActionbar = titleActionbar + `§e[§6|§7|||||||||||||||||||§e] §c${(percent * 100).toFixed(2)}%`
-                                break;
-                            case percent < 0:
-                                titleActionbar = titleActionbar + `§e[§7||||||||||||||||||||§e] §c0.00%`
-                                break;
-                        }
-                    } else if (playerList[i].hasTag("ShowOxygen3")) {
-                        titleActionbar = titleActionbar + `§l§e${GetScore("oxygen",playerList[i].nameTag)}/${equLevelData[GetScore("equLevel",playerList[i].nameTag)].max}`
-                    } else if (playerList[i].hasTag("ShowOxygen4")) {
-                        titleActionbar = titleActionbar + `§l§e${(percent * 100).toFixed(2)}%`
-                    }
-                }
-                if (playerList[i].hasTag("ShowMoney")) {
-                    titleActionbar = titleActionbar + "§r §f能源币：§e§l" + GetScore("money",playerList[i].nameTag)
-                }
-                if (playerList[i].hasTag("ShowTime")) {
-                    titleActionbar = titleActionbar + "§r §f在线时间：§e§l" + GetScore("time",playerList[i].nameTag)
-                }
-                if (playerList[i].hasTag("ShowRN")) {
-                    titleActionbar = titleActionbar + "§r §f物价指数：§e§l" + GetScore("DATA","RN") / 100
-                }
-                if (playerList[i].hasTag("ShowStamina")) {
-                    titleActionbar = titleActionbar + "§r §f体力值：§e§l" + GetScore("stamina",playerList[i].nameTag)
-                }
-                if (GetScore("oxygen",playerList[i].nameTag) <= 200 && GetScore("oxygen",playerList[i].nameTag) > 0) {
-                    titleActionbar = titleActionbar + "§r\n§c§l您即将进入缺氧状态，请及时补充氧气！"
-                }
-                if (playerList[i].dimension.id == "minecraft:nether" && GetScore("equLevel",playerList[i].nameTag) <= 8) {
-                    titleActionbar = titleActionbar + "§r\n§c§l⚠警告！您目前呼吸装备等级过低，氧气消耗速度是原有的1倍！"
-                }
-                if (playerList[i].dimension.id == "minecraft:the_end" && GetScore("equLevel",playerList[i].nameTag) <= 13) {
-                    titleActionbar = titleActionbar + "§r\n§c§l⚠警告！您目前呼吸装备等级过低，氧气消耗速度是原有的2倍！"
-                }
-                if (GetScore("AnoxicTime",playerList[i].nameTag) > 0) {
-                    titleActionbar = titleActionbar + "§r\n§c§l⚠警告！您已经进入缺氧状态 " + GetScore("AnoxicTime",playerList[i].nameTag) + " 秒，请及时补充氧气否则将会死亡！"
-                }
-                RunCmd(`title @a[name=${playerList[i].nameTag}] actionbar ${titleActionbar}`)
+            if (playerList[i].hasTag("fly") && GetScore("equLevel",playerList[i].nameTag) >= 13) {
+                RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume * 99}`)
             }
         }
     }
-})
+    for (let i = 0; i < playerList.length; i++) {
+        if (playerList[i].dimension.id == "minecraft:the_end" || playerList[i].dimension.id == "minecraft:nether") {
+            playerList[i].removeTag("fly")
+            RunCmd(`ability @a[name="${playerList[i].nameTag}",tag=!op] mayfly false`)
+        }
+        if (!playerList[i].hasTag("shown")) {
+            playerList[i].addTag("showing")
+            // RunCmd(`tag "${playerList[i].nameTag}" add showing`)
+        }
+        //这里控制玩家氧气值不超过100%
+        if (GetScore("oxygen",playerList[i].nameTag) > equLevelData[GetScore("equLevel",playerList[i].nameTag)].max) {
+            RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] oxygen ${equLevelData[GetScore("equLevel",playerList[i].nameTag)].max}`)
+        }
+        //这里控制玩家氧气值不低于0
+        if (GetScore("oxygen",playerList[i].nameTag) < 0) {
+            RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] oxygen 0`)
+        }
+        //生命恢复
+        if (GetScore("oxygen",playerList[i].nameTag) > 3500 && GetScore("equLevel",playerList[i].nameTag) < 14) {
+            RunCmd(`effect "${playerList[i].nameTag}" regeneration 15 0 true`)
+        } else if (GetScore("oxygen",playerList[i].nameTag) > 3500 && GetScore("equLevel",playerList[i].nameTag) >= 14) {
+            RunCmd(`effect "${playerList[i].nameTag}" regeneration 15 1 true`)
+        }
+        //夜视
+        if (GetScore("equLevel",playerList[i].nameTag) > 16) {
+            RunCmd(`effect "${playerList[i].nameTag}" night_vision 15 0 true`)
+        }
+        //力量
+        if (GetScore("oxygen",playerList[i].nameTag) > 4800 && GetScore("equLevel",playerList[i].nameTag) < 16) {
+            RunCmd(`effect "${playerList[i].nameTag}" strength 15 0 true`)
+        } else if (GetScore("oxygen",playerList[i].nameTag) > 4800 && GetScore("equLevel",playerList[i].nameTag) >= 16) {
+            RunCmd(`effect "${playerList[i].nameTag}" strength 15 1 true`)
+        }
+        if (playerList[i].dimension.id == "minecraft:nether" && GetScore("equLevel",playerList[i].nameTag) <= 8) {
+            RunCmd(`effect "${playerList[i].nameTag}" slowness 15 0 true`)
+            RunCmd(`effect "${playerList[i].nameTag}" weakness 15 2 true`)
+        }
+        if (playerList[i].dimension.id == "minecraft:the_end" && GetScore("equLevel",playerList[i].nameTag) <= 13) {
+            RunCmd(`effect "${playerList[i].nameTag}" slowness 15 0 true`)
+            RunCmd(`effect "${playerList[i].nameTag}" weakness 15 3 true`)
+        }
+        if (playerList[i].hasTag("GetIsland")) {
+            guiAPI.CreIsland(playerList[i])
+            RunCmd(`tag ${playerList[i].nameTag} remove GetIsland`)
+        }
+        // Broadcast(`§c[NKillHacker]§r\nspeed:${((Math.pow(playerList[i].velocity.x,2) + Math.pow(playerList[i].velocity.y,2) + Math.pow(playerList[i].velocity.z,2))).toFixed(5)} \npos:${playerList[i].location.x.toFixed(4)} ${playerList[i].location.y.toFixed(4)} ${playerList[i].location.z.toFixed(4)}`)
+        // let pos = {}
+        // if (posData[playerList[i].nameTag]) {
+        //     //Broadcast((Math.pow(playerList[i].location.x.toFixed(4) - posData[playerList[i].nameTag].x,2) + Math.pow(playerList[i].location.y.toFixed(4) - posData[playerList[i].nameTag].y,2) + Math.pow(playerList[i].location.z.toFixed(4) - posData[playerList[i].nameTag].z,2)).toString())
+        //     if (((Math.pow(playerList[i].velocity.x,2) + Math.pow(playerList[i].velocity.y,2) + Math.pow(playerList[i].velocity.z,2))) >= 0.045 && (Math.pow(playerList[i].location.x.toFixed(4) - posData[playerList[i].nameTag].x,2) + Math.pow(playerList[i].location.y.toFixed(4) - posData[playerList[i].nameTag].y,2) + Math.pow(playerList[i].location.z.toFixed(4) - posData[playerList[i].nameTag].z,2)) <= 0.5) {
+        //         world.getDimension("overworld").runCommandAsync(`tellraw @a[tag=op] {\"rawtext\":[{\"text\":\"§c>> 疑似 §e${playerList[i].nameTag} §c正在使用自由视角，如果本消息短期多次出现建议前往查看！注意：本消息可能是个误判！以下为该玩家的异常数据§r\nspeed:${((Math.pow(playerList[i].velocity.x,2) + Math.pow(playerList[i].velocity.y,2) + Math.pow(playerList[i].velocity.z,2))).toFixed(3)} \npos:${playerList[i].location.x.toFixed(3)} ${playerList[i].location.y.toFixed(3)} ${playerList[i].location.z.toFixed(3)}\ndistance:${(Math.pow(playerList[i].location.x.toFixed(4) - posData[playerList[i].nameTag].x,2) + Math.pow(playerList[i].location.y.toFixed(4) - posData[playerList[i].nameTag].y,2) + Math.pow(playerList[i].location.z.toFixed(4) - posData[playerList[i].nameTag].z,2)).toFixed(3).toString()}\"}]}`);
+        //         posData[playerList[i].nameTag].num++
+        //         if (posData[playerList[i].nameTag].num >= 8) {
+        //             posData[playerList[i].nameTag].num = 0
+        //             RunCmd(`ban ${playerList[i].nameTag} 1 违规使用自由视角(灵魂出窍)`)
+        //         }
+        //         //RunCmd(`ban ${playerList[i].nameTag} 1 违规使用自由视角(灵魂出窍)`)
+        //     }
+        //     posData[playerList[i].nameTag].x = playerList[i].location.x.toFixed(4)
+        //     posData[playerList[i].nameTag].y = playerList[i].location.y.toFixed(4)
+        //     posData[playerList[i].nameTag].z = playerList[i].location.z.toFixed(4)
+        // } else {
+        //     //Broadcast("1")
+        //     pos.num = 0
+        //     pos.x = playerList[i].location.x.toFixed(4)
+        //     pos.y = playerList[i].location.y.toFixed(4)
+        //     pos.z = playerList[i].location.z.toFixed(4)
+        //     posData[playerList[i].nameTag] = pos
+        // }
+        if ((Math.pow(playerList[i].getVelocity().x,2) + Math.pow(playerList[i].getVelocity().y,2) + Math.pow(playerList[i].getVelocity().z,2)) > 0.07 && GetScore("equLevel",playerList[i].nameTag) <= 10) {
+            RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -1`);
+        }
+        if (GetScore("oxygen",playerList[i].nameTag) <= 0) {
+            RunCmd(`scoreboard players add @a[name="${playerList[i].nameTag}"] AnoxicTime 1`)
+        } else {
+            RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] AnoxicTime 0`)
+        }
+        if (GetScore("AnoxicTime",playerList[i].nameTag) == 1) {
+            RunCmd(`title "${playerList[i].nameTag}" title §c您已缺氧！`)
+            RunCmd(`title "${playerList[i].nameTag}" subtitle §7请及时补充氧气！`)
+            Tell("§c>> 您已进入缺氧状态！请及时补充氧气，否则会导致死亡！5秒后系统将自动打开氧气购买界面！",playerList[i].nameTag)
+        }
+        if (GetScore("AnoxicTime",playerList[i].nameTag) == 6) {
+            OxygenGUI.OxygenBuy(playerList[i])
+        }
+        if (GetScore("oxygen",playerList[i].nameTag) <= 200) {
+            RunCmd(`effect "${playerList[i].nameTag}" slowness 15 0`)
+            RunCmd(`effect "${playerList[i].nameTag}" weakness 15 2`)
+        }
+        if (GetScore("AnoxicTime",playerList[i].nameTag) >= 60) {
+            RunCmd(`effect "${playerList[i].nameTag}" blindness 15 0`)
+            RunCmd(`effect "${playerList[i].nameTag}" mining_fatigue 15 2`)
+            RunCmd(`effect "${playerList[i].nameTag}" nausea 15 0`)
+        }
+        //缺氧达到一定时间后直接进行死亡程序
+        if (GetScore("AnoxicTime",playerList[i].nameTag) >= 240) {
+            RunCmd(`kill "${playerList[i].nameTag}"`)
+            Tell("§c>> 我们很遗憾的通知您，由于您缺氧过长时间，昏倒在家中...幸亏您被巡逻机器人及时发现并送到了医院，才救回一条命...",playerList[i].nameTag)
+            RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] oxygen 200`)
+            RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] AnoxicTime 0`)
+            RunCmd(`scoreboard players add @a[name="${playerList[i].nameTag}"] money -50`)
+            Tell("§r======================\n§cNIA服务器医院 账单§r\n======================§c\n氧气费用 --- 20 能源币\n诊疗费用 --- 20 能源币\n转运费用 --- 10 能源币\n合计费用 --- 50 能源币§r\n======================",playerList[i].nameTag)
+            Tell("§r===============================\n§cNIA服务器自动扣费通知§r\n===============================§c\n50 能源币 已自动从您账户扣除\n如果您发现账户余额为负请及时补齐\n否则可能影响您的信誉值！§r\n===============================",playerList[i].nameTag)
+        }
+        ///////////////////////////////////
+        let titleActionbar = "";
+        if(playerList[i].hasTag("ShowActionbar")) {
+            if (playerList[i].hasTag("fly")) {
+                titleActionbar = "§c飞行模式§r "
+            }
+            //
+            if (playerList[i].hasTag("ShowOxygenName")) {
+                titleActionbar = titleActionbar + "氧气值："
+            }
+            //
+            if (playerList[i].hasTag("ShowOxygen1") || playerList[i].hasTag("ShowOxygen2") || playerList[i].hasTag("ShowOxygen3") || playerList[i].hasTag("ShowOxygen4")) {
+                let percent = (GetScore("oxygen",playerList[i].nameTag) / equLevelData[GetScore("equLevel",playerList[i].nameTag)].max)
+                if (playerList[i].hasTag("ShowOxygen1")) {
+                    switch (true) {
+                        case percent >= 1:
+                            titleActionbar = titleActionbar + "§e[§a||||||||||||||||||||§6100.00%§e]"
+                            break;
+                        case percent >= 0.95:
+                            titleActionbar = titleActionbar + `§e[§a|||||||||||||||||||§6${(percent * 100).toFixed(2)}%§7§e]`
+                            break;
+                        case percent >= 0.9:
+                            titleActionbar = titleActionbar + `§e[§a||||||||||||||||||§6${(percent * 100).toFixed(2)}%§7|§e]`
+                            break;
+                        case percent >= 0.85:
+                            titleActionbar = titleActionbar + `§e[§a|||||||||||||||||§6${(percent * 100).toFixed(2)}%§7||§e]`
+                            break;
+                        case percent >= 0.8:
+                            titleActionbar = titleActionbar + `§e[§a||||||||||||||||§6${(percent * 100).toFixed(2)}%§7|||§e]`
+                            break;
+                        case percent >= 0.75:
+                            titleActionbar = titleActionbar + `§e[§a|||||||||||||||§6${(percent * 100).toFixed(2)}%§7||||§e]`
+                            break;
+                        case percent >= 0.7:
+                            titleActionbar = titleActionbar + `§e[§a||||||||||||||§6${(percent * 100).toFixed(2)}%§7|||||§e]`
+                            break;
+                        case percent >= 0.65:
+                            titleActionbar = titleActionbar + `§e[§a|||||||||||||§6${(percent * 100).toFixed(2)}%§7||||||§e]`
+                            break;
+                        case percent >= 0.6:
+                            titleActionbar = titleActionbar + `§e[§a||||||||||||§6${(percent * 100).toFixed(2)}%§7|||||||§e]`
+                            break;
+                        case percent >= 0.55:
+                            titleActionbar = titleActionbar + `§e[§a|||||||||||§6${(percent * 100).toFixed(2)}%§7||||||||§e]`
+                            break;
+                        case percent >= 0.5:
+                            titleActionbar = titleActionbar + `§e[§a||||||||||§6${(percent * 100).toFixed(2)}%§7|||||||||§e]`
+                            break;
+                        case percent >= 0.45:
+                            titleActionbar = titleActionbar + `§e[§a|||||||||§6${(percent * 100).toFixed(2)}%§7||||||||||§e]`
+                            break;
+                        case percent >= 0.4:
+                            titleActionbar = titleActionbar + `§e[§a||||||||§6${(percent * 100).toFixed(2)}%§7|||||||||||§e]`
+                            break;
+                        case percent >= 0.35:
+                            titleActionbar = titleActionbar + `§e[§a|||||||§6${(percent * 100).toFixed(2)}%§7||||||||||||§e]`
+                            break;
+                        case percent >= 0.3:
+                            titleActionbar = titleActionbar + `§e[§a||||||§6${(percent * 100).toFixed(2)}%§7|||||||||||||§e]`
+                            break;
+                        case percent >= 0.25:
+                            titleActionbar = titleActionbar + `§e[§a|||||§6${(percent * 100).toFixed(2)}%§7||||||||||||||§e]`
+                            break;
+                        case percent >= 0.2:
+                            titleActionbar = titleActionbar + `§e[§c||||§c${(percent * 100).toFixed(2)}%§7|||||||||||||||§e]`
+                            break;
+                        case percent >= 0.15:
+                            titleActionbar = titleActionbar + `§e[§c|||§c${(percent * 100).toFixed(2)}%§7||||||||||||||||§e]`
+                            break;
+                        case percent >= 0.1:
+                            titleActionbar = titleActionbar + `§e[§c||§c${(percent * 100).toFixed(2)}%§7|||||||||||||||||§e]`
+                            break;
+                        case percent >= 0.05:
+                            titleActionbar = titleActionbar + `§e[§c|§c${(percent * 100).toFixed(2)}%§7||||||||||||||||||§e]`
+                            break;
+                        case percent >= 0:
+                            titleActionbar = titleActionbar + `§e[§c${(percent * 100).toFixed(2)}%§7|||||||||||||||||||§e]`
+                            break;
+                        case percent < 0:
+                            titleActionbar = titleActionbar + `§e[§c0.00%§7|||||||||||||||||||§e]`
+                            break;
+                    }
+                } else if (playerList[i].hasTag("ShowOxygen2")) {
+                    switch (true) {
+                        case percent >= 1:
+                            titleActionbar = titleActionbar + "§e[§a||||||||||||||||||||§e] §6100.00%"
+                            break;
+                        case percent >= 0.95:
+                            titleActionbar = titleActionbar + `§e[§a|||||||||||||||||||§6|§e] §6${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.9:
+                            titleActionbar = titleActionbar + `§e[§a||||||||||||||||||§6|§7|§e] §6${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.85:
+                            titleActionbar = titleActionbar + `§e[§a|||||||||||||||||§6|§7||§e] §6${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.8:
+                            titleActionbar = titleActionbar + `§e[§a||||||||||||||||§6|§7|||§e] §6${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.75:
+                            titleActionbar = titleActionbar + `§e[§a|||||||||||||||§6|§7||||§e] §6${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.7:
+                            titleActionbar = titleActionbar + `§e[§a||||||||||||||§6|§7|||||§e] §6${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.65:
+                            titleActionbar = titleActionbar + `§e[§a|||||||||||||§6|§7||||||§e] §6${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.6:
+                            titleActionbar = titleActionbar + `§e[§a||||||||||||§6|§7|||||||§e] §6${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.55:
+                            titleActionbar = titleActionbar + `§e[§a|||||||||||§6|§7||||||||§e] §6${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.5:
+                            titleActionbar = titleActionbar + `§e[§a||||||||||§6|§7|||||||||§e] §6${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.45:
+                            titleActionbar = titleActionbar + `§e[§a|||||||||§6|§7||||||||||§e] §6${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.4:
+                            titleActionbar = titleActionbar + `§e[§a||||||||§6|§7|||||||||||§e] §6${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.35:
+                            titleActionbar = titleActionbar + `§e[§a|||||||§6|§7||||||||||||§e] §6${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.3:
+                            titleActionbar = titleActionbar + `§e[§a||||||§6|§7|||||||||||||§e] §6${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.25:
+                            titleActionbar = titleActionbar + `§e[§a|||||§6|§7||||||||||||||§e] §6${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.2:
+                            titleActionbar = titleActionbar + `§e[§c||||§6|§7|||||||||||||||§e] §c${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.15:
+                            titleActionbar = titleActionbar + `§e[§c|||§6|§7||||||||||||||||§e] §c${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.1:
+                            titleActionbar = titleActionbar + `§e[§c||§6|§7|||||||||||||||||§e] §c${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0.05:
+                            titleActionbar = titleActionbar + `§e[§c|§6|§7||||||||||||||||||§e] §c${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent >= 0:
+                            titleActionbar = titleActionbar + `§e[§6|§7|||||||||||||||||||§e] §c${(percent * 100).toFixed(2)}%`
+                            break;
+                        case percent < 0:
+                            titleActionbar = titleActionbar + `§e[§7||||||||||||||||||||§e] §c0.00%`
+                            break;
+                    }
+                } else if (playerList[i].hasTag("ShowOxygen3")) {
+                    titleActionbar = titleActionbar + `§l§e${GetScore("oxygen",playerList[i].nameTag)}/${equLevelData[GetScore("equLevel",playerList[i].nameTag)].max}`
+                } else if (playerList[i].hasTag("ShowOxygen4")) {
+                    titleActionbar = titleActionbar + `§l§e${(percent * 100).toFixed(2)}%`
+                }
+            }
+            if (playerList[i].hasTag("ShowMoney")) {
+                titleActionbar = titleActionbar + "§r §f能源币：§e§l" + GetScore("money",playerList[i].nameTag)
+            }
+            if (playerList[i].hasTag("ShowTime")) {
+                titleActionbar = titleActionbar + "§r §f在线时间：§e§l" + GetScore("time",playerList[i].nameTag)
+            }
+            if (playerList[i].hasTag("ShowRN")) {
+                titleActionbar = titleActionbar + "§r §f物价指数：§e§l" + GetScore("DATA","RN") / 100
+            }
+            if (playerList[i].hasTag("ShowStamina")) {
+                titleActionbar = titleActionbar + "§r §f体力值：§e§l" + GetScore("stamina",playerList[i].nameTag)
+            }
+            if (GetScore("oxygen",playerList[i].nameTag) <= 200 && GetScore("oxygen",playerList[i].nameTag) > 0) {
+                titleActionbar = titleActionbar + "§r\n§c§l您即将进入缺氧状态，请及时补充氧气！"
+            }
+            if (playerList[i].dimension.id == "minecraft:nether" && GetScore("equLevel",playerList[i].nameTag) <= 8) {
+                titleActionbar = titleActionbar + "§r\n§c§l⚠警告！您目前呼吸装备等级过低，氧气消耗速度是原有的1倍！"
+            }
+            if (playerList[i].dimension.id == "minecraft:the_end" && GetScore("equLevel",playerList[i].nameTag) <= 13) {
+                titleActionbar = titleActionbar + "§r\n§c§l⚠警告！您目前呼吸装备等级过低，氧气消耗速度是原有的2倍！"
+            }
+            if (GetScore("AnoxicTime",playerList[i].nameTag) > 0) {
+                titleActionbar = titleActionbar + "§r\n§c§l⚠警告！您已经进入缺氧状态 " + GetScore("AnoxicTime",playerList[i].nameTag) + " 秒，请及时补充氧气否则将会死亡！"
+            }
+            RunCmd(`title @a[name=${playerList[i].nameTag}] actionbar ${titleActionbar}`)
+        }
+    }
+},20)
 
 

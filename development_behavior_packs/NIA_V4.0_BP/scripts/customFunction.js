@@ -1,4 +1,4 @@
-import {world,BlockLocation,Block, Player, EffectType} from '@minecraft/server';
+import {world} from '@minecraft/server';
 import {ActionFormData,ModalFormData,MessageFormData} from '@minecraft/server-ui'
 //一些自定义函数的注册
 
@@ -12,7 +12,7 @@ export function log(info) {
  * @param {string} Msg
  */
 export function Broadcast(Msg) {
-    world.say(Msg)
+    world.sendMessage(Msg)
     // world.getDimension("overworld").runCommandAsync(`tellraw @a {\"rawtext\":[{\"text\":\"${Msg}\"}]}`);
 }
 

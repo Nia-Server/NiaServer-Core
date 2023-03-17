@@ -25,10 +25,10 @@
 
 ## 部分文件夹说明
 
-- development_behavior_packs文件夹 存储了服务器所使用的行为包的相关文件
-- development_resource_packs文件夹 存储了服务器所使用的资源包的相关文件
-- NIAServerPlugin文件夹 指向了服务器自主开发的dll格式插件开源项目地址[NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin)。
-- plugins文件夹 存储了服务器所使用的插件(将于近期上线)
+- `development_behavior_packs`文件夹 存储了服务器所使用的行为包的相关文件
+- `development_resource_packs`文件夹 存储了服务器所使用的资源包的相关文件
+- `NiaServerPlugin`文件夹 指向了服务器自主开发的dll格式插件开源项目地址[NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin)。
+- `plugins`文件夹 存储了服务器所使用的部分脚本插件
 
 **但是我并不推荐您直接下载里面的文件，因为里面的文件很可能仍处于开发状态中！您可以前往release界面下载经过测试的资源包、行为包、插件等**
 
