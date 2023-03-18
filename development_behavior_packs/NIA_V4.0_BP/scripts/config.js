@@ -2,7 +2,7 @@
 //配置文件每一项的详细作用前往 https://docs.mcnia.top/zh-cn/ 查看
 
 const config = {
-    "language": "zh-CN",
+    "MENUITEM": "minecraft:stick",
     "USEMenu": true,
     "USEShop": true,
     "USERandomDATA": true,
@@ -13,7 +13,6 @@ const config = {
     "TimeScoreboardName":"time",
     "OPTAG": "op",
     "OPMENUPassword": "123456",
-    "pos": [100,100,100],
     "islandCfg": {
         "R":  1000,
         "CX": 402,

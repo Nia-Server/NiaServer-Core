@@ -5,7 +5,7 @@
 		"name": "NIA V4.0 RP",
 		"uuid": "981f1ce2-370b-4f58-99d9-9c504a118ec0",
 		"min_engine_version": [1, 19, 5],
-		"version": [4, 2, 11]
+		"version": [1, 1, 0]
 	},
 	"modules": [
 		{
@@ -13,12 +13,6 @@
 			"type": "resources",
 			"uuid": "7e41869f-82f7-40f5-87c0-4dcfbc61d91b",
 			"version": [1, 0, 0]
-		}
-	],
-	"dependencies": [
-		{
-			"version": [4, 2, 11],
-			"uuid": "cab0bbe3-eb10-465e-b1de-b09facc076c8"
 		}
 	],
 	"metadata": {
