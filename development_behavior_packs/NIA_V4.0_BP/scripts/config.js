@@ -1,5 +1,5 @@
 //这里是配置文件，你可以根据自己的需求更改相应的配置项目
-//配置文件每一项的详细作用前往 https://docs.mcnia.top/zh-cn/ 查看
+//配置文件每一项的详细作用前往 https://docs.mcnia.top/zh-CN/deploy.html 查看
 
 const config = {
     "MENUITEM": "minecraft:stick",

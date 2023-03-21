@@ -1438,7 +1438,7 @@ system.runInterval(() => {
             RunCmd(`effect "${playerList[i].nameTag}" regeneration 15 1 true`)
         }
         //夜视
-        if (GetScore("equLevel",playerList[i].nameTag) > 16) {
+        if (playerList[i].hasTag("NightVision") && GetScore("equLevel",playerList[i].nameTag) > 16) {
             RunCmd(`effect "${playerList[i].nameTag}" night_vision 15 0 true`)
         }
         //力量

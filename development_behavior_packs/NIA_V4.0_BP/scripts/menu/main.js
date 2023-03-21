@@ -3,7 +3,7 @@ import {ActionFormData,ModalFormData,MessageFormData} from '@minecraft/server-ui
 import { Broadcast,Tell,log,RunCmd,GetScore } from '../customFunction.js';
 import { cfg } from '../config.js'
 
-import { ActionBarSetupGUI } from './ActionbarSetup.js';
+import { SetupGUI } from './Setup.js';
 import { ShopGUI } from './shop.js';
 import { OxygenGUI } from './oxygen.js';
 import { TpaGUI } from './Tpa.js';
@@ -39,7 +39,7 @@ const MainGUI = {
             "name": "设置\n在这里修改所有设置",
             "icon": "textures/ui/automation_glyph_color",
             "type": "openGUI",
-            "GUI": "ActionbarSetupGUI"
+            "GUI": "SetupGUI"
         },
         {
             "name": "商店系统\n购买、卖出、赚钱？",
@@ -122,8 +122,8 @@ export function Main(player) {
 
 function OpenGUI(player,GUINAME) {
     switch (GUINAME) {
-        case "ActionbarSetupGUI":
-            ActionBarSetupGUI(player)
+        case "SetupGUI":
+            SetupGUI.SetupMain(player)
             break;
         case "ShopGUI":
             ShopGUI.ShopMain(player)

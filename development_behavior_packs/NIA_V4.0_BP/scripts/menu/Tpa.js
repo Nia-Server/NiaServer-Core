@@ -1,6 +1,8 @@
 import { world } from '@minecraft/server'
 import {ActionFormData,ModalFormData,MessageFormData} from '@minecraft/server-ui'
 import {Tell,RunCmd,GetScore} from '../customFunction.js'
+import { Main } from './main.js'
+import { SetupGUI } from './Setup.js'
 
 const GUI = {
     TpaMain(player) {
@@ -9,11 +11,14 @@ const GUI = {
         .body("§r§l===========================" + "\n§c欢迎使用传送系统！" + "\n§r§l===========================")
         .button("开始传送")
         .button("传送设置")
+        .button("返回上一级菜单")
         TpaMainForm.show(player).then(result => {
             if (result.selection == 0) {
                 this.TpaSub(player)
             } else if (result.selection == 1) {
                 this.TpaSetup(player)
+            } else if (result.selection == 2) {
+                Main(player)
             }
         })
     },
@@ -165,21 +170,23 @@ const GUI = {
             TpaSetupForm.dropdown("删除传送黑名单",BanList,0)
             TpaSetupForm.show(player).then(result => {
                 player.removeTag("BanTpa")
-                //RunCmd(`tag "${player.nameTag}" remove BanTpa`);
-                if (result.formValues[0] == 1) {
-                    player.addTag("BanTpa")
-                    player.sendMessage("§c>> 您已拒绝所有人向您发送传送申请！")
-                    //RunCmd(`tag "${player.nameTag}" add BanTpa`);
+                if (result.canceled) {
+                    SetupGUI.SetupMain(player)
                 } else {
-                    player.sendMessage("§a>> 您已允许其他人向您发送传送申请！")
-                }
-                if (result.formValues[1] != 0) {
-                    Tell(`§c>> 已把玩家 ${playersName[result.formValues[1]]} 成功加入传送黑名单！`,player.nameTag)
-                    RunCmd(`scoreboard players set "@${playersName[result.formValues[1]]}" T:${player.nameTag.slice(0,10)} 0`)
-                }
-                if (result.formValues[2] != 0) {
-                    Tell(`§a>> 已把玩家 ${playersName[result.formValues[2]]} 成功从传送黑名单移除！`,player.nameTag)
-                    RunCmd(`scoreboard players reset "@${playersName[result.formValues[2]]}" T:${player.nameTag.slice(0,10)}`);
+                    if (result.formValues[0] == 1) {
+                        player.addTag("BanTpa")
+                        player.sendMessage("§c>> 您已拒绝所有人向您发送传送申请！")
+                    } else {
+                        player.sendMessage("§a>> 您已允许其他人向您发送传送申请！")
+                    }
+                    if (result.formValues[1] != 0) {
+                        Tell(`§c>> 已把玩家 ${playersName[result.formValues[1]]} 成功加入传送黑名单！`,player.nameTag)
+                        RunCmd(`scoreboard players set "@${playersName[result.formValues[1]]}" T:${player.nameTag.slice(0,10)} 0`)
+                    }
+                    if (result.formValues[2] != 0) {
+                        Tell(`§a>> 已把玩家 ${playersName[result.formValues[2]]} 成功从传送黑名单移除！`,player.nameTag)
+                        RunCmd(`scoreboard players reset "@${playersName[result.formValues[2]]}" T:${player.nameTag.slice(0,10)}`);
+                    }
                 }
             })
     }
