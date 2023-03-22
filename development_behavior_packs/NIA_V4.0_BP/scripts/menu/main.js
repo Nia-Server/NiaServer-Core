@@ -7,6 +7,10 @@ import { SetupGUI } from './Setup.js';
 import { ShopGUI } from './shop.js';
 import { OxygenGUI } from './oxygen.js';
 import { TpaGUI } from './Tpa.js';
+import { CDKGUI } from './cdk.js';
+import { FlyGUI } from './Fly.js';
+import { TransferGUI } from './Transfer.js';
+
 
 const MainGUI = {
     "title": "服务器菜单",
@@ -69,7 +73,7 @@ const MainGUI = {
             "name": "飞行系统\n开启飞行模式建造自己的家园！",
             "icon": "textures/ui/levitation_effect",
             "type": "openGUI",
-            "GUI": "CanFlyGUI"
+            "GUI": "FlyGUI"
         },
         {
             "name": "转账系统\n玩家间的转账",
@@ -109,10 +113,10 @@ export function Main(player) {
                 break;
             case "goISLAND":
                 if (GetScore("posX",player.nameTag) == 0 && GetScore("posY",player.nameTag) == 0 && GetScore("posZ",player.nameTag) == 0) {
-                    Tell(`§c>> 未找到相应的主岛数据！请在领取空岛后使用本功能！`,player.nameTag)
+                    player.sendMessage(`§c>> 未找到相应的主岛数据！请在领取空岛后使用本功能！`,player.nameTag)
                 } else {
                     RunCmd(`tp @a[name=${player.nameTag}] ${GetScore("posX",player.nameTag)} ${GetScore("posY",player.nameTag)} ${GetScore("posZ",player.nameTag)}`)
-                    Tell(`§a>> 已经将您传送至主岛！`,player.nameTag)
+                    player.sendMessage(`§a>> 已经将您传送至主岛！`,player.nameTag)
                 }
                 break;
 
@@ -133,6 +137,15 @@ function OpenGUI(player,GUINAME) {
             break;
         case "TpaGUI":
             TpaGUI.TpaMain(player)
+            break;
+        case "CdkGUI":
+            CDKGUI(player)
+            break;
+        case "FlyGUI":
+            FlyGUI(player)
+            break;
+        case "TransferGUI":
+            TransferGUI.Transfer(player)
             break;
     }
 }
