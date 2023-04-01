@@ -2,8 +2,8 @@
 
 [![wakatime](https://wakatime.com/badge/user/a2d785d3-a26c-467b-9112-333ba2bee9e8/project/9ae0abd5-b1ad-4199-bd66-0fba1a96ac45.svg?style=for-the-badge)](https://wakatime.com/badge/user/a2d785d3-a26c-467b-9112-333ba2bee9e8/project/9ae0abd5-b1ad-4199-bd66-0fba1a96ac45)
 [![status](https://img.shields.io/github/actions/workflow/status/NIANIANKNIA/NIASERVER-V4/main.yml?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/actions)
-[![GitHub Release Date](https://img.shields.io/github/release-date/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/releases)
-[![Latest Release](https://img.shields.io/github/v/release/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/releases/latest)
+[![GitHub Release Date](https://img.shields.io/github/release-date-pre/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/releases)
+[![Latest Release](https://img.shields.io/github/v/release/NIANIANKNIA/NIASERVER-V4?include_prereleases&style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/releases/latest)
 [![GitHub last commit](https://img.shields.io/github/last-commit/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/commits)
 [![QQ GROUNP](https://img.shields.io/badge/QQ%20GROUNP-724360499-blue?style=for-the-badge)](https://jq.qq.com/?_wv=1027&k=uk57fVr0)
 [![website](https://img.shields.io/badge/website-docs.mcnia.top-blue?style=for-the-badge)](https://docs.mcnia.top)

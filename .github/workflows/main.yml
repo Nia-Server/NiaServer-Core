@@ -28,5 +28,5 @@ jobs:
         with:
           artifacts: "development_behavior_packs/NIA_V4.0_BP/NIAV4BP-${{ github.ref_name }}.zip,development_resource_packs/NIA_V4.0_RP/NIAV4RP-${{ github.ref_name }}.zip"
           bodyFile: "CHANGELOG.md"
-          generateReleaseNotes: true
+          generateReleaseNotes: false
           token: ${{ secrets.GITHUB_TOKEN }}
