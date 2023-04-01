@@ -35,7 +35,7 @@
 
   "hud_text": {
     "type": "label",
-    "text": "§cNIA V4.3.18",
+    "text": "§cNIA V4.4.1",
     "shadow": true,
     "font_type":"MinecraftTen",
     "font_scale_factor":0.8,

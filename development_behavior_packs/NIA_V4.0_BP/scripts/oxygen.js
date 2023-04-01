@@ -114,7 +114,7 @@ const equLevelData = {
         "price": 50000
     }
 }
-
+export const equLevel = equLevelData
 // system.runInternal(() => {
 
 // },20)
