@@ -43,9 +43,11 @@ const GUI = {
                 let Tags = ["NightVision"]
                 for (let i = 0; i < Tags.length; i++) {
                     player.removeTag(Tags[i])
+                    player.sendMessage("§c>> 夜视效果已关闭！")
                 }
                 if (result.formValues[0] == 1) {
                     player.addTag("NightVision")
+                    player.sendMessage("§a>> 夜视效果已开启！")
                 }
             } else {
                 this.SetupMain(player)
@@ -97,7 +99,6 @@ const GUI = {
         } else {
             ActionBarForm.dropdown("体力值显示方式",["不显示","显示"],0)
         }
-        //
         ActionBarForm.show(player).then((result) => {
             if (!result.canceled) {
                 let Tags = ["ShowActionbar","ShowOxygenName","ShowOxygen1","ShowOxygen2","ShowOxygen3","ShowOxygen4","ShowMoney","ShowTime","ShowRN","ShowStamina"]

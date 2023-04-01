@@ -1,7 +1,7 @@
 # v1.1.0-pre-1更新日志
 
 [![BDS VERSION](https://img.shields.io/badge/BDS-1.19.72.01-green?style=for-the-badge&logo=appveyor)](https://www.minecraft.net/en-us/download/server/bedrock)
-[![LiteLoader VERSION](https://img.shields.io/badge/LiteLoader-2.12.0-green?style=for-the-badge&logo=appveyor)](https://github.com/LiteLDev/LiteLoaderBDS/releases/)
+[![LiteLoader VERSION](https://img.shields.io/badge/LiteLoader-2.12.3-green?style=for-the-badge&logo=appveyor)](https://github.com/LiteLDev/LiteLoaderBDS/releases/)
 
 **版本说明：本次script-api出现部分变动，与老版本不相兼容，请及时更新本版本！**
 
@@ -9,7 +9,9 @@
 
 ## 适配
 
-BDS && Minecraft BedRock-1.19.72.01
+BDS && Minecraft BedRock-1.19.73.01
+
+Liteloader 2.12.3
 
 ## 新增
 
@@ -24,7 +26,7 @@ BDS && Minecraft BedRock-1.19.72.01
 
 1.服务器插件功能解耦合，便于自行选择使用的部分
 
-2.使用1.19.72.01的新API，插件在部分场景理论性能表现更好
+2.使用1.19.70+的新API，插件在部分场景理论性能表现更好
 
 3.服务器主菜单界面变化
 
@@ -38,6 +40,8 @@ BDS && Minecraft BedRock-1.19.72.01
 1.在新版本无法关闭“欢迎使用控件自定义”界面的bug
 
 2.部分情况出现误报“违规使用自由视角”的bug
+
+3.CDK兑换码修改属性后不生效的bug
 
 **配置说明：您可以前往[NIA服务器官方文档站](https://docs.mcnia.top/zh-CN/deploy.html)查看具体部署过程！**
 

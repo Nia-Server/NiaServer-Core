@@ -14,8 +14,11 @@ import {ShopGUI} from './shop.js'
 import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution} from './customFunction.js'
 import './chat.js'
 import './menu/main.js'
+import './island.js'
 import { OxygenGUI } from './oxygen.js';
 import { cfg } from './config.js';
+
+
 
 
 
@@ -1316,15 +1319,15 @@ const guiAPI = {
 }
 
 //对于钟表使用的检测
-world.events.beforeItemUse.subscribe(event => {
-    // Tell(`§c>> ${event.item.typeId} ${event.source.nameTag}`,`NIANIANKNIA`);
-    if (event.item.typeId == "minecraft:clock") {
-        // Tell(`§c>> 你使用钟表!`,event.source.nameTag);
-        let player = event.source;
-        //调用服务器主菜单
-        guiAPI.Main(player);
-    }
-})
+// world.events.beforeItemUse.subscribe(event => {
+//     // Tell(`§c>> ${event.item.typeId} ${event.source.nameTag}`,`NIANIANKNIA`);
+//     if (event.item.typeId == "minecraft:clock") {
+//         // Tell(`§c>> 你使用钟表!`,event.source.nameTag);
+//         let player = event.source;
+//         //调用服务器主菜单
+//         guiAPI.Main(player);
+//     }
+// })
 
 
 
@@ -1353,7 +1356,7 @@ system.runInterval(() => {
     RunCmd(`title @a[x=725,y=3,z=539,dx=89,dy=71,dz=30,scores={miningTime = ..0}] title §c矿场使用时间已到！`)
     RunCmd(`title @a[x=725,y=3,z=539,dx=89,dy=71,dz=30,scores={miningTime = ..0}] subtitle §7请重新花费体力进入！`)
     RunCmd(`tp @a[x=725,y=3,z=539,dx=89,dy=71,dz=30,scores={miningTime = ..0}] 702 82 554`)
-    CheckCringPlayer()
+    //CheckCringPlayer()
     // RunCmd(`scoreboard players add @a oxygen 0`)
     // RunCmd(`scoreboard players add @a equLevel 0`)
     // RunCmd(`scoreboard players add @a actionbar 0`)
@@ -1455,10 +1458,11 @@ system.runInterval(() => {
             RunCmd(`effect "${playerList[i].nameTag}" slowness 15 0 true`)
             RunCmd(`effect "${playerList[i].nameTag}" weakness 15 3 true`)
         }
-        if (playerList[i].hasTag("GetIsland")) {
-            guiAPI.CreIsland(playerList[i])
-            RunCmd(`tag ${playerList[i].nameTag} remove GetIsland`)
-        }
+        // if (playerList[i].hasTag("GetIsland")) {
+        //     guiAPI.CreIsland(playerList[i])
+        //     RunCmd(`tag ${playerList[i].nameTag} remove GetIsland`)
+        // }
+
         // Broadcast(`§c[NKillHacker]§r\nspeed:${((Math.pow(playerList[i].velocity.x,2) + Math.pow(playerList[i].velocity.y,2) + Math.pow(playerList[i].velocity.z,2))).toFixed(5)} \npos:${playerList[i].location.x.toFixed(4)} ${playerList[i].location.y.toFixed(4)} ${playerList[i].location.z.toFixed(4)}`)
         // let pos = {}
         // if (posData[playerList[i].nameTag]) {

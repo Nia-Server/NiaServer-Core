@@ -1,5 +1,5 @@
 import { world } from '@minecraft/server';
-import {ActionFormData,ModalFormData,MessageFormData} from '@minecraft/server-ui'
+import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 import { Broadcast,Tell,log,RunCmd,GetScore } from '../customFunction.js';
 import { cfg } from '../config.js'
 
@@ -10,6 +10,7 @@ import { TpaGUI } from './Tpa.js';
 import { CDKGUI } from './cdk.js';
 import { FlyGUI } from './Fly.js';
 import { TransferGUI } from './Transfer.js';
+import { OpGUI } from './op.js';
 
 
 const MainGUI = {
@@ -20,67 +21,85 @@ const MainGUI = {
             "name": "立即回城\n点击后立即返回主城",
             "icon": "textures/blocks/chest_front",
             "type": "runCmd",
-            "content": "tp @a[name=%playername%] 702 82 554"
+            "content": "tp @a[name=%playername%] 702 82 554",
+            "opMenu": false
         },
         {
             "name": "返回主岛\n即可立即返回自己的主岛",
             "icon": "textures/ui/backup_replace",
-            "type": "goISLAND"
+            "type": "goISLAND",
+            "opMenu": false
         },
         {
             "name": "个人传送点\n设置属于自己的传送点",
             "icon": "textures/ui/icon_new",
             "type": "runCmd",
-            "content": "openhomegui %playername%"
+            "content": "openhomegui %playername%",
+            "opMenu": false
         },
         {
             "name": "调节生存模式\n不调节生存你怎么开始玩？",
             "icon": "textures/ui/controller_glyph_color",
             "type": "runCmd",
-            "content": "gamemode s %playername%"
+            "content": "gamemode s %playername%",
+            "opMenu": false
         },
         {
             "name": "设置\n在这里修改所有设置",
             "icon": "textures/ui/automation_glyph_color",
             "type": "openGUI",
-            "GUI": "SetupGUI"
+            "GUI": "SetupGUI",
+            "opMenu": false
         },
         {
             "name": "商店系统\n购买、卖出、赚钱？",
             "icon": "textures/ui/icon_blackfriday",
             "type": "openGUI",
-            "GUI": "ShopGUI"
+            "GUI": "ShopGUI",
+            "opMenu": false
         },
         {
             "name": "氧气系统\n在这里购买呼吸装备，升级！",
             "icon": "textures/ui/bubble",
             "type": "openGUI",
-            "GUI": "OxygenGUI"
+            "GUI": "OxygenGUI",
+            "opMenu": false
         },
         {
             "name": "玩家传送系统\n传送到你的好基友那里",
             "icon": "textures/ui/dressing_room_skins",
             "type": "openGUI",
-            "GUI": "TpaGUI"
+            "GUI": "TpaGUI",
+            "opMenu": false
         },
         {
             "name": "兑换码系统\n礼品码在这里输入后即可兑换",
             "icon": "textures/ui/gift_square",
             "type": "openGUI",
-            "GUI": "CdkGUI"
+            "GUI": "CdkGUI",
+            "opMenu": false
         },
         {
             "name": "飞行系统\n开启飞行模式建造自己的家园！",
             "icon": "textures/ui/levitation_effect",
             "type": "openGUI",
-            "GUI": "FlyGUI"
+            "GUI": "FlyGUI",
+            "opMenu": false
         },
         {
             "name": "转账系统\n玩家间的转账",
             "icon": "textures/ui/icon_best3",
             "type": "openGUI",
-            "GUI": "TransferGUI"
-        }
+            "GUI": "TransferGUI",
+            "opMenu": false
+        },
+        {
+            "name": "管理菜单\n点开即可开始管理服务器",
+            "icon": "textures/ui/op",
+            "type": "openGUI",
+            "GUI": "OpGUI",
+            "opMenu": true
+        },
     ]
 }
 
@@ -99,30 +118,68 @@ export function Main(player) {
     const MainForm = new ActionFormData()
         .title(title)
         .body(body)
-        for (let i = 0; i < buttons.length; i ++) {
-            MainForm.button(buttons[i].name,buttons[i].icon)
+        //检查玩家是否拥有管理权限
+        if (player.hasTag(cfg.OPTAG)) {
+            for (let i = 0; i < buttons.length; i ++) {
+                MainForm.button(buttons[i].name,buttons[i].icon)
+            }
+        } else {
+            for (let i = 0; i < buttons.length; i ++) {
+                if (!buttons[i].opMenu) {
+                    MainForm.button(buttons[i].name,buttons[i].icon)
+                }
+            }
         }
     MainForm.show(player).then((response) => {
-        switch (buttons[response.selection].type) {
-            case "runCmd":
-                let cmd = buttons[response.selection].content.replace("%playername%",player.nameTag)
-                RunCmd(cmd)
-                break;
-            case "openGUI":
-                OpenGUI(player,buttons[response.selection].GUI)
-                break;
-            case "goISLAND":
-                if (GetScore("posX",player.nameTag) == 0 && GetScore("posY",player.nameTag) == 0 && GetScore("posZ",player.nameTag) == 0) {
-                    player.sendMessage(`§c>> 未找到相应的主岛数据！请在领取空岛后使用本功能！`,player.nameTag)
-                } else {
-                    RunCmd(`tp @a[name=${player.nameTag}] ${GetScore("posX",player.nameTag)} ${GetScore("posY",player.nameTag)} ${GetScore("posZ",player.nameTag)}`)
-                    player.sendMessage(`§a>> 已经将您传送至主岛！`,player.nameTag)
+        if (player.hasTag(cfg.OPTAG)) {
+            switch (buttons[response.selection].type) {
+                case "runCmd":
+                    let cmd = buttons[response.selection].content.replace("%playername%",player.nameTag)
+                    RunCmd(cmd)
+                    break;
+                case "openGUI":
+                    OpenGUI(player,buttons[response.selection].GUI)
+                    break;
+                //这里相当于一个自定义功能的实例
+                case "goISLAND":
+                    if (GetScore("posX",player.nameTag) == 0 && GetScore("posY",player.nameTag) == 0 && GetScore("posZ",player.nameTag) == 0) {
+                        player.sendMessage(`§c>> 未找到相应的主岛数据！请在领取空岛后使用本功能！`,player.nameTag)
+                    } else {
+                        RunCmd(`tp @a[name=${player.nameTag}] ${GetScore("posX",player.nameTag)} ${GetScore("posY",player.nameTag)} ${GetScore("posZ",player.nameTag)}`)
+                        player.sendMessage(`§a>> 已经将您传送至主岛！`,player.nameTag)
+                    }
+                    break;
+            }
+        } else {
+            //这里的目的是为了清除管理菜单
+            let buttons = []
+            for (let i = 0; i < MainGUI.buttons.length; i++) {
+                if (!MainGUI.buttons[i].opMenu) {
+                    buttons.push(MainGUI.buttons[i])
                 }
-                break;
-
+            }
+            switch (buttons[response.selection].type) {
+                case "runCmd":
+                    let cmd = buttons[response.selection].content.replace("%playername%",player.nameTag)
+                    RunCmd(cmd)
+                    break;
+                case "openGUI":
+                    OpenGUI(player,buttons[response.selection].GUI)
+                    break;
+                //这里相当于一个自定义功能的实例
+                case "goISLAND":
+                    if (GetScore("posX",player.nameTag) == 0 && GetScore("posY",player.nameTag) == 0 && GetScore("posZ",player.nameTag) == 0) {
+                        player.sendMessage(`§c>> 未找到相应的主岛数据！请在领取空岛后使用本功能！`,player.nameTag)
+                    } else {
+                        RunCmd(`tp @a[name=${player.nameTag}] ${GetScore("posX",player.nameTag)} ${GetScore("posY",player.nameTag)} ${GetScore("posZ",player.nameTag)}`)
+                        player.sendMessage(`§a>> 已经将您传送至主岛！`,player.nameTag)
+                    }
+                    break;
+            }
         }
     })
 }
+
 
 function OpenGUI(player,GUINAME) {
     switch (GUINAME) {
@@ -146,6 +203,9 @@ function OpenGUI(player,GUINAME) {
             break;
         case "TransferGUI":
             TransferGUI.Transfer(player)
+            break;
+        case "OpGUI":
+            OpGUI.CheckOP(player);
             break;
     }
 }

@@ -1,13 +1,11 @@
 //这里是配置文件，你可以根据自己的需求更改相应的配置项目
 //配置文件每一项的详细作用前往 https://docs.mcnia.top/zh-CN/deploy.html 查看
+//当前配置文件版本号；v1.0.0
 
 const config = {
-    "MENUITEM": "minecraft:stick",
-    "USEMenu": true,
-    "USEShop": true,
+    "ServerMode": "Island",
+    "MENUITEM": "minecraft:clock",
     "USERandomDATA": true,
-    "USETpa": true,
-    "USEHome": true,
     "MoneyScoreboardName": "money",
     "MoneyShowName": "能源币",
     "TimeScoreboardName":"time",

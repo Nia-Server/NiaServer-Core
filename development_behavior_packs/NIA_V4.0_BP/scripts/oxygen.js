@@ -1,4 +1,4 @@
-import {world} from '@minecraft/server';
+import {world,system} from '@minecraft/server';
 import {ActionFormData,ModalFormData,MessageFormData} from '@minecraft/server-ui'
 import {Tell,RunCmd,GetScore} from './customFunction.js'
 import {ShopGUI} from './shop.js'
@@ -115,94 +115,6 @@ const equLevelData = {
     }
 }
 
-const GUI = {
-    OxygenMain(player) {
-        const OxygenMainForm = new ActionFormData()
-        .title("氧气装备商店")
-        .body("§l===========================\n§r§e欢迎光临服务器官方氧气&呼吸装备商店！" + "\n§r§e当前氧气参考价： §6§l1能源币 = 10氧气值\n§r§l===========================" + "\n§r§e您的能源币余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§e您当前氧气值剩余为： §6§l" + GetScore("oxygen",player.nameTag) + "\n§r§e您当前呼吸装备的等级： §l§6" + equLevelData[GetScore("equLevel",player.nameTag)].name + "\n§r§e您当前呼吸装备的最大氧气值： §l§6" + equLevelData[GetScore("equLevel",player.nameTag)].max + "\n§r§e您当前每分钟消耗的氧气值为： §l§6" + equLevelData[GetScore("equLevel",player.nameTag)].consume + "\n§r§l===========================")
-        .button("§c返回上一级")
-        .button("购买氧气")
-        .button("升级呼吸装备")
-        .button("购买氧气制造机")
-        OxygenMainForm.show(player).then(result => {
-            switch (result.selection) {
-                case 0:
-                    ShopGUI.ShopMain(player)
-                    break;
-                case 1:
-                    this.OxygenBuy(player)
-                    break;
-                case 2:
-                    this.OxygenEqu(player)
-                    break;
-                case 3:
-                    Tell(`§7>> 开发中内容，敬请期待！`)
-                    break;
-            }
-        })
-    },
+// system.runInternal(() => {
 
-    OxygenBuy(player) {
-        const OxygenBuyForm = new ModalFormData()
-            .title("§c§l购买氧气")
-            .slider("请选择你购买的氧气",0,equLevelData[GetScore("equLevel",player.nameTag)].max - GetScore("oxygen",player.nameTag),10,10)
-        OxygenBuyForm.show(player).then(result => {
-            this.OxygenBuySub(player,result.formValues[0])
-        })
-    },
-
-    OxygenBuySub(player,num) {
-        const OxygenBuySubForm = new MessageFormData()
-            .title("§c§l确认购买氧气")
-            .body("§e您确定要以 §l" + parseInt(num / 10) + " §r§e能源币购买 §l" + num + " §r§e氧气值？")
-            .button1("§c取消")
-            .button2("§a确定")
-            OxygenBuySubForm.show(player).then(result => {
-                switch (result.selection) {
-                    case 0:
-                        //首先判断
-                        if (parseInt(num / 10) <= GetScore("money",player.nameTag)) {
-                            RunCmd(`scoreboard players add @a[name="${player.nameTag}"] oxygen ${num}`)
-                            RunCmd(`scoreboard players add @a[name="${player.nameTag}"] money -${parseInt(num / 10)}`)
-                            Tell(`§a>> 您使用 §l${parseInt(num / 10)} §r§a能源币，成功购买 §l${num} §r§a氧气值！`,player.nameTag)
-                        } else {
-                            Tell(`§c>> 购买失败！余额不足，您的余额为 ${GetScore("money",player.nameTag)} 能源币，而本次购买需要 ${parseInt(num / 10)} 能源币，您还缺少 ${parseInt(num / 10) - GetScore("money",player.nameTag)} 能源币，请在攒够足够货币后尝试再次购买！`,player.nameTag)
-                        }
-                        break;
-                    case 1:
-                        Tell(`§c>> 购买失败！原因是您取消了本次购买！`,player.nameTag)
-                        break;
-                }
-            })
-
-    },
-
-    OxygenEqu(player){
-        const OxygenEquForm = new ActionFormData()
-            .title("升级呼吸装备")
-            if (GetScore("equLevel",player.nameTag) == 17) {
-                OxygenEquForm.body("§r§l===========================" + "\n§c您当前的呼吸装备已升到当前版本的最高级！" + "\n§r§l===========================")
-                OxygenEquForm.button("§c返回上一级菜单")
-            } else {
-                OxygenEquForm.body("§r§l===========================" + "\n§r§e您的能源币余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§e您当前呼吸装备的等级： §l§6" + equLevelData[GetScore("equLevel",player.nameTag)].name + "\n§r§e您当前呼吸装备的最大氧气值： §l§6" + equLevelData[GetScore("equLevel",player.nameTag)].max + "\n§r§e您当前每分钟消耗的氧气值为： §l§6" + equLevelData[GetScore("equLevel",player.nameTag)].consume + "\n§r§l===========================" + "\n§r§e下一级升级所消耗的能源币： §l§6" + equLevelData[GetScore("equLevel",player.nameTag) + 1].price + "\n§r§e下一级呼吸装备的等级： §l§6" + equLevelData[GetScore("equLevel",player.nameTag) + 1].name + "\n§r§e下一级呼吸装备的最大氧气值： §l§6" + equLevelData[GetScore("equLevel",player.nameTag) + 1].max + "\n§r§e下一级每分钟消耗的氧气值为： §l§6" + equLevelData[GetScore("equLevel",player.nameTag) + 1].consume + "\n§r§l===========================")
-                OxygenEquForm.button("§c返回上一级菜单")
-                OxygenEquForm.button("§a升级至下一级呼吸装备")
-            }
-            OxygenEquForm.show(player).then(result => {
-                if (result.selection == 0) {
-                    this.OxygenMain(player)
-                } else if (result.selection == 1) {
-                    if (equLevelData[GetScore("equLevel",player.nameTag) + 1].price <= GetScore("money",player.nameTag)) {
-                        RunCmd(`scoreboard players add @a[name="${player.nameTag}"] money -${equLevelData[GetScore("equLevel",player.nameTag) + 1].price}`)
-                        Tell("§a>> 升级成功！您当前的氧气装备已经升级为 " + equLevelData[GetScore("equLevel",player.nameTag) + 1].name,player.nameTag)
-                        RunCmd(`scoreboard players add @a[name="${player.nameTag}"] equLevel 1`)
-                        this.OxygenEqu(player)
-                    } else {
-                        Tell("§c>> 升级失败！原因是余额不足！",player.nameTag)
-                        this.OxygenEqu(player)
-                    }
-                }
-            })
-    }
-}
-export const OxygenGUI = GUI
+// },20)
