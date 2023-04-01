@@ -22,6 +22,19 @@
 
 **最后，希望这个项目&&服务器在大家的共同推进下发展的越来越好，如果本项目确实对您有所帮助，不妨点个star吧！**
 
+## Addons功能&&特性
+
+- [x] 钟表菜单
+- [x] 商店系统
+- [x] 转账系统
+- [x] 兑换码系统
+- [x] 回收系统
+- [x] 传送系统
+- [x] 空岛生成
+- [x] 氧气值玩法
+- [x] 支持修改配置文件
+- [ ] 支持自定义
+- [ ] 多语言支持
 
 ## 部分文件夹说明
 
@@ -40,9 +53,39 @@
 
 您可以根据您自己的需求下载相应的zip文件
 
-在完成配置之后将行为包以及资源包分别解压至`development_behavior_packs`文件夹、`development_resource_packs`文件夹即可使用！
+在完成配置之后将行为包以及资源包分别解压至`development_behavior_packs`文件夹、`development_resource_packs`！
 
-**具体的配置教程将在近期上线**
+> 别忘记根据自己下的addons包修改版本号!
+
+然后在`worlds/MAPNAME`目录下添加`world_behavior_packs.json`
+
+```json
+[
+    {
+        "pack_id": "cab0bbe3-eb10-465e-b1de-b09facc076c8",
+        "version": [
+            1,0,0
+        ]
+    }
+]
+```
+
+与`world_resource_packs.json`文件
+
+```json
+[
+    {
+        "pack_id": "981f1ce2-370b-4f58-99d9-9c504a118ec0",
+        "version": [
+            1,0,0
+        ]
+    }
+]
+```
+
+然后修改完配置文件即可使用！
+
+**更加具体的配置教程请前往[NIA服务器文档站](https://docs.mcnia.top/zh-CN/deploy.html)查看！**
 
 ## Bug反馈/提建议
 
