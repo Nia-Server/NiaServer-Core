@@ -43,5 +43,7 @@ Liteloader 2.12.3
 
 3.CDK兑换码修改属性后不生效的bug
 
+4.无法正常生成空岛的bug
+
 **配置说明：您可以前往[NIA服务器官方文档站](https://docs.mcnia.top/zh-CN/deploy.html)查看具体部署过程！**
 
