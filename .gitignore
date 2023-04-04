@@ -9,6 +9,9 @@
 !/plugins/NBan.js
 !/plugins/KillItem.js
 
+!world_behavior_packs.json
+!world_resource_packs.json
+
 !.gitignore
 !.gitmodules
 !CHANGELOG-PRE.md
