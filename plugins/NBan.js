@@ -1,5 +1,5 @@
 //LiteLoaderScript Dev Helper
-/// <reference path="e:\服务器本地测试/dts/llaids/src/index.d.ts"/>
+/// <reference path="d:\NIASERVER-V4/dts/llaids/src/index.d.ts"/>
 
 //NBan
 

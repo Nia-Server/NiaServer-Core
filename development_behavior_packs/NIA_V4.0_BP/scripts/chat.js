@@ -1,6 +1,33 @@
-import {world} from '@minecraft/server';
+import {world,system} from '@minecraft/server';
 import {cfg} from './config.js'
 import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution} from './customFunction.js'
+import {http,HttpRequestMethod,HttpRequest,HttpHeader} from '@minecraft/server-net';
+
+
+//与服务器通信获取群聊消息
+system.runInterval(() => {
+    const reqCheckChat = new HttpRequest("http://127.0.0.1:3000/CheckGrounpChat");
+    reqCheckChat.body = JSON.stringify({
+        score: 22,
+    });
+    reqCheckChat.method = HttpRequestMethod.POST;
+    reqCheckChat.headers = [
+        new HttpHeader("Content-Type", "application/json"),
+    ];
+    http.request(reqCheckChat).then((response) => {
+        if (response.status == 200) {
+            let msgBoxs = JSON.parse(response.body)
+            //Broadcast("body:" + response.body)
+            if (!msgBoxs  == {}) {
+                for (let name in msgBoxs) {
+                    world.sendMessage("§6[群聊]§r <"+ name + "§r> " + msgBoxs[name])
+                }
+            }
+        } else {
+            Broadcast("§c>> 依赖服务器连接失败，如果你看到此提示请联系腐竹！")
+        }
+    })
+},60)
 
 
 //对一些指令的检测
@@ -49,8 +76,32 @@ world.events.beforeChat.subscribe(t => {
                     break;
                 case "-c":
                     hasCommand = true;
-
-                    Tell("§c>> 注意本指令为调试指令，不要在正式生产环境中使用本指令！",t.sender.nameTag);
+                    t.sender.sendMessage("§c>> 注意本指令为调试指令");
+                    // const req = new HttpRequest("http://127.0.0.1:3000");
+                    // req.method = HttpRequestMethod.POST;
+                    // req.body = JSON.stringify({score: 22});
+                    // req.headers = [
+                    //     new HttpHeader("Content-Type", "application/json"),
+                    // ];
+                    // http.request(req)
+                    const req = new HttpRequest("http://127.0.0.1:3000/test");
+                    req.body = JSON.stringify({
+                      score: 22,
+                    });
+                    req.method = HttpRequestMethod.POST;
+                    req.headers = [
+                      new HttpHeader("Content-Type", "application/json"),
+                    ];
+                    http.request(req).then((response) => {
+                        Broadcast("body:" + response.body)
+                    })
+                    // http.get("http://127.0.0.1:3000").then((response) => {
+                    //     t.sender.sendMessage("status" + response.status)
+                    // })
+                    // http.request(req).then((response) => {
+                    //     t.sender.sendMessage(response.status)
+                    // })
+                    t.sender.sendMessage("§c>> 注意本指令为调试指令，不要在正式生产环境中使用本指令！");
                     break;
                 case "-h":
                     hasCommand = true;
@@ -165,9 +216,19 @@ world.events.beforeChat.subscribe(t => {
         }
     }
 
-    //对于自定义头衔的设计
-    if (t.sender.hasTag("op")) {
-        t.cancel = true;
-        Broadcast(`§c§l[管理] §r<${t.sender.nameTag}> ${t.message}`)
-    }
+    //玩家说话转发群聊
+    const reqPlayerChat = new HttpRequest("http://127.0.0.1:3000/PlayerChat");
+    let msg = {}
+    msg.name = t.sender.nameTag
+    msg.message = t.message
+    reqPlayerChat.body = JSON.stringify(msg);
+    reqPlayerChat.method = HttpRequestMethod.POST;
+    reqPlayerChat.headers = [
+        new HttpHeader("Content-Type", "application/json"),
+    ];
+    http.request(reqPlayerChat).then((response) => {
+        if (!response.status == 200) {
+            Broadcast("§c>> 依赖服务器连接失败，如果你看到此提示请联系腐竹！")
+        }
+    })
 })
