@@ -3,6 +3,8 @@
 !/development_behavior_packs
 !/development_rescourse_packs
 !/NIAServerPlugin
+!/NIA-Server
+/NIA-Server/node_modules/
 
 !/plugins/
 /plugins/*

@@ -1,0 +1,15 @@
+{
+  "name": "niaserver-net",
+  "version": "0.1.0",
+  "description": "用于NIA服务器net通信",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "NIANIANKNIA",
+  "license": "ISC",
+  "dependencies": {
+    "icqq": "^0.2.0",
+    "os-utils": "^0.0.14"
+  }
+}
