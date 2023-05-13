@@ -1,33 +1,33 @@
 import {world,system} from '@minecraft/server';
 import {cfg} from './config.js'
 import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution} from './customFunction.js'
-import {http,HttpRequestMethod,HttpRequest,HttpHeader} from '@minecraft/server-net';
+//import {http,HttpRequestMethod,HttpRequest,HttpHeader} from '@minecraft/server-net';
 
 
 //与服务器通信获取群聊消息
-system.runInterval(() => {
-    const reqCheckChat = new HttpRequest("http://127.0.0.1:3000/CheckGrounpChat");
-    reqCheckChat.body = JSON.stringify({
-        score: 22,
-    });
-    reqCheckChat.method = HttpRequestMethod.POST;
-    reqCheckChat.headers = [
-        new HttpHeader("Content-Type", "application/json"),
-    ];
-    http.request(reqCheckChat).then((response) => {
-        if (response.status == 200) {
-            let msgBoxs = JSON.parse(response.body)
-            //Broadcast("body:" + response.body)
-            if (!msgBoxs  == {}) {
-                for (let name in msgBoxs) {
-                    world.sendMessage("§6[群聊]§r <"+ name + "§r> " + msgBoxs[name])
-                }
-            }
-        } else {
-            Broadcast("§c>> 依赖服务器连接失败，如果你看到此提示请联系腐竹！")
-        }
-    })
-},60)
+// system.runInterval(() => {
+//     const reqCheckChat = new HttpRequest("http://127.0.0.1:3000/CheckGrounpChat");
+//     reqCheckChat.body = JSON.stringify({
+//         score: 22,
+//     });
+//     reqCheckChat.method = HttpRequestMethod.POST;
+//     reqCheckChat.headers = [
+//         new HttpHeader("Content-Type", "application/json"),
+//     ];
+//     http.request(reqCheckChat).then((response) => {
+//         if (response.status == 200) {
+//             let msgBoxs = JSON.parse(response.body)
+//             //Broadcast("body:" + response.body)
+//             if (!msgBoxs  == {}) {
+//                 for (let name in msgBoxs) {
+//                     world.sendMessage("§6[群聊]§r <"+ name + "§r> " + msgBoxs[name])
+//                 }
+//             }
+//         } else {
+//             Broadcast("§c>> 依赖服务器连接失败，如果你看到此提示请联系腐竹！")
+//         }
+//     })
+// },60)
 
 
 //对一些指令的检测
@@ -217,18 +217,18 @@ world.events.beforeChat.subscribe(t => {
     }
 
     //玩家说话转发群聊
-    const reqPlayerChat = new HttpRequest("http://127.0.0.1:3000/PlayerChat");
-    let msg = {}
-    msg.name = t.sender.nameTag
-    msg.message = t.message
-    reqPlayerChat.body = JSON.stringify(msg);
-    reqPlayerChat.method = HttpRequestMethod.POST;
-    reqPlayerChat.headers = [
-        new HttpHeader("Content-Type", "application/json"),
-    ];
-    http.request(reqPlayerChat).then((response) => {
-        if (!response.status == 200) {
-            Broadcast("§c>> 依赖服务器连接失败，如果你看到此提示请联系腐竹！")
-        }
-    })
+    // const reqPlayerChat = new HttpRequest("http://127.0.0.1:3000/PlayerChat");
+    // let msg = {}
+    // msg.name = t.sender.nameTag
+    // msg.message = t.message
+    // reqPlayerChat.body = JSON.stringify(msg);
+    // reqPlayerChat.method = HttpRequestMethod.POST;
+    // reqPlayerChat.headers = [
+    //     new HttpHeader("Content-Type", "application/json"),
+    // ];
+    // http.request(reqPlayerChat).then((response) => {
+    //     if (!response.status == 200) {
+    //         Broadcast("§c>> 依赖服务器连接失败，如果你看到此提示请联系腐竹！")
+    //     }
+    // })
 })
