@@ -5,7 +5,7 @@
 		"name": "NIA V4.0 RP",
 		"uuid": "981f1ce2-370b-4f58-99d9-9c504a118ec0",
 		"min_engine_version": [1, 19, 8],
-		"version": [1, 2, 0]
+		"version": [1, 2, 1]
 	},
 	"modules": [
 		{

@@ -4,7 +4,7 @@
 	  "name": "NIA V4.0 BP",
 	  "description": "§bNIA服务器V4-行为包\n作者：NIANIANKNIA\n项目地址：https://github.com/NIANIANKNIA/NIASERVER-V4",
 	  "uuid": "cab0bbe3-eb10-465e-b1de-b09facc076c8",
-	  "version": [ 1, 2, 0 ],
+	  "version": [ 1, 2, 1 ],
 	  "min_engine_version": [ 1, 19, 8 ]
 	},
 	"modules": [

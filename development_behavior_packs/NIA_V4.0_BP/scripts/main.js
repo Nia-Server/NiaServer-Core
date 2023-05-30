@@ -15,23 +15,9 @@ import './chat.js'
 import './menu/main.js'
 import './island.js'
 import './net.js'
+import './market.js'
 import { OxygenGUI } from './menu/oxygen.js';
 
-
-// import { HttpClient } from "@minecraft/server-net";
-
-// const request = new HttpRequest("127.0.0.1:3000");
-// request.method = HttpRequestMethod.GET;
-// request.body = 'body';
-// request.headers = [
-//   new HttpHeader("Content-Type", "text/plain;charset=utf-8"),
-// ];
-
-// http.request(request).then((response) => {
-//   // Body content of the HTTP response.
-//   // Type: string
-//   Broadcast(response.body);
-// });
 
 
 //定义一些常数

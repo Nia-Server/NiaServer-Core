@@ -1,12 +1,14 @@
 const http = require('http');
 const fs = require('fs');
 const os = require('os-utils');
-
-const { createClient } = require("icqq")
 const config = require('./config.json')
-const client = createClient()
 const account = config.account
 const password = config.password
+
+const { createClient } = require("icqq")
+
+const client = createClient()
+
 const PLAYERCMDS = ["list","申请白名单"]
 
 var AccountOnline = false;
@@ -22,6 +24,28 @@ const serverInfo = {
 var msgboxs= {}
 var repData = {}
 repData.msgboxs = []
+
+// isFileExisted("./config.json")
+
+// // 检查文件是否存在于当前目录中。
+// function isFileExisted(path_way) {
+//   console.log("sss")
+//   return new Promise((resolve, reject) => {
+//     fs.access(path_way, (err) => {
+//       if (err) {
+//         fs.appendFileSync(path_way, '{"USEBOT": true,"account": 3374574180,"password": "","QQGroup": 595540532}', 'utf-8', (err) => {
+//           if (err) {
+//             return console.log('该文件不存在，重新创建失败！')
+//           }
+//           console.log("文件不存在，已新创建");
+//         });
+//         reject(false);
+//       } else {
+//         resolve(true);
+//       }
+//     })
+//   })
+// };
 
 
 // //定义时间
