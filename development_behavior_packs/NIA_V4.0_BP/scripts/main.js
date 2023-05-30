@@ -14,6 +14,7 @@ import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistributi
 import './chat.js'
 import './menu/main.js'
 import './island.js'
+import './net.js'
 import { OxygenGUI } from './menu/oxygen.js';
 
 
@@ -154,7 +155,7 @@ world.events.playerSpawn.subscribe(event => {
     if (!event.initialSpawn) {
         if (GetScore("equLevel",event.player.nameTag) < 17) {
             RunCmd(`scoreboard players set @a[name="${event.player.nameTag}"] oxygen ${parseInt(GetScore("oxygen",event.player.nameTag) * 0.9)}`)
-            event.player.tell(`§c>> 您由于死亡损失了剩余的10%的氧气值！`)
+            event.player.sendMessage(`§c>> 您由于死亡损失了剩余的10%的氧气值！`)
         }
     }
 })

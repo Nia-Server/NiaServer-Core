@@ -27,13 +27,13 @@ jobs:
         with:
           type: 'zip'
           directory: '.'
-          path: 'NIA-Server'
-          filename: NIA-Server-${{ github.ref_name }}.zip
+          path: 'NIA-Server-BOT'
+          filename: NIA-Server-BOT-${{ github.ref_name }}.zip
       - name: Upload Release
         uses: ncipollo/release-action@v1.12.0
         with:
           prerelease: true
-          artifacts: "development_behavior_packs/NIA_V4.0_BP/NIAV4BP-${{ github.ref_name }}.zip,development_resource_packs/NIA_V4.0_RP/NIAV4RP-${{ github.ref_name }}.zip,NIA-Server-${{ github.ref_name }}.zip,world_behavior_packs.json,world_resource_packs.json"
+          artifacts: "development_behavior_packs/NIA_V4.0_BP/NIAV4BP-${{ github.ref_name }}.zip,development_resource_packs/NIA_V4.0_RP/NIAV4RP-${{ github.ref_name }}.zip,NIA-Server-BOT-${{ github.ref_name }}.zip,world_behavior_packs.json,world_resource_packs.json"
           bodyFile: "CHANGELOG-PRE.md"
           generateReleaseNotes: false
           token: ${{ secrets.GITHUB_TOKEN }}

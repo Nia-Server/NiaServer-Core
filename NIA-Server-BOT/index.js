@@ -7,15 +7,35 @@ const config = require('./config.json')
 const client = createClient()
 const account = config.account
 const password = config.password
-const PLAYERCMDS = ["list"]
+const PLAYERCMDS = ["list","申请白名单"]
 
 var AccountOnline = false;
 var ServerStarted = false;
 
 const port = 3000;
 
-var msgboxs= {}
+const serverInfo = {
+	cpuUsage: 0
+}
 
+
+var msgboxs= {}
+var repData = {}
+repData.msgboxs = []
+
+
+// //定义时间
+// var date = new Date();
+
+// // 年月日
+// var year = date.getFullYear();
+// var month = date.getMonth() + 1;
+// var day = date.getDate();
+
+// // 时分秒
+// var hour = date.getHours();
+// var minute = date.getMinutes();
+// var second = date.getSeconds();
 
 const server = http.createServer()
 
@@ -37,14 +57,31 @@ server.on("request", (req, res) => {
         res.end(data.toString());
       })
       break;
-    case "/CheckGrounpChat":
+    case "/Check":
+      console.log("成功接收MC检查请求！")
       ServerStarted = true;
-      //console.log("成功接收MC群消息检查请求！")
       res.statusCode = 200;
       res.setHeader('Content-Type', 'text/plain;charset=utf-8');
-      res.end(JSON.stringify(msgboxs));
-      msgboxs= {}
+      res.end(JSON.stringify(repData));
+      //console.error(JSON.stringify(repData))
+      repData = {}
+      repData.msgboxs = []
       break;
+    case '/ServerStarted':
+      res.statusCode = 200;
+      ServerStarted = true;
+      res.setHeader('Content-Type', 'text/plain;charset=utf-8');
+      res.end("Server Started");
+      group.sendMsg("服务器已启动！")
+      break;
+    // case "/CheckGrounpChat":
+    //   ServerStarted = true;
+    //   console.log("成功接收MC群消息检查请求！")
+    //   res.statusCode = 200;
+    //   res.setHeader('Content-Type', 'text/plain;charset=utf-8');
+    //   res.end(JSON.stringify(msgboxs));
+    //   msgboxs= {}
+    //   break;
     case '/PlayerChat':
       console.log("成功接收群消息！")
       req.on("data", (data) => {
@@ -58,6 +95,28 @@ server.on("request", (req, res) => {
       })
       res.statusCode = 200;
       break;
+    case '/PlayerJoin':
+      req.on("data", (data) => {
+        arr.push(data)
+      })
+      req.on("end", () => {
+        let playerjoinData = Buffer.concat(arr).toString()
+        if (AccountOnline) {
+          group.sendMsg(playerjoinData + " 加入了服务器!")
+        }
+      })
+      break;
+    case '/PlayerLeave':
+      req.on("data", (data) => {
+        arr.push(data)
+      })
+      req.on("end", () => {
+        let playerleaveData = Buffer.concat(arr).toString()
+        if (AccountOnline) {
+          group.sendMsg(playerleaveData + " 离开了服务器!")
+        }
+      })
+      break;
   }
   // res.statusCode = 200;
   // res.setHeader('Content-Type', 'text/plain')
@@ -67,11 +126,6 @@ server.on("request", (req, res) => {
 server.listen(port,'127.0.0.1', () => {
   console.info(`NIA服务器监听服务器已经成功在 http://127.0.0.1:${port} 启动！`);
 });
-
-
-const serverInfo = {
-	cpuUsage: 0
-}
 
 
 client.on('system.login.slider', (e) => {
@@ -106,30 +160,33 @@ client.on('system.login.device', (e) => {
 
 client.login(account,password)
 
-
-
-//client.login(account,password)
 client.on('system.online', (e) => {
     AccountOnline = true
+    group.sendMsg("机器人登陆成功！")
     console.log("机器人登陆成功！")
 })
 
+
 client.on('message.group', (e) => {
     if (e.group_id == config.QQGroup && e.sender.user_id != 3467371607) {
-        if (e.message[0].text.toString().slice(0,1) == "#") {
+        if (e.message[0].text.toString().slice(0,1) == "-") {
             if (PLAYERCMDS.indexOf(e.message[0].text.toString().slice(1)) != -1) {
                 //mc.runcmd(e.message[0].text.toString().slice(1))
+                e.group.sendMsg("开发中功能！")
             } else if (e.sender.role == "owner" || e.sender.role == "admin") {
                 //mc.runcmd(e.message[0].text.toString().slice(1))
+                e.group.sendMsg("开发中功能！")
             } else {
                 e.group.sendMsg("您不是管理员，无法执行相关指令！")
             }
         } else {
             if (e.sender.card == "") {
-              msgboxs[e.sender.nickname] = e.message[0].text.toString()
+              repData.msgboxs.push([e.sender.nickname,e.message[0].text.toString()])
+              //msgboxs[e.sender.nickname] = e.message[0].text.toString()
                 //mc.broadcast("§6[群聊]§r <" + e.sender.nickname + "> §r" + e.message[0].text.toString())
             } else {
-              msgboxs[e.sender.card] = e.message[0].text.toString()
+              repData.msgboxs.push([e.sender.card,e.message[0].text.toString()])
+              //msgboxs[e.sender.card] = e.message[0].text.toString()
                 //mc.broadcast("§6[群聊]§r <" + e.sender.card + "> §r" + e.message[0].text.toString())
             }
         }
@@ -142,7 +199,7 @@ const group = client.pickGroup(config.QQGroup)
  * 获取系统cpu利用率
  */
 async function getCPUUsage() {
-	let promise = new Promise((resolve, reject) => {
+	let promise = new Promise((resolve) => {
 		os.cpuUsage(function(v){
 			resolve(v)
 		});
@@ -163,6 +220,6 @@ setInterval(() => {
         }
     }
     if (!ServerStarted) {
-      console.log("暂未连接到MC服务器！")
+      console.log("[ERR] 暂未连接到MC服务器！")
     }
 }, 10000)
