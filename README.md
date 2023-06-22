@@ -1,6 +1,6 @@
 # NIA服务器v4.0--基岩版空岛服务器
 
-[![wakatime](https://wakatime.com/badge/user/a2d785d3-a26c-467b-9112-333ba2bee9e8/project/9ae0abd5-b1ad-4199-bd66-0fba1a96ac45.svg?style=for-the-badge)](https://wakatime.com/badge/user/a2d785d3-a26c-467b-9112-333ba2bee9e8/project/9ae0abd5-b1ad-4199-bd66-0fba1a96ac45)
+[![wakatime](https://wakatime.com/badge/user/a2d785d3-a26c-467b-9112-333ba2bee9e8/project/9ae0abd5-b1ad-4199-bd66-0fba1a96ac45.svg?style=for-the-badge)](https://wakatime.com/@NIANIANKNIA)
 [![status](https://img.shields.io/github/actions/workflow/status/NIANIANKNIA/NIASERVER-V4/main.yml?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/actions)
 [![GitHub Release Date](https://img.shields.io/github/release-date-pre/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/releases)
 [![Latest Release](https://img.shields.io/github/v/release/NIANIANKNIA/NIASERVER-V4?include_prereleases&style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/releases/latest)
@@ -13,6 +13,8 @@
 **语言: 简体中文 | [English](README-EN.md)**
 
 ## 写在前面
+
+**当前服务器addons包仍处于开发状态，暂时没有对其他类型服务器做适配，所以我们并不推荐您直接使用！**
 
 一个基于BDS的基岩版服务器，这里开源了由服务器开发团队制作的addons（包括基于script-api的脚本）、大部分运行于LiteLoader的插件（部分LiteLoader插件源码可以点击前往 [NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin) 查看）
 

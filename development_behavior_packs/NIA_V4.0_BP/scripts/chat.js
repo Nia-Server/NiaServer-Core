@@ -31,7 +31,7 @@ import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistributi
 
 
 //对一些指令的检测
-world.events.beforeChat.subscribe(t => {
+world.beforeEvents.chatSend.subscribe(t => {
     //对于指令前缀"-"的检测以及相关权限的检测
     if (t.message.slice(0,1) == "-") {
         //取消有自定义指令前缀的消息输出

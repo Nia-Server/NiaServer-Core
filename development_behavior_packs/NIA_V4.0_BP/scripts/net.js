@@ -28,7 +28,7 @@ system.runInterval(() => {
 //
 
 //服务器启动监听
-world.events.worldInitialize.subscribe(() => {
+world.afterEvents.worldInitialize.subscribe(() => {
     const reqServerStarted = new HttpRequest("http://127.0.0.1:3000/ServerStarted");
     reqServerStarted.body = JSON.stringify({
         score: 22,
@@ -37,11 +37,17 @@ world.events.worldInitialize.subscribe(() => {
     reqServerStarted.headers = [
         new HttpHeader("Content-Type", "application/json"),
     ];
-    http.request(reqServerStarted)
+    http.request(reqServerStarted).then((response) => {
+        if (response.status == 200) {
+            console.warn("[NIA V4] The dependent server has been successfully connected!")
+        } else {
+            console.error("[NIA V4] Dependent server connection failed! Check whether the dependent server started successfully.")
+        }
+    })
 })
 
 //玩家加入服务器监听
-world.events.playerJoin.subscribe((player) => {
+world.afterEvents.playerJoin.subscribe((player) => {
     const reqPlayerJoin = new HttpRequest("http://127.0.0.1:3000/PlayerJoin");
     reqPlayerJoin.body = player.playerName
     reqPlayerJoin.method = HttpRequestMethod.POST;
@@ -52,7 +58,7 @@ world.events.playerJoin.subscribe((player) => {
 })
 
 //玩家离开服务器监听
-world.events.playerLeave.subscribe((player) => {
+world.afterEvents.playerLeave.subscribe((player) => {
     const reqPlayerLeave = new HttpRequest("http://127.0.0.1:3000/PlayerLeave");
     reqPlayerLeave.body = player.playerName
     reqPlayerLeave.method = HttpRequestMethod.POST;
@@ -63,7 +69,7 @@ world.events.playerLeave.subscribe((player) => {
 })
 
 //游戏聊天转发
-world.events.beforeChat.subscribe((t) => {
+world.afterEvents.chatSend.subscribe((t) => {
     const reqPlayerChat = new HttpRequest("http://127.0.0.1:3000/PlayerChat");
     let msg = {}
     msg.name = t.sender.nameTag

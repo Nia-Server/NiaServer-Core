@@ -211,8 +211,8 @@ function OpenGUI(player,GUINAME) {
 }
 
 //对于物品使用的检测
-world.events.beforeItemUse.subscribe(event => {
-    if (event.item.typeId == cfg.MENUITEM) {
+world.afterEvents.itemUse.subscribe(event => {
+    if (event.itemStack.typeId == cfg.MENUITEM) {
         let player = event.source;
         Main(player)
     }

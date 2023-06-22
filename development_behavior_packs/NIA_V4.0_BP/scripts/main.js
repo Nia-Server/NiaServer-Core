@@ -135,9 +135,13 @@ const equLevelData = {
     }
 }
 
+//服务器启动监听
+world.afterEvents.worldInitialize.subscribe(() => {
+    console.warn("\n[NIA V4] You are using a preview version, do not use it in a production environment!\n[NIA V4] NIA V4 has been successfully started on the server!\n[NIA V4] version:v1.3.0-pre based on BDS-1.20.10.02(last upgrate:2023/6/22)\n[NIA V4] author:@NIANIANKNIA(https://github.com/NIANIANKNIA)")
+})
 
 // 玩家死亡后重生的检测
-world.events.playerSpawn.subscribe(event => {
+world.afterEvents.playerSpawn.subscribe(event => {
     if (!event.initialSpawn) {
         if (GetScore("equLevel",event.player.nameTag) < 17) {
             RunCmd(`scoreboard players set @a[name="${event.player.nameTag}"] oxygen ${parseInt(GetScore("oxygen",event.player.nameTag) * 0.9)}`)
