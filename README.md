@@ -14,7 +14,7 @@
 
 ## 写在前面
 
-**当前服务器addons包仍处于开发状态，暂时没有对其他类型服务器做适配，所以我们并不推荐您直接使用！**
+**注意：当前服务器addons包仍处于开发状态，暂时没有对其他类型服务器做适配，所以我们并不推荐您直接使用！**
 
 一个基于BDS的基岩版服务器，这里开源了由服务器开发团队制作的addons（包括基于script-api的脚本）、大部分运行于LiteLoader的插件（部分LiteLoader插件源码可以点击前往 [NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin) 查看）
 
@@ -35,6 +35,8 @@
 - [x] 空岛生成
 - [x] 氧气值玩法
 - [x] 支持修改配置文件
+- [x] q群机器人
+- [ ] 玩家交易市场
 - [ ] 支持自定义
 - [ ] 多语言支持
 

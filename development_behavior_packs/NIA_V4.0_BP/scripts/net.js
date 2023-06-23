@@ -19,6 +19,7 @@ system.runInterval(() => {
             for (let i = 0; i < repData.msgboxs.length; i++) {
                 world.sendMessage("§6[群聊]§r <"+ repData.msgboxs[i][0] + "§r> " + repData.msgboxs[i][1])
             }
+            //错误信息解析
         } else {
             Broadcast("§c>> 依赖服务器连接失败，如果你看到此提示请联系腐竹！")
         }
@@ -39,7 +40,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
     ];
     http.request(reqServerStarted).then((response) => {
         if (response.status == 200) {
-            console.warn("[NIA V4] The dependent server has been successfully connected!")
+            console.log("\x1b[33m[NIA V4] The dependent server has been successfully connected!\x1b[0m")
         } else {
             console.error("[NIA V4] Dependent server connection failed! Check whether the dependent server started successfully.")
         }

@@ -137,7 +137,7 @@ const equLevelData = {
 
 //服务器启动监听
 world.afterEvents.worldInitialize.subscribe(() => {
-    console.warn("\n[NIA V4] You are using a preview version, do not use it in a production environment!\n[NIA V4] NIA V4 has been successfully started on the server!\n[NIA V4] version:v1.3.0-pre based on BDS-1.20.10.02(last upgrate:2023/6/22)\n[NIA V4] author:@NIANIANKNIA(https://github.com/NIANIANKNIA)")
+    console.log("\n\x1b[33m[NIA V4] You are using a preview version, do not use it in a production environment!\n[NIA V4] NIA V4 has been successfully started on the server!\n[NIA V4] version: v1.3.0-pre based on BDS-1.20.10.02(last upgrate:2023/6/23)\n[NIA V4] author:@NIANIANKNIA(https://github.com/NIANIANKNIA)\x1b[0m")
 })
 
 // 玩家死亡后重生的检测
@@ -185,8 +185,8 @@ system.runInterval(() => {
         Broadcast(`§a>> 服务器自动备份中！可能出现卡顿，请勿在此时进行较大负载活动！`)
         if (TIME.getHours() == 16) {
             //每天更新数据文件
-            RunCmd(`tite @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] title §c矿场已更新！`)
-            RunCmd(`tite @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] subtitle §7请重新花费体力进入！`)
+            RunCmd(`title @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] title §c矿场已更新！`)
+            RunCmd(`title @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] subtitle §7请重新花费体力进入！`)
             RunCmd(`tp @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] 702 82 554`)
             RunCmd(`scoreboard objectives remove miningTime`)
             RunCmd(`scoreboard objectives add miningTime dummy 采矿时间`)
