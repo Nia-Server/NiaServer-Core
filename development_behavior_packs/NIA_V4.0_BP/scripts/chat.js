@@ -1,6 +1,9 @@
 import {world,system} from '@minecraft/server';
 import {cfg} from './config.js'
 import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution} from './customFunction.js'
+
+import '../API/cipher_system.js'
+
 //import {http,HttpRequestMethod,HttpRequest,HttpHeader} from '@minecraft/server-net';
 
 
@@ -211,9 +214,9 @@ world.afterEvents.chatSend.subscribe(t => {
     if (t.message.slice(0,1) == "*") {
         //取消有自定义指令前缀的消息输出
         t.cancel = true;
-        if (t.sender.nameTag == "NIANIANKNIA") {
-            Tell(`§c>> 密码为§a${parseInt(((t.message.slice(1) * 12345) + 65432) / 9876 + 100000)}`,t.sender.nameTag);
-        }
+        if (t.sender.isOp()) 
+            Tell(`§c>> 密码为§a${adler32(t.message.slice(1))}`,t.sender.nameTag);
+            //Tell(`§c>> 密码为§a${((parseInt(t.message.slice(1)) * 12345) + 65432) / 9876 + 100000}`,t.sender.nameTag);
     }
 
     //玩家说话转发群聊
