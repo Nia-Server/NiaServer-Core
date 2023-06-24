@@ -75,7 +75,7 @@ export function FlyGUI(player) {
             .textField("请输入飞行系统激活码","请不要尝试破解（")
             .show(player).then(result => {
                 let password = result.formValues[0];
-                if(password != adler32(UUID)) 
+                if(password != adler32(toString(UUID,10))) 
                     player.sendMessage(`§c>> 您输入的激活码不正确，请再次重试！如果您还未获得激活码，请将您的UUID§a${UUID}§c发给腐竹获取飞行系统激活码！`),
                     FlyGUI(player);
                 else player.sendMessage(`§a>> 验证码正确！您已获得相关权限！`), RunCmd(`tag "${player.nameTag}" add CanFly`);
