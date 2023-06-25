@@ -9,7 +9,7 @@
   "author": "NIANIANKNIA",
   "license": "ISC",
   "dependencies": {
-    "icqq": "^0.4.5",
+    "icqq": "^0.4.6",
     "os-utils": "^0.0.14"
   }
 }

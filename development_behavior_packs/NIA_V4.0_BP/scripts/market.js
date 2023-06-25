@@ -58,28 +58,6 @@ const MarketGUI = {
 
     //市场
     Market(player) {
-        //先连接依赖服务器
-        // const reqMarket = new HttpRequest("http://127.0.0.1:3000/Market");
-        // reqMarket.body = JSON.stringify({"playername":player.nameTag,"playerid":player.id});
-        // reqMarket.method = HttpRequestMethod.POST;
-        // reqMarket.headers = [
-        //     new HttpHeader("Content-Type", "application/json"),
-        // ];
-        // http.request(reqMarket).then((response) => {
-        //     let commodities = JSON.parse(response.body)
-        //     if (response.status == 200) {
-        //         const MarketForm = new ActionFormData()
-        //         .title("服务器交易市场")
-        //         .body("§c欢迎光临服务器交易市场")
-        //         .button("搜索物品")
-        //         for (let i = 0; i < commodities.length; i ++) {
-        //             MarketForm.button(commodities[i].name + "\n单价: " + commodities[i].price + "库存数量: " + commodities[i].amount)
-        //         }
-        //         MarketForm.show(player)
-        //     } else {
-        //         this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ShelfForm")
-        //     }
-        // })
         let CanBuyCommodities = []
         const MarketForm = new ActionFormData()
             .title("服务器交易市场")
@@ -105,15 +83,16 @@ const MarketGUI = {
                     }
                     MarketSubForm.button("预览商品")
                     MarketSubForm.button("购买商品")
-                    MarketSubForm.show(player)
+                    MarketSubForm.show(player).then((response) => {
+                        if (response.canceled) {
+                            this.Market(player)
+                        } else if (response.selection == 0) {
+                            //预览商品
+                        } else if (response.selection == 1) {
+                            //购买商品
+                        }
+                    })
             }
-            //先连接依赖服务器
-            // const reqMarket = new HttpRequest("http://127.0.0.1:3000/Market");
-            // reqMarket.body = JSON.stringify({"playername":player.nameTag,"playerid":player.id});
-            // reqMarket.method = HttpRequestMethod.POST;
-            // reqMarket.headers = [
-            //     new HttpHeader("Content-Type", "application/json"),
-            // ];
         })
     },
 
@@ -140,7 +119,7 @@ const MarketGUI = {
             ShelfForm.show(player).then((response) => {
                 if (response.canceled) {
                     this.Main(player)
-                } else if (response.formValues[0] == 0 || response.formValues[1] == NaN || response.formValues[2] == NaN) {
+                } else if (response.formValues[0] == 0 || response.formValues[1] == "" || response.formValues[2] == "") {
                     this.Error(player,"§c错误的数据格式，请重新填写！","101","ShelfForm")
                 } else {
                     //（暂时）不要忘记考虑羊毛
@@ -198,10 +177,9 @@ const MarketGUI = {
             .slider("请选择你要上架的物品数量",1,itemData.amount,1,itemData.amount)
             .textField("请输入物品单价","请注意，这里输入的是物品单价！")
         ShelfSubForm.show(player).then((response) => {
-            console.log(response.formValues[1])
             if (response.canceled) {
                 this.Shelf(player)
-            } else if (response.formValues[1] == NaN || parseInt(response.formValues[1]) <= 0 || isNaN(parseInt(Number(response.formValues[1])))) {
+            } else if (response.formValues[1] == "" || parseInt(response.formValues[1]) <= 0 || isNaN(parseInt(Number(response.formValues[1])))) {
                 this.Error(player,"§c错误的数据格式，只能填写正数！","102","ShelfForm")
             } else {
                 //再给物品加一个价格属性
@@ -237,6 +215,7 @@ const MarketGUI = {
                 } else {
                     //开始连接依赖服务器
                     const reqShelf = new HttpRequest("http://127.0.0.1:3000/Shelf");
+                    itemData.amount = itemData.amount -  response.formValues[0]
                     reqShelf.body = JSON.stringify(itemData);
                     reqShelf.method = HttpRequestMethod.POST;
                     reqShelf.headers = [

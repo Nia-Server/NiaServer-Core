@@ -145,5 +145,41 @@
         "playerid": "-21474836479",
         "playerName": "NIANIANKNIA",
         "addedTime": "2023-06-23 23:52:25"
+    },
+    {
+        "state": true,
+        "slot": 0,
+        "typeid": "minecraft:planks",
+        "amount": 64,
+        "keepOnDeath": false,
+        "maxAmount": 64,
+        "Hasdamage": false,
+        "Hasench": true,
+        "ench": {},
+        "name": "木板",
+        "description": "测试商品1",
+        "price": 50,
+        "id": "386803089",
+        "playerid": "-21474836479",
+        "playerName": "NIANIANKNIA",
+        "addedTime": "2023-06-24 15:47:14"
+    },
+    {
+        "state": true,
+        "slot": 0,
+        "typeid": "minecraft:planks",
+        "amount": 16,
+        "keepOnDeath": false,
+        "maxAmount": 64,
+        "Hasdamage": false,
+        "Hasench": true,
+        "ench": {},
+        "name": "木板",
+        "description": "测试商品2",
+        "price": 5050,
+        "id": "943789566",
+        "playerid": "-21474836479",
+        "playerName": "NIANIANKNIA",
+        "addedTime": "2023-06-24 15:49:59"
     }
 ]

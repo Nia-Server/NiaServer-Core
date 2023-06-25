@@ -5,7 +5,7 @@ const os = require('os-utils');
 const port = 3000;
 const { createClient } = require("icqq");
 const { fail } = require('assert');
-const PLAYERCMDS = ["list","申请白名单"]
+const PLAYERCMDS = ["list","申请白名单","查"]
 const serverInfo = {cpuUsage: 0}
 
 //初始化变量
@@ -13,8 +13,8 @@ var AccountOnline = false;
 var ServerStarted = false;
 
 //初始化配置文件格式，请勿更改！！！！
-var config = {"platform": 6,"account": 123456,"password": "","QQGroup": 123456789,"owner": [123456]}
-var client = createClient({platform:config.platform})
+var config = {"account": 123456,"password": "","QQGroup": 123456789,"owners": [123456],"botconfig":{"platform": 6}}
+var client = createClient(config.botconfig)
 var account = config.account
 var password = config.password
 var group = client.pickGroup(config.QQGroup)
@@ -22,9 +22,18 @@ var group = client.pickGroup(config.QQGroup)
 //配置文件地址
 const cfg_path = "./config.json";
 
-const ERROR = "[NIA-Server-BOT] \x1b[31m[ERROR]\x1b[0m [" + new Date().toLocaleString('zh', { hour12: false }).replaceAll('/', '-') + "] "
-const INFO = "[NIA-Server-BOT] \x1b[32m[INFO]\x1b[0m [" + new Date().toLocaleString('zh', { hour12: false }).replaceAll('/', '-') + "] "
-const WARN = "[NIA-Server-BOT] \x1b[33m[WARN]\x1b[0m [" + new Date().toLocaleString('zh', { hour12: false }).replaceAll('/', '-') + "] "
+
+const log = {
+  error(message) {
+    console.log("[NIA-Server-BOT] \x1b[31m[ERROR]\x1b[0m [" + new Date().toLocaleString('zh', { hour12: false }).replaceAll('/', '-') + "] " + message)
+  },
+  info(message) {
+    console.log("[NIA-Server-BOT] \x1b[32m[INFO]\x1b[0m [" + new Date().toLocaleString('zh', { hour12: false }).replaceAll('/', '-') + "] " + message)
+  },
+  warn(message) {
+    console.log("[NIA-Server-BOT] \x1b[33m[WARN]\x1b[0m [" + new Date().toLocaleString('zh', { hour12: false }).replaceAll('/', '-') + "] " + message)
+  }
+}
 
 //判断配置文件是否存在
 fs.access(cfg_path, (err) => {
@@ -32,26 +41,26 @@ fs.access(cfg_path, (err) => {
   if (err) {
     fs.writeFile(cfg_path, JSON.stringify(config,null,4), 'utf-8', (err) => {
       if (err) {
-        return console.log(ERROR + '该文件不存在，重新创建失败！')
+        return log.error('该文件不存在，重新创建失败！')
       }
     });
-    console.log(WARN + "配置文件不存在，已重新创建，请修改配置文件后再运行！");
+    log.warn("配置文件不存在，已重新创建，请修改配置文件后再运行！");
     //直接结束本次进程
     process.exit(1)
   } else {
     //存在，读取配置文件
     fs.readFile(cfg_path,(err,data) => {
       if (err) {
-        return console.log(ERROR + "配置文件读取错误！")
+        return log.error("配置文件读取错误！")
       }
       config = JSON.parse(data.toString())
       //再次读取配置文件中的数据
       account = config.account
       password = config.password
       group = client.pickGroup(config.QQGroup)
-      console.log(INFO + "配置文件数据读取成功，正在启动机器人！");
+      log.info("配置文件数据读取成功，正在启动机器人！");
       //登录qq机器人
-      client = createClient({platform:config.platform})
+      client = createClient(config.botconfig)
       client.on('system.login.slider', (e) => {
           console.log('输入滑块地址获取的ticket后继续。\n滑块地址:    ' + e.url)
           process.stdin.once('data', (data) => {
@@ -85,10 +94,61 @@ fs.access(cfg_path, (err) => {
       //判断机器人是否登录成功
       client.on('system.online', (e) => {
         AccountOnline = true
-        group.sendMsg("机器人登陆成功！")
-        console.log(INFO + "机器人登陆成功！")
         group = client.pickGroup(config.QQGroup)
+        group.sendMsg("机器人登陆成功！")
+        log.info("机器人登陆成功！")
       })
+
+      //监听群聊消息
+      client.on('message.group', (e) => {
+        //等适配
+          if (e.group_id == config.QQGroup && e.sender.user_id != 3467371607) {
+              if (e.message[0].text.toString().slice(0,1) == "#") {
+                let message = e.message[0].text.toString().slice(1).split(" ")
+                switch (message[0]) {
+                  default:
+                    e.group.sendMsg("未知的指令，请重新检查后再次发送!")
+                    break;
+                  case "申请白名单":
+                    if (message[1] == undefined) {
+                      e.group.sendMsg("未知的XboxID，请发送形如 #申请白名单 Steve 来获取白名单！")
+                    } else {
+                      e.group.sendMsg("你已成功将XboxID <" + message[1] + "> 与qq <" + e.sender.user_id + "> 成功绑定！如需解绑/换绑请联系管理员！")
+                    }
+                    break;
+                  case "查市场":
+                    fs.readFile("./market.json",(err,data) => {
+                      if (err) {
+                        return log.error("market文件读取错误！")
+                      }
+                      commodities = JSON.parse(data.toString())
+                      let marketStr = ""
+                      if (message[1] == undefined) {
+                        for (let i = 0; i < commodities.length; i++) {
+                          marketStr = "商品名称:" + commodities[i].name + " 商品单价:" + commodities[i].price + "\n" + marketStr
+                        }
+                        e.group.sendMsg("已成功获取玩家市场数据:\n" + marketStr)
+                      }
+                    })
+                    break;
+                }
+                  // if (PLAYERCMDS.indexOf(e.message[0].text.toString().slice(1)) != -1) {
+                  //     e.group.sendMsg("开发中功能！")
+                  // } else if (e.sender.role == "owner" || e.sender.role == "admin") {
+                  //     e.group.sendMsg("开发中功能！")
+                  // } else {
+                  //     e.group.sendMsg("您不是管理员，无法执行相关指令！")
+                  // }
+              } else {
+                  if (e.sender.card == "") {
+                    repData.msgboxs.push([e.sender.nickname,e.message[0].text.toString()])
+                  } else {
+                    repData.msgboxs.push([e.sender.card,e.message[0].text.toString()])
+                  }
+              }
+          }
+      })
+
     })
   }
 })
@@ -102,18 +162,18 @@ fs.access("./market.json", (err) => {
     //没有文件直接创建
     fs.writeFile("./market.json", "[]", 'utf-8', (err) => {
       if (err) {
-        return console.log(ERROR + '该文件不存在且重新创建失败！')
+        log.error('该文件不存在且重新创建失败！')
         process.exit(1)
       }
     });
   } else {
     fs.readFile("./market.json",(err,data) => {
       if (err) {
-        return console.log(ERROR + "market文件读取错误！")
+        return log.error("market文件读取错误！")
       }
       commodities = JSON.parse(data.toString())
     })
-    console.log(INFO + "market.json已成功读取！")
+    log.info("market.json已成功读取！")
   }
 })
 
@@ -155,7 +215,7 @@ server.on("request", (req, res) => {
     case "/Check":
       if (!ServerStarted) {
         ServerStarted = true;
-        console.log(INFO + "已经与MC服务器成功连接！")
+        log.info("已经与MC服务器成功连接！")
       }
       res.statusCode = 200;
       res.setHeader('Content-Type', 'text/plain;charset=utf-8');
@@ -166,7 +226,7 @@ server.on("request", (req, res) => {
     case '/MarketInitialize':
       fs.readFile("./market.json",(err,data) => {
         if (err) {
-          return console.log(ERROR + "market文件读取错误！")
+          return log.error("market文件读取错误！")
         }
         commodities = JSON.parse(data.toString())
         //开始读取文件
@@ -175,11 +235,12 @@ server.on("request", (req, res) => {
         res.setHeader('Content-Type', 'text/plain;charset=utf-8');
         res.end(JSON.stringify(commodities));
         group.sendMsg("交易市场数据获得成功")
-        console.log(INFO + "market.json已成功读取！")
+        log.info("market.json已成功读取！")
       })
       break;
     //监听服务器开服
     case '/ServerStarted':
+      log.info("已经与MC服务器成功连接！")
       res.statusCode = 200;
       ServerStarted = true;
       res.setHeader('Content-Type', 'text/plain;charset=utf-8');
@@ -320,30 +381,9 @@ server.on("request", (req, res) => {
 
 //监听服务器开启成功提醒
 server.listen(port,'127.0.0.1', () => {
-  console.info(INFO + "NIA服务器监听服务器已经成功在 http://127.0.0.1:" + port + " 启动！");
+  log.info("NIA服务器监听服务器已经成功在 http://127.0.0.1:" + port + " 启动！");
 });
 
-//监听群聊消息
-client.on('message.group', (e) => {
-  //等适配
-    if (e.group_id == config.QQGroup && e.sender.user_id != 3467371607) {
-        if (e.message[0].text.toString().slice(0,1) == "-") {
-            if (PLAYERCMDS.indexOf(e.message[0].text.toString().slice(1)) != -1) {
-                e.group.sendMsg("开发中功能！")
-            } else if (e.sender.role == "owner" || e.sender.role == "admin") {
-                e.group.sendMsg("开发中功能！")
-            } else {
-                e.group.sendMsg("您不是管理员，无法执行相关指令！")
-            }
-        } else {
-            if (e.sender.card == "") {
-              repData.msgboxs.push([e.sender.nickname,e.message[0].text.toString()])
-            } else {
-              repData.msgboxs.push([e.sender.card,e.message[0].text.toString()])
-            }
-        }
-    }
-})
 
 //获得系统cou占用率
 async function getCPUUsage() {
@@ -368,6 +408,6 @@ setInterval(() => {
         }
     }
     if (!ServerStarted && AccountOnline) {
-      console.log(ERROR + "暂未连接到MC服务器！")
+      log.error("暂未连接到MC服务器！")
     }
 }, 10000)

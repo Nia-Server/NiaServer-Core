@@ -20,6 +20,7 @@ system.runInterval(() => {
                 world.sendMessage("§6[群聊]§r <"+ repData.msgboxs[i][0] + "§r> " + repData.msgboxs[i][1])
             }
             //错误信息解析
+            //踢出未认证玩家
         } else {
             Broadcast("§c>> 依赖服务器连接失败，如果你看到此提示请联系腐竹！")
         }
