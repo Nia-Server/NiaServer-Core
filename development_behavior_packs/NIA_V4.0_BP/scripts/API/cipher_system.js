@@ -22,13 +22,14 @@ function __2UTF8(str) {
     return back;
 }
 
-function __adler32(str) {  
-    var P = 65521, a = 1, b = 0;  
+function __adler32(str) {
+    var P = 65521, a = 1, b = 0;
     str = __2UTF8(str);
-    for(var i=0;i < str.length; i++) a = (a+str[i])%P, b = (a+b)%P; 
-    return (b>>>0)*((1<<16)>>>0)+(a>>>0); 
+    for(var i=0;i < str.length; i++) a = (a+str[i])%P, b = (a+b)%P;
+    return (b>>>0)*((1<<16)>>>0)+(a>>>0);
 }
-function adler32(str){
+
+export function adler32(str){
     str = __adler32(str);
     return str.toString(16).padStart(8, "0");
 }

@@ -5,7 +5,7 @@ const os = require('os-utils');
 const port = 3000;
 const { createClient } = require("icqq");
 const { fail } = require('assert');
-const PLAYERCMDS = ["list","申请白名单","查"]
+//const PLAYERCMDS = ["list","申请白名单","查"]
 const serverInfo = {cpuUsage: 0}
 
 //初始化变量
@@ -398,13 +398,14 @@ async function getCPUUsage() {
 //周期运作
 setInterval(() => {
     if (AccountOnline) {
+      //等后续获取自己的qq号
         getCPUUsage()
         if (serverInfo.cpuUsage <= 0.6) {
-            group.setCard(3374574180,"🟢流畅 | CPU占用率：" + (serverInfo.cpuUsage*100).toFixed(2) + "%")
+            group.setCard(3457589560,"🟢流畅 | CPU占用率：" + (serverInfo.cpuUsage*100).toFixed(2) + "%")
         } else if (serverInfo.cpuUsage <= 0.8) {
-            group.setCard(3374574180,"🟡一般 | CPU占用率：" + (serverInfo.cpuUsage*100).toFixed(2) + "%")
+            group.setCard(3457589560,"🟡一般 | CPU占用率：" + (serverInfo.cpuUsage*100).toFixed(2) + "%")
         } else if (serverInfo.cpuUsage >= 0.9) {
-            group.setCard(3374574180,"🔴卡死 | CPU占用率：" + (serverInfo.cpuUsage*100).toFixed(2) + "%")
+            group.setCard(3457589560,"🔴卡死 | CPU占用率：" + (serverInfo.cpuUsage*100).toFixed(2) + "%")
         }
     }
     if (!ServerStarted && AccountOnline) {

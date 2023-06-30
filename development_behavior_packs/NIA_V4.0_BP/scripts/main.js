@@ -137,7 +137,7 @@ const equLevelData = {
 
 //服务器启动监听
 world.afterEvents.worldInitialize.subscribe(() => {
-    console.log("\n\x1b[33m[NIA V4] You are using a preview version, do not use it in a production environment!\n[NIA V4] NIA V4 has been successfully started on the server!\n[NIA V4] version: v1.3.0-pre based on BDS-1.20.10.02(last upgrate:2023/6/24)\n[NIA V4] author:@NIANIANKNIA(https://github.com/NIANIANKNIA)\x1b[0m")
+    console.log("\n\x1b[33m[NIA V4] You are using a preview version, do not use it in a production environment!\n[NIA V4] NIA V4 has been successfully started on the server!\n[NIA V4] version: v1.3.0-pre based on BDS-1.20.10.02(last upgrate:2023/6/28)\n[NIA V4] author:@NIANIANKNIA(https://github.com/NIANIANKNIA)\x1b[0m")
 })
 
 // 玩家死亡后重生的检测

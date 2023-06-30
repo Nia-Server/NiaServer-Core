@@ -67,7 +67,7 @@ const GUI = {
                 .button1("§c退出传送系统")
                 .button2("§a返回传送系统")
             ErrorTpaForm.show(ApplyPlayer).then(result => {
-                if (result.selection == 0) {
+                if (result.selection == 1) {
                     this.TpaMain(ApplyPlayer)
                 }
             })
@@ -78,9 +78,9 @@ const GUI = {
                 .button1("§c不同意")
                 .button2("§a同意")
             ApplyTpa1Form.show(AcceptPlayer).then(result => {
-                if (result.selection == 1) {
+                if (result.selection == 0) {
                     Tell(`§c>> 对方拒绝了您的传送申请！请尝试稍后重试！（请勿短时间内多次发起申请，否则可能被对方加入黑名单！）`,ApplyPlayer.nameTag)
-                } else if (result.selection == 0) {
+                } else if (result.selection == 1) {
                     Tell(`§a>> 对方同意了您的申请，已把您传送过去！`,ApplyPlayer.nameTag)
                     Tell(`§a>> 您已同意对方的传送申请！`,AcceptPlayer.nameTag)
                     RunCmd(`tp "${ApplyPlayer.nameTag}" "${AcceptPlayer.nameTag}"`)
@@ -109,7 +109,7 @@ const GUI = {
                 .button1("§c退出传送系统")
                 .button2("§a返回传送系统")
             ErrorTpaForm.show(ApplyPlayer).then(result => {
-                if (result.selection == 0) {
+                if (result.selection == 1) {
                     this.TpaMain(ApplyPlayer)
                 }
             })
@@ -120,9 +120,9 @@ const GUI = {
                 .button1("§c不同意")
                 .button2("§a同意")
             ApplyTpa2Form.show(AcceptPlayer).then(result => {
-                if (result.selection == 1) {
+                if (result.selection == 0) {
                     Tell(`§c>> 对方拒绝了您的传送申请！请尝试稍后重试！（请勿短时间内多次发起申请，否则可能被对方加入黑名单！）`,ApplyPlayer.nameTag)
-                } else if (result.selection == 0) {
+                } else if (result.selection == 1) {
                     Tell(`§a>> 对方同意了您的申请，已把对方传送过来！`,ApplyPlayer.nameTag)
                     Tell(`§a>> 您已同意对方的传送申请，已把您传送至对方所在位置`,AcceptPlayer.nameTag)
                     RunCmd(`tp "${AcceptPlayer.nameTag}" "${ApplyPlayer.nameTag}"`)

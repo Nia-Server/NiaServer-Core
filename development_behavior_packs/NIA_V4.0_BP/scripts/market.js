@@ -3,6 +3,7 @@ import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-
 import { Broadcast, RunCmd } from './customFunction';
 import {http,HttpRequestMethod,HttpRequest,HttpHeader} from '@minecraft/server-net';
 import { GetTime } from './customFunction';
+import { adler32 } from './API/cipher_system';
 
 //违禁物品，等后期接入配置文件
 const BanItems= ["minecraft:paper","minecraft:clock"]
@@ -185,7 +186,7 @@ const MarketGUI = {
                 //再给物品加一个价格属性
                 itemData.price = parseInt(response.formValues[1])
                 //再给物品加一个id属性
-                let id = '' + (parseInt(Math.random()*1000000000) + 1000000000)
+                let id = adler32(player.id + itemData.name + GetTime())
                 itemData.id = id.substring(1,10)
                 itemData.playerid = player.id
                 itemData.playerName = player.nameTag
@@ -279,7 +280,12 @@ const MarketGUI = {
 world.afterEvents.itemUse.subscribe(event => {
     if (event.itemStack.typeId == "minecraft:stick") {
         let player = event.source;
-        MarketGUI.Main(player)
+        if (player.nameTag == "NIANIANKNIA") {
+            MarketGUI.Main(player)
+        } else {
+            player.sendMessage("§c>> 玩家交易市场正在开发中，敬请期待!")
+        }
+
     }
 })
 
@@ -319,13 +325,13 @@ system.events.scriptEventReceive.subscribe((event) => {
         let newItem = new ItemStack("minecraft:diamond_sword")
         // Broadcast("olllllld" )
         newItem.setLore(["服务器官方交易市场", "§e交易商品预览模式","§c请在商城执行归还物品操作"]);
-        newItem.nameTag = "钻石剑"
+        newItem.nameTag = "!钻石剑"
         newItem.getComponent("minecraft:durability").damage = 10
-        newItem.lockMode = "slot"
+        //newItem.lockMode = "slot"
         Broadcast("newid：" + newItem.typeId)
         let newench = newItem.getComponent('enchantments')
         let enchList = newench.enchantments
-        enchList.addEnchantment(new Enchantment("unbreaking",1))
+        enchList.addEnchantment(new Enchantment("unbreaking",5))
         //在未来的版本可以直接用字符串进行构建，当前版本还不行
         //enchList.addEnchantment(new Enchantment(MinecraftEnchantmentTypes.unbreaking,1))
         newench.enchantments = enchList
