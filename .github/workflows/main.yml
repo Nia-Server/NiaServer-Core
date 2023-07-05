@@ -1,12 +1,34 @@
-name: Zip and Release
+name: Build and Pre-Release
+
 on:
   push:
     tags:
-       - 'v*.*.*'
+      - 'v*.*.*'
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     if: ${{ !contains(github.ref, 'pre') }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+      - name: Install CMake and Ninja
+        uses: lukka/get-cmake@latest
+      - name: Configure the project
+        uses: threeal/cmake-action@v1.2.0
+        with:
+          run-build: true
+          source-dir: NIAHttpBOT
+          build-dir: NIAHttpBOT
+      - name: Upload the exe file
+        uses: actions/upload-artifact@v2
+        with:
+          name: NIAHttpBOT.exe
+          path: ./NIAhttpBOT/Debug/NIAHttpBOT.exe
+
+  zip:
+    needs: build
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Archive Release1
@@ -16,6 +38,11 @@ jobs:
           directory: 'development_behavior_packs/NIA_V4.0_BP'
           path: '.'
           filename: NIAV4BP-${{ github.ref_name }}.zip
+      - name: Upload the zip file1
+        uses: actions/upload-artifact@v2
+        with:
+          name: NIAV4BP-${{ github.ref_name }}.zip
+          path: ./development_behavior_packs/NIA_V4.0_BP/NIAV4BP-${{ github.ref_name }}.zip
       - name: Archive Release2
         uses: thedoctor0/zip-release@0.7.1
         with:
@@ -23,17 +50,34 @@ jobs:
           directory: 'development_resource_packs/NIA_V4.0_RP'
           path: '.'
           filename: NIAV4RP-${{ github.ref_name }}.zip
-      - name: Archive Release3
-        uses: thedoctor0/zip-release@0.7.1
+      - name: Upload the zip file2
+        uses: actions/upload-artifact@v2
         with:
-          type: 'zip'
-          directory: '.'
-          path: 'NIA-Server-BOT'
-          filename: NIA-Server-BOT-${{ github.ref_name }}.zip
-      - name: Upload Release
-        uses: ncipollo/release-action@v1.12.0
+          name: NIAV4RP-${{ github.ref_name }}.zip
+          path: ./development_resource_packs/NIA_V4.0_RP/NIAV4RP-${{ github.ref_name }}.zip
+
+  release:
+    needs: zip
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+      - name: Download the exe file
+        uses: actions/download-artifact@v2
         with:
-          artifacts: "development_behavior_packs/NIA_V4.0_BP/NIAV4BP-${{ github.ref_name }}.zip,development_resource_packs/NIA_V4.0_RP/NIAV4RP-${{ github.ref_name }}.zip,NIA-Server-BOT-${{ github.ref_name }}.zip,world_behavior_packs.json,world_resource_packs.json"
+          name: NIAHttpBOT.exe
+      - name: Download the behavior_pack
+        uses: actions/download-artifact@v2
+        with:
+          name: NIAV4BP-${{ github.ref_name }}.zip
+      - name: Download the resource_pack
+        uses: actions/download-artifact@v2
+        with:
+          name: NIAV4RP-${{ github.ref_name }}.zip
+      - name: Create and upload release # 步骤：创建和上传release
+        uses: ncipollo/release-action@v1.12.0 # 使用ncipollo/release-action@v1.12.0
+        with:
+          artifacts: "NIAV4BP-${{ github.ref_name }}.zip,NIAV4RP-${{ github.ref_name }}.zip,NIAHttpBOT.exe,world_behavior_packs.json,world_resource_packs.json" # 指定要上传的exe文件的路径
           bodyFile: "CHANGELOG.md"
           generateReleaseNotes: false
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }} # 指定GitHub令牌环境变量

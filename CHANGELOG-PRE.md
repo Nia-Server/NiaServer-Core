@@ -1,4 +1,4 @@
-# v1.3.0-pre-4 更新日志
+# v1.3.0-pre-5 更新日志
 
 [![BDS VERSION](https://img.shields.io/badge/BDS-1.20.10.02-green?style=for-the-badge&logo=appveyor)](https://www.minecraft.net/en-us/download/server/bedrock)
 [![LiteLoader VERSION](https://img.shields.io/badge/LiteLoader-2.14.1-green?style=for-the-badge&logo=appveyor)](https://github.com/LiteLDev/LiteLoaderBDS/releases/)
@@ -9,31 +9,17 @@
 
 ## 新增
 
-玩家交易市场（制作中，由于部分api需求，预计将后续发布）
-
-已完成模块：
-
-- 玩家上线市场逻辑（服务器本地）
-- 玩家上架物品qq机器人群聊提醒
-- 玩家上线物品依赖服务器存储数据
-- 玩家可以初步查看市场商品
+全新的NIAHttpBOT！基于c++编写，相比旧方案内存占用更小，性能更好！（特别感谢[**@jiansyuan**](https://github.com/jiansyuan)在编写中给予的帮助！）
 
 ## 优化
 
-1.qq机器人升级至icqq@0.4.7
+1.由于qq机器人暂时不稳定，在找到稳定的解决方案前暂时停止qq机器人的使用
 
-2.飞行系统授权码算法优化 [**@jiansyuan**](https://github.com/jiansyuan)
-
-3.优化商城id生成逻辑
+2.自本版本之后，**停止对NIA-Server-BOT的更新与维护**，转而使用全新的**NIAHttpBOT**实现对原有功能的替代。
 
 ## 修复
 
-1.传送系统无法正常同意的bug
-
-2.转账系统无法正常使用的bug
-
-3.飞行系统无法正常验证的bug
-
+回收商店系统部分商品无法回收的bug
 
 **配置说明：您可以前往[NIA服务器官方文档站](https://docs.mcnia.top/zh-CN/deploy.html)查看具体部署过程！**
 

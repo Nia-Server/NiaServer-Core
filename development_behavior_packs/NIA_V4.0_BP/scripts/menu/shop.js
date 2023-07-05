@@ -50,6 +50,14 @@ var SellData = [
                 "discount": 1,
                 "data": 0,
                 "image": "textures/items/bucket_powder_snow"
+            },
+            {
+                "name": "经验瓶",
+                "type": "minecraft:experience_bottle",
+                "price": 400,
+                "discount": 1,
+                "data": 0,
+                "image": "textures/items/experience_bottle"
             }
         ]
     },
@@ -160,6 +168,14 @@ var SellData = [
                 "discount": 1,
                 "data": 0,
                 "image": "textures/blocks/mangrove_propagule"
+            },
+            {
+                "name": "樱花树苗",
+                "type": "minecraft:cherry_sapling",
+                "price": 150,
+                "discount": 1,
+                "data": 0,
+                "image": "textures/blocks/cherry_sapling"
             }
         ]
     },
@@ -731,20 +747,65 @@ var RecycleData = [
         "image": "textures/ui/mashup_world",
         "content": [
             {
-                "name": "橡木/云杉木/白桦木/丛林木",
-                "type": "minecraft:log",
+                "name": "橡木",
+                "type": "minecraft:oak_log",
                 "price": 40,
-                "data": -1,
+                "data": 0,
                 "image": "textures/blocks/log_oak",
                 "lim": false,
                 "limnum": 0
             },
             {
-                "name": "金合欢原木/深色橡木原木",
-                "type": "minecraft:log2",
+                "name": "云杉木",
+                "type": "minecraft:spruce_log",
+                "price": 40,
+                "data": 0,
+                "image": "textures/blocks/log_spruce",
+                "lim": false,
+                "limnum": 0
+            },
+            {
+                "name": "白桦木",
+                "type": "minecraft:birch_log",
+                "price": 40,
+                "data": 0,
+                "image": "textures/blocks/log_birch",
+                "lim": false,
+                "limnum": 0
+            },
+            {
+                "name": "丛林木",
+                "type": "minecraft:jungle_log",
+                "price": 40,
+                "data": 0,
+                "image": "textures/blocks/log_jungle",
+                "lim": false,
+                "limnum": 0
+            },
+            {
+                "name": "金合欢原木",
+                "type": "minecraft:acacia_log",
+                "price": 40,
+                "data": 0,
+                "image": "textures/blocks/log_acacia",
+                "lim": false,
+                "limnum": 0
+            },
+            {
+                "name": "深色橡木原木",
+                "type": "minecraft:dark_oak_log",
                 "price": 40,
                 "data": -1,
-                "image": "textures/blocks/log_acacia",
+                "image": "textures/blocks/log_big_oak",
+                "lim": false,
+                "limnum": 0
+            },
+            {
+                "name": "樱花原木",
+                "type": "minecraft:cherry_log",
+                "price": 40,
+                "data": -1,
+                "image": "textures/blocks/cherry_log_side",
                 "lim": false,
                 "limnum": 0
             }
@@ -1127,18 +1188,9 @@ const GUI = {
         //回收物品这里有四种情况-没有相关物品-回收数量达到限额-有相关物品但有数量限制-有相关物品但没有数量限制
         //首先判断有没有相关物品
         let ItemNum = 0;
-        //判断回收项目是否不限特殊值
-        if (RecycleData[index1].content[index2].data == -1) {
-            for (let i = 0; i < 35; i++) {
-                if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).typeId == RecycleData[index1].content[index2].type) {
-                    ItemNum = ItemNum + player.getComponent("minecraft:inventory").container.getItem(i).amount
-                }
-            }
-        } else {
-            for (let i = 0; i < 35; i++) {
-                if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).typeId == RecycleData[index1].content[index2].type && player.getComponent("minecraft:inventory").container.getItem(i).data == RecycleData[index1].content[index2].data) {
-                    ItemNum = ItemNum + player.getComponent("minecraft:inventory").container.getItem(i).amount
-                }
+        for (let i = 0; i < 35; i++) {
+            if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).typeId == RecycleData[index1].content[index2].type) {
+                ItemNum = ItemNum + player.getComponent("minecraft:inventory").container.getItem(i).amount
             }
         }
         //有物品之后再次判断是否限制数量

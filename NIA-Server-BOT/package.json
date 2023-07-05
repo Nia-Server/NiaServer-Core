@@ -4,7 +4,8 @@
   "description": "用于NIA服务器net通信",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "node test.js"
   },
   "author": "NIANIANKNIA",
   "license": "ISC",

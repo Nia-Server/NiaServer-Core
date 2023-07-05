@@ -214,7 +214,7 @@ world.afterEvents.chatSend.subscribe(t => {
     if (t.message.slice(0,1) == "*") {
         //取消有自定义指令前缀的消息输出
         t.cancel = true;
-        if (t.sender.isOp())
+        if (t.sender.hasTag("op"))
             Tell(`§c>> 密码为§a${adler32(toString(t.message.slice(1)))}`,t.sender.nameTag);
             //Tell(`§c>> 密码为§a${((parseInt(t.message.slice(1)) * 12345) + 65432) / 9876 + 100000}`,t.sender.nameTag);
     }

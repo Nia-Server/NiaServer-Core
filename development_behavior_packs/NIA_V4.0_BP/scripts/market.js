@@ -7,23 +7,60 @@ import { adler32 } from './API/cipher_system';
 
 //违禁物品，等后期接入配置文件
 const BanItems= ["minecraft:paper","minecraft:clock"]
+const port = 10086
 var MarketData = [-1]
 
 
 //服务器启动监听&&获得玩家市场数据
 world.afterEvents.worldInitialize.subscribe(() => {
-    const reqMarketInitialize = new HttpRequest("http://127.0.0.1:3000/MarketInitialize");
-    reqMarketInitialize.body = JSON.stringify({});
-    reqMarketInitialize.method = HttpRequestMethod.POST;
-    reqMarketInitialize.headers = [
-        new HttpHeader("Content-Type", "application/json"),
+    //首先检查文件是否存在
+    const reqCheckMarket = new HttpRequest(`http://127.0.0.1:${port}/CheckFile`);
+    reqCheckMarket.body = "market.json"
+    reqCheckMarket.method = HttpRequestMethod.POST;
+    reqCheckMarket.headers = [
+        new HttpHeader("Content-Type", "text/plain"),
     ];
-    http.request(reqMarketInitialize).then((response) => {
-        if (response.status == 200) {
-            MarketData = JSON.parse(response.body)
-            console.log("\x1b[33m[NIA V4] Successfully obtained player market data!\x1b[0m")
+    http.request(reqCheckMarket).then((response) => {
+        if (response.status == 200 && response.body == "true") {
+            //文件存在开始读取数据
+            const reqGetMarketData = new HttpRequest(`http://127.0.0.1:${port}/GetJsonFileData`);
+            reqGetMarketData.body = "market.json"
+            reqGetMarketData.method = HttpRequestMethod.POST;
+            reqGetMarketData.headers = [
+                new HttpHeader("Content-Type", "text/plain"),
+            ];
+            http.request(reqGetMarketData).then((response) => {
+                if (response.status == 200 && response.body != "The market.json file does not exist") {
+                    //读取成功
+                    MarketData = JSON.parse(response.body)
+                    console.log("Get file(market.json) data successfully!")
+                } else if (response.status == 200 && response.body == "The target file does not exist") {
+                    console.error("The market.json file does not exist")
+                } else {
+                    console.error("Dependent server connection failed! Check whether the dependent server started successfully.")
+                }
+            })
+        } else if (response.status == 200 && response.body == "false") {
+            //文件不存在开始生成文件并初始化
+            const reqCreateMarketFile = new HttpRequest(`http://127.0.0.1:${port}/CreateNewJsonFile`);
+            reqCreateMarketFile.body = JSON.stringify({"fileName":"market.json","fileContent":[]})
+            reqCreateMarketFile.method = HttpRequestMethod.POST;
+            reqCreateMarketFile.headers = [
+                new HttpHeader("Content-Type", "text/plain"),
+            ];
+            http.request(reqCreateMarketFile).then((response) => {
+                if (response.status == 200 && response.body == "success") {
+                    //初始化成功
+                    MarketData = [];
+                    console.log("File(market.json) created successfully!")
+                } else if (response.status == 200 && response.body != "success") {
+                    console.error(response.body)
+                } else {
+                    console.error("Dependent server connection failed! Check whether the dependent server started successfully.")
+                }
+            })
         } else {
-            console.error("[NIA V4] Failed to get player market data, please use /scriptevent nia:market reload to reload the data.")
+            console.error("Dependent server connection failed! Check whether the dependent server started successfully.")
         }
     })
 })
@@ -192,41 +229,47 @@ const MarketGUI = {
                 itemData.playerName = player.nameTag
                 itemData.addedTime = GetTime()
                 if (itemData.amount == response.formValues[0]) {
-                    //开始连接依赖服务器
-                    const reqShelf = new HttpRequest("http://127.0.0.1:3000/Shelf");
-                    reqShelf.body = JSON.stringify(itemData);
-                    reqShelf.method = HttpRequestMethod.POST;
-                    reqShelf.headers = [
-                        new HttpHeader("Content-Type", "application/json"),
+                    //首先更新缓存中MarketData的值，然后直接覆写market.json
+                    let temp_MarketData = MarketData;
+                    temp_MarketData.push(itemData)
+                    const reqOverwriteMarket = new HttpRequest(`http://127.0.0.1:${port}/OverwriteJsonFile`);
+                    reqOverwriteMarket.body = JSON.stringify({"fileName":"market.json","fileData":temp_MarketData})
+                    reqOverwriteMarket.method = HttpRequestMethod.POST;
+                    reqOverwriteMarket.headers = [
+                        new HttpHeader("Content-Type", "text/plain"),
                     ];
-                    http.request(reqShelf).then((response) => {
-                        //player.sendMessage("code" + response.status)
-                        if (response.status == 200) {
-                            //把上架数据写入内存
-                            MarketData.push(itemData)
+                    http.request(reqOverwriteMarket).then((response) => {
+                        if (response.status == 200 && response.body == "success") {
+                            //覆写成功
+                            MarketData = temp_MarketData;
                             let receipt = new ItemStack("minecraft:paper")
                             receipt.nameTag = "§c§l上架凭证"
                             receipt.setLore(["服务器官方交易市场", "§e上架商品凭证","上架商品名称:§b" + itemData.name, "上架人:§b" + player.nameTag,"流水号:§b" + id.substring(1,10),"§7要想查看上架商品更详细信息","§7请将凭证拿在手中后聊天栏发送+info即可"]);
                             player.getComponent("minecraft:inventory").container.setItem(itemData.slot,receipt)
                             this.Success(player,`\n[商品上架成功]\n商品名称: ${itemData.name} (${itemData.typeid}) \n商品简介: ${itemData.description} \n商品单价: ${itemData.price}\n商品剩余库存: ${itemData.amount}\n商品流水号: ${itemData.id}`)
+                        } else if (response.status == 200 && response.body != "success") {
+                            console.error(response.body)
+                            this.Error(player,response.body,"105","ShelfForm")
                         } else {
+                            console.error("Dependent server connection failed! Check whether the dependent server started successfully.")
                             this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ShelfForm")
                         }
                     })
+
                 } else {
-                    //开始连接依赖服务器
-                    const reqShelf = new HttpRequest("http://127.0.0.1:3000/Shelf");
-                    itemData.amount = itemData.amount -  response.formValues[0]
-                    reqShelf.body = JSON.stringify(itemData);
-                    reqShelf.method = HttpRequestMethod.POST;
-                    reqShelf.headers = [
-                        new HttpHeader("Content-Type", "application/json"),
+                    //首先更新缓存中MarketData的值，然后直接覆写market.json
+                    let temp_MarketData = MarketData;
+                    temp_MarketData.push(itemData)
+                    const reqOverwriteMarket = new HttpRequest(`http://127.0.0.1:${port}/OverwriteJsonFile`);
+                    reqOverwriteMarket.body = JSON.stringify({"fileName":"market.json","fileData":temp_MarketData})
+                    reqOverwriteMarket.method = HttpRequestMethod.POST;
+                    reqOverwriteMarket.headers = [
+                        new HttpHeader("Content-Type", "text/plain"),
                     ];
-                    http.request(reqShelf).then((rep) => {
-                        //player.sendMessage("code" + response.status)
-                        if (rep.status == 200) {
-                            //把上架数据写入内存
-                            MarketData.push(itemData)
+                    http.request(reqOverwriteMarket).then((response) => {
+                        if (response.status == 200 && response.body == "success") {
+                            //覆写成功
+                            MarketData = temp_MarketData;
                             let newItem = player.getComponent("minecraft:inventory").container.getItem(itemData.slot)
                             newItem.amount = newItem.amount - response.formValues[0]
                             itemData.amount = response.formValues[0]
@@ -236,7 +279,11 @@ const MarketGUI = {
                             receipt.setLore(["服务器官方交易市场", "§e上架商品凭证","上架商品名称:§b" + itemData.name, "上架人:§b" + player.nameTag,"流水号:§b" + id.substring(1,10),"§7要想查看上架商品更详细信息","§7请将凭证拿在手中后聊天栏发送+info即可"]);
                             player.getComponent("minecraft:inventory").container.addItem(receipt)
                             this.Success(player,`\n[商品上架成功]\n商品名称: ${itemData.name} (${itemData.typeid}) \n商品简介: ${itemData.description} \n商品单价: ${itemData.price}\n商品剩余库存: ${itemData.amount}\n商品流水号: ${itemData.id}`)
+                        } else if (response.status == 200 && response.body != "success") {
+                            console.error(response.body)
+                            this.Error(player,response.body,"105","ShelfForm")
                         } else {
+                            console.error("Dependent server connection failed! Check whether the dependent server started successfully.")
                             this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ShelfForm")
                         }
                     })
@@ -322,28 +369,28 @@ system.events.scriptEventReceive.subscribe((event) => {
         // let text = JSON.stringify(object, null, 2)
         // Broadcast("enchantments：" + text)
         // Broadcast("neeeew" )
-        let newItem = new ItemStack("minecraft:diamond_sword")
+        let newItem = new ItemStack("minecraft:wooden_sword")
         // Broadcast("olllllld" )
         newItem.setLore(["服务器官方交易市场", "§e交易商品预览模式","§c请在商城执行归还物品操作"]);
-        newItem.nameTag = "!钻石剑"
+        newItem.nameTag = "木剑"
         newItem.getComponent("minecraft:durability").damage = 10
         //newItem.lockMode = "slot"
-        Broadcast("newid：" + newItem.typeId)
         let newench = newItem.getComponent('enchantments')
         let enchList = newench.enchantments
-        enchList.addEnchantment(new Enchantment("unbreaking",5))
+        enchList.addEnchantment(new Enchantment("unbreaking",32767))
         //在未来的版本可以直接用字符串进行构建，当前版本还不行
         //enchList.addEnchantment(new Enchantment(MinecraftEnchantmentTypes.unbreaking,1))
         newench.enchantments = enchList
         //newench.addEnchantment()
         // newItem.getComponent('enchantments').addEnchantment(newench)
         event.sourceEntity.getComponent("minecraft:inventory").container.addItem(newItem)
+        Broadcast("newid：" + newItem.typeId)
     }
-    for (let i = 0; i < 35; i++) {
-        if (event.sourceEntity.getComponent("minecraft:inventory").container.getItem(i) != undefined) {
-            Broadcast(event.sourceEntity.getComponent("minecraft:inventory").container.getItem(i).typeId)
-        }
-    }
+    // for (let i = 0; i < 35; i++) {
+    //     if (event.sourceEntity.getComponent("minecraft:inventory").container.getItem(i) != undefined) {
+    //         Broadcast(event.sourceEntity.getComponent("minecraft:inventory").container.getItem(i).typeId)
+    //     }
+    // }
 });
 
 
