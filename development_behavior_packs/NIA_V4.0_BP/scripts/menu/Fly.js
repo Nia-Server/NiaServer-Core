@@ -3,6 +3,9 @@ import { RunCmd,GetScore} from '../customFunction.js'
 import { world } from '@minecraft/server'
 import { Main } from './main'
 
+import { adler32 } from '../API/cipher_system.js'
+
+
 export function FlyGUI(player) {
     if (player.hasTag("CanFly")) {
         const FlyForm = new ActionFormData()
@@ -73,18 +76,10 @@ export function FlyGUI(player) {
             .textField("请输入飞行系统激活码","请不要尝试破解（")
             .show(player).then(result => {
                 let password = result.formValues[0];
-                if (!isNaN(parseInt(Number(result.formValues[0])))) {
-                    if (password == parseInt(((UUID * 12345) + 65432) / 9876 + 100000)) {
-                        player.sendMessage(`§a>> 验证码正确！您已获得相关权限！`);
-                        RunCmd(`tag "${player.nameTag}" add CanFly`)
-                    } else {
-                        player.sendMessage(`§c>> 您输入的激活码不正确，请再次重试！如果您还未获得激活码，请将您的UUID§a${UUID}§c发给腐竹获取飞行系统激活码！`);
-                        FlyGUI(player)
-                    }
-                } else {
-                    player.sendMessage(`§c>> 您输入的激活码不正确，请再次重试！如果您还未获得激活码，请将您的UUID§a${UUID}§c发给腐竹获取飞行系统激活码！`);
-                    FlyGUI(player)
-                }
+                if(password != adler32(toString(UUID)))
+                    player.sendMessage(`§c>> 您输入的激活码不正确，请再次重试！如果您还未获得激活码，请将您的UUID§a${UUID}§c发给腐竹获取飞行系统激活码！`),
+                    FlyGUI(player);
+                else player.sendMessage(`§a>> 验证码正确！您已获得相关权限！`), RunCmd(`tag "${player.nameTag}" add CanFly`);
             })
         } else {
             const FlyForm = new ActionFormData()

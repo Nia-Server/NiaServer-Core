@@ -50,6 +50,14 @@ var SellData = [
                 "discount": 1,
                 "data": 0,
                 "image": "textures/items/bucket_powder_snow"
+            },
+            {
+                "name": "经验瓶",
+                "type": "minecraft:experience_bottle",
+                "price": 400,
+                "discount": 1,
+                "data": 0,
+                "image": "textures/items/experience_bottle"
             }
         ]
     },
@@ -160,6 +168,14 @@ var SellData = [
                 "discount": 1,
                 "data": 0,
                 "image": "textures/blocks/mangrove_propagule"
+            },
+            {
+                "name": "樱花树苗",
+                "type": "minecraft:cherry_sapling",
+                "price": 150,
+                "discount": 1,
+                "data": 0,
+                "image": "textures/blocks/cherry_sapling"
             }
         ]
     },
@@ -731,20 +747,65 @@ var RecycleData = [
         "image": "textures/ui/mashup_world",
         "content": [
             {
-                "name": "橡木/云杉木/白桦木/丛林木",
-                "type": "minecraft:log",
+                "name": "橡木",
+                "type": "minecraft:oak_log",
                 "price": 40,
-                "data": -1,
+                "data": 0,
                 "image": "textures/blocks/log_oak",
                 "lim": false,
                 "limnum": 0
             },
             {
-                "name": "金合欢原木/深色橡木原木",
-                "type": "minecraft:log2",
+                "name": "云杉木",
+                "type": "minecraft:spruce_log",
+                "price": 40,
+                "data": 0,
+                "image": "textures/blocks/log_spruce",
+                "lim": false,
+                "limnum": 0
+            },
+            {
+                "name": "白桦木",
+                "type": "minecraft:birch_log",
+                "price": 40,
+                "data": 0,
+                "image": "textures/blocks/log_birch",
+                "lim": false,
+                "limnum": 0
+            },
+            {
+                "name": "丛林木",
+                "type": "minecraft:jungle_log",
+                "price": 40,
+                "data": 0,
+                "image": "textures/blocks/log_jungle",
+                "lim": false,
+                "limnum": 0
+            },
+            {
+                "name": "金合欢原木",
+                "type": "minecraft:acacia_log",
+                "price": 40,
+                "data": 0,
+                "image": "textures/blocks/log_acacia",
+                "lim": false,
+                "limnum": 0
+            },
+            {
+                "name": "深色橡木原木",
+                "type": "minecraft:dark_oak_log",
                 "price": 40,
                 "data": -1,
-                "image": "textures/blocks/log_acacia",
+                "image": "textures/blocks/log_big_oak",
+                "lim": false,
+                "limnum": 0
+            },
+            {
+                "name": "樱花原木",
+                "type": "minecraft:cherry_log",
+                "price": 40,
+                "data": -1,
+                "image": "textures/blocks/cherry_log_side",
                 "lim": false,
                 "limnum": 0
             }
@@ -1045,11 +1106,11 @@ const GUI = {
                 this.ShopPurchaseSub(player,index1)
             }
             if (parseInt(result.formValues[0]) <= 0 || isNaN(parseInt(Number(result.formValues[0])))) {
-                player.tell(`§c>> 错误的数字格式，请重新输入！`)
+                player.sendMessage(`§c>> 错误的数字格式，请重新输入！`)
                 // Tell(`§c>> 错误的数字格式，请重新输入！`,player.nameTag)
                 this.ShopBuy(player,index1,index2)
             } else if (parseInt(result.formValues[0]) >= 1025) {
-                player.tell(`§c>> 单次购买物品的数量上限是1024，请重新输入！`)
+                player.sendMessage(`§c>> 单次购买物品的数量上限是1024，请重新输入！`)
                 Tell(`§c>> 单次购买物品的数量上限是1024，请重新输入！`,player.nameTag)
                 this.ShopBuy(player,index1,index2)
             } else {
@@ -1066,20 +1127,17 @@ const GUI = {
             .button2("§a§l确定")
         ShopBuySubForm.show(player).then((result) => {
             switch(result.selection) {
-                case 0:
+                case 1:
                     if (GetScore("money",player.nameTag) >= parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num) {
                         RunCmd(`give "${player.nameTag}" ${SellData[i].content[j].type} ${num} ${SellData[i].content[j].data}`)
                         RunCmd(`scoreboard players add @a[name="${player.nameTag}"] money -${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num}`)
                         Tell("§a>> 购买成功！§e您以 §l" + parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num + "§r§e 能源币，成功购买 §l" + num + " §r§e个" + SellData[i].content[j].name + "!期待您的下次光临！",player.nameTag)
-                        this.ShopPurchaseSub(player,i)
                     } else {
                         Tell(`§c>> 购买失败！余额不足，您的余额为 ${GetScore("money",player.nameTag)} 能源币，而本次购买需要 ${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num} 能源币，您还缺少 ${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num - GetScore("money",player.nameTag)} 能源币，请在攒够足够能源币后尝试再次购买！`,player.nameTag)
-                        this.ShopPurchaseSub(player,i)
                     }
                     break;
-                case 1:
+                case 0:
                     Tell("§c>> 购买失败！原因是您自己取消了本次购买！",player.nameTag)
-                    this.ShopPurchaseSub(player,i)
                     break;
             }
         })
@@ -1130,18 +1188,9 @@ const GUI = {
         //回收物品这里有四种情况-没有相关物品-回收数量达到限额-有相关物品但有数量限制-有相关物品但没有数量限制
         //首先判断有没有相关物品
         let ItemNum = 0;
-        //判断回收项目是否不限特殊值
-        if (RecycleData[index1].content[index2].data == -1) {
-            for (let i = 0; i < 35; i++) {
-                if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).typeId == RecycleData[index1].content[index2].type) {
-                    ItemNum = ItemNum + player.getComponent("minecraft:inventory").container.getItem(i).amount
-                }
-            }
-        } else {
-            for (let i = 0; i < 35; i++) {
-                if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).typeId == RecycleData[index1].content[index2].type && player.getComponent("minecraft:inventory").container.getItem(i).data == RecycleData[index1].content[index2].data) {
-                    ItemNum = ItemNum + player.getComponent("minecraft:inventory").container.getItem(i).amount
-                }
+        for (let i = 0; i < 35; i++) {
+            if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).typeId == RecycleData[index1].content[index2].type) {
+                ItemNum = ItemNum + player.getComponent("minecraft:inventory").container.getItem(i).amount
             }
         }
         //有物品之后再次判断是否限制数量
@@ -1204,10 +1253,10 @@ const GUI = {
                     .button2("§a返回上一级菜单")
                     ShopSellLimForm.show(player).then(result => {
                         switch (result.selection) {
-                            case 0:
+                            case 1:
                                 this.ShopRecycleSub(player,index1);
                                 break;
-                            case 1:
+                            case 0:
                                 Tell("§c>> 回收失败！原因是该物品已达到本日回收最大数量，请明天再次尝试回收哦！",player.nameTag)
                                 break;
                         }
@@ -1223,10 +1272,10 @@ const GUI = {
                 .button2("§a返回上一级菜单")
                 ShopSellNoItemForm.show(player).then(result => {
                     switch (result.selection) {
-                        case 0:
+                        case 1:
                             this.ShopRecycleSub(player,index1);
                             break;
-                        case 1:
+                        case 0:
                             Tell("§c>> 回收失败！原因是没有在您的背包中找到相应物品！请检查背包后再次尝试！",player.nameTag)
                             break;
                     }
@@ -1244,7 +1293,7 @@ const GUI = {
             .button2("§a§l确定")
             ShopSellSubForm.show(player).then((result) => {
             switch(result.selection) {
-                case 0:
+                case 1:
                     //首先进行判断是否有限制，有限制就直接写入相关数据
                     if (RecycleData[index1].content[index2].lim) {
                         // PlayerRecycleData[player.nameTag][RecycleData[index1].content[index2].type] = PlayerRecycleData[player.nameTag][RecycleData[index1].content[index2].type] + num
@@ -1256,7 +1305,7 @@ const GUI = {
                     RunCmd(`scoreboard players add @a[name="${player.nameTag}"] money ${parseInt(RecycleData[index1].content[index2].price * GetScore("DATA","RN") / 100) * num}`)
                     Tell(`§a>> 回收成功！您成功回收 §l${num}§r§a 个 §l${RecycleData[index1].content[index2].name}§r§a，并获得了 §l${parseInt(RecycleData[index1].content[index2].price * GetScore("DATA","RN") / 100) * num} §r§a能源币！期待您的下次光临！`,player.nameTag)
                     break;
-                case 1:
+                case 0:
                     Tell("§c>> 回收失败！原因是您自己取消了本次回收！",player.nameTag)
                     break;
             }

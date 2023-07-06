@@ -144,7 +144,7 @@ function SpawnIsland(playerName,posX,cY,posZ,structureName,dX,dY,dZ) {
                 for (let z = minZ; z <= maxZ; z++) {
                     block = world.getDimension("overworld").getBlock({x:x, y:y, z:z})
 
-                    if (block.typeId != "minecraft:air") {
+                    if (block.typeid != "minecraft:air") {
                         AllAir = false
                         break;
                     }

@@ -102,7 +102,7 @@ const guiAPI = {
             for(let i in Dates) {
                 if (num == id) {
                     for(let m = 0 ; m < Dates[i].length ; m++) {
-                        item = mc.newItem(NBT.parseSNBT(Dates[i][m]));
+                        let item = mc.newItem(NBT.parseSNBT(Dates[i][m]));
                         ChooseMenu.addButton("§c" + item.name + " §ecount: §c" + item.count);
                     }
                 }
@@ -116,10 +116,10 @@ const guiAPI = {
                     for(let i in Dates) {
                         if (num == id) {
                             for(let m = 0 ; m < Dates[i].length ; m++) {
-                                item = mc.newItem(NBT.parseSNBT(Dates[i][date - 1]));
+                                let item = mc.newItem(NBT.parseSNBT(Dates[i][date - 1]));
+                                player.giveItem(item);
+                                player.tell(`§e>> 物品 ${item.name} 已经恢复至您的背包！`);
                             }
-                            player.giveItem(item);
-                            player.tell(`§e>> 物品 ${item.name} 已经恢复至您的背包！`);
                         }
                         num++;
                     }

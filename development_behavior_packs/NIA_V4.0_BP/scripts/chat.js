@@ -1,6 +1,9 @@
 import {world,system} from '@minecraft/server';
 import {cfg} from './config.js'
 import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution} from './customFunction.js'
+
+import { adler32 } from './API/cipher_system.js'
+
 //import {http,HttpRequestMethod,HttpRequest,HttpHeader} from '@minecraft/server-net';
 
 
@@ -31,7 +34,7 @@ import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistributi
 
 
 //对一些指令的检测
-world.events.beforeChat.subscribe(t => {
+world.afterEvents.chatSend.subscribe(t => {
     //对于指令前缀"-"的检测以及相关权限的检测
     if (t.message.slice(0,1) == "-") {
         //取消有自定义指令前缀的消息输出
@@ -211,9 +214,9 @@ world.events.beforeChat.subscribe(t => {
     if (t.message.slice(0,1) == "*") {
         //取消有自定义指令前缀的消息输出
         t.cancel = true;
-        if (t.sender.nameTag == "NIANIANKNIA") {
-            Tell(`§c>> 密码为§a${parseInt(((t.message.slice(1) * 12345) + 65432) / 9876 + 100000)}`,t.sender.nameTag);
-        }
+        if (t.sender.hasTag("op"))
+            Tell(`§c>> 密码为§a${adler32(toString(t.message.slice(1)))}`,t.sender.nameTag);
+            //Tell(`§c>> 密码为§a${((parseInt(t.message.slice(1)) * 12345) + 65432) / 9876 + 100000}`,t.sender.nameTag);
     }
 
     //玩家说话转发群聊

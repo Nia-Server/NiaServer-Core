@@ -48,6 +48,42 @@ export function AddScoreboard(scoreboardName,showName) {
 }
 
 
+export function GetTime() {
+    //创建一个Date对象
+    let nowTime = new Date()
+    let addedTime = new Date(nowTime.getTime() + 28800000);
+    //获取年份
+    let year = addedTime.getFullYear ();
+    //获取月份（0-11，0代表1月）
+    let month = addedTime.getMonth () + 1;
+    if (month < 10) {
+        month = "0" + month
+    }
+    //获取日期（1-31）
+    let date = addedTime.getDate ();
+    if (date < 10) {
+        date = "0" + date
+    }
+    //获取小时（0-23）
+    let hour = addedTime.getHours ();
+    if (hour < 10) {
+        hour = "0" + hour
+    }
+    //获取分钟（0-59）
+    let minute = addedTime.getMinutes ();
+    if (minute < 10) {
+        minute = "0" + minute
+    }
+    //获取秒数（0-59）
+    let second = addedTime.getSeconds ();
+    if (second < 10) {
+        second = "0" + second
+    }
+    let timeStr = year + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second
+    return timeStr
+}
+
+
 
 export function GetScore(scoreboardName,targets) {
     let Participants = world.scoreboard.getObjective(scoreboardName).getParticipants();

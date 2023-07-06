@@ -159,7 +159,7 @@ const GUI = {
             .button2("§a确定")
             OxygenBuySubForm.show(player).then(result => {
                 switch (result.selection) {
-                    case 0:
+                    case 1:
                         //首先判断
                         if (parseInt(num / 10) <= GetScore("money",player.nameTag)) {
                             RunCmd(`scoreboard players add @a[name="${player.nameTag}"] oxygen ${num}`)
@@ -169,7 +169,7 @@ const GUI = {
                             Tell(`§c>> 购买失败！余额不足，您的余额为 ${GetScore("money",player.nameTag)} 能源币，而本次购买需要 ${parseInt(num / 10)} 能源币，您还缺少 ${parseInt(num / 10) - GetScore("money",player.nameTag)} 能源币，请在攒够足够货币后尝试再次购买！`,player.nameTag)
                         }
                         break;
-                    case 1:
+                    case 0:
                         Tell(`§c>> 购买失败！原因是您取消了本次购买！`,player.nameTag)
                         break;
                 }
