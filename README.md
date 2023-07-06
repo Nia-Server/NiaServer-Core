@@ -24,6 +24,14 @@
 
 **最后，希望这个项目&&服务器在大家的共同推进下发展的越来越好，如果本项目确实对您有所帮助，不妨点个star吧！**
 
+## 开发计划
+
+预计将在1.4.0版本上线玩家市场功能
+
+将在1.5.0版本优化插件整体逻辑来适配更多服务器
+
+...
+
 ## Addons功能&&特性
 
 - [x] 钟表菜单
@@ -42,10 +50,13 @@
 
 ## 外部机器人功能&&特性
 
-机器人基于icqq制作，使用前请安装**nodejs**
+（已弃用）旧版机器人基于icqq制作，使用前请安装**nodejs**
+
+新版机器人基于c++制作（特别感谢[**@jiansyuan**](https://github.com/jiansyuan)），使用HTTP实现对文件的一系列操作，具体使用示例，请前往[NIA服务器文档站](https://docs.mcnia.com/zh-CN/develop/Http-Bot.html)查看使用说明！
 
 ## 部分文件夹说明
 
+- `NIAHttpBOT`文件夹 存储了全新的NIAHttpBOT的源码
 - `development_behavior_packs`文件夹 存储了服务器所使用的行为包的相关文件
 - `development_resource_packs`文件夹 存储了服务器所使用的资源包的相关文件
 - `NiaServerPlugin`文件夹 指向了服务器自主开发的dll格式插件开源项目地址[NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin)。
@@ -55,11 +66,11 @@
 
 ## 使用说明
 
-为了更加稳定的运行，推荐您直接前往[release](https://github.com/NIANIANKNIA/NIASERVER-V4/releases/latest)页面下载打包好的资源包、行为包
+为了更加稳定的运行，推荐您直接前往[release](https://github.com/NIANIANKNIA/NIASERVER-V4/releases)页面下载打包好的资源包、行为包
 
 其中`BP`代表行为包，`RP`代表资源包
 
-您可以根据您自己的需求下载相应的zip文件
+您可以根据您自己的需求下载相应的文件
 
 在完成配置之后将行为包以及资源包分别解压至`development_behavior_packs`文件夹、`development_resource_packs`！
 
@@ -91,7 +102,25 @@
 ]
 ```
 
+然后将`config/default/permissions.json`内容改为
+
+```json
+{
+    "allowed_modules": [
+        "@minecraft/server-gametest",
+        "@minecraft/server",
+        "@minecraft/server-ui",
+        "@minecraft/server-admin",
+        "@minecraft/server-editor",
+        "@minecraft/server-net"
+    ]
+}
+
+```
+
 然后修改完配置文件即可使用！
+
+启动服务器时应当先启动NIAHttpBOT，待看到成功启动的字样再启动BDS服务器！
 
 **更加具体的配置教程请前往[NIA服务器文档站](https://docs.mcnia.top/zh-CN/deploy.html)查看！**
 
