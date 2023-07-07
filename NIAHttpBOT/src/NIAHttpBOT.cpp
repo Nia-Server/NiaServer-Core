@@ -5,16 +5,20 @@
 #include <string>
 
 #include <httplib.h>
-#include <rapidjson/document.h> 
-#include <rapidjson/stringbuffer.h> 
-#include <rapidjson/prettywriter.h> 
+#include <rapidjson/document.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/prettywriter.h>
 #include <rapidjson/ostreamwrapper.h>
 #include <rapidjson/istreamwrapper.h>
 
-#define INFO(a) GetTime(), std::cout<<"[INFO] "<<a<<std::endl
-#define WARN(a) GetTime(), std::cout<<"[WARN] "<<a<<std::endl
-#define FAIL(a) GetTime(), std::cout<<"[FAIL] "<<a<<std::endl
+#define INFO(a) GetTime(), std::cout<<"\x1b[32m[INFO]\x1b[0m "<<a<<std::endl
+#define WARN(a) GetTime(), std::cout<<"\x1b[33m[WARN]\x1b[0m "<<a<<std::endl
+#define FAIL(a) GetTime(), std::cout<<"\x1b[31m[FAIL]\x1b[0m "<<a<<std::endl
 #define LOG(sym,str) GetTime(), std::cout<<#sym" "<<str<<std::endl
+
+const std::string IPAddress = "127.0.0.1";
+const int PORT = 10086;
+
 
 void GetTime() {
 	time_t timep; tm p;
@@ -28,12 +32,11 @@ int main() {
 	SetConsoleOutputCP(65001);
 	std::ios::sync_with_stdio(false), std::cin.tie(0), std::cout.tie(0);
 
-	INFO("NIA服务器依赖服务器启动成功！");
-	// WARN("NIA服务器依赖服务器启动成功！");
-	// FAIL("NIA服务器依赖服务器启动成功！");
-	// LOG([呜呜呜], "sadasasdflfjioqejc");
 
-	//检查配置文件是否存在
+	INFO("NIAHttpBOT 已在 " + IPAddress + ":" + std::to_string(PORT) + " 上成功启动!");
+	INFO("项目地址：https://github.com/NIANIANKNIA/NIASERVER-V4/tree/main/NIAHttpBOT");
+	INFO("项目作者：@NIANIANKNIA @jiansyuan");
+	INFO("在使用中遇到问题请前往项目下的issue反馈，如果觉得本项目不错不妨点个star！");
 
 
 	httplib::Server svr;
@@ -202,7 +205,7 @@ int main() {
 
 	});
 
-	svr.listen("127.0.0.1", 10086);
+	svr.listen(IPAddress, PORT);
 
 	return 0;
 }
