@@ -11,6 +11,8 @@
 #include <rapidjson/ostreamwrapper.h>
 #include <rapidjson/istreamwrapper.h>
 
+#include "CFG_Parser.hpp"
+
 #define INFO(a) GetTime(), std::cout<<"\x1b[32m[INFO]\x1b[0m "<<a<<std::endl
 #define WARN(a) GetTime(), std::cout<<"\x1b[43;1m[WARN]\x1b[0m "<<a<<std::endl
 #define REMOVE_PATH(a) (a + sizeof(__PROJECT__) -1)
@@ -60,6 +62,33 @@ R"(           _  _    _____   _____     ___             ___     ___    _____
 	INFO("项目地址：https://github.com/NIANIANKNIA/NIASERVER-V4/tree/main/NIAHttpBOT");
 	INFO("项目作者：@NIANIANKNIA @jiansyuan");
 	INFO("在使用中遇到问题请前往项目下的 issue 反馈，如果觉得本项目不错不妨点个 star！");
+
+	CFGPAR::parser par;
+	par.parFromFile("./test.cfg");
+	bool enableFeature = par.getBool("enable_feature");
+	bool useCache = par.getBool("use_cache");
+
+	int maxConnections = par.getInt("max_connections");
+	int timeout = par.getInt("timeout");
+
+	char delimiter = par.getChar("delimiter");
+	char quote = par.getChar("quote");
+
+	std::string welcomeMessage = par.getString("welcome_message");
+	std::string apiEndpoint = par.getString("api_endpoint");
+
+	bool unusedValueIsNull = par.isNull("unused_value");
+	
+	std::cout << "enable_feature: " << enableFeature << std::endl;
+	std::cout << "use_cache: " << useCache << std::endl;
+	std::cout << "max_connections: " << maxConnections << std::endl;
+	std::cout << "timeout: " << timeout << std::endl;
+	std::cout << "delimiter: " << delimiter << std::endl;
+	std::cout << "quote: " << quote << std::endl;
+	std::cout << "welcome_message: " << welcomeMessage << std::endl;
+	std::cout << "api_endpoint: " << apiEndpoint << std::endl;
+	std::cout << "unused_value is null: " << unusedValueIsNull << std::endl;
+
 
 	httplib::Server svr;
 
