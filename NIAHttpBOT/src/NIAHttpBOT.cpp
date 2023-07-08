@@ -12,8 +12,11 @@
 #include <rapidjson/istreamwrapper.h>
 
 #define INFO(a) GetTime(), std::cout<<"\x1b[32m[INFO]\x1b[0m "<<a<<std::endl
-#define WARN(a) GetTime(), std::cout<<"\x1b[33m[WARN]\x1b[0m "<<a<<std::endl
-#define FAIL(a) GetTime(), std::cout<<"\x1b[31m[FAIL]\x1b[0m "<<a<<std::endl
+#define WARN(a) GetTime(), std::cout<<"\x1b[43;1m[WARN]\x1b[0m "<<a<<std::endl
+#define REMOVE_PATH(a) (a + sizeof(__PROJECT__) -1)
+#define FAIL(a) GetTime(), std::cout<<"\x1b[41;1m[FAIL]\x1b[0m \x1b[36;45;4mError at " \
+	<<REMOVE_PATH(__FILE__)<<":"<<__LINE__<<" ("<<__FUNCTION__ \
+	<<")\x1b[0m ==>\n"<<a<<'\n'<<std::endl
 #define LOG(sym,str) GetTime(), std::cout<<#sym" "<<str<<std::endl
 
 const std::string IPAddress = "127.0.0.1";
@@ -25,19 +28,38 @@ void GetTime() {
     char time_buffer[80];
 	time(&timep), localtime_s(&p, &timep);
     strftime(time_buffer, sizeof(time_buffer), "[%Y/%m/%d %H:%M:%S] ", &p);
-	std::cout << time_buffer;
+	std::cout << "\x1b[35m" << time_buffer << "\x1b[0m";
 }
 
 int main() {
 	SetConsoleOutputCP(65001);
 	std::ios::sync_with_stdio(false), std::cin.tie(0), std::cout.tie(0);
 
+	std::cout<<"\x1b[36m"<<R"(
+        __/\\\\\_____/\\\___/\\\\\\\\\\\______/\\\\\\\\\____        
+         _\/\\\\\\___\/\\\__\/////\\\///_____/\\\\\\\\\\\\\__       
+          _\/\\\/\\\__\/\\\______\/\\\_______/\\\/////////\\\_      
+           _\/\\\//\\\_\/\\\______\/\\\______\/\\\_______\/\\\_     
+            _\/\\\\//\\\\/\\\______\/\\\______\/\\\\\\\\\\\\\\\_    
+             _\/\\\_\//\\\/\\\______\/\\\______\/\\\/////////\\\_   
+              _\/\\\__\//\\\\\\______\/\\\______\/\\\_______\/\\\_  
+               _\/\\\___\//\\\\\___/\\\\\\\\\\\__\/\\\_______\/\\\_ 
+                _\///_____\/////___\///////////___\///________\///__
+)";
+	
+	std::cout<<"\x1b[0;32m"<<
+R"(           _  _    _____   _____     ___             ___     ___    _____  
+    o O O | || |  |_   _| |_   _|   | _ \    o O O  | _ )   / _ \  |_   _| 
+   o      | __ |    | |     | |     |  _/   o       | _ \  | (_) |   | |   
+  TS__[O] |_||_|   _|_|_   _|_|_   _|_|_   TS__[O]  |___/   \___/   _|_|_  
+ {======|_|"""""|_|"""""|_|"""""|_| """ | {======|_|"""""|_|"""""|_|"""""| 
+./o--000'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'./o--000'"`-0-0-'"`-0-0-'"`-0-0-' 
+)" <<"\x1b[0m"<< std::endl;
 
 	INFO("NIAHttpBOT 已在 " + IPAddress + ":" + std::to_string(PORT) + " 上成功启动!");
 	INFO("项目地址：https://github.com/NIANIANKNIA/NIASERVER-V4/tree/main/NIAHttpBOT");
 	INFO("项目作者：@NIANIANKNIA @jiansyuan");
-	INFO("在使用中遇到问题请前往项目下的issue反馈，如果觉得本项目不错不妨点个star！");
-
+	INFO("在使用中遇到问题请前往项目下的 issue 反馈，如果觉得本项目不错不妨点个 star！");
 
 	httplib::Server svr;
 

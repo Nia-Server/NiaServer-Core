@@ -9,6 +9,8 @@ project(${PROJECT})
 aux_source_directory(./src/ SOURCE)
 include_directories(./header)
 
+add_definitions(-D__PROJECT__="${CMAKE_CURRENT_SOURCE_DIR}")
+
 add_executable(${PROJECT} ${SOURCE})
 
 
