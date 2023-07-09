@@ -38,6 +38,7 @@ void GetTime() {
 
 int main() {
 
+
 	system("title NIAHttpBOT V1.3.1");
 	SetConsoleOutputCP(65001);
 	std::ios::sync_with_stdio(false), std::cin.tie(0), std::cout.tie(0);
