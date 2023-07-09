@@ -1,8 +1,9 @@
 import {world,system} from '@minecraft/server';
 import {cfg} from './config.js'
-import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution} from './customFunction.js'
+import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution, GetTime} from './customFunction.js'
 import {http,HttpRequestMethod,HttpRequest,HttpHeader} from '@minecraft/server-net';
 const port = 10086
+const VERSION = "v1.3.1-pre-1"
 //与服务器通信获取群聊消息
 system.runInterval(() => {
     // let reqCheck = http.get(`http://127.0.0.1:${port}/Check`)
@@ -29,7 +30,10 @@ system.runInterval(() => {
         }
     })
 
-    //检查文件是否存在
+
+    //NIAHttpBOT部分功能使用示例
+
+    // 检查文件是否存在
     // const reqCheckFile = new HttpRequest(`http://127.0.0.1:${port}/CheckFile`);
     // reqCheckFile.body = "FileName.json"
     // reqCheckFile.method = HttpRequestMethod.POST;
@@ -41,6 +45,23 @@ system.runInterval(() => {
     //         console.log("Target file exists.")
     //     } else if (response.status == 200 && response.body == "false") {
     //         console.error("The target file does not exist")
+    //     } else {
+    //         console.error("Dependent server connection failed! Check whether the dependent server started successfully.")
+    //     }
+    // })
+
+    // 检查文件夹是否存在
+    // const reqCheckDir = new HttpRequest(`http://127.0.0.1:${port}/CheckDir`);
+    // reqCheckDir.body = "./A"
+    // reqCheckDir.method = HttpRequestMethod.POST;
+    // reqCheckDir.headers = [
+    //     new HttpHeader("Content-Type", "text/plain"),
+    // ];
+    // http.request(reqCheckDir).then((response) => {
+    //     if (response.status == 200 && response.body == "true") {
+    //         console.log("Target folder exists.")
+    //     } else if (response.status == 200 && response.body == "false") {
+    //         console.error("The target folder does not exist")
     //     } else {
     //         console.error("Dependent server connection failed! Check whether the dependent server started successfully.")
     //     }
@@ -96,9 +117,59 @@ system.runInterval(() => {
     //         console.error("Dependent server connection failed! Check whether the dependent server started successfully.")
     //     }
     // })
-},60)
 
-//
+    //执行cmd指令
+    // const reqRunCmd = new HttpRequest(`http://127.0.0.1:${port}/RunCmd`);
+    // reqRunCmd.body = "del 123.txt"
+    // reqRunCmd.method = HttpRequestMethod.POST;
+    // reqRunCmd.headers = [
+    //     new HttpHeader("Content-Type", "text/plain"),
+    // ];
+    // http.request(reqRunCmd).then((response) => {
+    //     if (response.status == 200 && response.body == "success") {
+    //         console.log("Dos command executed successfully!")
+    //     } else if (response.status == 200 && response.body != "success") {
+    //         console.error(response.body)
+    //     } else {
+    //         console.error("Dependent server connection failed! Check whether the dependent server started successfully.")
+    //     }
+    // })
+
+    //向目标文件写入一行
+    // const reqWriteLineToFile = new HttpRequest(`http://127.0.0.1:${port}/WriteLineToFile`);
+    // reqWriteLineToFile.body = JSON.stringify({"fileName":"123.txt","content": "这是一行测试内容" + "\n"})
+    // reqWriteLineToFile.method = HttpRequestMethod.POST;
+    // reqWriteLineToFile.headers = [
+    //     new HttpHeader("Content-Type", "text/plain"),
+    // ];
+    // http.request(reqWriteLineToFile).then((response) => {
+    //     if (response.status == 200 && response.body == "success") {
+    //         console.log("Overwrite file data successfully!")
+    //     } else if (response.status == 200 && response.body != "success") {
+    //         console.error(response.body)
+    //     } else {
+    //         console.error("Dependent server connection failed! Check whether the dependent server started successfully.")
+    //     }
+    // })
+
+    //向目标文件覆写内容
+    // const reqOverwriteFile = new HttpRequest(`http://127.0.0.1:${port}/OverwriteFile`);
+    // reqOverwriteFile.body = JSON.stringify({"fileName":"123.txt","content": "这是一行测试内容" + "\n"})
+    // reqOverwriteFile.method = HttpRequestMethod.POST;
+    // reqOverwriteFile.headers = [
+    //     new HttpHeader("Content-Type", "text/plain"),
+    // ];
+    // http.request(reqOverwriteFile).then((response) => {
+    //     if (response.status == 200 && response.body == "success") {
+    //         console.log("Overwrite file data successfully!")
+    //     } else if (response.status == 200 && response.body != "success") {
+    //         console.error(response.body)
+    //     } else {
+    //         console.error("Dependent server connection failed! Check whether the dependent server started successfully.")
+    //     }
+    // })
+
+}, 60)
 
 //服务器启动监听
 world.afterEvents.worldInitialize.subscribe(() => {
@@ -110,6 +181,20 @@ world.afterEvents.worldInitialize.subscribe(() => {
             console.error("[NIA V4] Dependent server connection failed! Check whether the dependent server started successfully.")
         }
     })
+
+        //检查更新
+        const reqCheckUpdate = http.get(`http://api.github.com/repos/NIANIANKNIA/NIASERVER-V4/releases`)
+        reqCheckUpdate.then((response) => {
+            if (response.status == 200) {
+                if (JSON.parse(response.body)[0].tag_name != VERSION) {
+                    console.warn(`The current version is not the latest version. The currently used version is ${VERSION}, and the latest version is ${JSON.parse(response.body)[0].tag_name}. Click the link to jump to download immediately: https://github.com/NIANIANKNIA/NIASERVER-V4/releases/tag/${JSON.parse(response.body)[0].tag_name}`)
+                } else {
+                    console.log("Checking for updates is successful, all versions are the latest versions!")
+                }
+            } else {
+                console.error("Github server connection failed!")
+            }
+        })
     // const reqServerStarted = new HttpRequest(`http://127.0.0.1:${port}/ServerStarted`);
     // reqServerStarted.body = JSON.stringify({
     //     score: 22,

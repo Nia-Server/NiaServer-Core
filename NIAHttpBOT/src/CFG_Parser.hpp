@@ -5,11 +5,11 @@
 /*
     |    version ? ? ? ----------------- ? ? ? ?     |  support more...
     |--> version 0.0.0 ----------------- 2023.7.8 <--|  support basic types: bool, int, char, string and null
-    |    version -1    ----------------- ? ? ? ?     |  
+    |    version -1    ----------------- ? ? ? ?     |
 */
 
 
-/* 
+/*
 
 Copyright (C) 2023 jiansyuan
 
@@ -34,6 +34,9 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 #define IS_DIGIT(ch) (('0'<=ch)&&(ch<='9'))
 #define IS_LETTER(ch) (('a'<=ch&&ch<='z')||('A'<=ch&&ch<='Z'))
 #define IS_SYMBOL(ch) (IS_LETTER(ch)||IS_DIGIT(ch)||ch=='-'||ch=='_')
+
+
+
 
 namespace CFGPAR {
 
@@ -197,11 +200,13 @@ public:
             }
             if(typ==IDontKnow) return false; //error in match
             //valVec.push_back((KVnode){sym, typ, val});
-            KVmap.insert(std::make_pair(sym, (Vnode){typ, val}));
+            /*Vnode temp = {typ, val};
+            KVmap.insert(std::make_pair(sym, temp));*/
+            KVmap.insert(std::make_pair(sym, Vnode{ typ, val }));
         }
-        return true; 
+        return true;
     }
-    
+
     bool parFromFile(const std::string& path){
         std::ifstream file(path);
         if (!file.is_open()) return false;
