@@ -22,12 +22,13 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 */
 
 
+#include <immintrin.h>
+
 #include <string>
 #include <vector>
 #include <variant>
 #include <unordered_map>
 #include <fstream>
-#include <immintrin.h>
 
 
 #define IS_SPACE(ch) ((ch==' ')||(ch=='\t')||(ch=='\r'))
@@ -64,6 +65,28 @@ private:
     std::unordered_map<std::string, Vnode> KVmap;
 
 private:
+
+    inline std::vector<unsigned> findEqualSigns(const std::string& str, char tar='=') {
+        std::vector<unsigned> ret;
+#ifdef __AVX2__
+        const char* data = str.data();
+        __m256i tars = _mm256_set1_epi8(tar);
+        size_t i = 0;
+        for (; i+32<str.size(); i+=32) {
+            __m256i chunk = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(data+i)),
+                    match = _mm256_cmpeq_epi8(chunk, tars);
+            int mask = _mm256_movemask_epi8(match);
+            while (mask != 0) {
+                int index = __builtin_ctz(mask);
+                ret.push_back(i+(unsigned)index), mask &= ~(1<<index);
+            }
+        }
+        for(; i<str.size(); i++) if(str[i]==tar) ret.push_back(i);
+#else
+        for(size_t i=0; i<str.size(); i++) if(str[i]==tar) ret.push_back(i);
+#endif
+        return ret;
+    }
 
     inline char escapeChar(char ch){
         if(ch=='0') ch = '\0';
@@ -111,7 +134,7 @@ private:
 
     std::pair<bool, std::string> matchString(const std::string& str, int idx) {
         std::string ret;
-        for(int i=idx+1;i<str.size();i++) {
+        for(int i=idx+1; i<str.size(); i++) {
             if(str[i]=='\"') return std::make_pair(true, ret);
             if(str[i]=='\n') return std::make_pair(false, ""); // lack double quotation mark
             if(str[i]=='\\'){
@@ -149,10 +172,7 @@ public:
     }
 
     bool parFromStr(const std::string& str) {
-        std::vector<int> key;
-        //std::vector<KVnode> valVec;
-        for(int i=0; i<str.size(); i++) 
-            if(str[i]=='=') key.push_back(i);
+        std::vector<unsigned> key = findEqualSigns(str);
         for(auto i : key) {
             int tmp = -1;
             std::string sym;
@@ -199,9 +219,6 @@ public:
 
             }
             if(typ==IDontKnow) return false; //error in match
-            //valVec.push_back((KVnode){sym, typ, val});
-            /*Vnode temp = {typ, val};
-            KVmap.insert(std::make_pair(sym, temp));*/
             KVmap.insert(std::make_pair(sym, Vnode{ typ, val }));
         }
         return true;

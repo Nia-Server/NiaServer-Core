@@ -43,25 +43,6 @@ int main() {
 	SetConsoleOutputCP(65001);
 	std::ios::sync_with_stdio(false), std::cin.tie(0), std::cout.tie(0);
 
-	CFGPAR::parser par;
-	//首先检查有没有配置文件
-	std::ifstream cfgFile("NIAHttpBOT.cfg");
-	if (!cfgFile) {
-		std::ofstream outcfgFile("NIAHttpBOT.cfg");
-		outcfgFile << "IPAddress = \"127.0.0.1\"\n";
-		outcfgFile << "Port = 10086\n";
-		outcfgFile << "UseCmd = false\n";
-		outcfgFile.close();
-		WARN("未找到配置文件，已自动初始化配置文件 NIAHttpBOT.cfg");
-	} else {
-		cfgFile.close();
-		par.parFromFile("./NIAHttpBOT.cfg");
-		IPAddress = par.getString("IPAddress");
-		PORT = par.getInt("Port");
-		UseCmd = par.getBool("UseCmd");
-		INFO("已成功读取配置文件！");
-	}
-
 	std::cout<<"\x1b[36m"<<R"(
     __/\\\\\_____/\\\___/\\\\\\\\\\\______/\\\\\\\\\____
      _\/\\\\\\___\/\\\__\/////\\\///_____/\\\\\\\\\\\\\__
@@ -84,14 +65,25 @@ int main() {
 ./o--000'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'./o--000'"`-0-0-'"`-0-0-'"`-0-0-'
 	)" <<"\x1b[0m"<< std::endl;
 
-
+	CFGPAR::parser par;
+	//首先检查有没有配置文件
+	if (!par.parFromFile("./NIAHttpBOT.cfg")) {
+		std::ofstream outcfgFile("NIAHttpBOT.cfg");
+		outcfgFile << "# 基础配置:\n\nIPAddress = \"127.0.0.1\"\nPort = 10086\n\n# 功能配置:\n\nUseCmd = false\n";
+		outcfgFile.close();
+		WARN("未找到配置文件，已自动初始化配置文件 NIAHttpBOT.cfg");
+	} else {
+		IPAddress = par.getString("IPAddress");
+		PORT = par.getInt("Port");
+		UseCmd = par.getBool("UseCmd");
+		INFO("已成功读取配置文件！");
+	}
+	
 	INFO("NIAHttpBOT 已在 " + IPAddress + ":" + std::to_string(PORT) + " 上成功启动!");
 	INFO("项目地址：https://github.com/NIANIANKNIA/NIASERVER-V4/tree/main/NIAHttpBOT");
 	INFO("项目作者：@NIANIANKNIA @jiansyuan");
 	INFO("在使用中遇到问题请前往项目下的 issue 反馈，如果觉得本项目不错不妨点个 star！");
-	if (UseCmd) {
-		WARN("检测到执行DOS命令功能已启用，请注意服务器安全！");
-	}
+	if (UseCmd)  WARN("检测到执行DOS命令功能已启用，请注意服务器安全！");
 
 	httplib::Server svr;
 
