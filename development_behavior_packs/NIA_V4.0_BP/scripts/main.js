@@ -268,30 +268,6 @@ system.runInterval(() => {
         //     RunCmd(`tag ${playerList[i].nameTag} remove GetIsland`)
         // }
 
-        // Broadcast(`§c[NKillHacker]§r\nspeed:${((Math.pow(playerList[i].velocity.x,2) + Math.pow(playerList[i].velocity.y,2) + Math.pow(playerList[i].velocity.z,2))).toFixed(5)} \npos:${playerList[i].location.x.toFixed(4)} ${playerList[i].location.y.toFixed(4)} ${playerList[i].location.z.toFixed(4)}`)
-        // let pos = {}
-        // if (posData[playerList[i].nameTag]) {
-        //     //Broadcast((Math.pow(playerList[i].location.x.toFixed(4) - posData[playerList[i].nameTag].x,2) + Math.pow(playerList[i].location.y.toFixed(4) - posData[playerList[i].nameTag].y,2) + Math.pow(playerList[i].location.z.toFixed(4) - posData[playerList[i].nameTag].z,2)).toString())
-        //     if (((Math.pow(playerList[i].velocity.x,2) + Math.pow(playerList[i].velocity.y,2) + Math.pow(playerList[i].velocity.z,2))) >= 0.045 && (Math.pow(playerList[i].location.x.toFixed(4) - posData[playerList[i].nameTag].x,2) + Math.pow(playerList[i].location.y.toFixed(4) - posData[playerList[i].nameTag].y,2) + Math.pow(playerList[i].location.z.toFixed(4) - posData[playerList[i].nameTag].z,2)) <= 0.5) {
-        //         world.getDimension("overworld").runCommandAsync(`tellraw @a[tag=op] {\"rawtext\":[{\"text\":\"§c>> 疑似 §e${playerList[i].nameTag} §c正在使用自由视角，如果本消息短期多次出现建议前往查看！注意：本消息可能是个误判！以下为该玩家的异常数据§r\nspeed:${((Math.pow(playerList[i].velocity.x,2) + Math.pow(playerList[i].velocity.y,2) + Math.pow(playerList[i].velocity.z,2))).toFixed(3)} \npos:${playerList[i].location.x.toFixed(3)} ${playerList[i].location.y.toFixed(3)} ${playerList[i].location.z.toFixed(3)}\ndistance:${(Math.pow(playerList[i].location.x.toFixed(4) - posData[playerList[i].nameTag].x,2) + Math.pow(playerList[i].location.y.toFixed(4) - posData[playerList[i].nameTag].y,2) + Math.pow(playerList[i].location.z.toFixed(4) - posData[playerList[i].nameTag].z,2)).toFixed(3).toString()}\"}]}`);
-        //         posData[playerList[i].nameTag].num++
-        //         if (posData[playerList[i].nameTag].num >= 8) {
-        //             posData[playerList[i].nameTag].num = 0
-        //             RunCmd(`ban ${playerList[i].nameTag} 1 违规使用自由视角(灵魂出窍)`)
-        //         }
-        //         //RunCmd(`ban ${playerList[i].nameTag} 1 违规使用自由视角(灵魂出窍)`)
-        //     }
-        //     posData[playerList[i].nameTag].x = playerList[i].location.x.toFixed(4)
-        //     posData[playerList[i].nameTag].y = playerList[i].location.y.toFixed(4)
-        //     posData[playerList[i].nameTag].z = playerList[i].location.z.toFixed(4)
-        // } else {
-        //     //Broadcast("1")
-        //     pos.num = 0
-        //     pos.x = playerList[i].location.x.toFixed(4)
-        //     pos.y = playerList[i].location.y.toFixed(4)
-        //     pos.z = playerList[i].location.z.toFixed(4)
-        //     posData[playerList[i].nameTag] = pos
-        // }
         if ((Math.pow(playerList[i].getVelocity().x,2) + Math.pow(playerList[i].getVelocity().y,2) + Math.pow(playerList[i].getVelocity().z,2)) > 0.07 && GetScore("equLevel",playerList[i].nameTag) <= 10) {
             RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -1`);
         }

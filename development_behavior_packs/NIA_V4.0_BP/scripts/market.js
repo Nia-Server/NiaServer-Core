@@ -134,6 +134,10 @@ const MarketGUI = {
         })
     },
 
+    Preview(player) {
+
+    },
+
     //上架商品菜单
     Shelf(player) {
         let InventoryData = ["-无-"]

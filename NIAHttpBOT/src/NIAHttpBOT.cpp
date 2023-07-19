@@ -78,7 +78,7 @@ int main() {
 		UseCmd = par.getBool("UseCmd");
 		INFO("已成功读取配置文件！");
 	}
-	
+
 	INFO("NIAHttpBOT 已在 " + IPAddress + ":" + std::to_string(PORT) + " 上成功启动!");
 	INFO("项目地址：https://github.com/NIANIANKNIA/NIASERVER-V4/tree/main/NIAHttpBOT");
 	INFO("项目作者：@NIANIANKNIA @jiansyuan");
@@ -134,22 +134,20 @@ int main() {
 	//创建新的文件
 	svr.Post("/CreateNewFile", [](const httplib::Request& req, httplib::Response& res) {
 		INFO("接收到创建文件的请求！ ");
+					res.status = 200;
 		//解析字符串并创建一个json对象
 		rapidjson::Document NewFileData;
 		NewFileData.Parse(req.body.c_str());
 		//判断是否解析成功
 		if (NewFileData.HasParseError()) {
-			res.status = 200;
 			res.set_content("Data parsing failed", "text/plain");
 			return ;
 		}
 		if(!NewFileData.HasMember("fileName")){
-			res.status = 200;
 			res.set_content("The fileName key for the json object was not found! Please recheck and send again.", "text/plain");
 			return ;
 		}
 		if(!NewFileData.HasMember("fileContent")){
-			res.status = 200;
 			res.set_content("The fileContent key for the json object was not found! Please recheck and send again.", "text/plain");
 			return ;
 		}
@@ -163,7 +161,6 @@ int main() {
 		// 检测${fileName}文件是否存在，如果不存在，就创建一个新的文件，并写入内容
 		std::ifstream file(fileName);
 		if(file){
-			res.status = 200;
 			res.set_content("The target file already exists and cannot be regenerated.", "text/plain");
 			return ;
 		}
@@ -171,7 +168,6 @@ int main() {
 		std::ofstream outFile(fileName);
 		outFile << fileContent;
 		outFile.close();
-		res.status = 200;
 		res.set_content("success", "text/plain");
 		file.close();
 	});
@@ -180,22 +176,20 @@ int main() {
 	//创建新的json文件
 	svr.Post("/CreateNewJsonFile", [](const httplib::Request& req, httplib::Response& res) {
 		INFO("接收到创建json文件的请求！ ");
+		res.status = 200;
 		//解析字符串并创建一个json对象
 		rapidjson::Document NewFileData;
 		NewFileData.Parse(req.body.c_str());
 		//判断是否解析成功
 		if (NewFileData.HasParseError()) {
-			res.status = 200;
 			res.set_content("Data parsing failed", "text/plain");
 			return ;
 		}
 		if(!NewFileData.HasMember("fileName")){
-			res.status = 200;
 			res.set_content("The fileName key for the json object was not found! Please recheck and send again.", "text/plain");
 			return ;
 		}
 		if(!NewFileData.HasMember("fileContent")){
-			res.status = 200;
 			res.set_content("The fileContent key for the json object was not found! Please recheck and send again.", "text/plain");
 			return ;
 		}
@@ -214,7 +208,6 @@ int main() {
 		// 检测${fileName}文件是否存在，如果不存在，就创建一个新的文件，并写入内容
 		std::ifstream file(fileName);
 		if(file){
-			res.status = 200;
 			res.set_content("The target file already exists and cannot be regenerated.", "text/plain");
 			return ;
 		}
@@ -222,7 +215,6 @@ int main() {
 		std::ofstream out(fileName);
 		out << buffer.GetString();
 		out.close();
-		res.status = 200;
 		res.set_content("success", "text/plain");
 		file.close();
 	});
@@ -230,13 +222,13 @@ int main() {
 	//获取json文件数据
 	svr.Post("/GetJsonFileData", [](const httplib::Request& req, httplib::Response& res) {
 		INFO("接收到获取文件数据的请求,请求获取的文件名称为： " << req.body);
+		res.status = 200;
 		//初始化文件名称
 		std::string fileName = req.body;
 		//判断文件存不存在
 		std::ifstream file(fileName);
 		if(!file) {
 			//文件打开失败
-			res.status = 200;
 			res.set_content("The target file does not exist", "text/plain");
 			return ;
 		}
@@ -251,7 +243,6 @@ int main() {
 		rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
 		doc.Accept(writer);
 		std::string jsonStr = buffer.GetString();
-		res.status = 200;
 		res.set_content(jsonStr, "text/plain");
 		file.close();
 	});
@@ -259,22 +250,20 @@ int main() {
 	//覆盖json文件内容
 	svr.Post("/OverwriteJsonFile", [](const httplib::Request& req, httplib::Response& res) {
 		INFO("接收到覆写json文件的请求！");
+		res.status = 200;
 		//解析字符串并创建一个json对象
 		rapidjson::Document overWriteFileData;
 		overWriteFileData.Parse(req.body.c_str());
 		//判断是否解析成功
 		if (overWriteFileData.HasParseError()) {
-			res.status = 200;
 			res.set_content("Data parsing failed", "text/plain");
 			return ;
 		}
 		if(!overWriteFileData.HasMember("fileName")){
-			res.status = 200;
 			res.set_content("The fileName key for the json object was not found! Please recheck and send again.", "text/plain");
 			return ;
 		}
 		if(!overWriteFileData.HasMember("fileData")){
-			res.status = 200;
 			res.set_content("The fileData key for the json object was not found! Please recheck and send again.", "text/plain");
 			return ;
 		}
@@ -293,14 +282,12 @@ int main() {
 		// 检测${fileName}文件是否存在，如果不存在，就创建一个新的文件，并写入内容
 		std::ifstream file(fileName);
 		if(!file) {
-			res.status = 200;
 			res.set_content("The target file does not exist.", "text/plain");
 			return ;
 		}
 		std::ofstream out(fileName);
 		out << buffer.GetString();
 		out.close();
-		res.status = 200;
 		res.set_content("success", "text/plain");
 		file.close();
 
@@ -308,39 +295,36 @@ int main() {
 
 	//执行cmd命令
 	svr.Post("/RunCmd",  [](const httplib::Request& req, httplib::Response& res) {
+		res.status = 200;
 		//首先判断配置文件是否启用
 		if (!UseCmd) {
 			WARN("执行DOS命令的功能暂未启用！请在启用后使用！");
-			res.status = 200;
 			res.set_content("feature not enabled!", "text/plain");
 			return ;
 		}
 		std::string cmd = req.body;
 		WARN("收到一条执行DOS命令的请求：" + cmd);
 		system(cmd.c_str());
-		res.status = 200;
 		res.set_content("success", "text/plain");
 	});
 
 	//向目标文件写入一行内容
 	svr.Post("/WriteLineToFile",  [](const httplib::Request& req, httplib::Response& res) {
 		INFO("接收到向目标文件写入一行内容的请求！");
+		res.status = 200;
 		//解析字符串并创建一个json对象
 		rapidjson::Document WriteLineData;
 		WriteLineData.Parse(req.body.c_str());
 		//判断是否解析成功
 		if (WriteLineData.HasParseError()) {
-			res.status = 200;
 			res.set_content("Data parsing failed", "text/plain");
 			return ;
 		}
 		if(!WriteLineData.HasMember("fileName")){
-			res.status = 200;
 			res.set_content("The fileName key for the json object was not found! Please recheck and send again.", "text/plain");
 			return ;
 		}
 		if(!WriteLineData.HasMember("content")){
-			res.status = 200;
 			res.set_content("The content key for the json object was not found! Please recheck and send again.", "text/plain");
 			return ;
 		}
@@ -353,7 +337,6 @@ int main() {
 		// 检测${fileName}文件是否存在，如果不存在，就创建一个新的文件，并写入内容
 		std::ifstream file(fileName);
 		if(!file) {
-			res.status = 200;
 			res.set_content("The target file does not exist.", "text/plain");
 			return ;
 		}
@@ -361,7 +344,6 @@ int main() {
 		std::ofstream outFile(fileName, std::ios_base::app);
 		outFile << fileContent;
 		outFile.close();
-		res.status = 200;
 		res.set_content("success", "text/plain");
 		file.close();
 	});
@@ -369,22 +351,20 @@ int main() {
 	//向目标文件覆盖内容
 	svr.Post("/OverwriteFile",  [](const httplib::Request& req, httplib::Response& res) {
 		INFO("接收到覆写文件的请求！");
+		res.status = 200;
 		//解析字符串并创建一个json对象
 		rapidjson::Document OverwriteFileData;
 		OverwriteFileData.Parse(req.body.c_str());
 		//判断是否解析成功
 		if (OverwriteFileData.HasParseError()) {
-			res.status = 200;
 			res.set_content("Data parsing failed", "text/plain");
 			return ;
 		}
 		if(!OverwriteFileData.HasMember("fileName")){
-			res.status = 200;
 			res.set_content("The fileName key for the json object was not found! Please recheck and send again.", "text/plain");
 			return ;
 		}
 		if(!OverwriteFileData.HasMember("content")){
-			res.status = 200;
 			res.set_content("The content key for the json object was not found! Please recheck and send again.", "text/plain");
 			return ;
 		}
@@ -397,7 +377,6 @@ int main() {
 		// 检测${fileName}文件是否存在
 		std::ifstream file(fileName);
 		if(!file) {
-			res.status = 200;
 			res.set_content("The target file does not exist.", "text/plain");
 			return ;
 		}
@@ -405,19 +384,17 @@ int main() {
 		std::ofstream outFile(fileName);
 		outFile << fileContent;
 		outFile.close();
-		res.status = 200;
 		res.set_content("success", "text/plain");
 		file.close();
 	});
 
 	//检测指定文件夹是否存在
 	svr.Post("/CheckDir",  [](const httplib::Request& req, httplib::Response& res) {
+		res.status = 200;
 		std::filesystem::path p{req.body};
 		if (std::filesystem::exists(p)) {
-			res.status = 200;
 			res.set_content("true", "text/plain");
 		} else {
-			res.status = 200;
 			res.set_content("false", "text/plain");
 		}
 	});
