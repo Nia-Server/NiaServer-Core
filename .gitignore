@@ -26,3 +26,9 @@
 !LICENSE
 !README-EN.md
 !README.md
+
+/NIAHttpBOT/*
+!/NIAHttpBOT/header/
+!/NIAHttpBOT/src/
+!/NIAHttpBOT/CMakeLists.txt
+

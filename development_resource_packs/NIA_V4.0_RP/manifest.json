@@ -5,14 +5,14 @@
 		"name": "NIA V4.0 RP",
 		"uuid": "981f1ce2-370b-4f58-99d9-9c504a118ec0",
 		"min_engine_version": [1, 20, 0],
-		"version": [1, 3, 0]
+		"version": [1, 3, 1]
 	},
 	"modules": [
 		{
 			"description": "NIANIANKNIA",
 			"type": "resources",
 			"uuid": "7e41869f-82f7-40f5-87c0-4dcfbc61d91b",
-			"version": [1, 3, 0]
+			"version": [1, 3, 1]
 		}
 	],
 	"metadata": {
