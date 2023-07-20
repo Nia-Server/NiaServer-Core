@@ -3,7 +3,8 @@ import {cfg} from './config.js'
 import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution, GetTime} from './customFunction.js'
 import {http,HttpRequestMethod,HttpRequest,HttpHeader} from '@minecraft/server-net';
 const port = 10086
-const VERSION = "v1.3.1-pre-1"
+const VERSION = "v1.3.2-pre-1"
+import { GetJsonFileData } from './API/fs.js';
 //与服务器通信获取群聊消息
 system.runInterval(() => {
     // let reqCheck = http.get(`http://127.0.0.1:${port}/Check`)
@@ -24,11 +25,17 @@ system.runInterval(() => {
             }
             //错误信息解析
             //踢出未认证玩家
-
         } else {
             Broadcast("§c>> 依赖服务器连接失败，如果你看到此提示请联系腐竹！")
         }
     })
+
+    // GetJsonFileData("market.json").then((data) => {
+    //     console.log(data);
+    // })
+    // let data = GetJsonFileData("market.json");
+    // console.log(data);
+
 
 
     //NIAHttpBOT部分功能使用示例

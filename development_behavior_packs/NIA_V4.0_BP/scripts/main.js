@@ -16,6 +16,7 @@ import './menu/main.js'
 import './island.js'
 import './net.js'
 import './market.js'
+import './land.js'
 import { OxygenGUI } from './menu/oxygen.js';
 
 
@@ -139,7 +140,7 @@ const equLevelData = {
 world.afterEvents.worldInitialize.subscribe(() => {
     console.log("\n\x1b[33m[NIA V4] You are using a preview version, do not use it in a production environment!\x1b[0m")
     console.log("\n\x1b[33m[NIA V4] NIA V4 has been successfully started on the server!\x1b[0m")
-    console.log("\n\x1b[33m[NIA V4] version: v1.3.1-pre based on BDS-1.20.10.02(last upgrate:2023/7/10)\x1b[0m")
+    console.log("\n\x1b[33m[NIA V4] version: v1.3.2-pre based on BDS-1.20.10.02(last upgrate:2023/7/20)\x1b[0m")
     console.log("\n\x1b[33m[NIA V4] author: @NIANIANKNIA(https://github.com/NIANIANKNIA)\x1b[0m")
 })
 

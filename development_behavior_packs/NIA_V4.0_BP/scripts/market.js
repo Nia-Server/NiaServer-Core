@@ -1,3 +1,6 @@
+//玩家交易市场
+//开发中功能，请勿使用！
+
 import {system, world, ItemStack, Enchantment} from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 import { Broadcast, RunCmd } from './customFunction';
@@ -126,6 +129,7 @@ const MarketGUI = {
                             this.Market(player)
                         } else if (response.selection == 0) {
                             //预览商品
+                            
                         } else if (response.selection == 1) {
                             //购买商品
                         }
@@ -134,7 +138,9 @@ const MarketGUI = {
         })
     },
 
-    Preview(player) {
+    Buy(player) {
+        const BuyForm = new MessageFormData()
+
 
     },
 
