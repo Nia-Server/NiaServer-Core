@@ -3,70 +3,93 @@
 
 import {system, world, ItemStack, Enchantment} from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
-import { Broadcast, RunCmd } from './customFunction';
+import { Broadcast, log } from './customFunction';
 import {http,HttpRequestMethod,HttpRequest,HttpHeader} from '@minecraft/server-net';
 import { GetTime } from './customFunction';
 import { adler32 } from './API/cipher_system';
+import { ExternalFS } from './API/filesystem';
 
 //违禁物品，等后期接入配置文件
-const BanItems= ["minecraft:paper","minecraft:clock"]
+const fs = new ExternalFS();
+const BanItems = ["minecraft:paper","minecraft:clock"]
 const port = 10086
 var MarketData = [-1]
 
 
 //服务器启动监听&&获得玩家市场数据
 world.afterEvents.worldInitialize.subscribe(() => {
-    //首先检查文件是否存在
-    const reqCheckMarket = new HttpRequest(`http://127.0.0.1:${port}/CheckFile`);
-    reqCheckMarket.body = "market.json"
-    reqCheckMarket.method = HttpRequestMethod.POST;
-    reqCheckMarket.headers = [
-        new HttpHeader("Content-Type", "text/plain"),
-    ];
-    http.request(reqCheckMarket).then((response) => {
-        if (response.status == 200 && response.body == "true") {
-            //文件存在开始读取数据
-            const reqGetMarketData = new HttpRequest(`http://127.0.0.1:${port}/GetJsonFileData`);
-            reqGetMarketData.body = "market.json"
-            reqGetMarketData.method = HttpRequestMethod.POST;
-            reqGetMarketData.headers = [
-                new HttpHeader("Content-Type", "text/plain"),
-            ];
-            http.request(reqGetMarketData).then((response) => {
-                if (response.status == 200 && response.body != "The market.json file does not exist") {
-                    //读取成功
-                    MarketData = JSON.parse(response.body)
-                    console.log("Get file(market.json) data successfully!")
-                } else if (response.status == 200 && response.body == "The target file does not exist") {
-                    console.error("The market.json file does not exist")
-                } else {
-                    console.error("Dependent server connection failed! Check whether the dependent server started successfully.")
-                }
-            })
-        } else if (response.status == 200 && response.body == "false") {
-            //文件不存在开始生成文件并初始化
-            const reqCreateMarketFile = new HttpRequest(`http://127.0.0.1:${port}/CreateNewJsonFile`);
-            reqCreateMarketFile.body = JSON.stringify({"fileName":"market.json","fileContent":[]})
-            reqCreateMarketFile.method = HttpRequestMethod.POST;
-            reqCreateMarketFile.headers = [
-                new HttpHeader("Content-Type", "text/plain"),
-            ];
-            http.request(reqCreateMarketFile).then((response) => {
-                if (response.status == 200 && response.body == "success") {
-                    //初始化成功
+    fs.getJSONFileData("market.json").then((result) => {
+        //文件不存在
+        if (result === 0) {
+            fs.CreateNewJsonFile("market.json",[]).then((result) => {
+                if (result === "success") {
                     MarketData = [];
-                    console.log("File(market.json) created successfully!")
-                } else if (response.status == 200 && response.body != "success") {
-                    console.error(response.body)
-                } else {
-                    console.error("Dependent server connection failed! Check whether the dependent server started successfully.")
+                    log("玩家市场文件不存在，已成功创建！");
+                } else if (result === -1) {
+                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
                 }
-            })
+            });
+        } else if (result === -1) {
+            console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
         } else {
-            console.error("Dependent server connection failed! Check whether the dependent server started successfully.")
+            //文件存在且服务器连接成功
+            MarketData = result;
+            log("玩家市场数据获取成功！")
         }
     })
 })
+// world.afterEvents.worldInitialize.subscribe(() => {
+//     //首先检查文件是否存在
+//     const reqCheckMarket = new HttpRequest(`http://127.0.0.1:${port}/CheckFile`);
+//     reqCheckMarket.body = "market.json"
+//     reqCheckMarket.method = HttpRequestMethod.POST;
+//     reqCheckMarket.headers = [
+//         new HttpHeader("Content-Type", "text/plain"),
+//     ];
+//     http.request(reqCheckMarket).then((response) => {
+//         if (response.status == 200 && response.body == "true") {
+//             //文件存在开始读取数据
+//             const reqGetMarketData = new HttpRequest(`http://127.0.0.1:${port}/GetJsonFileData`);
+//             reqGetMarketData.body = "market.json"
+//             reqGetMarketData.method = HttpRequestMethod.POST;
+//             reqGetMarketData.headers = [
+//                 new HttpHeader("Content-Type", "text/plain"),
+//             ];
+//             http.request(reqGetMarketData).then((response) => {
+//                 if (response.status == 200) {
+//                     //读取成功
+//                     MarketData = JSON.parse(response.body)
+//                     log("玩家市场数据获取成功！")
+//                 } else if (response.status == 400) {
+//                     console.error("[NIA V4] 玩家市场数据获取失败！")
+//                 } else {
+//                     console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！")
+//                 }
+//             })
+//         } else if (response.status == 200 && response.body == "false") {
+//             //文件不存在开始生成文件并初始化
+//             const reqCreateMarketFile = new HttpRequest(`http://127.0.0.1:${port}/CreateNewJsonFile`);
+//             reqCreateMarketFile.body = JSON.stringify({"fileName":"market.json","fileContent":[]})
+//             reqCreateMarketFile.method = HttpRequestMethod.POST;
+//             reqCreateMarketFile.headers = [
+//                 new HttpHeader("Content-Type", "text/plain"),
+//             ];
+//             http.request(reqCreateMarketFile).then((response) => {
+//                 if (response.status == 200) {
+//                     //初始化成功
+//                     MarketData = [];
+//                     log("玩家市场文件不存在，已成功创建！")
+//                 } else if (response.status == 400) {
+//                     console.error(response.body)
+//                 } else {
+//                     console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！")
+//                 }
+//             })
+//         } else {
+//             console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！")
+//         }
+//     })
+// })
 
 
 const MarketGUI = {

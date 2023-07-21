@@ -3,7 +3,7 @@ import {ActionFormData,ModalFormData,MessageFormData} from '@minecraft/server-ui
 //一些自定义函数的注册
 
 export function log(info) {
-    console.warn(info)
+    console.log("\n\x1b[33m[NIA V4] " + info + "\x1b[0m")
 }
 
 
@@ -41,9 +41,9 @@ export function RunCmd(Cmd) {
 export function AddScoreboard(scoreboardName,showName) {
     if (world.scoreboard.getObjective(scoreboardName) == null) {
         world.scoreboard.addObjective(scoreboardName,showName);
-        Broadcast(`§e>> 计分板${scoreboardName}已被添加！`)
+        log(`计分板${scoreboardName}已被添加！`)
     } else {
-        Broadcast(`§c>> 添加错误，计分板${scoreboardName}已存在！`)
+        console.error(`[NIA V4] 添加错误，计分板${scoreboardName}已存在！`)
     }
 }
 

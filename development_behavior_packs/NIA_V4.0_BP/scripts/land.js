@@ -113,6 +113,8 @@ function PosInIndex(pos,dimid) {
     return false;
 }
 
-calculateIndex([100,0,100],[150,100,150],"minecraft:nether",123456,LandIndex)
-console.log(JSON.stringify(PosInIndex([100,0,151],"minecraft:nether")))
-console.log(JSON.stringify(LandIndex))
+// calculateIndex([100,0,100],[150,100,150],"minecraft:nether",123456,LandIndex)
+// console.log(JSON.stringify(PosInIndex([100,0,151],"minecraft:nether")))
+// console.log(JSON.stringify(LandIndex))
+
+
