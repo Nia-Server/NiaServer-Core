@@ -504,3 +504,11 @@ system.runInterval(() => {
         }
     }
 },20)
+
+world.afterEvents.entityHurt.subscribe((event) => {
+    if (event.damageSource.cause == "entityAttack" && event.damageSource.damagingEntity.typeId == "minecraft:player") {
+        console.log(event.hurtEntity.getComponent("minecraft:health").currentValue)
+    }
+})
+
+//event.damageSource.damagingEntity.sendMessage("你对 " + event.hurtEntity.typeId + " 造成了 " + event.damage.toFixed(2) + " 伤害" + event.hurtEntity.getComponent("minecraft:health").currentValue + " "+ event.hurtEntity.getComponent("minecraft:health").defaultValue + " " + event.hurtEntity.getComponent("minecraft:health") + " " + event.hurtEntity.hasComponent("minecraft:health"))

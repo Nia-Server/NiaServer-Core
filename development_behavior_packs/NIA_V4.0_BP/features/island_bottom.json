@@ -1,0 +1,31 @@
+{
+  "format_version": "1.13.0",
+  "minecraft:scatter_feature": {
+    "description": {
+      "identifier": "dave:island_bottom"
+    },
+    "iterations": "v.noisemap.size = 1024;
+v.noise_offset = 512;
+v.multinoise.temp = q.noise(v.originx/v.noisemap.size, v.originz/v.noisemap.size);
+v.multinoise.hum = q.noise((v.originx + v.noisemap.size) / v.noise_offset, (v.originz - v.noisemap.size) / v.noise_offset);
+t.height = q.noise(v.originz/64,v.originx/64)*12;
+return t.height;",
+    "places_feature": "dave:stone",
+    "x": 0,
+    "z": 0,
+    "y": {
+      "extent": [
+        "-t.height",
+        0
+      ],
+      "distribution": "fixed_grid"
+    }
+  }
+}
+// {
+//   "extent": [
+//     "(v.multinoise.temp) * (v.multinoise.hum)", 
+//     0
+//   ],
+//   "distribution": "fixed_grid"
+// }

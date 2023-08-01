@@ -38,58 +38,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
         }
     })
 })
-// world.afterEvents.worldInitialize.subscribe(() => {
-//     //首先检查文件是否存在
-//     const reqCheckMarket = new HttpRequest(`http://127.0.0.1:${port}/CheckFile`);
-//     reqCheckMarket.body = "market.json"
-//     reqCheckMarket.method = HttpRequestMethod.POST;
-//     reqCheckMarket.headers = [
-//         new HttpHeader("Content-Type", "text/plain"),
-//     ];
-//     http.request(reqCheckMarket).then((response) => {
-//         if (response.status == 200 && response.body == "true") {
-//             //文件存在开始读取数据
-//             const reqGetMarketData = new HttpRequest(`http://127.0.0.1:${port}/GetJsonFileData`);
-//             reqGetMarketData.body = "market.json"
-//             reqGetMarketData.method = HttpRequestMethod.POST;
-//             reqGetMarketData.headers = [
-//                 new HttpHeader("Content-Type", "text/plain"),
-//             ];
-//             http.request(reqGetMarketData).then((response) => {
-//                 if (response.status == 200) {
-//                     //读取成功
-//                     MarketData = JSON.parse(response.body)
-//                     log("玩家市场数据获取成功！")
-//                 } else if (response.status == 400) {
-//                     console.error("[NIA V4] 玩家市场数据获取失败！")
-//                 } else {
-//                     console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！")
-//                 }
-//             })
-//         } else if (response.status == 200 && response.body == "false") {
-//             //文件不存在开始生成文件并初始化
-//             const reqCreateMarketFile = new HttpRequest(`http://127.0.0.1:${port}/CreateNewJsonFile`);
-//             reqCreateMarketFile.body = JSON.stringify({"fileName":"market.json","fileContent":[]})
-//             reqCreateMarketFile.method = HttpRequestMethod.POST;
-//             reqCreateMarketFile.headers = [
-//                 new HttpHeader("Content-Type", "text/plain"),
-//             ];
-//             http.request(reqCreateMarketFile).then((response) => {
-//                 if (response.status == 200) {
-//                     //初始化成功
-//                     MarketData = [];
-//                     log("玩家市场文件不存在，已成功创建！")
-//                 } else if (response.status == 400) {
-//                     console.error(response.body)
-//                 } else {
-//                     console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！")
-//                 }
-//             })
-//         } else {
-//             console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！")
-//         }
-//     })
-// })
+
 
 
 const MarketGUI = {
@@ -370,61 +319,61 @@ world.afterEvents.itemUse.subscribe(event => {
 })
 
 //调试语句
-system.events.scriptEventReceive.subscribe((event) => {
-    // let {
-    //     id,           // returns string (wiki:test)
-    //     nitiator,    // returns Entity
-    //     message,      // returns string (Hello World)
-    //     sourceBlock,  // returns Block
-    //     sourceEntity, // returns Entity
-    //     sourceType,   // returns MessageSourceType
-    // } = event;
-    Broadcast("§c[scriptEventReceive] §eEventid:" + event.id + " selectedSlot:" + event.sourceEntity.selectedSlot)
-    Broadcast("§c[scriptEventReceive] §eid:" + event.sourceEntity.id)
-    let item = event.sourceEntity.getComponent("minecraft:inventory").container.getItem(event.sourceEntity.selectedSlot)
-    if (item != undefined) {
-        // Broadcast("id：" + item.typeId)
-        // Broadcast("amount：" + item.amount)
-        // Broadcast("keepOnDeath：" + item.keepOnDeath)
-        // Broadcast("lockMode：" + item.lockMode)
-        // Broadcast("maxAmount：" + item.maxAmount)
-        // Broadcast("nameTag：" + item.nameTag)
-        // Broadcast("type：" + item.type.id)
-        // //判断耐久值
-        // Broadcast("damage：" + item.getComponent("minecraft:durability").damage)
-        // //判断附魔
-        // let ench = item.getComponent('enchantments')
-        // //Broadcast(ench.slot)
-        // let object = [...ench.enchantments].reduce(
-        //         (obj, { type: { id }, level }) => Object.assign(obj, { [id]: level }),
-        //         {}
-        //     )
-        // let text = JSON.stringify(object, null, 2)
-        // Broadcast("enchantments：" + text)
-        // Broadcast("neeeew" )
-        let newItem = new ItemStack("minecraft:wooden_sword")
-        // Broadcast("olllllld" )
-        newItem.setLore(["服务器官方交易市场", "§e交易商品预览模式","§c请在商城执行归还物品操作"]);
-        newItem.nameTag = "木剑"
-        newItem.getComponent("minecraft:durability").damage = 10
-        //newItem.lockMode = "slot"
-        let newench = newItem.getComponent('enchantments')
-        let enchList = newench.enchantments
-        enchList.addEnchantment(new Enchantment("unbreaking",32767))
-        //在未来的版本可以直接用字符串进行构建，当前版本还不行
-        //enchList.addEnchantment(new Enchantment(MinecraftEnchantmentTypes.unbreaking,1))
-        newench.enchantments = enchList
-        //newench.addEnchantment()
-        // newItem.getComponent('enchantments').addEnchantment(newench)
-        event.sourceEntity.getComponent("minecraft:inventory").container.addItem(newItem)
-        Broadcast("newid：" + newItem.typeId)
-    }
-    // for (let i = 0; i < 35; i++) {
-    //     if (event.sourceEntity.getComponent("minecraft:inventory").container.getItem(i) != undefined) {
-    //         Broadcast(event.sourceEntity.getComponent("minecraft:inventory").container.getItem(i).typeId)
-    //     }
-    // }
-});
+// system.events.scriptEventReceive.subscribe((event) => {
+//     // let {
+//     //     id,           // returns string (wiki:test)
+//     //     nitiator,    // returns Entity
+//     //     message,      // returns string (Hello World)
+//     //     sourceBlock,  // returns Block
+//     //     sourceEntity, // returns Entity
+//     //     sourceType,   // returns MessageSourceType
+//     // } = event;
+//     Broadcast("§c[scriptEventReceive] §eEventid:" + event.id + " selectedSlot:" + event.sourceEntity.selectedSlot)
+//     Broadcast("§c[scriptEventReceive] §eid:" + event.sourceEntity.id)
+//     let item = event.sourceEntity.getComponent("minecraft:inventory").container.getItem(event.sourceEntity.selectedSlot)
+//     if (item != undefined) {
+//         // Broadcast("id：" + item.typeId)
+//         // Broadcast("amount：" + item.amount)
+//         // Broadcast("keepOnDeath：" + item.keepOnDeath)
+//         // Broadcast("lockMode：" + item.lockMode)
+//         // Broadcast("maxAmount：" + item.maxAmount)
+//         // Broadcast("nameTag：" + item.nameTag)
+//         // Broadcast("type：" + item.type.id)
+//         // //判断耐久值
+//         // Broadcast("damage：" + item.getComponent("minecraft:durability").damage)
+//         // //判断附魔
+//         // let ench = item.getComponent('enchantments')
+//         // //Broadcast(ench.slot)
+//         // let object = [...ench.enchantments].reduce(
+//         //         (obj, { type: { id }, level }) => Object.assign(obj, { [id]: level }),
+//         //         {}
+//         //     )
+//         // let text = JSON.stringify(object, null, 2)
+//         // Broadcast("enchantments：" + text)
+//         // Broadcast("neeeew" )
+//         let newItem = new ItemStack("minecraft:wooden_sword")
+//         // Broadcast("olllllld" )
+//         newItem.setLore(["服务器官方交易市场", "§e交易商品预览模式","§c请在商城执行归还物品操作"]);
+//         newItem.nameTag = "木剑"
+//         newItem.getComponent("minecraft:durability").damage = 10
+//         //newItem.lockMode = "slot"
+//         let newench = newItem.getComponent('enchantments')
+//         let enchList = newench.enchantments
+//         enchList.addEnchantment(new Enchantment("unbreaking",32767))
+//         //在未来的版本可以直接用字符串进行构建，当前版本还不行
+//         //enchList.addEnchantment(new Enchantment(MinecraftEnchantmentTypes.unbreaking,1))
+//         newench.enchantments = enchList
+//         //newench.addEnchantment()
+//         // newItem.getComponent('enchantments').addEnchantment(newench)
+//         event.sourceEntity.getComponent("minecraft:inventory").container.addItem(newItem)
+//         Broadcast("newid：" + newItem.typeId)
+//     }
+//     // for (let i = 0; i < 35; i++) {
+//     //     if (event.sourceEntity.getComponent("minecraft:inventory").container.getItem(i) != undefined) {
+//     //         Broadcast(event.sourceEntity.getComponent("minecraft:inventory").container.getItem(i).typeId)
+//     //     }
+//     // }
+// });
 
 
 // function __adler32(str) {

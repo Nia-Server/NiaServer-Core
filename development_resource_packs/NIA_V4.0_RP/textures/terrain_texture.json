@@ -1,10 +1,13 @@
 {
     "num_mip_levels" : 4,
     "padding" : 8,
-    "resource_pack_name" : "nia",
+    "resource_pack_name" : "NIA V4 RP",
     "texture_data": {
         "random_ore":{
             "textures": "textures/blocks/random_ore"
+        },
+        "dark_dirt": {
+            "textures": "textures/blocks/dark_dirt"
         }
     }
 }

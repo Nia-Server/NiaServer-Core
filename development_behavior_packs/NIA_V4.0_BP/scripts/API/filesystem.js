@@ -13,7 +13,7 @@ export class ExternalFS {
     getJSONFileData(filename) {
         const reqGetJsonFileData = new HttpRequest(`${server_url}:${port}/GetJsonFileData`)
         .setBody(filename)
-        .setMethod(HttpRequestMethod.POST)
+        .setMethod(HttpRequestMethod.Post)
         .addHeader("Content-Type", "text/plain");
         return new Promise(async (resolve) => {
             const response = await http.request(reqGetJsonFileData);
@@ -36,7 +36,7 @@ export class ExternalFS {
     CreateNewJsonFile(filename,filecontent) {
         const reqCreateNewJsonFile = new HttpRequest(`${server_url}:${port}/CreateNewJsonFile`)
         .setBody(JSON.stringify({"fileName":filename,"fileContent":filecontent}))
-        .setMethod(HttpRequestMethod.POST)
+        .setMethod(HttpRequestMethod.Post)
         .addHeader("Content-Type", "text/plain")
         return new Promise(async (resolve) => {
             const response = http.request(reqCreateNewJsonFile);
@@ -59,7 +59,7 @@ export class ExternalFS {
     OverwriteJsonFile(filename,filecontent) {
         const reqOverwriteJsonFile = new HttpRequest(`${server_url}:${port}/OverwriteJsonFile`)
         .setBody(JSON.stringify({"fileName":filename,"fileData":filecontent}))
-        .setMethod(HttpRequestMethod.POST)
+        .setMethod(HttpRequestMethod.Post)
         .addHeader("Content-Type", "text/plain");
         return new Promise(async (resolve) => {
             const response = http.request(reqOverwriteJsonFile);
