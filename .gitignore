@@ -1,15 +1,8 @@
 /*
 
 !/development_behavior_packs
-!/development_rescourse_packs
+!/development_resource_packs
 !/NIAServerPlugin
-!/NIAHttpBOT
-/NIAHttpBOT/out
-/NIAHttpBOT/.vs
-!/NIA-Server-BOT
-/NIA-Server-BOT/node_modules/
-/NIA-Server-BOT/data/
-/NIA-Server-BOT/config.json
 
 !/plugins/
 /plugins/*

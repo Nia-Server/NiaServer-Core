@@ -1,0 +1,114 @@
+{
+	"resource_pack_name": "NIA V4",
+	"texture_name": "atlas.items",
+	"texture_data": {
+		"op_sword": {
+			"textures": "textures/items/op_sword"
+		},
+		"dark_sword": {
+			"textures": "textures/items/sword/dark_sword"
+		},
+		"fire_sword": {
+			"textures": "textures/items/sword/fire_sword"
+		},
+		"nihility_sword": {
+			"textures": "textures/items/sword/nihility_sword"
+		},
+		"rock_sword": {
+			"textures": "textures/items/sword/rock_sword"
+		},
+		"spirit_sword": {
+			"textures": "textures/items/sword/spirit_sword"
+		},
+		"thunder_sword": {
+			"textures": "textures/items/sword/thunder_sword"
+		},
+		"water_sword": {
+			"textures": "textures/items/sword/water_sword"
+		},
+		"dark_gem": {
+			"textures": "textures/items/gem/dark_gem"
+		},
+		"fire_gem": {
+			"textures": "textures/items/gem/fire_gem"
+		},
+		"nihility_gem": {
+			"textures": "textures/items/gem/nihility_gem"
+		},
+		"rock_gem": {
+			"textures": "textures/items/gem/rock_gem"
+		},
+		"spirit_gem": {
+			"textures": "textures/items/gem/spirit_gem"
+		},
+		"thunder_gem": {
+			"textures": "textures/items/gem/thunder_gem"
+		},
+		"water_gem": {
+			"textures": "textures/items/gem/water_gem"
+		},
+		"dark_ore": {
+			"textures": "textures/items/ore/dark_ore"
+		},
+		"fire_ore": {
+			"textures": "textures/items/ore/fire_ore"
+		},
+		"nihility_ore": {
+			"textures": "textures/items/ore/nihility_ore"
+		},
+		"rock_ore": {
+			"textures": "textures/items/ore/rock_ore"
+		},
+		"spirit_ore": {
+			"textures": "textures/items/ore/spirit_ore"
+		},
+		"thunder_ore": {
+			"textures": "textures/items/ore/thunder_ore"
+		},
+		"water_ore": {
+			"textures": "textures/items/ore/water_ore"
+		},
+		"dark_crystal": {
+			"textures": "textures/items/crystal/dark_crystal"
+		},
+		"fire_crystal": {
+			"textures": "textures/items/crystal/fire_crystal"
+		},
+		"nihility_crystal": {
+			"textures": "textures/items/crystal/nihility_crystal"
+		},
+		"rock_crystal": {
+			"textures": "textures/items/crystal/rock_crystal"
+		},
+		"spirit_crystal": {
+			"textures": "textures/items/crystal/spirit_crystal"
+		},
+		"thunder_crystal": {
+			"textures": "textures/items/crystal/thunder_crystal"
+		},
+		"water_crystal": {
+			"textures": "textures/items/crystal/water_crystal"
+		},
+		"dark_bottle": {
+			"textures": "textures/items/bottle/dark_bottle"
+		},
+		"fire_bottle": {
+			"textures": "textures/items/bottle/fire_bottle"
+		},
+		"nihility_bottle": {
+			"textures": "textures/items/bottle/nihility_bottle"
+		},
+		"rock_bottle": {
+			"textures": "textures/items/bottle/rock_bottle"
+		},
+		"spirit_bottle": {
+			"textures": "textures/items/bottle/spirit_bottle"
+		},
+		"thunder_bottle": {
+			"textures": "textures/items/bottle/thunder_bottle"
+		},
+		"water_bottle": {
+			"textures": "textures/items/bottle/water_bottle"
+		}
+	}
+}
