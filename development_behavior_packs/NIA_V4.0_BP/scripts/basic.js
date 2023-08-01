@@ -122,7 +122,7 @@ const equLevelData = {
 world.afterEvents.worldInitialize.subscribe((event) => {
     log("你正在使用一个预览版！请不要在正式生产环境中使用！")
     log("NIA V4 已经成功在本服务器上启动！")
-    log("版本: v1.3.2-pre-1 based on BDS-1.20.10.02(last upgrate:2023/7/21)")
+    log("版本: v1.4.0-pre-1 based on BDS-1.20.12(last upgrate:2023/8/1)")
     log("作者: @NIANIANKNIA(https://github.com/NIANIANKNIA)")
     log("不会部署？前往文档站查看详细的部署过程==>(https://docs.mcnia.com/zh-CN/deploy.html)")
     log("本项目基于AGPL-3.0开源协议，注意遵守开源协议！")
@@ -169,22 +169,23 @@ world.afterEvents.playerSpawn.subscribe(event => {
     }
 })
 
-system.runInterval(() => {
-    RunCmd(`gamemode a @a[tag=!op,tag=!mining,m=!a,x=559,y=67,z=562,r=700]`)
-    RunCmd(`tag @a remove mining`)
-    RunCmd(`tag @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] add mining`)
-    RunCmd(`scoreboard players add @a[x=725,y=3,z=539,dx=89,dy=71,dz=30,tag=mining] miningTime -1`)
-    RunCmd(`title @a[x=725,y=3,z=539,dx=89,dy=71,dz=30,scores={miningTime = ..0}] title §c矿场使用时间已到！`)
-    RunCmd(`title @a[x=725,y=3,z=539,dx=89,dy=71,dz=30,scores={miningTime = ..0}] subtitle §7请重新花费体力进入！`)
-    RunCmd(`tp @a[x=725,y=3,z=539,dx=89,dy=71,dz=30,scores={miningTime = ..0}] 702 82 554`)
-    //CheckCringPlayer()
-    // RunCmd(`scoreboard players add @a oxygen 0`)
-    // RunCmd(`scoreboard players add @a equLevel 0`)
-    // RunCmd(`scoreboard players add @a actionbar 0`)
-    // RunCmd(`scoreboard players add @a time 0`)
-    // RunCmd(`scoreboard players add @a money 0`)
-    // RunCmd(`scoreboard players add @a AnoxicTime 0`)
-}, 1);
+// system.runInterval(() => {
+//     RunCmd(`gamemode a @a[tag=!op,tag=!mining,m=!a,x=559,y=67,z=562,r=700]`)
+//     RunCmd(`tag @a remove mining`)
+//     RunCmd(`tag @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] add mining`)
+//     RunCmd(`scoreboard players add @a[x=725,y=3,z=539,dx=89,dy=71,dz=30,tag=mining] miningTime -1`)
+//     RunCmd(`title @a[x=725,y=3,z=539,dx=89,dy=71,dz=30,scores={miningTime = ..0}] title §c矿场使用时间已到！`)
+//     RunCmd(`title @a[x=725,y=3,z=539,dx=89,dy=71,dz=30,scores={miningTime = ..0}] subtitle §7请重新花费体力进入！`)
+//     RunCmd(`tp @a[x=725,y=3,z=539,dx=89,dy=71,dz=30,scores={miningTime = ..0}] 702 82 554`)
+
+//     //CheckCringPlayer()
+//     // RunCmd(`scoreboard players add @a oxygen 0`)
+//     // RunCmd(`scoreboard players add @a equLevel 0`)
+//     // RunCmd(`scoreboard players add @a actionbar 0`)
+//     // RunCmd(`scoreboard players add @a time 0`)
+//     // RunCmd(`scoreboard players add @a money 0`)
+//     // RunCmd(`scoreboard players add @a AnoxicTime 0`)
+// }, 1);
 
 system.runInterval(() => {
     let players = world.getPlayers()
@@ -204,19 +205,19 @@ system.runInterval(() => {
         Broadcast(`§a>> 服务器自动备份中！可能出现卡顿，请勿在此时进行较大负载活动！`)
         if (TIME.getHours() == 16) {
             //每天更新数据文件
-            RunCmd(`title @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] title §c矿场已更新！`)
-            RunCmd(`title @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] subtitle §7请重新花费体力进入！`)
-            RunCmd(`tp @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] 702 82 554`)
-            RunCmd(`scoreboard objectives remove miningTime`)
-            RunCmd(`scoreboard objectives add miningTime dummy 采矿时间`)
-            RunCmd(`spawnores OreChunk1 813 3 568 725 68 539`)
+            // RunCmd(`title @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] title §c矿场已更新！`)
+            // RunCmd(`title @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] subtitle §7请重新花费体力进入！`)
+            // RunCmd(`tp @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] 702 82 554`)
+            // RunCmd(`scoreboard objectives remove miningTime`)
+            // RunCmd(`scoreboard objectives add miningTime dummy 采矿时间`)
+            // RunCmd(`spawnores OreChunk1 813 3 568 725 68 539`)
             let ScoreBoards = world.scoreboard.getObjectives()
             for (let i = 0; i < ScoreBoards.length; i++) {
                 if (ScoreBoards[i].id.slice(0,2) == "R:") {
                     RunCmd(`scoreboard objectives remove "${ScoreBoards[i].id}"`)
                 }
             }
-            Broadcast(`§a>> 服务器时间已更新！矿场已更新！`)
+            Broadcast(`§a>> 服务器时间已更新！`)
         }
     }
     if (TIME.getSeconds() == 0) {
@@ -505,10 +506,10 @@ system.runInterval(() => {
     }
 },20)
 
-world.afterEvents.entityHurt.subscribe((event) => {
-    if (event.damageSource.cause == "entityAttack" && event.damageSource.damagingEntity.typeId == "minecraft:player") {
-        console.log(event.hurtEntity.getComponent("minecraft:health").currentValue)
-    }
-})
+// world.afterEvents.entityHurt.subscribe((event) => {
+//     if (event.damageSource.cause == "entityAttack" && event.damageSource.damagingEntity.typeId == "minecraft:player") {
+//         console.log(event.hurtEntity.getComponent("minecraft:health").currentValue)
+//     }
+// })
 
 //event.damageSource.damagingEntity.sendMessage("你对 " + event.hurtEntity.typeId + " 造成了 " + event.damage.toFixed(2) + " 伤害" + event.hurtEntity.getComponent("minecraft:health").currentValue + " "+ event.hurtEntity.getComponent("minecraft:health").defaultValue + " " + event.hurtEntity.getComponent("minecraft:health") + " " + event.hurtEntity.hasComponent("minecraft:health"))

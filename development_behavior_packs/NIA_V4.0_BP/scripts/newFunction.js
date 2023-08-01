@@ -1,17 +1,19 @@
 import {world,system} from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 
-world.afterEvents.chatSend.subscribe(t => {
-    t.sender.sendMessage("启动成功！")
-})
-system.run
+const can_cr_id = ["mcnia:op_sword","mcnia:dark_sword","mcnia:fire_sword","mcnia:rock_sword","mcnia:spirit_sword","mcnia:thunder_sword","mcnia:water_sword","mcnia:wind_sword"]
+const can_cr_data = {"mcnia:op_sword": "op之剑","mcnia:dark_sword": "暗·剑","mcnia:fire_sword": "火·剑","mcnia:rock_sword": "岩·剑","mcnia:spirit_sword": "灵·剑","mcnia:thunder_sword": "雷·剑","mcnia:water_sword": "水·剑","mcnia:wind_sword": "空·剑"}
+const Upgrade_event = [
+    {}
+]
+
 
 world.afterEvents.entityHurt.subscribe((event) => {
     //判断是不是玩家使用攻击
     if (event.damageSource.cause == "entityAttack" && event.damageSource.damagingEntity.typeId == "minecraft:player") {
         //判断玩家拿的武器
         let selectedItem = event.damageSource.damagingEntity.getComponent("minecraft:inventory").container.getItem(event.damageSource.damagingEntity.selectedSlot)
-        if (selectedItem.typeId == "mcnia:op_sword" && selectedItem.getLore().length != 0 && selectedItem.getLore()[0].slice(0,3) == "§c+") {
+        if (can_cr_id.includes(selectedItem.typeId) && selectedItem.getLore().length != 0 && selectedItem.getLore()[0].slice(0,3) == "§c+") {
             //开始计算暴击率
             let cr = Number(selectedItem.getLore()[1].split("：")[1].slice(2, -1));
             let cd = Number(selectedItem.getLore()[2].split("：")[1].slice(2, -1));
@@ -59,10 +61,10 @@ world.afterEvents.entityHurt.subscribe((event) => {
                     }
                 } else {
                     if (event.hurtEntity.nameTag != "") {
-                        event.damageSource.damagingEntity.sendMessage("§7你对 §r" + event.hurtEntity.nameTag + " §7造成了 §e§l" + event.damage.toFixed(2) + " §r§7伤害,目标当前血量剩余：§c§l " + event.hurtEntity.getComponent("minecraft:health").currentValue.toFixed(2));
+                        event.damageSource.damagingEntity.sendMessage("§7你对 §r" + event.hurtEntity.nameTag + " §7造成了 §e§l" + event.damage.toFixed(2) + " §r§7伤害,目标当前血量剩余：§e§l " + event.hurtEntity.getComponent("minecraft:health").currentValue.toFixed(2));
                     } else {
                         let target_entity = "entity." + event.hurtEntity.typeId.split(":")[1] + ".name"
-                        let rawText = [{"text": "§7你对 §r"},{"translate": target_entity},{"text": " §7造成了 §e§l" + event.damage.toFixed(2) + " §r§7伤害,目标当前血量剩余：§c§l " + event.hurtEntity.getComponent("minecraft:health").currentValue.toFixed(2)}]
+                        let rawText = [{"text": "§7你对 §r"},{"translate": target_entity},{"text": " §7造成了 §e§l" + event.damage.toFixed(2) + " §r§7伤害,目标当前血量剩余：§e§l " + event.hurtEntity.getComponent("minecraft:health").currentValue.toFixed(2)}]
                         event.damageSource.damagingEntity.sendMessage(rawText);
                     }
                 }
@@ -78,10 +80,10 @@ world.afterEvents.entityHurt.subscribe((event) => {
                 }
             } else {
                 if (event.hurtEntity.nameTag != "") {
-                    event.damageSource.damagingEntity.sendMessage("§7你对 §r" + event.hurtEntity.nameTag + " §7造成了 §e§l" + event.damage.toFixed(2) + " §r§7伤害,目标当前血量剩余：§c§l " + event.hurtEntity.getComponent("minecraft:health").currentValue.toFixed(2));
+                    event.damageSource.damagingEntity.sendMessage("§7你对 §r" + event.hurtEntity.nameTag + " §7造成了 §e§l" + event.damage.toFixed(2) + " §r§7伤害,目标当前血量剩余：§e§l " + event.hurtEntity.getComponent("minecraft:health").currentValue.toFixed(2));
                 } else {
                     let target_entity = "entity." + event.hurtEntity.typeId.split(":")[1] + ".name"
-                    let rawText = [{"text": "§7你对 §r"},{"translate": target_entity},{"text": " §7造成了 §e§l" + event.damage.toFixed(2) + " §r§7伤害,目标当前血量剩余：§c§l " + event.hurtEntity.getComponent("minecraft:health").currentValue.toFixed(2)}]
+                    let rawText = [{"text": "§7你对 §r"},{"translate": target_entity},{"text": " §7造成了 §e§l" + event.damage.toFixed(2) + " §r§7伤害,目标当前血量剩余：§e§l " + event.hurtEntity.getComponent("minecraft:health").currentValue.toFixed(2)}]
                     event.damageSource.damagingEntity.sendMessage(rawText);
                 }
             }
@@ -121,12 +123,12 @@ const EQGUI = {
             .title("请选择要进阶的武器")
             let HaveItemIndex = []
             for (let i = 0; i < 35; i++) {
-                if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).typeId == "mcnia:op_sword" && player.getComponent("minecraft:inventory").container.getItem(i).getLore().length == 0) {
+                if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && can_cr_id.includes(player.getComponent("minecraft:inventory").container.getItem(i).typeId) && player.getComponent("minecraft:inventory").container.getItem(i).getLore().length == 0) {
                     if (player.getComponent("minecraft:inventory").container.getItem(i).nameTag != undefined) {
-                        InventoryData.push("§c槽id：" + i + " §r" + player.getComponent("minecraft:inventory").container.getItem(i).nameTag)
+                        InventoryData.push("§c槽id：" + i + " §r" + player.getComponent("minecraft:inventory").container.getItem(i).nameTag);
                         HaveItemIndex.push(i)
                     } else {
-                        InventoryData.push("§c槽id：" + i + " §r" + player.getComponent("minecraft:inventory").container.getItem(i).typeId)
+                        InventoryData.push("§c槽id：" + i + " §r" + can_cr_data[player.getComponent("minecraft:inventory").container.getItem(i).typeId]);
                         HaveItemIndex.push(i)
                     }
                 }
@@ -139,7 +141,7 @@ const EQGUI = {
                     //错误
                 } else {
                     let item = player.getComponent("minecraft:inventory").container.getItem(HaveItemIndex[response.formValues[0] - 1])
-                    item.setLore(["§c+0","暴击率：§c80%","暴击伤害：§c50%"])
+                    item.setLore(["§c+0","暴击率：§c20%","暴击伤害：§c50%"])
                     player.getComponent("minecraft:inventory").container.setItem(HaveItemIndex[response.formValues[0] - 1],item)
                     player.sendMessage("§7武器进阶成功！")
                 }
@@ -151,38 +153,78 @@ const EQGUI = {
         const UpgradeForm = new ModalFormData()
             .title("请选择要升级的武器")
             let HaveItemIndex = []
-            let num = 0
+            let sword_lev = 0;
             for (let i = 0; i < 35; i++) {
-                if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).typeId == "mcnia:op_sword" && player.getComponent("minecraft:inventory").container.getItem(i).getLore().length != 0 && player.getComponent("minecraft:inventory").container.getItem(i).getLore()[0].slice(0,3) == "§c+") {
+                if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && can_cr_id.includes(player.getComponent("minecraft:inventory").container.getItem(i).typeId) && player.getComponent("minecraft:inventory").container.getItem(i).getLore().length != 0 && Number(player.getComponent("minecraft:inventory").container.getItem(i).getLore()[0].slice(2)) < 12) {
                     if (player.getComponent("minecraft:inventory").container.getItem(i).nameTag != undefined) {
                         InventoryData.push("§c槽id：" + i + " §r" + player.getComponent("minecraft:inventory").container.getItem(i).nameTag)
                         HaveItemIndex.push(i)
                     } else {
-                        InventoryData.push("§c槽id：" + i + " §r" + player.getComponent("minecraft:inventory").container.getItem(i).typeId)
+                        InventoryData.push("§c槽id：" + i + " §r" + can_cr_data[player.getComponent("minecraft:inventory").container.getItem(i).typeId] + " §r§c等级：§r " + player.getComponent("minecraft:inventory").container.getItem(i).getLore()[0].slice(2))
                         HaveItemIndex.push(i)
                     }
                 }
-                //计算钻石数量
-                if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).typeId == "minecraft:diamond") {
-                    num = num + player.getComponent("minecraft:inventory").container.getItem(i).amount
-                }
             }
             UpgradeForm.dropdown("请选择要进阶的武器",InventoryData)
-            UpgradeForm.slider("请选择要进阶要使用的素材数量",0,num,1)
             UpgradeForm.show(player).then((response) => {
                 if (response.canceled) {
                     this.Main(player)
-                } else if (response.formValues[0] == 0 || response.formValues[1] == 0) {
+                } else if (response.formValues[0] == 0) {
                     //错误
                 } else {
-                    let item = player.getComponent("minecraft:inventory").container.getItem(HaveItemIndex[response.formValues[0] - 1])
-                    item.getLore()[0]
-                    item.setLore(["§c+12","暴击率：§c80%","暴击伤害：§c500%"])
-                    player.getComponent("minecraft:inventory").container.setItem(HaveItemIndex[response.formValues[0] - 1],item)
-                    player.sendMessage("§7武器进阶成功！")
+                    let sword_data = player.getComponent("minecraft:inventory").container.getItem(HaveItemIndex[response.formValues[0] - 1])
+                    this.UpgradeSub(player, sword_data, Number(sword_data.getLore()[0].slice(2)))
+                    // item.getLore()[0]
+                    // item.setLore(["§c+12","暴击率：§c80%","暴击伤害：§c500%"])
+                    // player.getComponent("minecraft:inventory").container.setItem(HaveItemIndex[response.formValues[0] - 1],item)
+                    // player.sendMessage("§7武器进阶成功！")
                 }
             })
-    }
+    },
+
+    UpgradeSub(player, sword_data, sword_level) {
+        let num = 0;
+        for (let i = 0; i < 35; i++) {
+            //计算钻石数量
+            if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).typeId == "minecraft:diamond") {
+                num = num + player.getComponent("minecraft:inventory").container.getItem(i).amount
+            }
+        }
+        if (num == 0) {
+            this.Info(player,"突破失败！\n原因是您背包内的突破素材不够！", "突破失败","UpgradeForm");
+        } else {
+            if (12 - sword_level <= num) {
+                num = 12 - sword_level;
+            }
+            const UpgradeSubForm = new ModalFormData()
+            .title("突破武器" + can_cr_data[sword_data.typeId])
+            .slider("请选择要进阶武器要使用的素材数量",1,num,1);
+            UpgradeSubForm.show(player).then((response) => {
+                let eventProb = [0.1283, 0.1596, 0.1896, 0.5225];
+                for (let i = 0; i < response.formValues[0]; i++) {
+                    console.log("强化一次")
+                }
+            })
+        }
+
+    },
+
+    Info(player,info,title,Form) {
+        const InfoForm = new MessageFormData()
+            .title(title)
+            .body(info)
+            .button1("确认")
+            .button2("退出")
+            .show(player).then((response) => {
+                if (response.selection == 0) {
+                    switch (Form) {
+                        case "UpgradeForm":
+                            this.Upgrade(player)
+                            break;
+                    }
+                }
+            })
+    },
 }
 
 //对于物品使用的检测

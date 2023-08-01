@@ -11,9 +11,6 @@
 		"fire_sword": {
 			"textures": "textures/items/sword/fire_sword"
 		},
-		"nihility_sword": {
-			"textures": "textures/items/sword/nihility_sword"
-		},
 		"rock_sword": {
 			"textures": "textures/items/sword/rock_sword"
 		},
@@ -26,14 +23,14 @@
 		"water_sword": {
 			"textures": "textures/items/sword/water_sword"
 		},
+		"wind_sword": {
+			"textures": "textures/items/sword/wind_sword"
+		},
 		"dark_gem": {
 			"textures": "textures/items/gem/dark_gem"
 		},
 		"fire_gem": {
 			"textures": "textures/items/gem/fire_gem"
-		},
-		"nihility_gem": {
-			"textures": "textures/items/gem/nihility_gem"
 		},
 		"rock_gem": {
 			"textures": "textures/items/gem/rock_gem"
@@ -47,14 +44,14 @@
 		"water_gem": {
 			"textures": "textures/items/gem/water_gem"
 		},
+		"wind_gem": {
+			"textures": "textures/items/gem/wind_gem"
+		},
 		"dark_ore": {
 			"textures": "textures/items/ore/dark_ore"
 		},
 		"fire_ore": {
 			"textures": "textures/items/ore/fire_ore"
-		},
-		"nihility_ore": {
-			"textures": "textures/items/ore/nihility_ore"
 		},
 		"rock_ore": {
 			"textures": "textures/items/ore/rock_ore"
@@ -68,14 +65,14 @@
 		"water_ore": {
 			"textures": "textures/items/ore/water_ore"
 		},
+		"wind_ore": {
+			"textures": "textures/items/ore/wind_ore"
+		},
 		"dark_crystal": {
 			"textures": "textures/items/crystal/dark_crystal"
 		},
 		"fire_crystal": {
 			"textures": "textures/items/crystal/fire_crystal"
-		},
-		"nihility_crystal": {
-			"textures": "textures/items/crystal/nihility_crystal"
 		},
 		"rock_crystal": {
 			"textures": "textures/items/crystal/rock_crystal"
@@ -89,14 +86,14 @@
 		"water_crystal": {
 			"textures": "textures/items/crystal/water_crystal"
 		},
+		"wind_crystal": {
+			"textures": "textures/items/crystal/wind_crystal"
+		},
 		"dark_bottle": {
 			"textures": "textures/items/bottle/dark_bottle"
 		},
 		"fire_bottle": {
 			"textures": "textures/items/bottle/fire_bottle"
-		},
-		"nihility_bottle": {
-			"textures": "textures/items/bottle/nihility_bottle"
 		},
 		"rock_bottle": {
 			"textures": "textures/items/bottle/rock_bottle"
@@ -109,6 +106,9 @@
 		},
 		"water_bottle": {
 			"textures": "textures/items/bottle/water_bottle"
+		},
+		"wind_bottle": {
+			"textures": "textures/items/bottle/wind_bottle"
 		}
 	}
 }

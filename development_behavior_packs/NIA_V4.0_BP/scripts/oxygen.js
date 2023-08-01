@@ -115,6 +115,3 @@ const equLevelData = {
     }
 }
 export const equLevel = equLevelData
-// system.runInternal(() => {
-
-// },20)

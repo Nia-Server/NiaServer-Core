@@ -306,17 +306,17 @@ const MarketGUI = {
 }
 
 //对于物品使用的检测
-world.afterEvents.itemUse.subscribe(event => {
-    if (event.itemStack.typeId == "minecraft:stick") {
-        let player = event.source;
-        if (player.nameTag == "NIANIANKNIA") {
-            MarketGUI.Main(player)
-        } else {
-            player.sendMessage("§c>> 玩家交易市场正在开发中，敬请期待!")
-        }
+// world.afterEvents.itemUse.subscribe(event => {
+//     if (event.itemStack.typeId == "minecraft:stick") {
+//         let player = event.source;
+//         if (player.nameTag == "NIANIANKNIA") {
+//             MarketGUI.Main(player)
+//         } else {
+//             player.sendMessage("§c>> 玩家交易市场正在开发中，敬请期待!")
+//         }
 
-    }
-})
+//     }
+// })
 
 //调试语句
 // system.events.scriptEventReceive.subscribe((event) => {

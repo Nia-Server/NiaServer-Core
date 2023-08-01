@@ -3,42 +3,42 @@ tile.nia:random_ore.name=原初之石
 item.mcnia:op_sword=OP之剑
 item.mcnia:dark_sword=暗·剑
 item.mcnia:fire_sword=火·剑
-item.mcnia:nihility_sword=空·剑
 item.mcnia:rock_sword=岩·剑
 item.mcnia:spirit_sword=灵·剑
 item.mcnia:thunder_sword=雷·剑
 item.mcnia:water_sword=水·剑
+item.mcnia:wind_sword=空·剑
 
 item.mcnia:dark_gem=暗元素宝石
 item.mcnia:fire_gem=火元素宝石
-item.mcnia:nihility_gem=空元素宝石
 item.mcnia:rock_gem=岩元素宝石
 item.mcnia:spirit_gem=灵元素宝石
 item.mcnia:thunder_gem=雷元素宝石
 item.mcnia:water_gem=水元素宝石
+item.mcnia:wind_gem=空元素宝石
 
 item.mcnia:dark_ore=暗元素矿石
 item.mcnia:fire_ore=火元素矿石
-item.mcnia:nihility_ore=空元素矿石
 item.mcnia:rock_ore=岩元素矿石
 item.mcnia:spirit_ore=灵元素矿石
 item.mcnia:thunder_ore=雷元素矿石
 item.mcnia:water_ore=水元素矿石
+item.mcnia:wind_ore=空元素矿石
 
 item.mcnia:dark_crystal=暗元素晶体
 item.mcnia:fire_crystal=火元素晶体
-item.mcnia:nihility_crystal=空元素晶体
 item.mcnia:rock_crystal=岩元素晶体
 item.mcnia:spirit_crystal=灵元素晶体
 item.mcnia:thunder_crystal=雷元素晶体
 item.mcnia:water_crystal=水元素晶体
+item.mcnia:wind_crystal=空元素晶体
 
 item.mcnia:dark_bottle=暗元素之瓶
 item.mcnia:fire_bottle=火元素之瓶
-item.mcnia:nihility_bottle=空元素之瓶
 item.mcnia:rock_bottle=岩元素之瓶
 item.mcnia:spirit_bottle=灵元素之瓶
 item.mcnia:thunder_bottle=雷元素之瓶
 item.mcnia:water_bottle=水元素之瓶
+item.mcnia:wind_bottle=空元素之瓶
 
 tile.mcnia:dark_dirt.name=暗之泥土

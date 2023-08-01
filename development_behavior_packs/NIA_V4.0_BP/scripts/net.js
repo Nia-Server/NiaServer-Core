@@ -5,7 +5,7 @@ import {http,HttpRequestMethod,HttpRequest,HttpHeader} from '@minecraft/server-n
 import { ExternalFS } from './API/filesystem.js';
 const fs = new ExternalFS();
 const port = 10086
-const VERSION = "v1.3.2-pre-1"
+const VERSION = "v1.4.0-pre-1"
 
 
 //与服务器通信获取群聊消息
@@ -200,7 +200,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
                     log("自动检查更新成功！当前版本是最新版本！")
                 }
             } else {
-                console.error("[NIA V4] 自动检查更新失败！Github服务器连接失败！")
+                console.warn("[NIA V4] 自动检查更新失败！Github服务器连接失败！")
             }
         })
 })
@@ -212,7 +212,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
 world.afterEvents.playerJoin.subscribe((player) => {
     const reqPlayerJoin = new HttpRequest(`http://127.0.0.1:${port}/PlayerJoin`);
     reqPlayerJoin.body = player.playerName
-    reqPlayerJoin.method = HttpRequestMethod.POST;
+    reqPlayerJoin.method = HttpRequestMethod.Post;
     reqPlayerJoin.headers = [
         new HttpHeader("Content-Type", "text/plain")
     ];
@@ -223,7 +223,7 @@ world.afterEvents.playerJoin.subscribe((player) => {
 world.afterEvents.playerLeave.subscribe((player) => {
     const reqPlayerLeave = new HttpRequest(`http://127.0.0.1:${port}/PlayerLeave`);
     reqPlayerLeave.body = player.playerName
-    reqPlayerLeave.method = HttpRequestMethod.POST;
+    reqPlayerLeave.method = HttpRequestMethod.Post;
     reqPlayerLeave.headers = [
         new HttpHeader("Content-Type", "text/plain"),
     ];
@@ -237,7 +237,7 @@ world.afterEvents.chatSend.subscribe((t) => {
     msg.name = t.sender.nameTag
     msg.message = t.message
     reqPlayerChat.body = JSON.stringify(msg);
-    reqPlayerChat.method = HttpRequestMethod.POST;
+    reqPlayerChat.method = HttpRequestMethod.Post;
     reqPlayerChat.headers = [
         new HttpHeader("Content-Type", "text/plain; charset=utf-8"),
     ];

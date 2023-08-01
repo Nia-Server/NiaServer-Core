@@ -2,7 +2,7 @@
 	"format_version": "1.16.100",
 	"minecraft:item": {
 		"description": {
-			"identifier": "mcnia:nihility_sword",
+			"identifier": "mcnia:wind_sword",
 			"category": "equipment"
 		},
 		"components": {
@@ -21,7 +21,7 @@
 				"slot": "sword"
 			},
 			"minecraft:icon": {
-				"texture": "nihility_sword"
+				"texture": "wind_sword"
 			},
             "minecraft:digger": {
                 "use_efficiency": true,
