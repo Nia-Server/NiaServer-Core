@@ -7,8 +7,7 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/commits)
 [![QQ GROUNP](https://img.shields.io/badge/QQ%20GROUNP-724360499-blue?style=for-the-badge)](https://jq.qq.com/?_wv=1027&k=uk57fVr0)
 [![website](https://img.shields.io/badge/website-docs.mcnia.com-blue?style=for-the-badge)](https://docs.mcnia.com)
-
-![NIASERVER-V4](https://socialify.git.ci/NIANIANKNIA/NIASERVER-V4/image?description=1&descriptionEditable=%E4%B8%80%E4%B8%AA%E5%9F%BA%E4%BA%8EBDS%E7%9A%84Minecraft%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%81&font=KoHo&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.top%2Flogo.png&name=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Auto)
+![NIASERVER-V4](https://socialify.git.ci/NIANIANKNIA/NIASERVER-V4/image?description=1&font=KoHo&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.com%2Flogo.png&name=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Light)
 
 **语言: 简体中文 | [English](README-EN.md)**
 
@@ -16,7 +15,7 @@
 
 **注意：当前服务器addons包仍处于开发状态，暂时没有对其他类型服务器做适配，所以我们并不推荐您直接使用！**
 
-**自2023/8/1之后由于NIA服务器开发计划有所变动，适配1.20.10的v1.4.0版本暂缓发布，该最终发布的v1.4.0版本将会有大范围变动（包括但不限于玩法、机制等）**
+**自2023/8/1之后由于NIA服务器开发计划有所变动，适配1.20.10的v1.4.0版本暂缓发布，最终发布的v1.4.0版本将会有大范围变动（包括但不限于玩法、机制等）**
 
 一个基于BDS的基岩版服务器，这里开源了由服务器开发团队制作的addons（包括基于script-api的脚本）、大部分运行于LiteLoader的插件（部分LiteLoader插件源码可以点击前往 [NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin) 查看）
 
@@ -134,11 +133,17 @@
 
 如果您在使用过程中遇到了问题、bug，或者拥有好的建议您都可以前往[issues](https://github.com/NIANIANKNIA/NIASERVER-V4/issues)反馈，我会在看到后第一时间回复！
 
+## 特别鸣谢
+
+[@Dave](https://abcdavk.github.io/) 服务器的空岛生成受他的行为包所启发！
+
 ## 服务器开发者名单 （排名不分先后）
 
 @NIANIANKNIA
 
 @jiansyuan
+
+@lonely
 
 @sliverplus
 
@@ -150,8 +155,6 @@
 
 @DoorCarey
 
-@lonely
-
 @stsx686868
 
 @Samcrybut
@@ -160,9 +163,6 @@
 
 ...
 
-## 特别鸣谢
-
-[@Dave](https://abcdavk.github.io/) 服务器的空岛生成受他的行为包所启发！
 
 ## 许可证
 
