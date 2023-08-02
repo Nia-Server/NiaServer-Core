@@ -13,6 +13,7 @@
 #include <rapidjson/istreamwrapper.h>
 
 #include "CFG_Parser.hpp"
+#include "I18Nize.hpp"
 
 #define INFO(a) GetTime(), std::cout<<"\x1b[32m[INFO]\x1b[0m "<<a<<std::endl
 #define WARN(a) GetTime(), std::cout<<"\x1b[43;1m[WARN]\x1b[0m "<<a<<std::endl
@@ -21,6 +22,14 @@
 	<<REMOVE_PATH(__FILE__)<<":"<<__LINE__<<" ("<<__FUNCTION__ \
 	<<")\x1b[0m ==>\n"<<a<<'\n'<<std::endl
 #define LOG(sym,str) GetTime(), std::cout<<#sym" "<<str<<std::endl
+
+#define XINFO(a) GetTime(), std::cout<<"\x1b[32m[INFO]\x1b[0m "<<__I18N(a)<<std::endl
+#define XWARN(a) GetTime(), std::cout<<"\x1b[43;1m[WARN]\x1b[0m "<<__I18N(a)<<std::endl
+#define XFAIL(a) GetTime(), std::cout<<"\x1b[41;1m[FAIL]\x1b[0m \x1b[36;45;4mError at " \
+	<<REMOVE_PATH(__FILE__)<<":"<<__LINE__<<" ("<<__FUNCTION__ \
+	<<")\x1b[0m ==>\n"<<__I18N(a)<<'\n'<<std::endl
+#define XLOG(sym,str) GetTime(), std::cout<<#sym" "<<__I18N(str)<<std::endl
+#define X(a) __I18N(a)
 
 //初始化配置文件数据
 std::string IPAddress = "127.0.0.1";
@@ -66,10 +75,13 @@ int main() {
 	)" <<"\x1b[0m"<< std::endl;
 
 	CFGPAR::parser par;
+	static I18N i18n;
+#define __I18N(a) i18n.get(a)
+
 	//首先检查有没有配置文件
 	if (!par.parFromFile("./NIAHttpBOT.cfg")) {
 		std::ofstream outcfgFile("NIAHttpBOT.cfg");
-		outcfgFile << "# 基础配置:\n\nIPAddress = \"127.0.0.1\"\nPort = 10086\n\n# 功能配置:\n\nUseCmd = false\n";
+		outcfgFile << "# 基础配置:\n\nLanguageFile = \"\"\nIPAddress = \"127.0.0.1\"\nPort = 10086\n\n# 功能配置:\n\nUseCmd = false\n";
 		outcfgFile.close();
 		WARN("未找到配置文件，已自动初始化配置文件 NIAHttpBOT.cfg");
 	} else {
@@ -77,21 +89,24 @@ int main() {
 		PORT = par.getInt("Port");
 		UseCmd = par.getBool("UseCmd");
 		INFO("已成功读取配置文件！");
+		if(!par.hasKey("LanguageFile") || !par.getString("LanguageFile").size()) INFO("已使用默认语言");
+		else if(!i18n.loadFromFile(par.getString("LanguageFile"))) WARN("语言文件加载失败");
+		else XINFO("语言配置已加载成功");
 	}
 
-	INFO("NIAHttpBOT 已在 " + IPAddress + ":" + std::to_string(PORT) + " 上成功启动!");
-	INFO("项目地址：https://github.com/NIANIANKNIA/NIASERVER-V4/tree/main/NIAHttpBOT");
-	INFO("项目作者：@NIANIANKNIA @jiansyuan");
-	INFO("在使用中遇到问题请前往项目下的 issue 反馈，如果觉得本项目不错不妨点个 star！");
-	if (UseCmd)  WARN("检测到执行DOS命令功能已启用，请注意服务器安全！");
+	INFO(X("NIAHttpBOT 已在 ") + IPAddress + ":" + std::to_string(PORT) + X(" 上成功启动!"));
+	XINFO("项目地址：https://github.com/NIANIANKNIA/NIASERVER-V4/tree/main/NIAHttpBOT");
+	XINFO("项目作者：@NIANIANKNIA @jiansyuan");
+	XINFO("在使用中遇到问题请前往项目下的 issue 反馈，如果觉得本项目不错不妨点个 star！");
+	if (UseCmd)  XWARN("检测到执行DOS命令功能已启用，请注意服务器安全！");
 
 	httplib::Server svr;
 
 	//服务器开启检测
 	svr.Get("/ServerStarted", [](const httplib::Request&, httplib::Response& res) {
-		INFO("Minecraft服务器连接成功！");
+		XINFO("Minecraft服务器连接成功！");
 		res.status = 200;
-		res.set_content("服务器已启动", "text/plain");
+		res.set_content(X("服务器已启动"), "text/plain");
 	});
 	svr.Post("/Check", [](const httplib::Request& req, httplib::Response& res) {
 		res.status = 200;
@@ -99,21 +114,21 @@ int main() {
 	});
 	//玩家加入服务器检测
 	svr.Post("/PlayerJoin", [](const httplib::Request& req, httplib::Response& res) {
-		INFO("玩家 " << req.body << " 进入了服务器");
+		INFO(X("玩家 ") << req.body << X(" 进入了服务器"));
 		res.status = 200;
-		res.set_content("玩家进入服务器", "text/plain");
+		res.set_content(X("玩家进入服务器"), "text/plain");
 	});
 	//玩家离开服务器检测
 	svr.Post("/PlayerLeave", [](const httplib::Request& req, httplib::Response& res) {
-		INFO("玩家 " << req.body << " 离开了服务器");
+		INFO(X("玩家 ") << req.body << X(" 离开了服务器"));
 		res.status = 200;
-		res.set_content("玩家离开服务器", "text/plain");
+		res.set_content(X("玩家离开服务器"), "text/plain");
 	});
 	//玩家发言检测
 	svr.Post("/PlayerChat", [](const httplib::Request& req, httplib::Response& res) {
-		INFO("玩家发言 " << req.body);
+		INFO(X("玩家发言 ") << req.body);
 		res.status = 200;
-		res.set_content("玩家进入服务器", "text/plain");
+		res.set_content(X("玩家进入服务器"), "text/plain");
 	});
 	//玩家市场初始化检测
 	// svr.Post("/MarketInitialize", [](const httplib::Request& req, httplib::Response& res) {
@@ -124,7 +139,7 @@ int main() {
 
 	//检查文件是否存在
 	svr.Post("/CheckFile", [](const httplib::Request& req, httplib::Response& res) {
-		INFO("接收到检查文件是否存在的请求，请求检查的文件名称: " << req.body);
+		INFO(X("接收到检查文件是否存在的请求，请求检查的文件名称: ") << req.body);
 		std::ifstream file(req.body);
 		res.status = 200;
 		res.set_content(file?"true":"false", "text/plain");
@@ -133,7 +148,7 @@ int main() {
 
 	//创建新的文件
 	svr.Post("/CreateNewFile", [](const httplib::Request& req, httplib::Response& res) {
-		INFO("接收到创建文件的请求！ ");
+		XINFO("接收到创建文件的请求！ ");
 		//解析字符串并创建一个json对象
 		rapidjson::Document NewFileData;
 		NewFileData.Parse(req.body.c_str());
@@ -179,7 +194,7 @@ int main() {
 
 	//创建新的json文件
 	svr.Post("/CreateNewJsonFile", [](const httplib::Request& req, httplib::Response& res) {
-		INFO("接收到创建json文件的请求！ ");
+		XINFO("接收到创建json文件的请求！ ");
 		//解析字符串并创建一个json对象
 		rapidjson::Document NewFileData;
 		NewFileData.Parse(req.body.c_str());
@@ -229,7 +244,7 @@ int main() {
 
 	//获取json文件数据
 	svr.Post("/GetJsonFileData", [](const httplib::Request& req, httplib::Response& res) {
-		INFO("接收到获取文件数据的请求,请求获取的文件名称为： " << req.body);
+		INFO(X("接收到获取文件数据的请求,请求获取的文件名称为： ") << req.body);
 		//初始化文件名称
 		std::string fileName = req.body;
 		//判断文件存不存在
@@ -258,7 +273,7 @@ int main() {
 
 	//覆盖json文件内容
 	svr.Post("/OverwriteJsonFile", [](const httplib::Request& req, httplib::Response& res) {
-		INFO("接收到覆写json文件的请求！");
+		XINFO("接收到覆写json文件的请求！");
 		//解析字符串并创建一个json对象
 		rapidjson::Document overWriteFileData;
 		overWriteFileData.Parse(req.body.c_str());
@@ -310,13 +325,13 @@ int main() {
 	svr.Post("/RunCmd",  [](const httplib::Request& req, httplib::Response& res) {
 		//首先判断配置文件是否启用
 		if (!UseCmd) {
-			WARN("执行DOS命令的功能暂未启用！请在启用后使用！");
+			XWARN("执行DOS命令的功能暂未启用！请在启用后使用！");
 			res.status = 400;
 			res.set_content("feature not enabled!", "text/plain");
 			return ;
 		}
 		std::string cmd = req.body;
-		WARN("收到一条执行DOS命令的请求：" + cmd);
+		WARN(X("收到一条执行DOS命令的请求：") + cmd);
 		system(cmd.c_str());
 		res.status = 200;
 		res.set_content("success", "text/plain");
@@ -324,7 +339,7 @@ int main() {
 
 	//向目标文件写入一行内容
 	svr.Post("/WriteLineToFile",  [](const httplib::Request& req, httplib::Response& res) {
-		INFO("接收到向目标文件写入一行内容的请求！");
+		XINFO("接收到向目标文件写入一行内容的请求！");
 		//解析字符串并创建一个json对象
 		rapidjson::Document WriteLineData;
 		WriteLineData.Parse(req.body.c_str());
@@ -368,7 +383,7 @@ int main() {
 
 	//向目标文件覆盖内容
 	svr.Post("/OverwriteFile",  [](const httplib::Request& req, httplib::Response& res) {
-		INFO("接收到覆写文件的请求！");
+		XINFO("接收到覆写文件的请求！");
 		//解析字符串并创建一个json对象
 		rapidjson::Document OverwriteFileData;
 		OverwriteFileData.Parse(req.body.c_str());
