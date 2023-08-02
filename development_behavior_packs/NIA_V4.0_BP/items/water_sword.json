@@ -39,7 +39,11 @@
                     "event": "mcnia:sword.on_dig_damage"
                 }
             },
-			"minecraft:weapon": {}
+			"minecraft:weapon": {
+				"on_hurt_entity": {
+					"event": "mcnia:sword.hurt_entity"
+				}
+			}
 		},
         "events": {
             "mcnia:sword.on_dig_damage": {
@@ -48,7 +52,18 @@
                     "target":"self",
                     "amount":1
                 }
-            }
+            },
+			"mcnia:sword.hurt_entity": {
+				"sequence": [
+					{
+						"damage":{
+							"type":"durability",
+							"target":"self",
+							"amount":1
+						}
+					}
+				]
+			}
         }
 	}
 }

@@ -3,9 +3,7 @@ import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-
 
 const can_cr_id = ["mcnia:op_sword","mcnia:dark_sword","mcnia:fire_sword","mcnia:rock_sword","mcnia:spirit_sword","mcnia:thunder_sword","mcnia:water_sword","mcnia:wind_sword"]
 const can_cr_data = {"mcnia:op_sword": "op之剑","mcnia:dark_sword": "暗·剑","mcnia:fire_sword": "火·剑","mcnia:rock_sword": "岩·剑","mcnia:spirit_sword": "灵·剑","mcnia:thunder_sword": "雷·剑","mcnia:water_sword": "水·剑","mcnia:wind_sword": "空·剑"}
-const Upgrade_event = [
-    {}
-]
+
 
 
 world.afterEvents.entityHurt.subscribe((event) => {
@@ -17,7 +15,7 @@ world.afterEvents.entityHurt.subscribe((event) => {
             //开始计算暴击率
             let cr = Number(selectedItem.getLore()[1].split("：")[1].slice(2, -1));
             let cd = Number(selectedItem.getLore()[2].split("：")[1].slice(2, -1));
-            let random = Math.floor(Math.random() * 100);
+            let random = Math.random() * 100;
             //event.damageSource.damagingEntity.sendMessage("hh"+ cr + " " + cd + " " + random)
             if (random <= cr) {
                 //暴击了
@@ -155,7 +153,7 @@ const EQGUI = {
             let HaveItemIndex = []
             let sword_lev = 0;
             for (let i = 0; i < 35; i++) {
-                if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && can_cr_id.includes(player.getComponent("minecraft:inventory").container.getItem(i).typeId) && player.getComponent("minecraft:inventory").container.getItem(i).getLore().length != 0 && Number(player.getComponent("minecraft:inventory").container.getItem(i).getLore()[0].slice(2)) < 12) {
+                if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && can_cr_id.includes(player.getComponent("minecraft:inventory").container.getItem(i).typeId) && player.getComponent("minecraft:inventory").container.getItem(i).getLore().length != 0 && Number(player.getComponent("minecraft:inventory").container.getItem(i).getLore()[0].slice(2)) < 5) {
                     if (player.getComponent("minecraft:inventory").container.getItem(i).nameTag != undefined) {
                         InventoryData.push("§c槽id：" + i + " §r" + player.getComponent("minecraft:inventory").container.getItem(i).nameTag)
                         HaveItemIndex.push(i)
@@ -173,7 +171,7 @@ const EQGUI = {
                     //错误
                 } else {
                     let sword_data = player.getComponent("minecraft:inventory").container.getItem(HaveItemIndex[response.formValues[0] - 1])
-                    this.UpgradeSub(player, sword_data, Number(sword_data.getLore()[0].slice(2)))
+                    this.UpgradeSub(player, sword_data, Number(sword_data.getLore()[0].slice(2)), HaveItemIndex[response.formValues[0] - 1])
                     // item.getLore()[0]
                     // item.setLore(["§c+12","暴击率：§c80%","暴击伤害：§c500%"])
                     // player.getComponent("minecraft:inventory").container.setItem(HaveItemIndex[response.formValues[0] - 1],item)
@@ -182,7 +180,7 @@ const EQGUI = {
             })
     },
 
-    UpgradeSub(player, sword_data, sword_level) {
+    UpgradeSub(player, sword_data, sword_level, slot) {
         let num = 0;
         for (let i = 0; i < 35; i++) {
             //计算钻石数量
@@ -193,20 +191,96 @@ const EQGUI = {
         if (num == 0) {
             this.Info(player,"突破失败！\n原因是您背包内的突破素材不够！", "突破失败","UpgradeForm");
         } else {
-            if (12 - sword_level <= num) {
-                num = 12 - sword_level;
+            if (5 - sword_level <= num) {
+                num = 5 - sword_level;
             }
             const UpgradeSubForm = new ModalFormData()
             .title("突破武器" + can_cr_data[sword_data.typeId])
             .slider("请选择要进阶武器要使用的素材数量",1,num,1);
             UpgradeSubForm.show(player).then((response) => {
-                let eventProb = [0.1283, 0.1596, 0.1896, 0.5225];
+                let add_cr = 0;
+                let add_cd = 0;
+                let info = "";
+                let store_random_data = 0;
+                let now_level = sword_level;
                 for (let i = 0; i < response.formValues[0]; i++) {
-                    console.log("强化一次")
+                    let random_num = Math.random();
+                    switch (true) {
+                        case random_num <= 0.02:
+                            sword_data.getComponent("minecraft:durability").damage = parseInt(sword_data.getComponent("minecraft:durability").damage / 2);
+                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + sword_data.getComponent("minecraft:durability").damage +"\n§r§c§l强化失败，耐久损失一半！\n\n§r=================\n";
+                            now_level = now_level + 1;
+                            break;
+                        case random_num > 0.02 && random_num <= 0.2:
+                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r§c§l强化失败，无事发生！\n\n§r=================\n";
+                            now_level = now_level + 1;
+                            break;
+                        case random_num > 0.2 && random_num <= 0.5:
+                            store_random_data = Math.random() * 9 + 1
+                            add_cr = add_cr + store_random_data;
+                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r暴击率 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
+                            now_level = now_level + 1;
+                            break;
+                        case random_num > 0.5 && random_num <= 0.8:
+                            store_random_data = Math.random() * 18 + 2;
+                            add_cd = add_cd + store_random_data;
+                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r暴击伤害 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
+                            now_level = now_level + 1;
+                            break;
+                        case random_num > 0.8 && random_num <= 0.89:
+                            store_random_data = Math.random() * 7 + 8;
+                            add_cr = add_cr + store_random_data;
+                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r暴击率 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
+                            now_level = now_level + 1;
+                            break;
+                        case random_num > 0.89 && random_num <= 0.98:
+                            store_random_data = Math.random() * 14 + 16;
+                            add_cd = add_cd + store_random_data;
+                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r暴击伤害 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
+                            now_level = now_level + 1;
+                            break;
+                        case random_num > 0.98 && random_num <= 0.989:
+                            store_random_data = Math.random() * 30 + 30;
+                            add_cr = add_cr + store_random_data;
+                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r暴击率 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
+                            now_level = now_level + 1;
+                            break;
+                        case random_num > 0.989 && random_num <= 0.998:
+                            store_random_data = Math.random() * 60 + 60;
+                            add_cd = add_cd + store_random_data;
+                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r暴击伤害 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
+                            now_level = now_level + 1;
+                            break;
+                        case random_num > 0.998 && random_num <= 0.999:
+                            add_cr = add_cr + 100;
+                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r暴击率 +§c§l100%%\n\n§r=================\n";
+                            now_level = now_level + 1;
+                            break;
+                        case random_num > 0.999 && random_num <= 1:
+                            add_cd = add_cd + 200;
+                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r暴击伤害 +§c§l200%%\n\n§r=================\n";
+                            now_level = now_level + 1;
+                            break;
+
+                    }
                 }
+                this.UpgradeResult(player,info,add_cr.toFixed(2),add_cd.toFixed(2));
+                let cr = (Number(sword_data.getLore()[1].split("：")[1].slice(2, -1)) + Number(add_cr)).toFixed(2);
+                let cd = (Number(sword_data.getLore()[2].split("：")[1].slice(2, -1)) + Number(add_cd)).toFixed(2);
+                sword_data.setLore(["§c+" + now_level,"暴击率：§c"+ cr +"%","暴击伤害：§c" + cd + "%"]);
+                player.getComponent("minecraft:inventory").container.setItem(slot,sword_data);
+
             })
         }
 
+    },
+
+    UpgradeResult(player,info,add_cr,add_cd) {
+        const UpgradeResultForm = new ActionFormData()
+            .body("本次升级总成长值：\n\n暴击率总提升：§c§l" + add_cr +"%%§r\n\n暴击伤害总提升：§c§l" + add_cd + "%%\n\n§r=================\n" + info)
+            .title("武器升级结果")
+            .button("重置武器")
+            .show(player)
     },
 
     Info(player,info,title,Form) {
@@ -226,6 +300,18 @@ const EQGUI = {
             })
     },
 }
+
+
+// 2%概率强化大失败 - 耐久损失一半
+// 18%概率强化失败 - 无事发生
+// 30%概率提高暴击率1%-10%任意数值
+// 30%概率提高暴击伤害2%-20%任意数值
+// 9%概率提高暴击率8%-15%任意数值
+// 9%概率提高暴击伤害16%-30%任意数值
+// 0.8%提高暴击率 30%-60%任意数值
+// 0.8%提高暴击伤害 60%-120%任意数值
+// 0.2%提高暴击率 80%
+// 0.2%提高暴击伤害 200%
 
 //对于物品使用的检测
 world.afterEvents.itemUse.subscribe(event => {
