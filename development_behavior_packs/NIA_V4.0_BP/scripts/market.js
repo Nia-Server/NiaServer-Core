@@ -15,6 +15,8 @@ const BanItems = ["minecraft:paper","minecraft:clock"]
 const port = 10086
 var MarketData = [-1]
 
+let start = Date.now();
+
 
 //服务器启动监听&&获得玩家市场数据
 world.afterEvents.worldInitialize.subscribe(() => {
@@ -34,11 +36,10 @@ world.afterEvents.worldInitialize.subscribe(() => {
         } else {
             //文件存在且服务器连接成功
             MarketData = result;
-            log("玩家市场数据获取成功！")
+            log("玩家市场数据获取成功，本次读取用时：" + (Date.now() - start) + "ms");
         }
     })
 })
-
 
 
 const MarketGUI = {

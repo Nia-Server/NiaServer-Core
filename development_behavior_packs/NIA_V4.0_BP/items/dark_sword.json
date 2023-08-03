@@ -63,6 +63,13 @@
 						}
 					},
 					{
+						"damage":{
+							"type":"magic",
+							"target":"other",
+							"amount":6
+						}
+					},
+					{
 						"add_mob_effect": {
 							"effect": "blindness",
 							"target": "other",

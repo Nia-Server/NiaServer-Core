@@ -9,6 +9,8 @@
 [![website](https://img.shields.io/badge/website-docs.mcnia.com-blue?style=for-the-badge)](https://docs.mcnia.com)
 ![NIASERVER-V4](https://socialify.git.ci/NIANIANKNIA/NIASERVER-V4/image?description=1&font=KoHo&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.com%2Flogo.png&name=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Light)
 
+[![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=NIANIANKNIA&repo=NIASERVER-V4)](https://github.com/anuraghazra/github-readme-stats)
+
 **语言: 简体中文 | [English](README-EN.md)**
 
 ## 写在前面

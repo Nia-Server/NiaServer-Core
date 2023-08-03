@@ -7,6 +7,8 @@ const fs = new ExternalFS();
 const port = 10086
 const VERSION = "v1.4.0-pre-1"
 
+const start = Date.now();
+
 
 //与服务器通信获取群聊消息
 // system.runInterval(() => {
@@ -195,12 +197,15 @@ world.afterEvents.worldInitialize.subscribe(() => {
         reqCheckUpdate.then((response) => {
             if (response.status == 200) {
                 if (JSON.parse(response.body)[0].tag_name != VERSION) {
-                    log(`当前插件包不是最新版本，当前版本是 ${VERSION}, Github上的release最新版本为 ${JSON.parse(response.body)[0].tag_name}. 点击链接立即跳转下载: https://github.com/NIANIANKNIA/NIASERVER-V4/releases/tag/${JSON.parse(response.body)[0].tag_name}`)
+                    log(`当前插件包不是最新版本，当前版本是 ${VERSION}, Github上的release最新版本为 ${JSON.parse(response.body)[0].tag_name}. 点击链接立即跳转下载: https://github.com/NIANIANKNIA/NIASERVER-V4/releases/tag/${JSON.parse(response.body)[0].tag_name}`);
+                    log("本次检查更新共用时：" + (Date.now() - start) + " ms");
                 } else {
-                    log("自动检查更新成功！当前版本是最新版本！")
+                    log("自动检查更新成功！当前版本是最新版本！");
+                    log("本次检查更新共用时：" + (Date.now() - start) + " ms");
                 }
             } else {
-                console.warn("[NIA V4] 自动检查更新失败！Github服务器连接失败！")
+                console.warn("[NIA V4] 自动检查更新失败！Github服务器连接失败！");
+                log("本次检查更新共用时：" + (Date.now() - start) + " ms");
             }
         })
 })

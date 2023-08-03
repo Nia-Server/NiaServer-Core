@@ -10,7 +10,49 @@ world.afterEvents.entityHurt.subscribe((event) => {
     //判断是不是玩家使用攻击
     if (event.damageSource.cause == "entityAttack" && event.damageSource.damagingEntity.typeId == "minecraft:player") {
         //判断玩家拿的武器
-        let selectedItem = event.damageSource.damagingEntity.getComponent("minecraft:inventory").container.getItem(event.damageSource.damagingEntity.selectedSlot)
+        let selectedItem = event.damageSource.damagingEntity.getComponent("minecraft:inventory").container.getItem(event.damageSource.damagingEntity.selectedSlot);
+        //判断武器，看有没有特殊效果
+        switch (selectedItem.typeId) {
+            case "mcnia:fire_sword":
+                event.hurtEntity.setOnFire(5,false);
+                break;
+            case "mcnia:rock_sword":
+                if (event.hurtEntity.hasComponent("minecraft:equipment_inventory")) {
+                    if (event.hurtEntity.getComponent("minecraft:equipment_inventory").getEquipment("chest") != undefined) {
+                        let equ_chest = event.hurtEntity.getComponent("minecraft:equipment_inventory").getEquipment("chest");
+                        if (equ_chest.getComponent("minecraft:durability").maxDurability >= equ_chest.getComponent("minecraft:durability").damage + 30) {
+                            equ_chest.getComponent("minecraft:durability").damage = equ_chest.getComponent("minecraft:durability").damage + 10;
+                            event.hurtEntity.getComponent("minecraft:equipment_inventory").setEquipment("chest", equ_chest);
+                        }
+                    }
+                    if (event.hurtEntity.getComponent("minecraft:equipment_inventory").getEquipment("feet") != undefined) {
+                        let equ_feet = event.hurtEntity.getComponent("minecraft:equipment_inventory").getEquipment("feet");
+                        if (equ_feet.getComponent("minecraft:durability").maxDurability >= equ_feet.getComponent("minecraft:durability").damage + 30) {
+                            equ_feet.getComponent("minecraft:durability").damage = equ_feet.getComponent("minecraft:durability").damage + 10;
+                            event.hurtEntity.getComponent("minecraft:equipment_inventory").setEquipment("feet", equ_feet);
+                        }
+                    }
+                    if (event.hurtEntity.getComponent("minecraft:equipment_inventory").getEquipment("head") != undefined) {
+                        let equ_head = event.hurtEntity.getComponent("minecraft:equipment_inventory").getEquipment("head");
+                        if (equ_head.getComponent("minecraft:durability").maxDurability >= equ_head.getComponent("minecraft:durability").damage + 30) {
+                            equ_head.getComponent("minecraft:durability").damage = equ_head.getComponent("minecraft:durability").damage + 10;
+                            event.hurtEntity.getComponent("minecraft:equipment_inventory").setEquipment("head", equ_head);
+                        }
+                    }
+                    if (event.hurtEntity.getComponent("minecraft:equipment_inventory").getEquipment("legs") != undefined) {
+                        let equ_legs = event.hurtEntity.getComponent("minecraft:equipment_inventory").getEquipment("legs");
+                        if (equ_legs.getComponent("minecraft:durability").maxDurability >= equ_legs.getComponent("minecraft:durability").damage + 30) {
+                            equ_legs.getComponent("minecraft:durability").damage = equ_legs.getComponent("minecraft:durability").damage + 10;
+                            event.hurtEntity.getComponent("minecraft:equipment_inventory").setEquipment("legs", equ_legs);
+                        }
+                    }
+                }
+                break;
+            case "mcnia:water_sword":
+                event.damageSource.damagingEntity.getComponent("minecraft:health").setCurrentValue(event.damageSource.damagingEntity.getComponent("minecraft:health").currentValue + 2);
+                break;
+
+        }
         if (can_cr_id.includes(selectedItem.typeId) && selectedItem.getLore().length != 0 && selectedItem.getLore()[0].slice(0,3) == "§c+") {
             //开始计算暴击率
             let cr = Number(selectedItem.getLore()[1].split("：")[1].slice(2, -1));

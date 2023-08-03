@@ -66,7 +66,7 @@
 						"add_mob_effect": {
 							"effect": "fire_resistance",
 							"target": "holder",
-							"duration": 1,
+							"duration": 3,
 							"amplifier": 1
 						}
 					},

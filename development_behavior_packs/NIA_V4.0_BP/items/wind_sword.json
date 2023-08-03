@@ -43,6 +43,12 @@
 				"on_hurt_entity": {
 					"event": "mcnia:sword.hurt_entity"
 				}
+			},
+			"minecraft:on_use":{
+				"on_use": {
+					"event": "mcnia:use_wind_sword",
+					"target": "self"
+				}
 			}
 		},
         "events": {
@@ -61,8 +67,24 @@
 							"target":"self",
 							"amount":1
 						}
+					},
+					{
+						"add_mob_effect": {
+							"effect": "levitation",
+							"target": "other",
+							"duration": 3,
+							"amplifier": 1
+						}
 					}
 				]
+			},
+			"mcnia:use_wind_sword": {
+				"add_mob_effect": {
+					"effect": "speed",
+					"target": "holder",
+					"duration": 3,
+					"amplifier": 0
+				}
 			}
         }
 	}
