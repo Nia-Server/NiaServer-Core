@@ -40,7 +40,12 @@ bool UseCmd = false;
 void GetTime() {
 	time_t timep; tm p;
     char time_buffer[80];
-	time(&timep), localtime_s(&p, &timep);
+	time(&timep);
+#ifdef WIN32
+	localtime_s(&p, &timep);
+#else
+	localtime_r(&timep, &p);
+#endif
     strftime(time_buffer, sizeof(time_buffer), "[%Y/%m/%d %H:%M:%S] ", &p);
 	std::cout << "\x1b[35m" << time_buffer << "\x1b[0m";
 }
@@ -49,7 +54,9 @@ int main() {
 
 
 	system("title NIAHttpBOT V1.3.2");
+#ifdef WIN32
 	SetConsoleOutputCP(65001);
+#endif
 	std::ios::sync_with_stdio(false), std::cin.tie(0), std::cout.tie(0);
 
 	std::cout<<"\x1b[36m"<<R"(

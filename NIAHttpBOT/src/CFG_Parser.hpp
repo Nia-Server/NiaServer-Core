@@ -77,7 +77,12 @@ private:
                     match = _mm256_cmpeq_epi8(chunk, tars);
             int mask = _mm256_movemask_epi8(match);
             while (mask != 0) {
-                int index = _tzcnt_u32(mask); //__builtin_ctz(mask);
+                int index = 
+    #ifdef WIN32
+                _tzcnt_u32(mask); 
+    #else
+                __builtin_ctz(mask);
+    #endif
                 ret.push_back(i+(unsigned)index), mask &= ~(1<<index);
             }
         }
