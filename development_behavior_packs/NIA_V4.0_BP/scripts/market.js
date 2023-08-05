@@ -20,7 +20,7 @@ let start = Date.now();
 
 //服务器启动监听&&获得玩家市场数据
 world.afterEvents.worldInitialize.subscribe(() => {
-    fs.getJSONFileData("market.json").then((result) => {
+    fs.GetJSONFileData("market.json").then((result) => {
         //文件不存在
         if (result === 0) {
             fs.CreateNewJsonFile("market.json",[]).then((result) => {
@@ -102,7 +102,6 @@ const MarketGUI = {
                             this.Market(player)
                         } else if (response.selection == 0) {
                             //预览商品
-                            
                         } else if (response.selection == 1) {
                             //购买商品
                         }
