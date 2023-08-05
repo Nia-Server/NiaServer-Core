@@ -8,11 +8,17 @@ set(CMAKE_BUILD_TYPE Release)
 
 project(${PROJECT})
 
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+	set(AVX2_FLAG /arch:AVX2)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	set(AVX2_FLAG -mavx2)
+endif()
 
-check_cxx_compiler_flag("/arch:AVX2" COMPILER_SUPPORTS_AVX2)
-if(COMPILER_SUPPORTS_AVX2)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:AVX2")
+check_cxx_compiler_flag("${AVX2_FLAG}" SUPPORTS_AVX2)
+if(SUPPORTS_AVX2)
+	message("use AVX2 (\"${AVX2_FLAG}\")")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${AVX2_FLAG}")
 endif()
 
 aux_source_directory(./src/ SOURCE)
