@@ -362,7 +362,6 @@ world.afterEvents.itemUse.subscribe(event => {
 
         EQGUI.Main(player)
 
-
     }
 })
 
