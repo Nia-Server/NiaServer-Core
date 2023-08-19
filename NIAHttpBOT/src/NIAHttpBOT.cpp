@@ -51,9 +51,7 @@ void GetTime() {
 }
 
 int main() {
-
-
-	system("title NIAHttpBOT V1.3.2");
+    std::cout << "\033]0;NIAHttpBOT V1.3.2\007";
 #ifdef WIN32
 	SetConsoleOutputCP(65001);
 #endif
