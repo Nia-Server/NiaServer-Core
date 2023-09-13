@@ -51,9 +51,7 @@ void GetTime() {
 }
 
 int main() {
-
-
-	system("title NIAHttpBOT V1.3.2");
+    std::cout << "\033]0;NIAHttpBOT V1.3.2\007";
 #ifdef WIN32
 	SetConsoleOutputCP(65001);
 #endif
@@ -111,7 +109,7 @@ int main() {
 
 	//服务器开启检测
 	svr.Get("/ServerStarted", [](const httplib::Request&, httplib::Response& res) {
-		XINFO("Minecraft服务器连接成功！");
+		XINFO("Minecraft 服务器连接成功！");
 		res.status = 200;
 		res.set_content(X("服务器已启动"), "text/plain");
 	});
@@ -365,7 +363,7 @@ int main() {
 
 	//覆盖json文件内容
 	svr.Post("/OverwriteJsonFile", [](const httplib::Request& req, httplib::Response& res) {
-		XINFO("接收到覆写json文件的请求！");
+		XINFO("接收到覆写 json 文件的请求！");
 		//解析字符串并创建一个json对象
 		rapidjson::Document overWriteFileData;
 		overWriteFileData.Parse(req.body.c_str());

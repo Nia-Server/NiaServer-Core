@@ -8,16 +8,20 @@ set(CMAKE_BUILD_TYPE Release)
 
 project(${PROJECT})
 
+cmake_host_system_information(RESULT CPU_CORES_FIGURE QUERY NUMBER_OF_LOGICAL_CORES)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 	set(AVX2_FLAG /arch:AVX2)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2")
+	add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP${CPU_CORES_FIGURE}>)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	set(AVX2_FLAG -mavx2)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast")
 endif()
 
 check_cxx_compiler_flag("${AVX2_FLAG}" SUPPORTS_AVX2)
 if(SUPPORTS_AVX2)
-	message("use AVX2 (\"${AVX2_FLAG}\")")
+	message("-> enable AVX2 (\"${AVX2_FLAG}\")")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${AVX2_FLAG}")
 endif()
 
