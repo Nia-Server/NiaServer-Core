@@ -50,7 +50,6 @@
 - [x] 空岛生成
 - [x] 氧气值玩法
 - [x] 支持修改配置文件
-- [x] q群机器人
 - [ ] 玩家交易市场
 - [ ] 支持自定义
 - [ ] 多语言支持
@@ -58,6 +57,14 @@
 ## 外部机器人功能&&特性
 
 新版机器人基于c++制作（特别感谢[**@jiansyuan**](https://github.com/jiansyuan)），使用HTTP实现对文件的一系列操作，具体使用示例，请前往[NIA服务器文档站](https://docs.mcnia.com/zh-CN/develop/Http-Bot.html)查看使用说明！
+
+为了本Addons更好的发展，自**v1.4.0**开始，部分功能将依赖**NIAHttpBOT**，目前为止以下功能依赖于**NIAHttpBOT**：
+
+- 商店系统（`shop_data.json`）
+- 玩家交易系统（`trade_data.json`）
+- 圈地系统（`land_data.json`）
+
+更多功能正在逐步接入...
 
 ## 部分文件夹说明
 

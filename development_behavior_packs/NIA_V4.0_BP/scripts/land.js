@@ -120,6 +120,13 @@ function PlayerInIndex(player) {
     //player.sendMessage(land)
 }
 
+system.runInterval(() => {
+    let players = world.getAllPlayers();
+    for (let i = 0; i < players.length; i++) {
+        PlayerInIndex(players[i]);
+    }
+},1)
+
 const start = Date.now();
 
 //服务器启动监听&&获得玩家市场数据
@@ -143,7 +150,6 @@ world.afterEvents.worldInitialize.subscribe(() => {
             let LandNum = 0;
             for (let Land in LandData) {
                 calculateIndex(LandData[Land].pos1, LandData[Land].pos2, LandData[Land].dimid, Land);
-                //log(JSON.stringify(LandIndex))
                 LandNum++;
             }
             log("圈地数据获取成功，本次读取用时：" + (Date.now() - start) + "ms，共加载 " + LandNum + " 块地皮数据！" );
@@ -151,23 +157,10 @@ world.afterEvents.worldInitialize.subscribe(() => {
     })
 })
 
-system.runInterval(() => {
-    let players = world.getAllPlayers();
-    for (let i = 0; i < players.length; i++) {
-        PlayerInIndex(players[i]);
-    }
-},1)
+//玩家GUI表现
+const GUI = {
 
-//玩家破坏方块监听
-
-world.afterEvents.blockBreak.subscribe((event) => {
-    event.player.sendMessage("破坏方块");
-    let land = PosInIndex([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
-    if (land) {
-        event.player.sendMessage("禁止破坏方块！");
-
-    }
-})
+}
 
 // 玩家使用物品
 world.beforeEvents.itemUseOn.subscribe((event) => {
@@ -197,5 +190,7 @@ world.beforeEvents.itemUseOn.subscribe((event) => {
         }
     }
 })
+
+
 
 

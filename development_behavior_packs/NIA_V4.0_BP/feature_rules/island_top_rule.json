@@ -6,14 +6,14 @@
       "places_feature": "dave:island_top"
     },
     "conditions": {
-      "placement_pass": "before_underground_pass",
-      "minecraft:biome_filter": [
-        {
-          "test": "has_biome_tag",
-          "operator": "==",
-          "value": "ocean"
-        }
-      ]
+      "placement_pass": "before_underground_pass"
+      // "minecraft:biome_filter": [
+      //   {
+      //     "test": "has_biome_tag",
+      //     "operator": "==",
+      //     "value": "ocean"
+      //   }
+      // ]
     },
     "distribution": {
       "iterations": 256,
@@ -31,7 +31,7 @@
           15
         ]
       },
-      "y": 240
+      "y": "240"
     }
   }
 }
