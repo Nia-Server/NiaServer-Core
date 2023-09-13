@@ -25,5 +25,5 @@
 
 2.正式移除`NIA-Server-BOT`项目及其所有文件
 
-**配置说明：您可以前往[NIA服务器官方文档站](https://docs.mcnia.top/zh-CN/deploy.html)查看具体部署过程！**
+**配置说明：您可以前往[NIA服务器官方文档站](https://docs.mcnia.com/zh-CN/deploy.html)查看具体部署过程！**
 

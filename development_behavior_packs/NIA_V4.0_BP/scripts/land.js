@@ -4,6 +4,7 @@
 import {system, world} from '@minecraft/server';
 import { ExternalFS } from './API/filesystem';
 import { Broadcast, log } from './customFunction';
+import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 //初始化LandIndex
 var LandIndex = {};
 

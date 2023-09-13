@@ -358,12 +358,12 @@ const EQGUI = {
 // 0.2%提高暴击伤害 200%
 
 //对于物品使用的检测
-world.afterEvents.itemUse.subscribe(event => {
-    if (event.itemStack.typeId == "minecraft:stick") {
-        let player = event.source;
+// world.afterEvents.itemUse.subscribe(event => {
+//     if (event.itemStack.typeId == "minecraft:stick") {
+//         let player = event.source;
 
-        EQGUI.Main(player)
+//         EQGUI.Main(player)
 
-    }
-})
+//     }
+// })
 

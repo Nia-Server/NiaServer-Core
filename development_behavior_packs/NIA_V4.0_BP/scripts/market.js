@@ -88,27 +88,52 @@ const MarketGUI = {
             if (response.canceled) {
                 this.Main(player)
             } else {
+                let pre_item_data = {};
                 const MarketSubForm = new ActionFormData()
                     .title("商品详情页")
                     if (CanBuyCommodities[response.selection - 1].Hasdamage == true || CanBuyCommodities[response.selection - 1].Hasench == false) {
-                        MarketSubForm.body(`商品名称: ${CanBuyCommodities[response.selection - 1].name} (${CanBuyCommodities[response.selection - 1].typeid}) \n商品简介: ${CanBuyCommodities[response.selection - 1].description} \n商品单价: ${CanBuyCommodities[response.selection - 1].price}\n商品剩余库存: ${CanBuyCommodities[response.selection - 1].amount}\n商品上架人: ${CanBuyCommodities[response.selection - 1].playerName}\n商品流水号: ${CanBuyCommodities[response.selection - 1].id}\n已消耗耐久度:${CanBuyCommodities[response.selection - 1].damage}\n拥有的附魔：${JSON.stringify(CanBuyCommodities[response.selection - 1].ench)} `)
+                        MarketSubForm.body(`商品名称: ${CanBuyCommodities[response.selection - 1].name} (${CanBuyCommodities[response.selection - 1].typeid}) \n商品简介: ${CanBuyCommodities[response.selection - 1].description} \n商品单价: ${CanBuyCommodities[response.selection - 1].price}\n商品剩余库存: ${CanBuyCommodities[response.selection - 1].amount}\n商品上架人: ${CanBuyCommodities[response.selection - 1].playerName}\n商品流水号: ${CanBuyCommodities[response.selection - 1].id}\n已消耗耐久度:${CanBuyCommodities[response.selection - 1].damage}\n拥有的附魔：${JSON.stringify(CanBuyCommodities[response.selection - 1].ench)} `);
+                        pre_item_data = CanBuyCommodities[response.selection - 1];
                     } else {
-                        MarketSubForm.body(`商品名称: ${CanBuyCommodities[response.selection - 1].name} (${CanBuyCommodities[response.selection - 1].typeid}) \n商品简介: ${CanBuyCommodities[response.selection - 1].description} \n商品单价: ${CanBuyCommodities[response.selection - 1].price}\n商品剩余库存: ${CanBuyCommodities[response.selection - 1].amount}\n商品上架人: ${CanBuyCommodities[response.selection - 1].playerName}\n商品流水号: ${CanBuyCommodities[response.selection - 1].id}`)
+                        MarketSubForm.body(`商品名称: ${CanBuyCommodities[response.selection - 1].name} (${CanBuyCommodities[response.selection - 1].typeid}) \n商品简介: ${CanBuyCommodities[response.selection - 1].description} \n商品单价: ${CanBuyCommodities[response.selection - 1].price}\n商品剩余库存: ${CanBuyCommodities[response.selection - 1].amount}\n商品上架人: ${CanBuyCommodities[response.selection - 1].playerName}\n商品流水号: ${CanBuyCommodities[response.selection - 1].id}`);
+                        pre_item_data = CanBuyCommodities[response.selection - 1];
                     }
                     MarketSubForm.button("预览商品")
                     MarketSubForm.button("购买商品")
                     MarketSubForm.show(player).then((response) => {
                         if (response.canceled) {
-                            this.Market(player)
+                            this.Market(player);
                         } else if (response.selection == 0) {
                             //预览商品
+                            //开始构建预览商品
+                            let pre_item_lores = pre_item_data.Lores;
+                            pre_item_lores.push("§c预览商品请勿进行其他操作！",pre_item_data.id)
+                            let preview_item = new ItemStack(pre_item_data.typeid);
+                            preview_item.setLore(pre_item_lores);
+                            preview_item.lockMode = "slot";
+                            //检查背包是否还有空余空间
+                            let has_empty_slot = false;
+                            for (let i = 9; i < 36; i++) {
+                                if (player.getComponent("minecraft:inventory").container.getItem(i) == undefined) {
+                                    player.getComponent("minecraft:inventory").container.setItem(i,preview_item);
+                                    has_empty_slot = true;
+                                    break;
+                                }
+                            }
+                            if (!has_empty_slot) {
+                                player.sendMessage("§c>> 您背包没有多余的空间来放置预览商品，请清空后重试！");
+                            } else {
+                                player.sendMessage("§e>> 已成功将预览商品送至您的背包中，请及时查看！");
+                            }
                         } else if (response.selection == 1) {
                             //购买商品
+                            this.Buy(player);
                         }
                     })
             }
         })
     },
+
 
     Buy(player) {
         const BuyForm = new MessageFormData()
@@ -138,53 +163,52 @@ const MarketGUI = {
             ShelfForm.textField("请输入商品描述","8-10字为合理长度")
             ShelfForm.show(player).then((response) => {
                 if (response.canceled) {
-                    this.Main(player)
+                    this.Main(player);
                 } else if (response.formValues[0] == 0 || response.formValues[1] == "" || response.formValues[2] == "") {
-                    this.Error(player,"§c错误的数据格式，请重新填写！","101","ShelfForm")
+                    this.Error(player,"§c错误的数据格式，请重新填写！","101","ShelfForm");
                 } else {
-                    //（暂时）不要忘记考虑羊毛
-                    let item = player.getComponent("minecraft:inventory").container.getItem(HaveItemIndex[response.formValues[0] - 1])
-                    let itemData = {}
-                    itemData.state = true
-                    itemData.slot = HaveItemIndex[response.formValues[0] - 1]
+                    let item = player.getComponent("minecraft:inventory").container.getItem(HaveItemIndex[response.formValues[0] - 1]);
+                    let itemData = {};
+                    itemData.state = true;
+                    itemData.slot = HaveItemIndex[response.formValues[0] - 1];
                     if (item.nameTag == "") {
-                        itemData.nameTag = ""
+                        itemData.nameTag = "";
                     } else {
-                        itemData.nameTag = item.nameTag
+                        itemData.nameTag = item.nameTag;
                     }
-                    itemData.typeid = item.typeId
-                    itemData.amount = item.amount
-                    itemData.keepOnDeath = item.keepOnDeath
-                    //itemData.lockMode = item.lockMode
-                    itemData.maxAmount = item.maxAmount
+                    itemData.typeid = item.typeId;
+                    itemData.Lores = item.getLore();
+                    itemData.amount = item.amount;
+                    itemData.keepOnDeath = item.keepOnDeath;
+                    itemData.maxAmount = item.maxAmount;
                     //判断是否有耐久
                     if (item.hasComponent("minecraft:durability")) {
-                        itemData.Hasdamage = true
-                        itemData.damage = item.getComponent("minecraft:durability").damage
+                        itemData.Hasdamage = true;
+                        itemData.damage = item.getComponent("minecraft:durability").damage;
                     } else {
-                        itemData.Hasdamage = false
+                        itemData.Hasdamage = false;
                     }
                     //判断是否有附魔组件
                     if (item.hasComponent("minecraft:enchantments")) {
-                        itemData.Hasench = true
-                        let ench = item.getComponent('enchantments')
+                        itemData.Hasench = true;
+                        let ench = item.getComponent('enchantments');
                         itemData.ench = [...ench.enchantments].reduce(
                             (obj, { type: { id }, level }) => Object.assign(obj, { [id]: level }),
                             {}
                         )
                     } else {
-                        itemData.Hasench = false
+                        itemData.Hasench = false;
                     }
-                    itemData.name = response.formValues[1]
-                    itemData.description = response.formValues[2]
+                    itemData.name = response.formValues[1];
+                    itemData.description = response.formValues[2];
                     //判断物品是否上锁
                     if (item.lockMode != "none") {
-                        this.Error(player,"已经上锁的物品无法上架市场！\n请在解锁物品之后再次尝试上架物品！","200","ShelfForm")
+                        this.Error(player,"已经上锁的物品无法上架市场！\n请在解锁物品之后再次尝试上架物品！","200","ShelfForm");
                     } else if (BanItems.indexOf(item.typeId) != -1) {
                         //player.sendMessage(JSON.stringify(itemData, null, 2))
-                        this.Error(player,"违禁物品 (" + item.typeId + ") 无法上架市场！\n请尝试上架其他非违禁物品！","201","ShelfForm")
+                        this.Error(player,"违禁物品 (" + item.typeId + ") 无法上架市场！\n请尝试上架其他非违禁物品！","201","ShelfForm");
                     } else {
-                        this.ShelfSub(player,itemData)
+                        this.ShelfSub(player,itemData);
                     }
                 }
             })
@@ -213,28 +237,20 @@ const MarketGUI = {
                 if (itemData.amount == response.formValues[0]) {
                     //首先更新缓存中MarketData的值，然后直接覆写market.json
                     let temp_MarketData = MarketData;
-                    temp_MarketData.push(itemData)
-                    const reqOverwriteMarket = new HttpRequest(`http://127.0.0.1:${port}/OverwriteJsonFile`);
-                    reqOverwriteMarket.body = JSON.stringify({"fileName":"market.json","fileData":temp_MarketData})
-                    reqOverwriteMarket.method = HttpRequestMethod.POST;
-                    reqOverwriteMarket.headers = [
-                        new HttpHeader("Content-Type", "text/plain"),
-                    ];
-                    http.request(reqOverwriteMarket).then((response) => {
-                        if (response.status == 200 && response.body == "success") {
+                    temp_MarketData.push(itemData);
+                    fs.OverwriteJsonFile("market.json",temp_MarketData).then((result) => {
+                        if (result === 0) {
+                            this.Error(player,"§c未找到玩家交易市场文件，请联系腐竹处理！","105","ShelfForm");
+                        } else if (result === -1) {
+                            this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ShelfForm");
+                        } else {
                             //覆写成功
                             MarketData = temp_MarketData;
-                            let receipt = new ItemStack("minecraft:paper")
-                            receipt.nameTag = "§c§l上架凭证"
+                            let receipt = new ItemStack("minecraft:paper");
+                            receipt.nameTag = "§c§l上架凭证";
                             receipt.setLore(["服务器官方交易市场", "§e上架商品凭证","上架商品名称:§b" + itemData.name, "上架人:§b" + player.nameTag,"流水号:§b" + id.substring(1,10),"§7要想查看上架商品更详细信息","§7请将凭证拿在手中后聊天栏发送+info即可"]);
-                            player.getComponent("minecraft:inventory").container.setItem(itemData.slot,receipt)
-                            this.Success(player,`\n[商品上架成功]\n商品名称: ${itemData.name} (${itemData.typeid}) \n商品简介: ${itemData.description} \n商品单价: ${itemData.price}\n商品剩余库存: ${itemData.amount}\n商品流水号: ${itemData.id}`)
-                        } else if (response.status == 200 && response.body != "success") {
-                            console.error(response.body)
-                            this.Error(player,response.body,"105","ShelfForm")
-                        } else {
-                            console.error("Dependent server connection failed! Check whether the dependent server started successfully.")
-                            this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ShelfForm")
+                            player.getComponent("minecraft:inventory").container.setItem(itemData.slot,receipt);
+                            this.Success(player,`\n[商品上架成功]\n商品名称: ${itemData.name} (${itemData.typeid}) \n商品简介: ${itemData.description} \n商品单价: ${itemData.price}\n商品剩余库存: ${itemData.amount}\n商品流水号: ${itemData.id}`);
                         }
                     })
 
@@ -242,31 +258,23 @@ const MarketGUI = {
                     //首先更新缓存中MarketData的值，然后直接覆写market.json
                     let temp_MarketData = MarketData;
                     temp_MarketData.push(itemData)
-                    const reqOverwriteMarket = new HttpRequest(`http://127.0.0.1:${port}/OverwriteJsonFile`);
-                    reqOverwriteMarket.body = JSON.stringify({"fileName":"market.json","fileData":temp_MarketData})
-                    reqOverwriteMarket.method = HttpRequestMethod.POST;
-                    reqOverwriteMarket.headers = [
-                        new HttpHeader("Content-Type", "text/plain"),
-                    ];
-                    http.request(reqOverwriteMarket).then((response) => {
-                        if (response.status == 200 && response.body == "success") {
+                    fs.OverwriteJsonFile("market.json",temp_MarketData).then((result) => {
+                        if (result === 0) {
+                            this.Error(player,"§c未找到玩家交易市场文件，请联系腐竹处理！","105","ShelfForm");
+                        } else if (result === -1) {
+                            this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ShelfForm");
+                        } else {
                             //覆写成功
                             MarketData = temp_MarketData;
-                            let newItem = player.getComponent("minecraft:inventory").container.getItem(itemData.slot)
-                            newItem.amount = newItem.amount - response.formValues[0]
-                            itemData.amount = response.formValues[0]
-                            player.getComponent("minecraft:inventory").container.setItem(itemData.slot,newItem)
-                            let receipt = new ItemStack("minecraft:paper")
-                            receipt.nameTag = "§c§l上架凭证"
+                            let newItem = player.getComponent("minecraft:inventory").container.getItem(itemData.slot);
+                            newItem.amount = newItem.amount - response.formValues[0];
+                            itemData.amount = response.formValues[0];
+                            player.getComponent("minecraft:inventory").container.setItem(itemData.slot,newItem);
+                            let receipt = new ItemStack("minecraft:paper");
+                            receipt.nameTag = "§c§l上架凭证";
                             receipt.setLore(["服务器官方交易市场", "§e上架商品凭证","上架商品名称:§b" + itemData.name, "上架人:§b" + player.nameTag,"流水号:§b" + id.substring(1,10),"§7要想查看上架商品更详细信息","§7请将凭证拿在手中后聊天栏发送+info即可"]);
-                            player.getComponent("minecraft:inventory").container.addItem(receipt)
-                            this.Success(player,`\n[商品上架成功]\n商品名称: ${itemData.name} (${itemData.typeid}) \n商品简介: ${itemData.description} \n商品单价: ${itemData.price}\n商品剩余库存: ${itemData.amount}\n商品流水号: ${itemData.id}`)
-                        } else if (response.status == 200 && response.body != "success") {
-                            console.error(response.body)
-                            this.Error(player,response.body,"105","ShelfForm")
-                        } else {
-                            console.error("Dependent server connection failed! Check whether the dependent server started successfully.")
-                            this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ShelfForm")
+                            player.getComponent("minecraft:inventory").container.addItem(receipt);
+                            this.Success(player,`\n[商品上架成功]\n商品名称: ${itemData.name} (${itemData.typeid}) \n商品简介: ${itemData.description} \n商品单价: ${itemData.price}\n商品剩余库存: ${itemData.amount}\n商品流水号: ${itemData.id}`);
                         }
                     })
                 }
@@ -305,18 +313,27 @@ const MarketGUI = {
     }
 }
 
-//对于物品使用的检测
-// world.afterEvents.itemUse.subscribe(event => {
-//     if (event.itemStack.typeId == "minecraft:stick") {
-//         let player = event.source;
-//         if (player.nameTag == "NIANIANKNIA") {
-//             MarketGUI.Main(player)
-//         } else {
-//             player.sendMessage("§c>> 玩家交易市场正在开发中，敬请期待!")
-//         }
 
-//     }
-// })
+//对于物品使用的检测
+world.afterEvents.itemUse.subscribe(event => {
+    if (event.itemStack.typeId == "minecraft:stick") {
+        let player = event.source;
+        if (player.nameTag == "NIANIANKNIA") {
+            MarketGUI.Main(player)
+        } else {
+            player.sendMessage("§c>> 玩家交易市场正在开发中，敬请期待!")
+        }
+
+    }
+})
+
+//对于预览物品使用的检测
+world.beforeEvents.itemUse.subscribe(event => {
+    if (event.itemStack.getLore()[event.itemStack.getLore().length - 2] == "§c预览商品请勿进行其他操作！") {
+        event.cancel = true;
+        event.source.sendMessage("§c>> 预览商品无法进行交互操作！");
+    }
+})
 
 //调试语句
 // system.events.scriptEventReceive.subscribe((event) => {

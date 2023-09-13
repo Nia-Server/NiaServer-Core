@@ -1,19 +1,26 @@
-# v1.3.2-pre-2 更新日志
+# v1.4.0-pre-1 更新日志
 
 [![BDS VERSION](https://img.shields.io/badge/BDS-1.20.12.02-green?style=for-the-badge&logo=appveyor)](https://www.minecraft.net/en-us/download/server/bedrock)
 [![LiteLoader VERSION](https://img.shields.io/badge/LiteLoader-2.15.0-green?style=for-the-badge&logo=appveyor)](https://github.com/LiteLDev/LiteLoaderBDS/releases/)
 
 > 预发布版本提醒：这是一个预览版本，可能存在一些bug，仅供测试，请勿在正式生产环境使用本版本！
 
-**注意：本版本仅可以使用`NIAHttpBOT`，其余行为包、资源包均在v1.4.0开发状态中，存在许多问题，请勿使用！**
 
 ## 新增
 
-1.NIAHttpBOT 新增API `/GetFileData`
+1.全新的七大武器&&七大元素方块加入
 
-2.NIAHttpBot新增国际化支持[@jiansyuan](https://github.com/jiansyuan)
+2.玩家交易系统--现在玩家可以自主上线物品到交易市场进行售卖了！
 
-（语言文件将在后期版本上线）
+3.圈地系统--保证自己的领地不被其他玩家所破坏
+
+4.初步上线部分空岛生成逻辑
+
+5.全新的武器强化系统
+
+## 调整
+
+1.去除部分仅适用于v4.0玩法的操作逻辑
 
 ## 优化
 
