@@ -183,7 +183,7 @@ world.beforeEvents.itemUseOn.subscribe((event) => {
         "minecraft:pink_shulker_box","minecraft:purple_shulker_box","minecraft:red_shulker_box","minecraft:undyed_shulker_box","minecraft:white_shulker_box","minecraft:yellow_shulker_box"
     ]
     let land = PosInIndex([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
-    //event.source.sendMessage("测试" + land + event.block.x + " " + event.block.y + " " + event.block.z + " " + event.block.dimension.id)
+    //log("测试" + land + event.block.x + " " + event.block.y + " " + event.block.z + " " + event.block.dimension.id)
     if (land) {
         if (tools.includes(event.itemStack.typeId) || blocks.includes(event.block.typeId)) {
             event.cancel = true;

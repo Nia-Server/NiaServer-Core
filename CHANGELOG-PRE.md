@@ -26,5 +26,9 @@
 
 NIAHttpBOT优化部分http请求的body接受规则
 
+## 修复
+
+NIAHttpBOT输出信息错位的bug
+
 **配置说明：您可以前往[NIA服务器官方文档站](https://docs.mcnia.com/zh-CN/deploy.html)查看具体部署过程！**
 
