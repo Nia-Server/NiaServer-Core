@@ -137,7 +137,7 @@ const GUI = {
                 // Tell(`§c>> 错误的数字格式，请重新输入！`,player.nameTag)
                 this.ShopBuy(player,index1,index2)
             } else if (parseInt(result.formValues[0]) >= 1025) {
-                player.sendMessage(`§c>> 单次购买物品的数量上限是1024，请重新输入！`)
+                player.sendMessage(`§c>> 单次购买物品的数量上限是1024，请重新输入！`);
                 this.ShopBuy(player,index1,index2)
             } else {
                 this.ShopBuySub(player,index1,index2,result.formValues[0])

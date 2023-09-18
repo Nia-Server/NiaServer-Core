@@ -62,26 +62,44 @@ world.afterEvents.worldInitialize.subscribe(() => {
 const MarketGUI = {
     //市场主菜单
     Main(player) {
-        const MainForm = new ActionFormData()
-            .title("§e§l服务器交易市场")
-            .body("§c欢迎光临服务器交易市场\n市场中所有物品均由玩家自主上架，定价！")
-            .button("浏览市场")
-            .button("上架商品")
-            .button("管理商品")
-            .button("返回上一级")
-        MainForm.show(player).then((response) => {
-            switch (response.selection) {
-                case 0:
-                    this.Market(player)
-                    break;
-                case 1:
-                    this.Shelf(player)
-                    break;
-                case 2:
-                    break;
-                case 3:
+        fs.GetJSONFileData("market.json").then((result) => {
+            //服务器连接失败
+            if (result === -1) {
+                const MainForm = new ActionFormData()
+                    .title("§e§l服务器交易市场")
+                    .body("§c§l服务器连接失败！无法获取玩家市场数据，请联系腐竹及时处理！")
+                    .button("返回上一级")
+                MainForm.show(player).then((response) => {
+                    switch (response.selection) {
+                        case 0:
+                            break;
+                    }
+                })
+            } else {
+                //服务器连接成功
+                MarketData = result;
+                const MainForm = new ActionFormData()
+                    .title("§e§l服务器交易市场")
+                    .body("§c欢迎光临服务器交易市场\n市场中所有物品均由玩家自主上架，定价！")
+                    .button("浏览市场")
+                    .button("上架商品")
+                    .button("管理商品")
+                    .button("返回上一级")
+                MainForm.show(player).then((response) => {
+                    switch (response.selection) {
+                        case 0:
+                            this.Market(player)
+                            break;
+                        case 1:
+                            this.Shelf(player)
+                            break;
+                        case 2:
+                            break;
+                        case 3:
 
-                    break;
+                            break;
+                    }
+                })
             }
         })
     },
@@ -103,6 +121,8 @@ const MarketGUI = {
         MarketForm.show(player).then((response) => {
             if (response.canceled) {
                 this.Main(player)
+            } else if (response.selection == 0) {
+                player.sendMessage("§c>> 该功能正在开发中，敬请期待！");
             } else {
                 let pre_item_data = {};
                 const MarketSubForm = new ActionFormData()
@@ -232,24 +252,24 @@ const MarketGUI = {
                                 }
                                 //开始连接服务器
                                 fs.OverwriteJsonFile("market.json",MarketData).then((result) => {
-                                    if (result != "success") {
-                                        this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ShelfForm");
-                                        console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
-                                        MarketData = old_MarketData;
-                                    } else {
+                                    if (result === "success") {
                                         let old_temp_player_money = Object.assign({},temp_player_money);
                                         temp_player_money[player.id] = response.formValues[0] * item_data.price;
                                         fs.OverwriteJsonFile("temp_player_money.json",temp_player_money).then((result) => {
-                                            if (result != "success") {
-                                                this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ShelfForm");
-                                                console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
-                                                temp_player_money = old_temp_player_money;
-                                            } else {
+                                            if (result === "success") {
                                                 player.sendMessage("§e>> 购买成功！已将商品送至您的背包中！");
                                                 //扣除玩家金币
                                                 world.scoreboard.getObjective("money").setScore(player,GetScore("money",player.nameTag) - (response.formValues[0] * item_data.price));
+                                            } else {
+                                                this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
+                                                console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                                                temp_player_money = old_temp_player_money;
                                             }
                                         })
+                                    } else {
+                                        this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
+                                        console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                                        MarketData = old_MarketData;
                                     }
                                 })
                                 break;
@@ -426,7 +446,10 @@ const MarketGUI = {
                 if (response.selection == 0) {
                     switch (Form) {
                         case "ShelfForm":
-                            this.Shelf(player)
+                            this.Shelf(player);
+                            break;
+                        case "MainForm":
+                            this.Main(player);
                             break;
                     }
                 }
@@ -480,15 +503,16 @@ world.afterEvents.playerSpawn.subscribe((event) => {
             temp_player_money[event.player.id] = 0;
             //连接服务器覆写文件
             fs.OverwriteJsonFile("temp_player_money.json",temp_player_money).then((result) => {
-                if (result != "success") {
-                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
-                    this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ShelfForm");
-                    temp_player_money = old_temp_player_money;
-                } else {
-                    log("玩家金币缓存已重置！");
+                if (result === "success") {
                     //存在，给钱
-                    world.scoreboard.getObjective("money").setScore(event.player,old_temp_player_money[event.player.id] + GetScore("money",event.player.nameTag));
-                    event.player.sendMessage("§e>> 您有一笔来自玩家交易市场的 " + old_temp_player_money[event.player.id] + " 金币已到账！请注意查收！");
+                    if (old_temp_player_money[event.player.id] != 0) {
+                        world.scoreboard.getObjective("money").setScore(event.player,old_temp_player_money[event.player.id] + GetScore("money",event.player.nameTag));
+                        event.player.sendMessage("§e>> 您有一笔来自玩家交易市场的 " + old_temp_player_money[event.player.id] + " 金币已到账！请注意查收！");
+                    }
+                } else {
+                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                    this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainForm");
+                    temp_player_money = old_temp_player_money;
                 }
             })
         }
