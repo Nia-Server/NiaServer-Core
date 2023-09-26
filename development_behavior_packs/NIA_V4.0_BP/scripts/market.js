@@ -1,5 +1,4 @@
 //玩家交易市场
-//开发中功能，请勿使用！
 
 import {system, world, ItemStack, Enchantment} from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui';
@@ -14,7 +13,6 @@ var MarketData = [];
 var temp_player_money = {};
 
 let start = Date.now();
-
 
 //服务器启动监听&&获得玩家市场数据
 world.afterEvents.worldInitialize.subscribe(() => {
@@ -58,7 +56,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
 })
 
 
-const MarketGUI = {
+const GUI = {
     //市场主菜单
     Main(player) {
         fs.GetJSONFileData("market.json").then((result) => {
@@ -662,7 +660,7 @@ const MarketGUI = {
 //对于物品使用的检测
 world.afterEvents.itemUse.subscribe(event => {
     if (event.itemStack.typeId == "minecraft:stick") {
-        MarketGUI.Main(event.source)
+        GUI.Main(event.source)
     }
 })
 
@@ -702,3 +700,4 @@ world.afterEvents.playerSpawn.subscribe((event) => {
 
 })
 
+export const MarketGUI = GUI;

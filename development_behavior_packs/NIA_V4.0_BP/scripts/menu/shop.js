@@ -215,7 +215,7 @@ const GUI = {
         //首先判断有没有相关物品
         let ItemNum = 0;
         for (let i = 0; i < 36; i++) {
-            if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).typeId == RecycleData[index1].content[index2].type && player.getComponent("minecraft:inventory").container.getItem(i).lockMode != "none") {
+            if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).typeId == RecycleData[index1].content[index2].type && player.getComponent("minecraft:inventory").container.getItem(i).lockMode == "none") {
                 ItemNum = ItemNum + player.getComponent("minecraft:inventory").container.getItem(i).amount;
             }
         }

@@ -11,6 +11,7 @@ import { CDKGUI } from './cdk.js';
 import { FlyGUI } from './Fly.js';
 import { TransferGUI } from './Transfer.js';
 import { OpGUI } from './op.js';
+import { MarketGUI } from '../market.js';
 
 
 const MainGUI = {
@@ -80,10 +81,10 @@ const MainGUI = {
             "opMenu": false
         },
         {
-            "name": "飞行系统\n开启飞行模式建造自己的家园！",
-            "icon": "textures/ui/levitation_effect",
+            "name": "交易市场\n随心所欲，自由交易！",
+            "icon": "textures/ui/enable_editor",
             "type": "openGUI",
-            "GUI": "FlyGUI",
+            "GUI": "MarketGUI",
             "opMenu": false
         },
         {
@@ -207,6 +208,10 @@ function OpenGUI(player,GUINAME) {
         case "OpGUI":
             OpGUI.CheckOP(player);
             break;
+        case "MarketGUI":
+            MarketGUI.Main(player);
+            break;
+
     }
 }
 
