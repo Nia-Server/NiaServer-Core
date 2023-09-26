@@ -133,7 +133,7 @@
 
 然后修改完配置文件即可使用！
 
-启动服务器时应当先启动NIAHttpBOT，待看到成功启动的字样再启动BDS服务器！
+启动服务器时应当先启动**NIAHttpBOT**，待看到成功启动的字样再启动BDS服务器！
 
 **更加具体的配置教程请前往[NIA服务器文档站](https://docs.mcnia.com/zh-CN/deploy.html)查看！**
 

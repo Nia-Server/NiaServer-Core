@@ -2,9 +2,8 @@
 //开发中功能，请勿使用！
 
 import {system, world, ItemStack, Enchantment} from '@minecraft/server';
-import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
-import { Broadcast, GetScore, log } from './customFunction';
-import { GetTime } from './customFunction';
+import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui';
+import { GetTime, GetScore, log } from './customFunction';
 import { adler32 } from './API/cipher_system';
 import { ExternalFS } from './API/filesystem';
 
@@ -88,12 +87,13 @@ const MarketGUI = {
                 MainForm.show(player).then((response) => {
                     switch (response.selection) {
                         case 0:
-                            this.Market(player)
+                            this.Market(player);
                             break;
                         case 1:
-                            this.Shelf(player)
+                            this.Shelf(player);
                             break;
                         case 2:
+                            this.Manage(player);
                             break;
                         case 3:
 
@@ -106,7 +106,7 @@ const MarketGUI = {
 
     //市场
     Market(player) {
-        let CanBuyCommodities = []
+        let CanBuyCommodities = [];
         const MarketForm = new ActionFormData()
             .title("服务器交易市场")
             .body("§c欢迎光临服务器交易市场")
@@ -230,12 +230,11 @@ const MarketGUI = {
                     }
                     //物品耐久值
                     if (item_data.Hasdamage) {
-                        new_item.getComponent("minecraft:durability").damage = pre_item_data.damage;
+                        new_item.getComponent("minecraft:durability").damage = item_data.damage;
                     }
-                    //检查背包是否还有空余空间，并且将物品放入背包
+                    //检查背包是否还有空余空间
                     let has_empty_slot = false;
                     if (player.getComponent("minecraft:inventory").container.emptySlotsCount != 0) {
-                        player.getComponent("minecraft:inventory").container.addItem(new_item);
                         has_empty_slot = true;
                     }
                     if (!has_empty_slot) {
@@ -260,6 +259,8 @@ const MarketGUI = {
                                                 player.sendMessage("§e>> 购买成功！已将商品送至您的背包中！");
                                                 //扣除玩家金币
                                                 world.scoreboard.getObjective("money").setScore(player,GetScore("money",player.nameTag) - (response.formValues[0] * item_data.price));
+                                                //发送物品
+                                                player.getComponent("minecraft:inventory").container.addItem(new_item);
                                             } else {
                                                 this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
                                                 console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
@@ -436,6 +437,190 @@ const MarketGUI = {
         })
     },
 
+    //管理商品菜单
+    Manage(player) {
+        let ManageData = [];
+        const ManageForm = new ActionFormData()
+            .title("§e§l管理商品")
+            .body("§c欢迎来到管理商品界面\n§c请注意，此处的操作将会直接影响到市场中的商品！")
+            .button("返回上一级")
+            for (let i = 0; i < MarketData.length; i++) {
+                if (MarketData[i].playerid == player.id && MarketData[i].state) {
+                    ManageForm.button(MarketData[i].name + "\n单价: " + MarketData[i].price + " 库存数量: " + MarketData[i].amount);
+                    ManageData.push(MarketData[i]);
+                } else {
+                    ManageForm.button("§c[已被管理员下架] " + MarketData[i].name + "\n单价: " + MarketData[i].price + " 库存数量: " + MarketData[i].amount);
+                    ManageData.push(MarketData[i]);
+                }
+            }
+            ManageForm.show(player).then((response) => {
+                if (response.canceled || response.selection == 0) {
+                    this.Main(player);
+                } else if (!ManageData[response.selection - 1].state) {
+                    //商品状态为不可用状态直接下架
+                    //首先检查玩家背包是否有空余空间
+                    let has_empty_slot = false;
+                    if (player.getComponent("minecraft:inventory").container.emptySlotsCount != 0) {
+                        has_empty_slot = true;
+                    }
+                    //如果玩家背包有空间
+                    if (has_empty_slot) {
+                        //直接开始构建物品
+                        let item_data = ManageData[response.selection - 1];
+                        let item_lores = item_data.Lores;
+                        let new_item = new ItemStack(item_data.typeid);
+                        new_item.setLore(item_lores);
+                        //物品名字()
+                        new_item.nameTag = item_data.name;
+                        //物品数量
+                        new_item.amount = item_data.amount;
+                        //物品附魔属性
+                        if (item_data.Hasench) {
+                            let newench = new_item.getComponent('enchantments');
+                            let enchList = newench.enchantments;
+                            for (let ench in item_data.ench) {
+                                enchList.addEnchantment(new Enchantment(ench,item_data.ench[ench]));
+                            }
+                            newench.enchantments = enchList;
+                        }
+                        //物品耐久值
+                        if (item_data.Hasdamage) {
+                            new_item.getComponent("minecraft:durability").damage = item_data.damage;
+                        }
+                        //首先将旧的MarketData缓存起来
+                        let old_MarketData = Object.assign({},MarketData);
+                        //根据商品id寻找，然后删除相应的数据
+                        for (let i = 0; i < MarketData.length; i++) {
+                            if (MarketData[i].id == item_data.id) {
+                                MarketData.splice(i,1);
+                                break;
+                            }
+                        }
+                        //开始连接服务器
+                        fs.OverwriteJsonFile("market.json",MarketData).then((result) => {
+                            if (result === "success") {
+                                //覆写成功
+                                this.Success(player,`[商品下架成功]\n商品名称: ${item_data.name} (${item_data.typeid}) \n商品简介: ${item_data.description} \n商品单价: ${item_data.price}\n商品剩余库存: ${item_data.amount}\n商品流水号: ${item_data.id}`);
+                                //发送物品
+                                player.getComponent("minecraft:inventory").container.addItem(new_item);
+                            } else {
+                                this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ManageForm");
+                                console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                                MarketData = old_MarketData;
+                            }
+                        })
+                    } else {
+                        //玩家背包没有空间，则直接报错提醒玩家
+                        this.Error(player,"§c您的背包没有多余的空间来放置下架的商品，请清空后重试！","104","ManageForm");
+                    }
+
+                } else {
+                    //商品状态为可用状态可以进行修改
+                    let item_data = ManageData[response.selection - 1];
+                    const ManageSubForm = new ModalFormData()
+                        .title("请选择你要对 "+ item_data.id +" 的操作")
+                        .slider("请选择你要下架该商品的数量",0,item_data.amount,1,0)
+                        .textField("请输入新的商品名称","尽量不要太长，3-6字为合理长度",item_data.name)
+                        .textField("请输入新的物品单价","请注意，这里输入的是物品单价！",item_data.price.toString())
+                        .textField("请输入新的商品描述","8-10字为合理长度",item_data.description)
+                        .show(player).then((response) => {
+                            if (response.canceled) {
+                                this.Manage(player);
+                            } else if (response.formValues[1] == "" || response.formValues[2] == "" || parseInt(response.formValues[2]) <= 0 || isNaN(parseInt(Number(response.formValues[2])))) {
+                                //填写的数据格式错误
+                                this.Error(player,"§c错误的数据格式，请重新填写！","101","ManageForm");
+                            } else {
+                                //数据格式正确且没有被下架
+                                //首先更新缓存中MarketData的值，然后修改相应的数据，最后覆写market.json
+                                let old_MarketData = Object.assign({},MarketData);
+                                //如果玩家下架一定数量的商品
+                                if (response.formValues[0] != 0) {
+                                    //开始构建预览商品
+                                    let item_lores = item_data.Lores;
+                                    let new_item = new ItemStack(item_data.typeid);
+                                    new_item.setLore(item_lores);
+                                    //物品名字()
+                                    new_item.nameTag = item_data.name;
+                                    //物品数量
+                                    new_item.amount = response.formValues[0];
+                                    //物品附魔属性
+                                    if (item_data.Hasench) {
+                                        let newench = new_item.getComponent('enchantments');
+                                        let enchList = newench.enchantments;
+                                        for (let ench in item_data.ench) {
+                                            enchList.addEnchantment(new Enchantment(ench,item_data.ench[ench]));
+                                        }
+                                        newench.enchantments = enchList;
+                                    }
+                                    //物品耐久值
+                                    if (item_data.Hasdamage) {
+                                        new_item.getComponent("minecraft:durability").damage = item_data.damage;
+                                    }
+                                    //检查背包是否还有空余空间
+                                    let has_empty_slot = false;
+                                    if (player.getComponent("minecraft:inventory").container.emptySlotsCount != 0) {
+                                        has_empty_slot = true;
+                                    }
+                                    //如果没有空间
+                                    if (!has_empty_slot) {
+                                        player.sendMessage("§c>> 本次对商品的所有操作失败！您背包没有多余的空间来放置商品，请清空后重试！");
+                                    } else {
+                                        //如果有足够空间
+                                        //根据商品id寻找
+                                        for (let i = 0; i < MarketData.length; i++) {
+                                            if (MarketData[i].id == item_data.id) {
+                                                MarketData[i].amount = MarketData[i].amount - response.formValues[0];
+                                                MarketData[i].name = response.formValues[1];
+                                                MarketData[i].price = parseInt(response.formValues[2]);
+                                                MarketData[i].description = response.formValues[3];
+                                                //判断商品数量是否为0，如果为0则删除相应物品数据
+                                                if (MarketData[i].amount == 0) {
+                                                    MarketData.splice(i,1);
+                                                }
+                                                break;
+                                            }
+                                        }
+                                        //开始连接服务器
+                                        fs.OverwriteJsonFile("market.json",MarketData).then((result) => {
+                                            if (result === "success") {
+                                                //覆写成功
+                                                this.Success(player,`[商品修改成功]\n商品名称: ${response.formValues[1]} (${item_data.typeid}) \n商品简介: ${response.formValues[3]} \n商品单价: ${response.formValues[2]}\n商品剩余库存: ${item_data.amount - response.formValues[0]}\n商品流水号: ${item_data.id}`);
+                                                //发送物品
+                                                player.getComponent("minecraft:inventory").container.addItem(new_item);
+                                            } else {
+                                                this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ManageForm");
+                                                MarketData = old_MarketData;
+                                            }
+                                        })
+                                    }
+                                } else {
+                                    //如果玩家没有下架商品
+                                    //开始连接服务器
+                                    for (let i = 0; i < MarketData.length; i++) {
+                                        if (MarketData[i].id == item_data.id) {
+                                            MarketData[i].name = response.formValues[1];
+                                            MarketData[i].price = parseInt(response.formValues[2]);
+                                            MarketData[i].description = response.formValues[3];
+                                            break;
+                                        }
+                                    }
+                                    fs.OverwriteJsonFile("market.json",MarketData).then((result) => {
+                                        if (result === "success") {
+                                            //覆写成功
+                                            this.Success(player,`[商品修改成功]\n商品名称: ${response.formValues[1]} (${item_data.typeid}) \n商品简介: ${response.formValues[3]} \n商品单价: ${response.formValues[2]}\n商品剩余库存: ${item_data.amount}\n商品流水号: ${item_data.id}`);
+                                        } else {
+                                            this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ManageForm");
+                                            MarketData = old_MarketData;
+                                        }
+                                    })
+                                }
+                            }
+                        })
+                }
+            })
+
+    },
+
     Error(player,info,ErrorCode,Form) {
         const ErrorForm = new MessageFormData()
             .title("§c出错了！错误码(" + ErrorCode +")")
@@ -450,6 +635,9 @@ const MarketGUI = {
                             break;
                         case "MainForm":
                             this.Main(player);
+                            break;
+                        case "ManageForm":
+                            this.Manage(player);
                             break;
                     }
                 }
@@ -474,13 +662,7 @@ const MarketGUI = {
 //对于物品使用的检测
 world.afterEvents.itemUse.subscribe(event => {
     if (event.itemStack.typeId == "minecraft:stick") {
-        let player = event.source;
-        if (player.nameTag == "NIANIANKNIA") {
-            MarketGUI.Main(player)
-        } else {
-            player.sendMessage("§c>> 玩家交易市场正在开发中，敬请期待!");
-        }
-
+        MarketGUI.Main(event.source)
     }
 })
 

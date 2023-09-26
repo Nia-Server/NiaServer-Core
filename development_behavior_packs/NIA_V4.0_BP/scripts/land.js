@@ -158,6 +158,26 @@ world.afterEvents.worldInitialize.subscribe(() => {
     })
 })
 
+world.beforeEvents.playerBreakBlock.subscribe((event) => {
+    let land = PosInIndex([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
+    if (land) {
+        if (!event.player.hasTag("op") && land.owner != event.player.id) {
+            event.cancel = true;
+            event.player.sendMessage("§c您没有相关权限在此处破坏方块！");
+        }
+    }
+})
+
+world.beforeEvents.playerPlaceBlock.subscribe((event) => {
+    let land = PosInIndex([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
+    if (land) {
+        if (!event.player.hasTag("op") && land.owner != event.player.id) {
+            event.cancel = true;
+            event.player.sendMessage("§c您没有相关权限在此处放置方块！");
+        }
+    }
+})
+
 //玩家GUI表现
 const GUI = {
 
@@ -184,10 +204,10 @@ world.beforeEvents.itemUseOn.subscribe((event) => {
     ]
     let land = PosInIndex([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
     //log("测试" + land + event.block.x + " " + event.block.y + " " + event.block.z + " " + event.block.dimension.id)
-    if (land) {
+    if (land && !event.source.hasTag("op") && land.owner != event.source.id) {
         if (tools.includes(event.itemStack.typeId) || blocks.includes(event.block.typeId)) {
             event.cancel = true;
-            event.source.sendMessage("禁止使用！")
+            event.source.sendMessage("§c您没有相关权限在此处进行相关交互动作！");
         }
     }
 })
