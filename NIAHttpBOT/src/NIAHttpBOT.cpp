@@ -15,46 +15,20 @@
 
 #include "CFG_Parser.hpp"
 #include "I18Nize.hpp"
+#include "Logger.hpp"
 
-#define SYNC(a) std::basic_osyncstream(a)
+#include "File_API.h"
+#include "Game_API.h"
 
-#define LOG(sym,str) SYNC(std::cout)<<GetTime()<<#sym" "<<str<<std::endl
-#define INFO(a) SYNC(std::cout)<<GetTime()<<"\x1b[32m[INFO]\x1b[0m "<<a<<std::endl
-#define WARN(a) SYNC(std::cout)<<GetTime()<<"\x1b[43;1m[WARN]\x1b[0m "<<a<<std::endl
-#define REMOVE_PATH(a) (a + sizeof(__PROJECT__) -1)
-#define FAIL(a) SYNC(std::cout)<<GetTime()<<"\x1b[41;1m[FAIL]\x1b[0m \x1b[36;45;4mError at " \
-	<<REMOVE_PATH(__FILE__)<<":"<<__LINE__<<" ("<<__FUNCTION__ \
-	<<")\x1b[0m ==>\n"<<a<<'\n'<<std::endl
 
-#define XLOG(sym,str) SYNC(std::cout)<<GetTime()<<#sym" "<<__I18N(str)<<std::endl
-#define XINFO(a) SYNC(std::cout)<<GetTime()<<"\x1b[32m[INFO]\x1b[0m "<<__I18N(a)<<std::endl
-#define XWARN(a) SYNC(std::cout)<<GetTime()<<"\x1b[43;1m[WARN]\x1b[0m "<<__I18N(a)<<std::endl
-#define XFAIL(a) SYNC(std::cout)<<GetTime()<<"\x1b[41;1m[FAIL]\x1b[0m \x1b[36;45;4mError at " \
-	<<REMOVE_PATH(__FILE__)<<":"<<__LINE__<<" ("<<__FUNCTION__ \
-	<<")\x1b[0m ==>\n"<<__I18N(a)<<'\n'<<std::endl
+signed int main(signed int argc, char** argv) {
 
-#define X(a) __I18N(a)
+	std::string IPAddress = "127.0.0.1";
+	int PORT = 10086;
+	bool UseCmd = false;
 
-//初始化配置文件数据
-std::string IPAddress = "127.0.0.1";
-int PORT = 10086;
-bool UseCmd = false;
-
-inline std::string GetTime() {
-	time_t timep; tm p;
-    char time_buffer[80];
-	time(&timep);
-#ifdef WIN32
-	localtime_s(&p, &timep);
-#else
-	localtime_r(&timep, &p);
-#endif
-    strftime(time_buffer, sizeof(time_buffer), "[%Y/%m/%d %H:%M:%S] ", &p);
-	return "\x1b[35m" + std::string(time_buffer) + "\x1b[0m";
-}
-
-int main() {
     std::cout << "\033]0;NIAHttpBOT V1.3.2\007";
+
 #ifdef WIN32
 	SetConsoleOutputCP(65001);
 #endif
@@ -83,8 +57,7 @@ int main() {
 	)" <<"\x1b[0m"<< std::endl;
 	
 	CFGPAR::parser par;
-	static I18N i18n;
-#define __I18N(a) i18n.get(a)
+
 
 	//首先检查有没有配置文件
 	if (!par.parFromFile("./NIAHttpBOT.cfg")) {
@@ -110,33 +83,40 @@ int main() {
 
 	httplib::Server svr;
 
-	//服务器开启检测
-	svr.Get("/ServerStarted", [](const httplib::Request&, httplib::Response& res) {
-		XINFO("Minecraft 服务器连接成功！");
-		res.status = 200;
-		res.set_content(X("服务器已启动"), "text/plain");
-	});
-	//玩家加入服务器检测
-	svr.Post("/PlayerJoin", [](const httplib::Request& req, httplib::Response& res) {
-		INFO(X("玩家 ") << req.body << X(" 进入了服务器"));
-		res.status = 200;
-		res.set_content(X("玩家进入服务器"), "text/plain");
-	});
-	//玩家离开服务器检测
-	svr.Post("/PlayerLeave", [](const httplib::Request& req, httplib::Response& res) {
-		INFO(X("玩家 ") << req.body << X(" 离开了服务器"));
-		res.status = 200;
-		res.set_content(X("玩家离开服务器"), "text/plain");
-	});
-	//玩家发言检测
-	svr.Post("/PlayerChat", [](const httplib::Request& req, httplib::Response& res) {
-		INFO(X("玩家发言 ") << req.body);
-		res.status = 200;
-		res.set_content(X("玩家进入服务器"), "text/plain");
+	
+    svr.Post("/GetConfig", [&par](const httplib::Request& req, httplib::Response& res){
+		rapidjson::Document req_json; 
+		req_json.Parse(req.body.c_str()), res.status = 400;
+		if(req_json.HasParseError()||!req_json.HasMember("Name")||!req_json.HasMember("Type")
+			||!par.hasKey(req_json["Name"].GetString())) [[unlikely]] // Type: B->bool, I->int, C->char, S->string 
+			return res.set_content("json data error", "text/plain");
+		switch(req_json["Type"].GetString()[0]) {
+			case 'B': 
+				if(!par.isBool("Name")) [[unlikely]] goto error;
+				res.set_content(par.getBool("Name")?"1":"0", "text/plain");
+				break;
+			case 'I':
+				if(!par.isInt("Name")) [[unlikely]] goto error;
+				res.set_content(std::to_string(par.getInt("Name")), "text/plain");
+				break;
+			case 'C':
+				if(!par.isChar("Name")) [[unlikely]] goto error;
+				res.set_content(std::string()+par.getChar("Name"), "text/plain");
+				break;
+			case 'S':
+				if(!par.isString("Name")) [[unlikely]] goto error;
+				res.set_content(par.getString("Name"), "text/plain");
+				break;
+				
+			[[unlikely]]default : error:
+				res.status = 114514, res.set_content("config type error", "text/plain");
+		}
+		if(res.status!=114514) [[likely]] res.status=200;
+
 	});
 
 	//执行cmd命令
-	svr.Post("/RunCmd",  [](const httplib::Request& req, httplib::Response& res) {
+	svr.Post("/RunCmd",  [UseCmd](const httplib::Request& req, httplib::Response& res) {
 		//首先判断配置文件是否启用
 		if (!UseCmd) {
 			XWARN("执行DOS命令的功能暂未启用！请在启用后使用！");
@@ -151,313 +131,9 @@ int main() {
 		res.set_content("success", "text/plain");
 	});
 
-	//检查文件是否存在
-	svr.Post("/CheckFile", [](const httplib::Request& req, httplib::Response& res) {
-		INFO(X("接收到检查文件是否存在的请求，请求检查的文件名称: ") << req.body);
-		std::ifstream file(req.body);
-		res.status = 200;
-		res.set_content(file?"true":"false", "text/plain");
-		file.close();
-	});
+	init_game_API(svr);
 
-		//检测指定文件夹是否存在
-	svr.Post("/CheckDir",  [](const httplib::Request& req, httplib::Response& res) {
-		res.status = 200;
-		std::filesystem::path p{req.body};
-		if (std::filesystem::exists(p)) {
-			res.set_content("true", "text/plain");
-		} else {
-			res.set_content("false", "text/plain");
-		}
-	});
-
-	//创建新的文件
-	svr.Post("/CreateNewFile", [](const httplib::Request& req, httplib::Response& res) {
-		XINFO("接收到创建文件的请求！ ");
-		//解析字符串并创建一个json对象
-		rapidjson::Document NewFileData;
-		NewFileData.Parse(req.body.c_str());
-		//判断是否解析成功
-		if (NewFileData.HasParseError()) {
-			res.status = 400;
-			res.set_content("Data parsing failed", "text/plain");
-			return ;
-		}
-		if(!NewFileData.HasMember("fileName")){
-			res.status = 400;
-			res.set_content("The fileName key for the json object was not found! Please recheck and send again.", "text/plain");
-			return ;
-		}
-		if(!NewFileData.HasMember("content")){
-			res.status = 400;
-			res.set_content("The content key for the json object was not found! Please recheck and send again.", "text/plain");
-			return ;
-		}
-		//初始化文件名称
-		std::string fileName = "";
-		//读取键为fileName的内容
-		//读取文件名称
-		fileName = NewFileData["fileName"].GetString();
-		//读取文件内容
-		std::string fileContent = NewFileData["content"].GetString();
-		// 检测${fileName}文件是否存在，如果不存在，就创建一个新的文件，并写入内容
-		std::ifstream file(fileName);
-		if(file){
-			res.status = 400;
-			res.set_content("The target file already exists and cannot be regenerated.", "text/plain");
-			return ;
-		}
-		//打开指定文件开始写入数据
-		std::ofstream outFile(fileName);
-		outFile << fileContent;
-		outFile.close();
-		res.status = 200;
-		res.set_content("success", "text/plain");
-		file.close();
-	});
-
-
-	//创建新的json文件
-	svr.Post("/CreateNewJsonFile", [](const httplib::Request& req, httplib::Response& res) {
-		XINFO("接收到创建json文件的请求！ ");
-		//解析字符串并创建一个json对象
-		rapidjson::Document NewFileData;
-		NewFileData.Parse(req.body.c_str());
-		//判断是否解析成功
-		if (NewFileData.HasParseError()) {
-			res.status = 400;
-			res.set_content("Data parsing failed", "text/plain");
-			return ;
-		}
-		if(!NewFileData.HasMember("fileName")){
-			res.status = 400;
-			res.set_content("The fileName key for the json object was not found! Please recheck and send again.", "text/plain");
-			return ;
-		}
-		if(!NewFileData.HasMember("content")){
-			res.status = 400;
-			res.set_content("The content key for the json object was not found! Please recheck and send again.", "text/plain");
-			return ;
-		}
-		//初始化文件名称
-		std::string fileName = "";
-		//读取键为fileName的内容
-		//读取文件名称
-		fileName = NewFileData["fileName"].GetString();
-		//读取文件内容
-		rapidjson::Value& content = NewFileData["content"];
-		//将文件内容转换为字符串，便于后续写入文件
-		rapidjson::StringBuffer buffer;
-		rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
-		writer.SetIndent(' ', 4);
-		content.Accept(writer);
-		// 检测${fileName}文件是否存在，如果不存在，就创建一个新的文件，并写入内容
-		std::ifstream file(fileName);
-		if(file){
-			res.status = 400;
-			res.set_content("The target file already exists and cannot be regenerated.", "text/plain");
-			return ;
-		}
-		file.close();
-		std::ofstream out(fileName);
-		out << buffer.GetString();
-		out.close();
-		res.status = 200;
-		res.set_content("success", "text/plain");
-		file.close();
-	});
-
-	//获取文件数据
-	svr.Post("/GetFileData", [](const httplib::Request& req, httplib::Response& res) {
-		INFO(X("接收到获取文件数据的请求,请求获取的文件名称为： ") << req.body);
-		//初始化文件名称
-		std::string fileName = req.body;
-		//判断文件存不存在
-		std::ifstream file(fileName);
-		if(!file) {
-			//文件打开失败
-			res.status = 400;
-			res.set_content("The target file does not exist", "text/plain");
-			return ;
-		}
-		std::string line_content;
-		std::string file_data = "";
-		while(getline(file,line_content))
-		{
-			file_data = file_data + line_content + "\n";
-		}
-		res.status = 200;
-		res.set_content(file_data, "text/plain");
-		file.close();
-	});
-
-	//获取json文件数据
-	svr.Post("/GetJsonFileData", [](const httplib::Request& req, httplib::Response& res) {
-		INFO(X("接收到获取文件数据的请求,请求获取的文件名称为： ") << req.body);
-		//初始化文件名称
-		std::string fileName = req.body;
-		//判断文件存不存在
-		std::ifstream file(fileName);
-		if(!file) {
-			//文件打开失败
-			res.status = 400;
-			res.set_content("The target file does not exist", "text/plain");
-			return ;
-		}
-		//文件打开成功，并创建文件流对象
-		rapidjson::IStreamWrapper isw(file);
-		//创建json对象
-		rapidjson::Document doc;
-		//从文件流中解析数据
-		doc.ParseStream(isw);
-		//将文件内容转换为字符串，便于后续写入文件
-		rapidjson::StringBuffer buffer;
-		rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-		doc.Accept(writer);
-		std::string jsonStr = buffer.GetString();
-		res.status = 200;
-		res.set_content(jsonStr, "text/plain");
-		file.close();
-	});
-
-	//向目标文件覆盖内容
-	svr.Post("/OverwriteFile",  [](const httplib::Request& req, httplib::Response& res) {
-		XINFO("接收到覆写文件的请求！");
-		//解析字符串并创建一个json对象
-		rapidjson::Document OverwriteFileData;
-		OverwriteFileData.Parse(req.body.c_str());
-		//判断是否解析成功
-		if (OverwriteFileData.HasParseError()) {
-			res.status = 400;
-			res.set_content("Data parsing failed", "text/plain");
-			return ;
-		}
-		if(!OverwriteFileData.HasMember("fileName")){
-			res.status = 400;
-			res.set_content("The fileName key for the json object was not found! Please recheck and send again.", "text/plain");
-			return ;
-		}
-		if(!OverwriteFileData.HasMember("content")){
-			res.status = 400;
-			res.set_content("The content key for the json object was not found! Please recheck and send again.", "text/plain");
-			return ;
-		}
-		//初始化文件名称
-		std::string fileName = "";
-		//读取文件名称
-		fileName = OverwriteFileData["fileName"].GetString();
-		//读取文件内容
-		std::string fileContent = OverwriteFileData["content"].GetString();
-		// 检测${fileName}文件是否存在
-		std::ifstream file(fileName);
-		if(!file) {
-			res.status = 400;
-			res.set_content("The target file does not exist.", "text/plain");
-			return ;
-		}
-		//打开指定文件开始写入数据
-		std::ofstream outFile(fileName);
-		outFile << fileContent;
-		outFile.close();
-		res.status = 200;
-		res.set_content("success", "text/plain");
-		file.close();
-	});
-
-	//覆盖json文件内容
-	svr.Post("/OverwriteJsonFile", [](const httplib::Request& req, httplib::Response& res) {
-		XINFO("接收到覆写 json 文件的请求！");
-		//解析字符串并创建一个json对象
-		rapidjson::Document overWriteFileData;
-		overWriteFileData.Parse(req.body.c_str());
-		//判断是否解析成功
-		if (overWriteFileData.HasParseError()) {
-			res.status = 400;
-			res.set_content("Data parsing failed", "text/plain");
-			return ;
-		}
-		if(!overWriteFileData.HasMember("fileName")){
-			res.status = 400;
-			res.set_content("The fileName key for the json object was not found! Please recheck and send again.", "text/plain");
-			return ;
-		}
-		if(!overWriteFileData.HasMember("content")){
-			res.status = 400;
-			res.set_content("The fileData key for the json object was not found! Please recheck and send again.", "text/plain");
-			return ;
-		}
-		//初始化文件名称
-		std::string fileName = "";
-		//读取键为fileName的内容
-		//读取文件名称
-		fileName = overWriteFileData["fileName"].GetString();
-		//读取文件内容
-		rapidjson::Value& content = overWriteFileData["content"];
-		//将文件内容转换为字符串，便于后续写入文件
-		rapidjson::StringBuffer buffer;
-		rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
-		writer.SetIndent(' ', 4);
-		content.Accept(writer);
-		// 检测${fileName}文件是否存在，如果不存在，就创建一个新的文件，并写入内容
-		std::ifstream file(fileName);
-		if(!file) {
-			res.status = 400;
-			res.set_content("The target file does not exist.", "text/plain");
-			return ;
-		}
-		std::ofstream out(fileName);
-		out << buffer.GetString();
-		out.close();
-		res.status = 200;
-		res.set_content("success", "text/plain");
-		file.close();
-
-	});
-
-
-	//向目标文件写入一行内容
-	svr.Post("/WriteLineToFile",  [](const httplib::Request& req, httplib::Response& res) {
-		XINFO("接收到向目标文件写入一行内容的请求！");
-		//解析字符串并创建一个json对象
-		rapidjson::Document WriteLineData;
-		WriteLineData.Parse(req.body.c_str());
-		//判断是否解析成功
-		if (WriteLineData.HasParseError()) {
-			res.status = 400;
-			res.set_content("Data parsing failed", "text/plain");
-			return ;
-		}
-		if(!WriteLineData.HasMember("fileName")){
-			res.status = 400;
-			res.set_content("The fileName key for the json object was not found! Please recheck and send again.", "text/plain");
-			return ;
-		}
-		if(!WriteLineData.HasMember("content")){
-			res.status = 400;
-			res.set_content("The content key for the json object was not found! Please recheck and send again.", "text/plain");
-			return ;
-		}
-		//初始化文件名称
-		std::string fileName = "";
-		//读取文件名称
-		fileName = WriteLineData["fileName"].GetString();
-		//读取文件内容
-		std::string fileContent = WriteLineData["content"].GetString();
-		// 检测${fileName}文件是否存在，如果不存在，就创建一个新的文件，并写入内容
-		std::ifstream file(fileName);
-		if(!file) {
-			res.status = 400;
-			res.set_content("The target file does not exist.", "text/plain");
-			return ;
-		}
-		//打开指定文件开始写入数据
-		std::ofstream outFile(fileName, std::ios_base::app);
-		outFile << fileContent;
-		outFile.close();
-		res.status = 200;
-		res.set_content("success", "text/plain");
-		file.close();
-	});
+	init_file_API(svr);
 
 	svr.listen(IPAddress, PORT);
 

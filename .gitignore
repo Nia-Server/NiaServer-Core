@@ -25,5 +25,6 @@
 !/NIAHttpBOT/header/
 !/NIAHttpBOT/src/
 !/NIAHttpBOT/I18N/
+!/NIAHttpBOT/test/
 !/NIAHttpBOT/CMakeLists.txt
 

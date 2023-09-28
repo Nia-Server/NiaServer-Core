@@ -78,4 +78,8 @@ public:
 
 };
 
+static I18N i18n;
+
+#define __I18N(a) i18n.get(a)
+
 #endif
