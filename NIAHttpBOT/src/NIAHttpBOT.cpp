@@ -27,7 +27,7 @@ signed int main(signed int argc, char** argv) {
 	int PORT = 10086;
 	bool UseCmd = false;
 
-    std::cout << "\033]0;NIAHttpBOT V1.3.2\007";
+    std::cout << "\033]0;NIAHttpBOT V1.4.0\007";
 
 #ifdef WIN32
 	SetConsoleOutputCP(65001);

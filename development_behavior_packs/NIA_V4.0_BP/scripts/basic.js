@@ -121,7 +121,7 @@ const equLevelData = {
 //服务器初始化
 world.afterEvents.worldInitialize.subscribe((event) => {
     log("NIA V4 已经成功在本服务器上启动！")
-    log("版本: v1.4.0-pre-1 based on BDS-1.20.12(last upgrate:2023/9/13)")
+    log("版本: v1.4.0-pre-1 based on BDS-1.20.30(last upgrate:2023/9/26)")
     log("作者: @NIANIANKNIA(https://github.com/NIANIANKNIA)")
     log("不会部署？前往文档站查看详细的部署过程==>(https://docs.mcnia.com/zh-CN/deploy.html)")
     log("本项目基于AGPL-3.0开源协议，注意遵守开源协议！")
@@ -131,11 +131,6 @@ world.afterEvents.worldInitialize.subscribe((event) => {
 
     if (world.getDynamicProperty("state") == null) {
         log("NIA V4 首次在此服务器上运行，开始初始化！")
-        AddScoreboard("IslandData","空岛数据");
-        AddScoreboard("IslandID","空岛编号");
-        AddScoreboard("posX","x坐标");
-        AddScoreboard("posY","y坐标");
-        AddScoreboard("posZ","z坐标");
         AddScoreboard("UUID","玩家识别码");
         AddScoreboard("DATA","服务器数据");
         AddScoreboard("money","能源币");
@@ -146,11 +141,7 @@ world.afterEvents.worldInitialize.subscribe((event) => {
         AddScoreboard("menu","§6==NIA服务器==");
         AddScoreboard("AnoxicTime","缺氧时间");
         AddScoreboard("CDK","CDK数据");
-        AddScoreboard("show_time","展示时间");
-        AddScoreboard("c_time","创建空岛时间");
-        AddScoreboard("stamina","体力值")
-        AddScoreboard("miningTime","采矿时间")
-        RunCmd(`scoreboard players set num IslandData 1`)
+        AddScoreboard("stamina","体力值");
         log("NIA V4 初始化成功！")
         world.setDynamicProperty("state",true)
     } else if (world.getDynamicProperty("state") == true) {
@@ -168,24 +159,6 @@ world.afterEvents.playerSpawn.subscribe(event => {
     }
 })
 
-// system.runInterval(() => {
-//     RunCmd(`gamemode a @a[tag=!op,tag=!mining,m=!a,x=559,y=67,z=562,r=700]`)
-//     RunCmd(`tag @a remove mining`)
-//     RunCmd(`tag @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] add mining`)
-//     RunCmd(`scoreboard players add @a[x=725,y=3,z=539,dx=89,dy=71,dz=30,tag=mining] miningTime -1`)
-//     RunCmd(`title @a[x=725,y=3,z=539,dx=89,dy=71,dz=30,scores={miningTime = ..0}] title §c矿场使用时间已到！`)
-//     RunCmd(`title @a[x=725,y=3,z=539,dx=89,dy=71,dz=30,scores={miningTime = ..0}] subtitle §7请重新花费体力进入！`)
-//     RunCmd(`tp @a[x=725,y=3,z=539,dx=89,dy=71,dz=30,scores={miningTime = ..0}] 702 82 554`)
-
-//     //CheckCringPlayer()
-//     // RunCmd(`scoreboard players add @a oxygen 0`)
-//     // RunCmd(`scoreboard players add @a equLevel 0`)
-//     // RunCmd(`scoreboard players add @a actionbar 0`)
-//     // RunCmd(`scoreboard players add @a time 0`)
-//     // RunCmd(`scoreboard players add @a money 0`)
-//     // RunCmd(`scoreboard players add @a AnoxicTime 0`)
-// }, 1);
-
 system.runInterval(() => {
     let players = world.getPlayers()
     let playerList = Array.from(players);
@@ -200,16 +173,9 @@ system.runInterval(() => {
         RunCmd(`scoreboard players set RN DATA ${RN}`);
         RunCmd(`title @a title §c物价指数发生变动！`)
         RunCmd(`title @a subtitle §7物价指数由 §l§e${GetScore("DATA","RN") / 100} §r§7变为 §l§e${RN / 100}`)
-        RunCmd(`backup`);
-        Broadcast(`§a>> 服务器自动备份中！可能出现卡顿，请勿在此时进行较大负载活动！`)
+        //RunCmd(`backup`);
+        //Broadcast(`§a>> 服务器自动备份中！可能出现卡顿，请勿在此时进行较大负载活动！`)
         if (TIME.getHours() == 16) {
-            //每天更新数据文件
-            // RunCmd(`title @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] title §c矿场已更新！`)
-            // RunCmd(`title @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] subtitle §7请重新花费体力进入！`)
-            // RunCmd(`tp @a[x=725,y=3,z=539,dx=89,dy=69,dz=30] 702 82 554`)
-            // RunCmd(`scoreboard objectives remove miningTime`)
-            // RunCmd(`scoreboard objectives add miningTime dummy 采矿时间`)
-            // RunCmd(`spawnores OreChunk1 813 3 568 725 68 539`)
             let ScoreBoards = world.scoreboard.getObjectives()
             for (let i = 0; i < ScoreBoards.length; i++) {
                 if (ScoreBoards[i].id.slice(0,2) == "R:") {
@@ -224,7 +190,6 @@ system.runInterval(() => {
             posData[playername].num = 0
         }
         RunCmd(`scoreboard players add @a time 1`);
-        RunCmd(`scoreboard players add @a[scores={stamina=..159}] stamina 1`);
         for (let i = 0; i < playerList.length; i++) {
             RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume}`);
             if (playerList[i].dimension.id == "minecraft:nether" && GetScore("equLevel",playerList[i].nameTag) <= 8) {
@@ -324,169 +289,6 @@ system.runInterval(() => {
         if(playerList[i].hasTag("ShowActionbar")) {
             if (playerList[i].hasTag("fly")) {
                 titleActionbar = "§c飞行模式§r "
-            }
-            //
-            if (playerList[i].hasTag("ShowOxygenName")) {
-                titleActionbar = titleActionbar + "氧气值："
-            }
-            //
-            if (playerList[i].hasTag("ShowOxygen1") || playerList[i].hasTag("ShowOxygen2") || playerList[i].hasTag("ShowOxygen3") || playerList[i].hasTag("ShowOxygen4")) {
-                let percent = (GetScore("oxygen",playerList[i].nameTag) / equLevelData[GetScore("equLevel",playerList[i].nameTag)].max)
-                if (playerList[i].hasTag("ShowOxygen1")) {
-                    switch (true) {
-                        case percent >= 1:
-                            titleActionbar = titleActionbar + "§e[§a||||||||||||||||||||§6100.00%§e]"
-                            break;
-                        case percent >= 0.95:
-                            titleActionbar = titleActionbar + `§e[§a|||||||||||||||||||§6${(percent * 100).toFixed(2)}%§7§e]`
-                            break;
-                        case percent >= 0.9:
-                            titleActionbar = titleActionbar + `§e[§a||||||||||||||||||§6${(percent * 100).toFixed(2)}%§7|§e]`
-                            break;
-                        case percent >= 0.85:
-                            titleActionbar = titleActionbar + `§e[§a|||||||||||||||||§6${(percent * 100).toFixed(2)}%§7||§e]`
-                            break;
-                        case percent >= 0.8:
-                            titleActionbar = titleActionbar + `§e[§a||||||||||||||||§6${(percent * 100).toFixed(2)}%§7|||§e]`
-                            break;
-                        case percent >= 0.75:
-                            titleActionbar = titleActionbar + `§e[§a|||||||||||||||§6${(percent * 100).toFixed(2)}%§7||||§e]`
-                            break;
-                        case percent >= 0.7:
-                            titleActionbar = titleActionbar + `§e[§a||||||||||||||§6${(percent * 100).toFixed(2)}%§7|||||§e]`
-                            break;
-                        case percent >= 0.65:
-                            titleActionbar = titleActionbar + `§e[§a|||||||||||||§6${(percent * 100).toFixed(2)}%§7||||||§e]`
-                            break;
-                        case percent >= 0.6:
-                            titleActionbar = titleActionbar + `§e[§a||||||||||||§6${(percent * 100).toFixed(2)}%§7|||||||§e]`
-                            break;
-                        case percent >= 0.55:
-                            titleActionbar = titleActionbar + `§e[§a|||||||||||§6${(percent * 100).toFixed(2)}%§7||||||||§e]`
-                            break;
-                        case percent >= 0.5:
-                            titleActionbar = titleActionbar + `§e[§a||||||||||§6${(percent * 100).toFixed(2)}%§7|||||||||§e]`
-                            break;
-                        case percent >= 0.45:
-                            titleActionbar = titleActionbar + `§e[§a|||||||||§6${(percent * 100).toFixed(2)}%§7||||||||||§e]`
-                            break;
-                        case percent >= 0.4:
-                            titleActionbar = titleActionbar + `§e[§a||||||||§6${(percent * 100).toFixed(2)}%§7|||||||||||§e]`
-                            break;
-                        case percent >= 0.35:
-                            titleActionbar = titleActionbar + `§e[§a|||||||§6${(percent * 100).toFixed(2)}%§7||||||||||||§e]`
-                            break;
-                        case percent >= 0.3:
-                            titleActionbar = titleActionbar + `§e[§a||||||§6${(percent * 100).toFixed(2)}%§7|||||||||||||§e]`
-                            break;
-                        case percent >= 0.25:
-                            titleActionbar = titleActionbar + `§e[§a|||||§6${(percent * 100).toFixed(2)}%§7||||||||||||||§e]`
-                            break;
-                        case percent >= 0.2:
-                            titleActionbar = titleActionbar + `§e[§c||||§c${(percent * 100).toFixed(2)}%§7|||||||||||||||§e]`
-                            break;
-                        case percent >= 0.15:
-                            titleActionbar = titleActionbar + `§e[§c|||§c${(percent * 100).toFixed(2)}%§7||||||||||||||||§e]`
-                            break;
-                        case percent >= 0.1:
-                            titleActionbar = titleActionbar + `§e[§c||§c${(percent * 100).toFixed(2)}%§7|||||||||||||||||§e]`
-                            break;
-                        case percent >= 0.05:
-                            titleActionbar = titleActionbar + `§e[§c|§c${(percent * 100).toFixed(2)}%§7||||||||||||||||||§e]`
-                            break;
-                        case percent >= 0:
-                            titleActionbar = titleActionbar + `§e[§c${(percent * 100).toFixed(2)}%§7|||||||||||||||||||§e]`
-                            break;
-                        case percent < 0:
-                            titleActionbar = titleActionbar + `§e[§c0.00%§7|||||||||||||||||||§e]`
-                            break;
-                    }
-                } else if (playerList[i].hasTag("ShowOxygen2")) {
-                    switch (true) {
-                        case percent >= 1:
-                            titleActionbar = titleActionbar + "§e[§a||||||||||||||||||||§e] §6100.00%"
-                            break;
-                        case percent >= 0.95:
-                            titleActionbar = titleActionbar + `§e[§a|||||||||||||||||||§6|§e] §6${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.9:
-                            titleActionbar = titleActionbar + `§e[§a||||||||||||||||||§6|§7|§e] §6${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.85:
-                            titleActionbar = titleActionbar + `§e[§a|||||||||||||||||§6|§7||§e] §6${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.8:
-                            titleActionbar = titleActionbar + `§e[§a||||||||||||||||§6|§7|||§e] §6${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.75:
-                            titleActionbar = titleActionbar + `§e[§a|||||||||||||||§6|§7||||§e] §6${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.7:
-                            titleActionbar = titleActionbar + `§e[§a||||||||||||||§6|§7|||||§e] §6${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.65:
-                            titleActionbar = titleActionbar + `§e[§a|||||||||||||§6|§7||||||§e] §6${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.6:
-                            titleActionbar = titleActionbar + `§e[§a||||||||||||§6|§7|||||||§e] §6${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.55:
-                            titleActionbar = titleActionbar + `§e[§a|||||||||||§6|§7||||||||§e] §6${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.5:
-                            titleActionbar = titleActionbar + `§e[§a||||||||||§6|§7|||||||||§e] §6${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.45:
-                            titleActionbar = titleActionbar + `§e[§a|||||||||§6|§7||||||||||§e] §6${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.4:
-                            titleActionbar = titleActionbar + `§e[§a||||||||§6|§7|||||||||||§e] §6${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.35:
-                            titleActionbar = titleActionbar + `§e[§a|||||||§6|§7||||||||||||§e] §6${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.3:
-                            titleActionbar = titleActionbar + `§e[§a||||||§6|§7|||||||||||||§e] §6${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.25:
-                            titleActionbar = titleActionbar + `§e[§a|||||§6|§7||||||||||||||§e] §6${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.2:
-                            titleActionbar = titleActionbar + `§e[§c||||§6|§7|||||||||||||||§e] §c${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.15:
-                            titleActionbar = titleActionbar + `§e[§c|||§6|§7||||||||||||||||§e] §c${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.1:
-                            titleActionbar = titleActionbar + `§e[§c||§6|§7|||||||||||||||||§e] §c${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0.05:
-                            titleActionbar = titleActionbar + `§e[§c|§6|§7||||||||||||||||||§e] §c${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent >= 0:
-                            titleActionbar = titleActionbar + `§e[§6|§7|||||||||||||||||||§e] §c${(percent * 100).toFixed(2)}%`
-                            break;
-                        case percent < 0:
-                            titleActionbar = titleActionbar + `§e[§7||||||||||||||||||||§e] §c0.00%`
-                            break;
-                    }
-                } else if (playerList[i].hasTag("ShowOxygen3")) {
-                    titleActionbar = titleActionbar + `§l§e${GetScore("oxygen",playerList[i].nameTag)}/${equLevelData[GetScore("equLevel",playerList[i].nameTag)].max}`
-                } else if (playerList[i].hasTag("ShowOxygen4")) {
-                    titleActionbar = titleActionbar + `§l§e${(percent * 100).toFixed(2)}%`
-                }
-            }
-            if (playerList[i].hasTag("ShowMoney")) {
-                titleActionbar = titleActionbar + "§r §f能源币：§e§l" + GetScore("money",playerList[i].nameTag)
-            }
-            if (playerList[i].hasTag("ShowTime")) {
-                titleActionbar = titleActionbar + "§r §f在线时间：§e§l" + GetScore("time",playerList[i].nameTag)
-            }
-            if (playerList[i].hasTag("ShowRN")) {
-                titleActionbar = titleActionbar + "§r §f物价指数：§e§l" + GetScore("DATA","RN") / 100
-            }
-            if (playerList[i].hasTag("ShowStamina")) {
-                titleActionbar = titleActionbar + "§r §f体力值：§e§l" + GetScore("stamina",playerList[i].nameTag)
             }
             if (GetScore("oxygen",playerList[i].nameTag) <= 200 && GetScore("oxygen",playerList[i].nameTag) > 0) {
                 titleActionbar = titleActionbar + "§r\n§c§l您即将进入缺氧状态，请及时补充氧气！"

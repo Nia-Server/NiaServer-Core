@@ -14,7 +14,10 @@
 
 #define WARN(a) SYNC(std::cout)<<GetTime()<<"\x1b[43;1m[WARN]\x1b[0m "<<a<<std::endl
 
-#define REMOVE_PATH(a) (a + sizeof(__PROJECT__) -1)
+// #define REMOVE_PATH(a) (a + sizeof(__PROJECT__) -1)
+constexpr const char* REMOVE_PATH(const char* str) {
+	return (str + sizeof(__PROJECT__) -1);
+}
 
 #define FAIL(a) SYNC(std::cout)<<GetTime()<<"\x1b[41;1m[FAIL]\x1b[0m \x1b[36;45;4mError at " \
 	<<REMOVE_PATH(__FILE__)<<":"<<__LINE__<<" ("<<__FUNCTION__ \

@@ -3,7 +3,7 @@ import {ActionFormData,ModalFormData,MessageFormData} from '@minecraft/server-ui
 //一些自定义函数的注册
 
 export function log(info) {
-    console.log("\n\x1b[33m[NIA V4] " + info + "\x1b[0m")
+    console.log("\x1b[33m[NIA V4] " + info + "\x1b[0m")
 }
 
 
