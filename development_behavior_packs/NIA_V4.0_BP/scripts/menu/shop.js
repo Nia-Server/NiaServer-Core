@@ -137,8 +137,7 @@ const GUI = {
                 // Tell(`§c>> 错误的数字格式，请重新输入！`,player.nameTag)
                 this.ShopBuy(player,index1,index2)
             } else if (parseInt(result.formValues[0]) >= 1025) {
-                player.sendMessage(`§c>> 单次购买物品的数量上限是1024，请重新输入！`)
-                Tell(`§c>> 单次购买物品的数量上限是1024，请重新输入！`,player.nameTag)
+                player.sendMessage(`§c>> 单次购买物品的数量上限是1024，请重新输入！`);
                 this.ShopBuy(player,index1,index2)
             } else {
                 this.ShopBuySub(player,index1,index2,result.formValues[0])
@@ -216,7 +215,7 @@ const GUI = {
         //首先判断有没有相关物品
         let ItemNum = 0;
         for (let i = 0; i < 36; i++) {
-            if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).typeId == RecycleData[index1].content[index2].type && player.getComponent("minecraft:inventory").container.getItem(i).lockMode != "none") {
+            if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).typeId == RecycleData[index1].content[index2].type && player.getComponent("minecraft:inventory").container.getItem(i).lockMode == "none") {
                 ItemNum = ItemNum + player.getComponent("minecraft:inventory").container.getItem(i).amount;
             }
         }

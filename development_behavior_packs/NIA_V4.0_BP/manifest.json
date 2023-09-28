@@ -5,7 +5,7 @@
 	  "description": "§bNIA服务器V4-行为包\n作者：NIANIANKNIA\n项目地址：https://github.com/NIANIANKNIA/NIASERVER-V4",
 	  "uuid": "cab0bbe3-eb10-465e-b1de-b09facc076c8",
 	  "version": [ 1, 4, 0 ],
-	  "min_engine_version": [ 1, 20, 10 ]
+	  "min_engine_version": [ 1, 20, 30 ]
 	},
 	"modules": [
 		{
@@ -20,7 +20,7 @@
 	"dependencies": [
 		{
 			"module_name": "@minecraft/server",
-			"version": "1.4.0-beta"
+			"version": "1.6.0-beta"
 		},
 		{
 			"module_name": "@minecraft/server-ui",
