@@ -180,6 +180,36 @@ world.beforeEvents.playerPlaceBlock.subscribe((event) => {
 
 //玩家GUI表现
 const GUI = {
+    Main(player) {
+        const MainForm = new ActionFormData()
+        .title("圈地系统")
+        .body("§e欢迎使用圈地系统！\n在这里您可以购买、管理您的地皮！")
+        .button("管理已有地皮")
+        .button("购买出售中地皮")
+        .button("开始自由圈地")
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                switch (response.selection) {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        this.ChoseLandType(player);
+                        break;
+                }
+            }
+        })
+    },
+
+    ChoseLandType(player) {
+        const CreateLandForm = new ActionFormData()
+        .title("请选择圈地类型")
+        .button("2D类型地皮\n§9直上直下的地皮，最安全")
+        .button("3D类型地皮\n§9按照提供的坐标，最实惠")
+    }
+
+
 
 }
 
@@ -209,6 +239,13 @@ world.beforeEvents.itemUseOn.subscribe((event) => {
             event.cancel = true;
             event.source.sendMessage("§c您没有相关权限在此处进行相关交互动作！");
         }
+    }
+})
+
+//对于物品使用的检测
+world.afterEvents.itemUse.subscribe(event => {
+    if (event.itemStack.typeId == "minecraft:stick") {
+        GUI.Main(event.source)
     }
 })
 

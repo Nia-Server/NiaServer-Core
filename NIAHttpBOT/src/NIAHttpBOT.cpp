@@ -5,6 +5,8 @@
 #include <string>
 #include <filesystem>
 #include <syncstream>
+#include <cstdlib>
+#include <cstring>
 
 #include <httplib.h>
 #include <rapidjson/document.h>
@@ -55,7 +57,7 @@ signed int main(signed int argc, char** argv) {
  {======|_|"""""|_|"""""|_|"""""|_| """ | {======|_|"""""|_|"""""|_|"""""|
 ./o--000'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'./o--000'"`-0-0-'"`-0-0-'"`-0-0-'
 	)" <<"\x1b[0m"<< std::endl;
-	
+
 	CFGPAR::parser par;
 
 
@@ -81,14 +83,16 @@ signed int main(signed int argc, char** argv) {
 	XINFO("在使用中遇到问题请前往项目下的 issue 反馈，如果觉得本项目不错不妨点个 star！");
 	if (UseCmd)  XWARN("检测到执行DOS命令功能已启用，请注意服务器安全！");
 
+
+
 	httplib::Server svr;
 
-	
+
     svr.Post("/GetConfig", [&par](const httplib::Request& req, httplib::Response& res){
-		rapidjson::Document req_json; 
+		rapidjson::Document req_json;
 		req_json.Parse(req.body.c_str()), res.status = 400;
 		if(req_json.HasParseError()||!req_json.HasMember("Name")||!req_json.HasMember("Type")
-			||!par.hasKey(req_json["Name"].GetString())) [[unlikely]] // Type: B->bool, I->int, C->char, S->string 
+			||!par.hasKey(req_json["Name"].GetString())) [[unlikely]] // Type: B->bool, I->int, C->char, S->string
 			return res.set_content("json data error", "text/plain");
 		switch(req_json["Type"].GetString()[0]) {
 			case 'B': 
@@ -107,7 +111,6 @@ signed int main(signed int argc, char** argv) {
 				if(!par.isString("Name")) [[unlikely]] goto error;
 				res.set_content(par.getString("Name"), "text/plain");
 				break;
-				
 			[[unlikely]]default : error:
 				res.status = 114514, res.set_content("config type error", "text/plain");
 		}
@@ -118,17 +121,28 @@ signed int main(signed int argc, char** argv) {
 	//执行cmd命令
 	svr.Post("/RunCmd",  [UseCmd](const httplib::Request& req, httplib::Response& res) {
 		//首先判断配置文件是否启用
+		res.status = 400;
 		if (!UseCmd) {
 			XWARN("执行DOS命令的功能暂未启用！请在启用后使用！");
-			res.status = 400;
 			res.set_content("feature not enabled!", "text/plain");
 			return ;
 		}
 		std::string cmd = req.body;
 		WARN(X("收到一条执行DOS命令的请求：") + cmd);
-		system(cmd.c_str());
-		res.status = 200;
-		res.set_content("success", "text/plain");
+		//执行dos指令，返回执行结果，如果执行失败则返回错误原因
+		int result = system(cmd.c_str());
+	    // 检查命令执行结果
+		if (result != 0) {
+			res.set_content(strerror(result), "text/plain");
+			// 输出错误原因
+			std::cerr << "执行DOS命令失败！原因：";
+			perror(strerror(result));
+
+		} else {
+			XINFO("执行DOS命令成功！");
+			res.status = 200;
+			res.set_content("success", "text/plain");
+		}
 	});
 
 	init_game_API(svr);

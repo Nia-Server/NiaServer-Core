@@ -1,4 +1,5 @@
 import {http,HttpRequestMethod,HttpRequest,HttpHeader} from '@minecraft/server-net';
+import { world } from '@minecraft/server';
 
 const port = 10086
 const server_url = "http://127.0.0.1"
@@ -181,6 +182,52 @@ export class ExternalFS {
             } else {
                 resolve(-1);
             }
+        })
+    }
+
+    /**
+     * 复制文件夹
+     * @param {String} From
+     * @param {String} To
+     * @return {String | Number} 备份成功返回success，备份失败返回0，服务器连接失败返回-1
+     */
+    CopyFolder(From, To) {
+        const reqCopyFolder = new HttpRequest(`${server_url}:${port}/CopyFolder`)
+        .setBody(JSON.stringify({"Folder":From,"To":To}))
+        .setMethod(HttpRequestMethod.Post)
+        .addHeader("Content-Type", "text/plain");
+        return new Promise(async (resolve) => {
+            const response = await http.request(reqCopyFolder);
+            if (response.status == 200) {
+                resolve(response.body);
+            } else if (response.status == 400) {
+                resolve(0);
+            } else {
+                resolve(-1);
+            }
+        })
+    }
+
+    /**
+     * 备份服务器存档
+     * @param {String} From
+     * @param {String} To
+     * @return {String | Number} 备份成功返回success，备份失败返回0，服务器连接失败返回-1
+     */
+    Backup(From,To) {
+        world.getDimension("overworld").runCommandAsync("save hold");
+        return new Promise(async (resolve) => {
+            this.RunCmd(`mkdir ${To}`).then((result) => {
+                if (result === "success") {
+                    this.CopyFolder(From, To).then((result) => {
+                        world.getDimension("overworld").runCommandAsync("save resume");
+                        resolve(result);
+                    })
+                } else {
+                    world.getDimension("overworld").runCommandAsync("save resume");
+                    resolve(result)
+                }
+            })
         })
     }
 }

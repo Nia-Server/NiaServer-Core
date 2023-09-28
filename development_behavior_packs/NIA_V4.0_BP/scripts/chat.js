@@ -1,36 +1,10 @@
-import {world,system} from '@minecraft/server';
+import {world,system, Player} from '@minecraft/server';
 import {cfg} from './config.js'
-import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution} from './customFunction.js'
+import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution, GetTime, GetShortTime, log} from './customFunction.js'
 
 import { adler32 } from './API/cipher_system.js'
-
-//import {http,HttpRequestMethod,HttpRequest,HttpHeader} from '@minecraft/server-net';
-
-
-//与服务器通信获取群聊消息
-// system.runInterval(() => {
-//     const reqCheckChat = new HttpRequest("http://127.0.0.1:3000/CheckGrounpChat");
-//     reqCheckChat.body = JSON.stringify({
-//         score: 22,
-//     });
-//     reqCheckChat.method = HttpRequestMethod.POST;
-//     reqCheckChat.headers = [
-//         new HttpHeader("Content-Type", "application/json"),
-//     ];
-//     http.request(reqCheckChat).then((response) => {
-//         if (response.status == 200) {
-//             let msgBoxs = JSON.parse(response.body)
-//             //Broadcast("body:" + response.body)
-//             if (!msgBoxs  == {}) {
-//                 for (let name in msgBoxs) {
-//                     world.sendMessage("§6[群聊]§r <"+ name + "§r> " + msgBoxs[name])
-//                 }
-//             }
-//         } else {
-//             Broadcast("§c>> 依赖服务器连接失败，如果你看到此提示请联系腐竹！")
-//         }
-//     })
-// },60)
+import { ExternalFS } from './API/filesystem.js';
+const fs = new ExternalFS();
 
 
 //对一些指令的检测
@@ -90,7 +64,15 @@ world.afterEvents.chatSend.subscribe(t => {
                     RunCmd(`backup`);
                     Tell("§c>> 注意本指令为调试指令，不要在正式生产环境中使用本指令！",t.sender.nameTag);
                     break;
-                case "-spawnores":
+                case "-backup":
+                    hasCommand = true;
+                    fs.Backup(`${cfg.MapFolder}`,`.${cfg.BackupFolder}\\${GetShortTime()}`).then((result) => {
+                        if (result === "success") {
+                            t.sender.sendMessage(`§e>> 地图备份成功！备份文件夹为：${cfg.BackupFolder}\\${GetShortTime()}`)
+                        } else {
+                            t.sender.sendMessage("§c>> 地图备份失败！失败错误码：" + result)
+                        }
+                    })
                     break;
             }
             if (!hasCommand) {
