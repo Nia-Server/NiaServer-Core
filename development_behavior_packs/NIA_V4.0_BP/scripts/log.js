@@ -1,6 +1,6 @@
 import { system, world } from "@minecraft/server";
 import { ExternalFS } from "./API/filesystem";
-import { log,GetTime } from "./customFunction";
+import { log,GetTime, Broadcast } from "./customFunction";
 
 const fs = new ExternalFS();
 
@@ -9,15 +9,6 @@ const fs = new ExternalFS();
 
 // let start = Date.now();
 
-// system.runInterval(() => {
-//     start = Date.now();
-//     fs.GetJSONFileData("test.json").then(() => {
-//         a.push(Date.now() - start);
-//         log(`本次读取用时: ${Date.now() - start} ms,这是第${b}次读取,平均用时: ${avg(a).toFixed(2)} ms`);
-//         b++;
-//         fs.WriteLineToFile("log.txt",`[${GetTime()}] 本次1MB Json 文件读取用时: ${Date.now() - start} ms,这是第 ${b} 次读取,平均用时: ${avg(a).toFixed(2)} ms\n`)
-//     })
-// },10)
 
 
 // function avg(array) {//封装求平均值函数

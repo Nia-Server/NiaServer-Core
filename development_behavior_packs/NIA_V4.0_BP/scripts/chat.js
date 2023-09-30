@@ -66,6 +66,7 @@ world.afterEvents.chatSend.subscribe(t => {
                     break;
                 case "-backup":
                     hasCommand = true;
+                    t.cancel = true;
                     fs.Backup(`${cfg.MapFolder}`,`.${cfg.BackupFolder}\\${GetShortTime()}`).then((result) => {
                         if (result === "success") {
                             t.sender.sendMessage(`§e>> 地图备份成功！备份文件夹为：${cfg.BackupFolder}\\${GetShortTime()}`)

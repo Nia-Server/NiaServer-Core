@@ -124,7 +124,7 @@ const equLevelData = {
 //服务器初始化
 world.afterEvents.worldInitialize.subscribe((event) => {
     log("NIA V4 已经成功在本服务器上启动！")
-    log("版本: v1.4.0-pre-1 based on BDS-1.20.30(last upgrate:2023/9/26)")
+    log("版本: v1.4.0-pre-2 based on BDS-1.20.30(last upgrate:2023/9/29)")
     log("作者: @NIANIANKNIA(https://github.com/NIANIANKNIA)")
     log("不会部署？前往文档站查看详细的部署过程==>(https://docs.mcnia.com/zh-CN/deploy.html)")
     log("本项目基于AGPL-3.0开源协议，注意遵守开源协议！")
@@ -182,7 +182,7 @@ system.runInterval(() => {
             if (result === "success") {
                 Broadcast(`§a>> 服务器自动备份成功！备份存档校验码：${GetShortTime()}`)
             } else {
-                Broadcast("§c>> 服务器备份失败！失败错误码：" + result)
+                Broadcast("§c>> 服务器备份失败！失败错误码：" + result + " 请联系管理员！")
             }
         })
         if (TIME.getHours() == 16) {

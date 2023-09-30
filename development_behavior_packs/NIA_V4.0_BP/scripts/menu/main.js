@@ -26,12 +26,6 @@ const MainGUI = {
             "opMenu": false
         },
         {
-            "name": "返回主岛\n即可立即返回自己的主岛",
-            "icon": "textures/ui/backup_replace",
-            "type": "goISLAND",
-            "opMenu": false
-        },
-        {
             "name": "个人传送点\n设置属于自己的传送点",
             "icon": "textures/ui/icon_new",
             "type": "runCmd",
@@ -166,15 +160,6 @@ export function Main(player) {
                     break;
                 case "openGUI":
                     OpenGUI(player,buttons[response.selection].GUI)
-                    break;
-                //这里相当于一个自定义功能的实例
-                case "goISLAND":
-                    if (GetScore("posX",player.nameTag) == 0 && GetScore("posY",player.nameTag) == 0 && GetScore("posZ",player.nameTag) == 0) {
-                        player.sendMessage(`§c>> 未找到相应的主岛数据！请在领取空岛后使用本功能！`,player.nameTag)
-                    } else {
-                        RunCmd(`tp @a[name=${player.nameTag}] ${GetScore("posX",player.nameTag)} ${GetScore("posY",player.nameTag)} ${GetScore("posZ",player.nameTag)}`)
-                        player.sendMessage(`§a>> 已经将您传送至主岛！`,player.nameTag)
-                    }
                     break;
             }
         }
