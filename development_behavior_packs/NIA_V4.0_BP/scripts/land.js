@@ -6,6 +6,7 @@ import { ExternalFS } from './API/filesystem';
 import { Broadcast, GetScore, GetTime, RunCmd, log } from './customFunction';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 import { adler32 } from './API/cipher_system';
+import { cfg } from './config';
 
 //初始化一些变量
 var land_index = {};
@@ -121,6 +122,21 @@ function player_in_index(player) {
     if (land) {
         player.onScreenDisplay.setActionBar(`§b您正在 ${land.land_name} 中`);
     }
+}
+
+/**
+ * 根据输入的地皮数据，判断玩家是否在白名单中
+ * @param {object} player
+ * @returns {boolean}
+ */
+function in_allowlist(player) {
+    if (land_data.owner == player.id) {
+        return true;
+    }
+    if(land_data.allowlist.hasOwnProperty(player.id)) {
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -416,6 +432,7 @@ const GUI = {
             if (!response.canceled) {
                 switch (response.selection) {
                     case 0:
+                        this.ManageLand(player);
                         break;
                     case 1:
                         break;
@@ -425,6 +442,57 @@ const GUI = {
                 }
             }
         })
+    },
+
+    ManageLand(player) {
+        let own_land_data = [];
+        const ManageLandForm = new ActionFormData()
+        .title("管理地皮")
+        .body("§e在这里您可以管理您的地皮！")
+        ManageLandForm.button("返回上一级")
+        for (let key in land_data) {
+            if (land_data[key].owner == player.id) {
+                ManageLandForm.button(`[${key}] ${land_data[key].land_name} \npos1: (${land_data[key].pos1[0]},${land_data[key].pos1[1]},${land_data[key].pos1[2]})`);
+                own_land_data.push(key);
+            }
+        }
+        ManageLandForm.show(player).then((response) => {
+            if (!response.canceled) {
+                switch (response.selection) {
+                    case 0:
+                        this.Main(player);
+                        break;
+                    default:
+                        for (let i = 0; i < own_land_data.length; i++) {
+                            if (response.selection == i + 1) {
+                                this.ManageLandDetail(player,own_land_data[i]);
+                                break;
+                            }
+                        }
+                        break;
+                }
+            }
+        })
+    },
+    //还是再加一个表单
+    //权限管理
+    //回收地皮
+    //转让地皮
+    //上架地皮
+    //设置传送点
+    //管理白名单
+    ManageLandDetail(player,LandUUID) {
+        const ManageLandDetailForm = new ModalFormData()
+        .title(`[${LandUUID}] ${land_data[LandUUID].land_name}`)
+        .textField("地皮名称","请尽量简短！",land_data[LandUUID].land_name)
+        .dropdown("请选择你要进行的操作",["无","回收（摧毁）地皮","转让地皮","上架地皮至市场"])
+        .toggle("其他玩家可以摧毁方块",land_data[LandUUID].setup.DestroyBlock)
+        .toggle("其他玩家可以放置方块",land_data[LandUUID].setup.PlaceBlock)
+        .toggle("其他玩家可以使用物品",land_data[LandUUID].setup.UseItem)
+        .toggle("其他玩家可以攻击实体",land_data[LandUUID].setup.AttackEntity)
+        .toggle("其他玩家可以打开箱子",land_data[LandUUID].setup.OpenChest)
+        .toggle("自己处于地皮内时显示标题",land_data[LandUUID].setup.ShowActionbar)
+        .show(player)
     },
 
     CreateLand(player) {
@@ -690,7 +758,7 @@ const GUI = {
                 new_land_data.sell = false;
                 new_land_data.get_time = GetTime();
                 new_land_data.land_name = player.nameTag + "的地皮";
-                new_land_data.allowlist = [];
+                new_land_data.allowlist = {};
                 new_land_data.banlist = [];
                 new_land_data.teleport = [];
                 new_land_data.setup = {
@@ -698,13 +766,16 @@ const GUI = {
                     "PlaceBlock":false,
                     "UseItem":false,
                     "AttackEntity":false,
+                    "OpenChest":false,
                     "ShowActionbar":true
                 }
                 land_data[adler32(GetTime() + player.id + Price)] = new_land_data;
                 //开始写入数据
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     if (result === "success") {
-                        player.sendMessage("§e>> 购买成功！您已经拥有该地皮！");
+                        player.sendMessage("§e>> 购买成功！您已经拥有该地皮,该地皮id为：§c" + adler32(GetTime() + player.id + Price) + "§e！");
+                        RunCmd(`title ${player.nameTag} title §e§l购买圈地成功！`);
+                        RunCmd(`title ${player.nameTag} subtitle §a您还可以购买 §c${5 - land_num - 1}§a 块地皮！`);
                         //扣除玩家金币
                         world.scoreboard.getObjective("money").addScore(player,-Price);
                         //计算索引值
@@ -717,7 +788,7 @@ const GUI = {
                     }
                 })
             } else {
-                player.sendMessage("§c您已取消购买！");
+                player.sendMessage("§c>> 购买失败！您已取消购买！");
             }
         })
 
@@ -738,7 +809,7 @@ const GUI = {
             return;
         }
         //如果地皮过大
-        if (XLength * YLength * ZLength > 1024) {
+        if (XLength * YLength * ZLength > 1000000) {
             player.sendMessage("§c您选择的地皮体积过大！请重新选择！");
             return;
         }
@@ -753,7 +824,7 @@ const GUI = {
             return;
         }
         //开始计算价格
-        let Price = XLength * YLength * ZLength * 30;
+        let Price = XLength * YLength * ZLength * 3;
         //弹出购买确认表单
         const CreateLandForm = new MessageFormData()
         .title("确认购买")
@@ -793,7 +864,7 @@ const GUI = {
                 new_land_data.sell = false;
                 new_land_data.get_time = GetTime();
                 new_land_data.land_name = player.nameTag + "的地皮";
-                new_land_data.allowlist = [];
+                new_land_data.allowlist = {};
                 new_land_data.banlist = [];
                 new_land_data.teleport = [];
                 new_land_data.setup = {
@@ -807,7 +878,9 @@ const GUI = {
                 //开始写入数据
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     if (result === "success") {
-                        player.sendMessage("§e>> 购买成功！您已经拥有该地皮！");
+                        player.sendMessage("§e>> 购买成功！您已经拥有该地皮,该地皮id为：§c" + adler32(GetTime() + player.id + Price) + "§e！");
+                        RunCmd(`title ${player.nameTag} title §e§l购买圈地成功！`);
+                        RunCmd(`title ${player.nameTag} subtitle §a您还可以购买 §c${5 - land_num - 1}§a 块地皮！`);
                         //扣除玩家金币
                         world.scoreboard.getObjective("money").addScore(player,-Price);
                         //计算索引值
@@ -820,7 +893,7 @@ const GUI = {
                     }
                 })
             } else {
-                player.sendMessage("§c您已取消购买！");
+                player.sendMessage("§c>> 购买失败！您已取消购买！");
             }
         })
     }
@@ -828,7 +901,6 @@ const GUI = {
 
 
 }
-
 
 
 system.runInterval(() => {
@@ -872,7 +944,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
 world.beforeEvents.playerBreakBlock.subscribe((event) => {
     let land = pos_in_index([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
     if (land) {
-        if (!event.player.hasTag("op") && land.owner != event.player.id) {
+        if (!event.player.hasTag(cfg.OPTAG) && !in_allowlist(event.player) && !land.setup.DestroyBlock) {
             event.cancel = true;
             event.player.sendMessage("§c您没有相关权限在此处破坏方块！");
         }
@@ -882,7 +954,7 @@ world.beforeEvents.playerBreakBlock.subscribe((event) => {
 world.beforeEvents.playerPlaceBlock.subscribe((event) => {
     let land = pos_in_index([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
     if (land) {
-        if (!event.player.hasTag("op") && land.owner != event.player.id) {
+        if (!event.player.hasTag(cfg.OPTAG) && !in_allowlist(event.player) && !land.setup.PlaceBlock) {
             event.cancel = true;
             event.player.sendMessage("§c您没有相关权限在此处放置方块！");
         }
@@ -911,8 +983,25 @@ world.beforeEvents.itemUseOn.subscribe((event) => {
         "minecraft:pink_shulker_box","minecraft:purple_shulker_box","minecraft:red_shulker_box","minecraft:undyed_shulker_box","minecraft:white_shulker_box","minecraft:yellow_shulker_box"
     ]
     let land = pos_in_index([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
-    if (land && !event.source.hasTag("op") && land.owner != event.source.id) {
+    if (land && !event.source.hasTag(cfg.OPTAG) && !in_allowlist(event.player) && !land.setup.UseItem) {
         if (tools.includes(event.itemStack.typeId) || blocks.includes(event.block.typeId)) {
+            event.cancel = true;
+            event.source.sendMessage("§c您没有相关权限在此处使用物品！");
+        }
+    }
+})
+
+// 玩家使用物品
+world.beforeEvents.itemUseOn.subscribe((event) => {
+    //定义一些可以被改变状态的方块
+    const blocks = [
+        "minecraft:chest","minecraft:trapped_chest","minecraft:ender_chest","minecraft:barrel","minecraft:frame","minecraft:anvil","minecraft:enchanting_table","minecraft:cartography_table","minecraft:smithing_table",
+        "minecraft:black_shulker_box","minecraft:blue_shulker_box","minecraft:brown_shulker_box","minecraft:cyan_shulker_box","minecraft:gray_shulker_box","minecraft:green_shulker_box","minecraft:light_blue_shulker_box","minecraft:lime_shulker_box","minecraft:orange_shulker_box",
+        "minecraft:pink_shulker_box","minecraft:purple_shulker_box","minecraft:red_shulker_box","minecraft:undyed_shulker_box","minecraft:white_shulker_box","minecraft:yellow_shulker_box"
+    ]
+    let land = pos_in_index([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
+    if (land && !event.source.hasTag(cfg.OPTAG) && !in_allowlist(event.player) && !land.setup.OpenChest) {
+        if (blocks.includes(event.block.typeId)) {
             event.cancel = true;
             event.source.sendMessage("§c您没有相关权限在此处进行相关交互动作！");
         }

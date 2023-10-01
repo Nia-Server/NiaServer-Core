@@ -151,8 +151,6 @@ world.afterEvents.worldInitialize.subscribe((event) => {
         log("NIA V4已经初始化完成！")
     }
 
-    //删除所有常加载区块
-    RunCmd("tickingarea remove_all");
 })
 
 // 玩家死亡后重生的检测

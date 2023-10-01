@@ -8,7 +8,6 @@
 
 import './chat.js'
 import './menu/main.js'
-import './island.js'
 import './net.js'
 import './market.js'
 import './land.js'
