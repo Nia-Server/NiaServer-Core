@@ -138,7 +138,6 @@ void init_file_API(httplib::Server &svr) {
 		std::string file_data = "";
 		while(getline(file,line_content))
 			file_data = file_data + line_content + "\n";
-		
 		res.status = 200;
 		res.set_content(file_data, "text/plain");
 		file.close();
@@ -314,12 +313,12 @@ void init_file_API(httplib::Server &svr) {
 
 	svr.Post("/CopyFolder", [](const httplib::Request& req, httplib::Response& res) {
 
-		rapidjson::Document req_json; 
+		rapidjson::Document req_json;
 		req_json.Parse(req.body.c_str()), res.status = 400;
 		if(req_json.HasParseError()||!req_json.HasMember("Folder")||!req_json.HasMember("To")) [[unlikely]]
 			return res.set_content("json data error", "text/plain");
     	try {
-			std::filesystem::copy(req_json["Folder"].GetString(), req_json["To"].GetString(), 
+			std::filesystem::copy(req_json["Folder"].GetString(), req_json["To"].GetString(),
 				std::filesystem::copy_options::recursive); // copy totally
 			res.status = 200;
 		} catch(const std::filesystem::filesystem_error& err) {
@@ -330,12 +329,12 @@ void init_file_API(httplib::Server &svr) {
 
 	svr.Post("/CopyFolderOverwrite", [](const httplib::Request& req, httplib::Response& res) {
 
-		rapidjson::Document req_json; 
+		rapidjson::Document req_json;
 		req_json.Parse(req.body.c_str()), res.status = 400;
 		if(req_json.HasParseError()||!req_json.HasMember("Folder")||!req_json.HasMember("To")) [[unlikely]]
 			return res.set_content("json data error", "text/plain");
     	try {
-			std::filesystem::copy(req_json["Folder"].GetString(), req_json["To"].GetString(), 
+			std::filesystem::copy(req_json["Folder"].GetString(), req_json["To"].GetString(),
 				std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing); // copy totally and overwrite
 			res.status = 200;
 		} catch(const std::filesystem::filesystem_error& err) {
@@ -346,12 +345,12 @@ void init_file_API(httplib::Server &svr) {
 
 	svr.Post("/CopyFile", [](const httplib::Request& req, httplib::Response& res) {
 
-		rapidjson::Document req_json; 
+		rapidjson::Document req_json;
 		req_json.Parse(req.body.c_str()), res.status = 400;
 		if(req_json.HasParseError()||!req_json.HasMember("File")||!req_json.HasMember("To")) [[unlikely]]
 			return res.set_content("json data error", "text/plain");
     	try {
-			std::filesystem::copy_file(req_json["File"].GetString(), req_json["To"].GetString(), 
+			std::filesystem::copy_file(req_json["File"].GetString(), req_json["To"].GetString(),
 				std::filesystem::copy_options::none);
 			res.status = 200;
 		} catch(const std::filesystem::filesystem_error& err) {
@@ -362,12 +361,12 @@ void init_file_API(httplib::Server &svr) {
 
 	svr.Post("/CopyFileOverwrite", [](const httplib::Request& req, httplib::Response& res) {
 
-		rapidjson::Document req_json; 
+		rapidjson::Document req_json;
 		req_json.Parse(req.body.c_str()), res.status = 400;
 		if(req_json.HasParseError()||!req_json.HasMember("File")||!req_json.HasMember("To")) [[unlikely]]
 			return res.set_content("json data error", "text/plain");
     	try {
-			std::filesystem::copy_file(req_json["File"].GetString(), req_json["To"].GetString(), 
+			std::filesystem::copy_file(req_json["File"].GetString(), req_json["To"].GetString(),
 				std::filesystem::copy_options::overwrite_existing); // overwrite
 			res.status = 200;
 		} catch(const std::filesystem::filesystem_error& err) {

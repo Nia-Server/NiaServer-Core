@@ -1,9 +1,10 @@
 # v1.4.0-pre-1 更新日志
 
 [![BDS VERSION](https://img.shields.io/badge/BDS-1.20.30.02-green?style=for-the-badge&logo=appveyor)](https://www.minecraft.net/en-us/download/server/bedrock)
-[![LiteLoader VERSION](https://img.shields.io/badge/LiteLoader-null-green?style=for-the-badge&logo=appveyor)](https://github.com/LiteLDev/LiteLoaderBDS/releases/)
+[![LiteLoader VERSION](https://img.shields.io/badge/LiteLoader-2.16.2-green?style=for-the-badge&logo=appveyor)](https://github.com/LiteLDev/LiteLoaderBDS/releases/)
 
 > **预发布版本提醒**：这是一个**预览版本**，可能存在一些bug，仅供测试，请勿在正式生产环境使用本版本！
+
 > **未完成开发版本提醒**：该版本**部分功能仍然在开发状态中**，可能出现包括但不限于服务器无法正常运行等问题，仅供开发者预览，请勿使用！
 
 
@@ -19,11 +20,11 @@
 
 5.初步上线武器强化系统
 
-6.NIAHttpBOT多语言支持的语言文件(@jiansyuan[https://github.com/jiansyuan])
+6.NIAHttpBOT多语言支持的语言文件[@jiansyuan](https://github.com/jiansyuan)
 
 ## 调整
 
-1.去除部分仅适用于v4.0玩法的操作逻辑
+1.去除部分仅适用于v4玩法的操作逻辑
 
 2.去除标题栏（actionbar）常驻显示功能，并简化相关设置
 

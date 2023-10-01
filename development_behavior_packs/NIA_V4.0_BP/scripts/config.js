@@ -1,6 +1,5 @@
 
 const config = {
-    "ServerMode": "Island",
     "MENUITEM": "minecraft:clock",
     "USERandomDATA": true,
     "MoneyScoreboardName": "money",
@@ -8,6 +7,8 @@ const config = {
     "TimeScoreboardName":"time",
     "OPTAG": "op",
     "OPMENUPassword": "123456",
+    "MapFolder":"..\\..\\..\\worlds\\NEWTEST",
+    "BackupFolder":"\\backup",
     "islandCfg": {
         "R":  1000,
         "CX": 402,

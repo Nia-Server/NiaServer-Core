@@ -1,8 +1,11 @@
 import { OxygenGUI } from './menu/oxygen.js';
 import {system, world, DynamicPropertiesDefinition} from '@minecraft/server';
-import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution,log} from './customFunction.js'
+import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution,log, GetShortTime} from './customFunction.js'
+import { cfg } from './config.js';
+import { ExternalFS } from './API/filesystem.js';
 
 //定义一些常数
+const fs = new ExternalFS();
 
 let posData = {}
 
@@ -121,7 +124,7 @@ const equLevelData = {
 //服务器初始化
 world.afterEvents.worldInitialize.subscribe((event) => {
     log("NIA V4 已经成功在本服务器上启动！")
-    log("版本: v1.4.0-pre-1 based on BDS-1.20.30(last upgrate:2023/9/26)")
+    log("版本: v1.4.0-pre-2 based on BDS-1.20.30(last upgrate:2023/9/29)")
     log("作者: @NIANIANKNIA(https://github.com/NIANIANKNIA)")
     log("不会部署？前往文档站查看详细的部署过程==>(https://docs.mcnia.com/zh-CN/deploy.html)")
     log("本项目基于AGPL-3.0开源协议，注意遵守开源协议！")
@@ -163,7 +166,7 @@ system.runInterval(() => {
     let players = world.getPlayers()
     let playerList = Array.from(players);
     let TIME = new Date();
-    // Broadcast(TIME.toLocaleString())
+    //每分钟更新一次
     if (TIME.getMinutes() == 0 && TIME.getSeconds() == 0 ) {
         let RN = parseInt(getNumberInNormalDistribution(100,20))
         //防止物价指数出现极端数值
@@ -173,8 +176,15 @@ system.runInterval(() => {
         RunCmd(`scoreboard players set RN DATA ${RN}`);
         RunCmd(`title @a title §c物价指数发生变动！`)
         RunCmd(`title @a subtitle §7物价指数由 §l§e${GetScore("DATA","RN") / 100} §r§7变为 §l§e${RN / 100}`)
-        //RunCmd(`backup`);
-        //Broadcast(`§a>> 服务器自动备份中！可能出现卡顿，请勿在此时进行较大负载活动！`)
+        //自动备份
+        Broadcast(`§e>> 服务器自动备份中！可能出现卡顿，请勿在此时进行较大负载活动！`)
+        fs.Backup(`${cfg.MapFolder}`,`.${cfg.BackupFolder}\\${GetShortTime()}`).then((result) => {
+            if (result === "success") {
+                Broadcast(`§a>> 服务器自动备份成功！备份存档校验码：${GetShortTime()}`)
+            } else {
+                Broadcast("§c>> 服务器备份失败！失败错误码：" + result + " 请联系管理员！")
+            }
+        })
         if (TIME.getHours() == 16) {
             let ScoreBoards = world.scoreboard.getObjectives()
             for (let i = 0; i < ScoreBoards.length; i++) {
@@ -185,6 +195,7 @@ system.runInterval(() => {
             Broadcast(`§a>> 服务器时间已更新！`)
         }
     }
+    //每秒钟更新一次
     if (TIME.getSeconds() == 0) {
         for (let playername in posData) {
             posData[playername].num = 0
@@ -207,10 +218,6 @@ system.runInterval(() => {
         if (playerList[i].dimension.id == "minecraft:the_end" || playerList[i].dimension.id == "minecraft:nether") {
             playerList[i].removeTag("fly")
             RunCmd(`ability @a[name="${playerList[i].nameTag}",tag=!op] mayfly false`)
-        }
-        if (!playerList[i].hasTag("shown")) {
-            playerList[i].addTag("showing")
-            // RunCmd(`tag "${playerList[i].nameTag}" add showing`)
         }
         //这里控制玩家氧气值不超过100%
         if (GetScore("oxygen",playerList[i].nameTag) > equLevelData[GetScore("equLevel",playerList[i].nameTag)].max) {
@@ -307,10 +314,3 @@ system.runInterval(() => {
     }
 },20)
 
-// world.afterEvents.entityHurt.subscribe((event) => {
-//     if (event.damageSource.cause == "entityAttack" && event.damageSource.damagingEntity.typeId == "minecraft:player") {
-//         console.log(event.hurtEntity.getComponent("minecraft:health").currentValue)
-//     }
-// })
-
-//event.damageSource.damagingEntity.sendMessage("你对 " + event.hurtEntity.typeId + " 造成了 " + event.damage.toFixed(2) + " 伤害" + event.hurtEntity.getComponent("minecraft:health").currentValue + " "+ event.hurtEntity.getComponent("minecraft:health").defaultValue + " " + event.hurtEntity.getComponent("minecraft:health") + " " + event.hurtEntity.hasComponent("minecraft:health"))

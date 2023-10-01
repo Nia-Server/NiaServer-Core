@@ -657,12 +657,7 @@ const GUI = {
 }
 
 
-//对于物品使用的检测
-world.afterEvents.itemUse.subscribe(event => {
-    if (event.itemStack.typeId == "minecraft:stick") {
-        GUI.Main(event.source)
-    }
-})
+
 
 //玩家加入服务监听
 world.afterEvents.playerSpawn.subscribe((event) => {
@@ -677,7 +672,6 @@ world.afterEvents.playerSpawn.subscribe((event) => {
         }
         //其次检查玩家金币缓存是否存在
         if (temp_player_money[event.player.id] != undefined) {
-
             let old_temp_player_money = Object.assign({},temp_player_money);
             //重置缓存
             temp_player_money[event.player.id] = 0;
@@ -686,7 +680,7 @@ world.afterEvents.playerSpawn.subscribe((event) => {
                 if (result === "success") {
                     //存在，给钱
                     if (old_temp_player_money[event.player.id] != 0) {
-                        world.scoreboard.getObjective("money").setScore(event.player,old_temp_player_money[event.player.id] + GetScore("money",event.player.nameTag));
+                        world.scoreboard.getObjective("money").addScore(event.player,old_temp_player_money[event.player.id])
                         event.player.sendMessage("§e>> 您有一笔来自玩家交易市场的 " + old_temp_player_money[event.player.id] + " 金币已到账！请注意查收！");
                     }
                 } else {
