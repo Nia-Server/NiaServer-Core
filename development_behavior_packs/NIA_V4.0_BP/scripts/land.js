@@ -1,7 +1,7 @@
 //圈地系统
 //开发中功能请勿使用！
 
-import {system, world} from '@minecraft/server';
+import { system, world, Dimension } from '@minecraft/server';
 import { ExternalFS } from './API/filesystem';
 import { Broadcast, GetScore, GetTime, RunCmd, log } from './customFunction';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
@@ -15,6 +15,9 @@ var taskid = {"actionbar":{},"particle":{}};
 
 //导入文件系统
 const fs = new ExternalFS();
+
+//删除所有常加载区块
+RunCmd("tickingarea remove_all");
 
 /**
  * 输入坐标范围信息，以及当前的索引值数据，添加索引值,并返回新的索引值
@@ -126,28 +129,24 @@ function player_in_index(player) {
  * @param {Array} pos2
  * @param {number} dimid
  */
-function HaveLand(pos1, pos2, dimid) {
+function have_land(pos1, pos2, dimid) {
     //首先根据输入的地皮坐标构建最大/最小的坐标
     //这里规定最小的坐标为pos1，最大的坐标为pos2
-    let posXMin = 0;
-    let posYMin = 0;
-    let posZMin = 0;
     if (pos1[0] > pos2[0]) {
-        posXMin = pos1[0];
+        let posXMin = pos1[0];
         pos1[0] = pos2[0];
         pos2[0] = posXMin;
     }
     if (pos1[1] > pos2[1]) {
-        posYMin = pos1[1];
+        let posYMin = pos1[1];
         pos1[1] = pos2[1];
         pos2[1] = posYMin;
     }
     if (pos1[2] > pos2[2]) {
-        posZMin = pos1[2];
+        let posZMin = pos1[2];
         pos1[2] = pos2[2];
         pos2[2] = posZMin;
     }
-    //
     //根据传入的最小值坐标输出最小
     let XIndexMIN = parseInt(pos1[0] / 16);
     let ZIndexMIN = parseInt(pos1[2] / 16);
@@ -160,67 +159,69 @@ function HaveLand(pos1, pos2, dimid) {
             //判断该索引值下地皮是否有地皮数据
             if(land_index[dimid] && land_index[dimid][XIndex] && land_index[dimid][XIndex][ZIndex]) {
                 //如果走到了这里说明，该区块编号下有相应的地皮数据存在，然后遍历该区块存在的地皮即可
-                let ThisIndexDate = land_index[dimid][XIndex][ZIndex];
-                // log("有地皮数据");
-                for (let key = 0;key < ThisIndexDate.length;key++) {
+                let this_index_data = land_index[dimid][XIndex][ZIndex];
+                //定义一些变量
+                let pos3 = [];
+                let pos4 = [];
+                let result_x = false;
+                let result_y = false;
+                let result_z = false;
+                for (let key = 0;key < this_index_data.length;key++) {
                     //根据相应的地皮类型进行计算
-                    // log(`haveDate Index: ${XIndex} ${ZIndex}`)
-                    switch (land_data[ThisIndexDate[key]].type) {
+                    switch (land_data[this_index_data[key]].type) {
                         case "3d":
                             //首先根据输入的地皮坐标构建最大/最小的坐标
                             //这里规定最小的坐标为pos3，最大的坐标为pos4
-                            pos3 = land_data[ThisIndexDate[key]].pos1
-                            pos4 = land_data[ThisIndexDate[key]].pos2
+                            pos3 = land_data[this_index_data[key]].pos1
+                            pos4 = land_data[this_index_data[key]].pos2
                             if (pos3[0] > pos4[0]) {
-                                posXMin = pos3[0];
+                                let posXMin = pos3[0];
                                 pos3[0] = pos4[0];
                                 pos4[0] = posXMin;
                             }
                             if (pos3[1] > pos4[1]) {
-                                posYMin = pos3[1];
+                                let posYMin = pos3[1];
                                 pos3[1] = pos4[1];
                                 pos3[1] = posYMin;
                             }
                             if (pos3[2] > pos4[2]) {
-                                posZMin = pos3[2];
+                                let posZMin = pos3[2];
                                 pos3[2] = pos4[2];
                                 pos3[2] = posZMin;
                             }
-                            // log(`pos1 ${pos1[0]} ${pos1[1]} ${pos1[2]}`);
-                            // log(`pos2 ${pos2[0]} ${pos2[1]} ${pos2[2]}`);
-                            // log(`pos3 ${pos3[0]} ${pos3[1]} ${pos3[2]}`);
-                            // log(`pos4 ${pos4[0]} ${pos4[1]} ${pos4[2]}`);
-                            //A B结果是XZ轴判断
-                            resultA = ((pos3[0] <= pos1[0]) && (pos4[0] >= pos1[0])) && ((pos3[2] <= pos1[2]) && (pos4[2] >= pos1[2]));
-                            resultB = ((pos3[0] <= pos2[0]) && (pos4[0] >= pos2[0])) && ((pos3[2] <= pos2[2]) && (pos4[2] >= pos2[2]));
-                            //C D结果是Y轴判断
-                            resultC = (pos3[2] <= pos1[2]) && (pos4[2] >= pos1[2]);
-                            resultD = (pos3[2] <= pos2[2]) && (pos4[2] >= pos2[2]);
-                            // log(`RESULT ${resultA} ${resultB}`)
-                            //要是重合那一定满足维度相同，xz轴有重合，y轴有重合，缺一不可
-                            if (dimid == land_data[ThisIndexDate[key]].dimid && (resultA || resultB) && (resultC || resultD)) {
+                            //为保证部分功能正常取消等于情况
+                            //x轴方向线段重合结果，没有重合为true，有重合为false
+                            result_x = (pos1[0] > pos4[0]) || (pos2[0] < pos3[0]);
+                            //y轴方向线段重合结果，没有重合为true，有重合为false
+                            result_y = (pos1[1] > pos4[1]) || (pos2[1] < pos3[1]);
+                            //z轴方向线段重合结果，没有重合为true，有重合为false
+                            result_z = (pos1[2] > pos4[2]) || (pos2[2] < pos3[2]);
+                            //如果重合，那么x轴方向和z轴方向投影线段一定有重合，两者缺一不可,并且y轴方向也要重合
+                            if (dimid == land_data[this_index_data[key]].dimid && !result_x && !result_y && !result_z) {
                                 return true;
                             }
                             break;
                         case "2d":
                             //首先根据输入的地皮坐标构建最大/最小的坐标
-                            //这里规定最小的坐标为pos1，最大的坐标为pos2
-                            pos3 = land_data[ThisIndexDate[key]].pos1
-                            pos4 = land_data[ThisIndexDate[key]].pos2
+                            pos3 = land_data[this_index_data[key]].pos1
+                            pos4 = land_data[this_index_data[key]].pos2
                             if (pos3[0] > pos4[0]) {
-                                posXMin = pos3[0];
+                                let posXMin = pos3[0];
                                 pos3[0] = pos4[0];
                                 pos4[0] = posXMin;
                             }
                             if (pos3[2] > pos4[2]) {
-                                posZMin = pos3[2];
+                                let posZMin = pos3[2];
                                 pos3[2] = pos4[2];
                                 pos3[2] = posZMin;
                             }
-                            //就是一个简简单单的数据判断
-                            resultA = ((pos3[0] <= pos1[0]) && (pos4[0] >= pos1[0])) && ((pos3[2] <= pos1[2]) && (pos4[2] >= pos1[2]))
-                            resultB = ((pos3[0] <= pos2[0]) && (pos4[0] >= pos2[0])) && ((pos3[2] <= pos2[2]) && (pos4[2] >= pos2[2]))
-                            if (dimid == land_data[ThisIndexDate[key]].dimid && (resultA || resultB)) {
+                            //为保证部分功能正常取消等于情况
+                            //x轴方向线段重合结果，没有重合为true，有重合为false
+                            result_x = (pos1[0] > pos4[0]) || (pos2[0] < pos3[0]);
+                            //z轴方向线段重合结果，没有重合为true，有重合为false
+                            result_z = (pos1[2] > pos4[2]) || (pos2[2] < pos3[2]);
+                            //如果重合，那么x轴方向和z轴方向投影线段一定有重合，两者缺一不可
+                            if (dimid == land_data[this_index_data[key]].dimid && !result_x && !result_z) {
                                 return true;
                             }
                             break;
@@ -293,98 +294,111 @@ const LandAPI = {
     stop_show_actionbar(player){
         if (taskid.actionbar.hasOwnProperty(player.id)) {
             system.clearRun(taskid.actionbar[player.id]);
+            //删除相应的taskid
+            delete taskid.actionbar[player.id];
         }
     },
 
     show_particle(player,pos1,pos2,dimid) {
         //判断pos1是否为空，如果为空则不显示粒子
-        if (pos1.length != 0 && dimid == "minecraft:overworld") {
-            RunCmd(`particle minecraft:balloon_gas_particle ${pos1[0]} ${pos1[1]} ${pos1[2]}`);
-        }
-        //判断pos2是否为空，如果为空则不显示粒子
-        if (pos2.length != 0 && dimid == "minecraft:overworld") {
-            RunCmd(`particle minecraft:balloon_gas_particle ${pos2[0]} ${pos2[1]} ${pos2[2]}`);
-        }
-        //如果pos1和pos2都不为空，则显示边框粒子
-        if (pos1.length != 0 && pos2.length != 0 && dimid == "minecraft:overworld") {
-            //在此之前先对坐标进行处理
-            let X1 = pos1[0];
-            let Y1 = pos1[1];
-            let Z1 = pos1[2];
-            let X2 = pos2[0];
-            let Y2 = pos2[1];
-            let Z2 = pos2[2];
-            //重新生成两个变量smallpos和bigpos，用于存储两个坐标中较小的坐标和较大的坐标
-            let smallpos = [];
-            let bigpos = [];
-            //首先判断X坐标
-            if (X1 > X2) {
-                smallpos[0] = X2;
-                bigpos[0] = X1;
-            } else {
-                smallpos[0] = X1;
-                bigpos[0] = X2;
+        try {
+            if (pos1.length != 0) {
+                RunCmd(`tickingarea add circle ${pos1[0]} ${pos1[1]} ${pos1[2]} 3 p1_${player.id}`);
+                world.getDimension(dimid).spawnParticle("minecraft:balloon_gas_particle",{x:pos1[0],y:pos1[1],z:pos1[2]});
             }
-            //然后判断Y坐标
-            if (Y1 > Y2) {
-                smallpos[1] = Y2;
-                bigpos[1] = Y1;
-            } else {
-                smallpos[1] = Y1;
-                bigpos[1] = Y2;
+            //判断pos2是否为空，如果为空则不显示粒子
+            if (pos2.length != 0) {
+                RunCmd(`tickingarea add circle ${pos2[0]} ${pos2[1]} ${pos2[2]} 3 p2_${player.id}`);
+                world.getDimension(dimid).spawnParticle("minecraft:balloon_gas_particle",{x:pos2[0],y:pos2[1],z:pos2[2]});
             }
-            //然后判断Z坐标
-            if (Z1 > Z2) {
-                smallpos[2] = Z2;
-                bigpos[2] = Z1;
-            } else {
-                smallpos[2] = Z1;
-                bigpos[2] = Z2;
+            //如果pos1和pos2都不为空，则显示边框粒子
+            if (pos1.length != 0 && pos2.length != 0) {
+                //在此之前先对坐标进行处理
+                let X1 = pos1[0];
+                let Y1 = pos1[1];
+                let Z1 = pos1[2];
+                let X2 = pos2[0];
+                let Y2 = pos2[1];
+                let Z2 = pos2[2];
+                //重新生成两个变量smallpos和bigpos，用于存储两个坐标中较小的坐标和较大的坐标
+                let smallpos = [];
+                let bigpos = [];
+                //首先判断X坐标
+                if (X1 > X2) {
+                    smallpos[0] = X2;
+                    bigpos[0] = X1;
+                } else {
+                    smallpos[0] = X1;
+                    bigpos[0] = X2;
+                }
+                //然后判断Y坐标
+                if (Y1 > Y2) {
+                    smallpos[1] = Y2;
+                    bigpos[1] = Y1;
+                } else {
+                    smallpos[1] = Y1;
+                    bigpos[1] = Y2;
+                }
+                //然后判断Z坐标
+                if (Z1 > Z2) {
+                    smallpos[2] = Z2;
+                    bigpos[2] = Z1;
+                } else {
+                    smallpos[2] = Z1;
+                    bigpos[2] = Z2;
+                }
+                //从smallpos到bigpos是一个长方体，生成六条边框的粒子
+                //每个粒子间距由该长方体边框总长决定的，一共有64个粒子均匀的分布在边框上
+                //首先计算出每个边框的长度
+                let XLength = bigpos[0] - smallpos[0];
+                let YLength = bigpos[1] - smallpos[1];
+                let ZLength = bigpos[2] - smallpos[2];
+                //然后计算出边框总长
+                let Length = XLength * 4 + YLength * 4 + ZLength * 4;
+                //然后计算出每个粒子间距
+                let Interval = Length / 200;
+                //然后生成四个长边框，每个粒子间距为Interval
+                for (let i = smallpos[0]; i <= bigpos[0]; i=i+Interval) {
+                    world.getDimension(dimid).spawnParticle("minecraft:balloon_gas_particle",{x:i,y:smallpos[1],z:smallpos[2]});
+                    world.getDimension(dimid).spawnParticle("minecraft:balloon_gas_particle",{x:i,y:smallpos[1],z:bigpos[2]});
+                    world.getDimension(dimid).spawnParticle("minecraft:balloon_gas_particle",{x:i,y:bigpos[1],z:smallpos[2]});
+                    world.getDimension(dimid).spawnParticle("minecraft:balloon_gas_particle",{x:i,y:bigpos[1],z:bigpos[2]});
+                }
+                //然后生成四个高边框，每个粒子间距为Interval
+                for (let i = smallpos[1]; i <= bigpos[1]; i=i+Interval) {
+                    world.getDimension(dimid).spawnParticle("minecraft:balloon_gas_particle",{x:smallpos[0],y:i,z:smallpos[2]});
+                    world.getDimension(dimid).spawnParticle("minecraft:balloon_gas_particle",{x:smallpos[0],y:i,z:bigpos[2]});
+                    world.getDimension(dimid).spawnParticle("minecraft:balloon_gas_particle",{x:bigpos[0],y:i,z:smallpos[2]});
+                    world.getDimension(dimid).spawnParticle("minecraft:balloon_gas_particle",{x:bigpos[0],y:i,z:bigpos[2]});
+                }
+                //最后生成四个宽边框，每个粒子间距为Interval
+                for (let i = smallpos[2]; i <= bigpos[2]; i=i+Interval) {
+                    world.getDimension(dimid).spawnParticle("minecraft:balloon_gas_particle",{x:smallpos[0],y:smallpos[1],z:i});
+                    world.getDimension(dimid).spawnParticle("minecraft:balloon_gas_particle",{x:smallpos[0],y:bigpos[1],z:i});
+                    world.getDimension(dimid).spawnParticle("minecraft:balloon_gas_particle",{x:bigpos[0],y:smallpos[1],z:i});
+                    world.getDimension(dimid).spawnParticle("minecraft:balloon_gas_particle",{x:bigpos[0],y:bigpos[1],z:i});
+                }
             }
-            //从smallpos到bigpos是一个长方体，生成六条边框的粒子
-            //每个粒子间距由该长方体边框总长决定的，一共有64个粒子均匀的分布在边框上
-            //首先计算出每个边框的长度
-            let XLength = bigpos[0] - smallpos[0];
-            let YLength = bigpos[1] - smallpos[1];
-            let ZLength = bigpos[2] - smallpos[2];
-            //然后计算出边框总长
-            let Length = XLength * 4 + YLength * 4 + ZLength * 4;
-            //然后计算出每个粒子间距
-            let Interval = Length / 100;
-            //然后生成四个长边框，每个粒子间距为Interval
-            for (let i = smallpos[0]; i <= bigpos[0]; i=i+Interval) {
-                RunCmd(`particle minecraft:balloon_gas_particle ${i} ${smallpos[1]} ${smallpos[2]}`);
-                RunCmd(`particle minecraft:balloon_gas_particle ${i} ${smallpos[1]} ${bigpos[2]}`);
-                RunCmd(`particle minecraft:balloon_gas_particle ${i} ${bigpos[1]} ${smallpos[2]}`);
-                RunCmd(`particle minecraft:balloon_gas_particle ${i} ${bigpos[1]} ${bigpos[2]}`);
-            }
-            //然后生成四个高边框，每个粒子间距为Interval
-            for (let i = smallpos[1]; i <= bigpos[1]; i=i+Interval) {
-                RunCmd(`particle minecraft:balloon_gas_particle ${smallpos[0]} ${i} ${smallpos[2]}`);
-                RunCmd(`particle minecraft:balloon_gas_particle ${smallpos[0]} ${i} ${bigpos[2]}`);
-                RunCmd(`particle minecraft:balloon_gas_particle ${bigpos[0]} ${i} ${smallpos[2]}`);
-                RunCmd(`particle minecraft:balloon_gas_particle ${bigpos[0]} ${i} ${bigpos[2]}`);
-            }
-            //最后生成四个宽边框，每个粒子间距为Interval
-            for (let i = smallpos[2]; i <= bigpos[2]; i=i+Interval) {
-                RunCmd(`particle minecraft:balloon_gas_particle ${smallpos[0]} ${smallpos[1]} ${i}`);
-                RunCmd(`particle minecraft:balloon_gas_particle ${smallpos[0]} ${bigpos[1]} ${i}`);
-                RunCmd(`particle minecraft:balloon_gas_particle ${bigpos[0]} ${smallpos[1]} ${i}`);
-                RunCmd(`particle minecraft:balloon_gas_particle ${bigpos[0]} ${bigpos[1]} ${i}`);
-            }
-
+        }  catch (error) {
+            RunCmd(`title "${player.name}" title §c`);
+            RunCmd(`title "${player.name}" subtitle §c§l您选择的圈地范围过大，无法完全显示所有预览框架！`);
         }
     },
 
     start_show_particle(player,pos1,pos2,dimid) {
         return system.runInterval(() => {
             this.show_particle(player,pos1,pos2,dimid);
-        },5)
+        },10)
     },
 
     stop_show_particle(player){
         if (taskid.particle.hasOwnProperty(player.id)) {
             system.clearRun(taskid.particle[player.id]);
+            //删除相应的taskid
+            delete taskid.particle[player.id];
+            //删除相应的tickingarea
+            RunCmd(`tickingarea remove p1_${player.id}`);
+            RunCmd(`tickingarea remove p2_${player.id}`);
         }
     }
 }
@@ -447,7 +461,8 @@ const GUI = {
                             land_history[player.id] = player_land_history;
                             //开始显示actionbar
                             taskid.actionbar[player.id] = LandAPI.start_show_actionbar(player,player_land_history.pos1,player_land_history.pos2,player_land_history.dimid);
-                        }   taskid.particle[player.id] = LandAPI.start_show_particle(player,land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid);
+                            taskid.particle[player.id] = LandAPI.start_show_particle(player,land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid);
+                        }
                         break;
                     case 1:
                         //首先取消当前的actionbar
@@ -630,7 +645,7 @@ const GUI = {
             return;
         }
         //开始判断地皮是否重合
-        if (HaveLand(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid)) {
+        if (have_land(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid)) {
             player.sendMessage("§c您选择的地皮与已有地皮重合！请重新选择！");
             return;
         }
@@ -645,7 +660,7 @@ const GUI = {
         .show(player).then((response) => {
             if (response.canceled) {
                 player.sendMessage("§c您已取消购买！");
-            } else {
+            } else if (response.selection == 0) {
                 //首先判断余额是否足够
                 if (GetScore("money",player.nameTag) < Price) {
                     player.sendMessage("§c您的金币余额不足！请充值后再购买！");
@@ -696,11 +711,13 @@ const GUI = {
                         calculate_index(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid,adler32(GetTime() + player.id + Price));
                     } else {
                         //服务器连接超时提醒
-                        player.sendMessage("§>> c服务器连接超时！请稍后再试！");
+                        player.sendMessage("§c>> 服务器连接超时！请稍后再试！");
                         console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
                         land_data = old_land_data;
                     }
                 })
+            } else {
+                player.sendMessage("§c您已取消购买！");
             }
         })
 
@@ -731,7 +748,7 @@ const GUI = {
             return;
         }
         //开始判断地皮是否重合
-        if (HaveLand(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid)) {
+        if (have_land(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid)) {
             player.sendMessage("§c您选择的地皮与已有地皮重合！请重新选择！");
             return;
         }
@@ -746,7 +763,7 @@ const GUI = {
         .show(player).then((response) => {
             if (response.canceled) {
                 player.sendMessage("§c您已取消购买！");
-            } else {
+            } else if (response.selection == 0) {
                 //首先判断余额是否足够
                 if (GetScore("money",player.nameTag) < Price) {
                     player.sendMessage("§c您的金币余额不足！请充值后再购买！");
@@ -797,11 +814,13 @@ const GUI = {
                         calculate_index(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid,adler32(GetTime() + player.id + Price));
                     } else {
                         //服务器连接超时提醒
-                        player.sendMessage("§>> c服务器连接超时！请稍后再试！");
+                        player.sendMessage("§c>> 服务器连接超时！请稍后再试！");
                         console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
                         land_data = old_land_data;
                     }
                 })
+            } else {
+                player.sendMessage("§c您已取消购买！");
             }
         })
     }
@@ -913,11 +932,23 @@ world.afterEvents.itemUse.subscribe(event => {
 //玩家退出服务器
 world.afterEvents.playerLeave.subscribe((player) => {
     //玩家退出服务器的时候清除actionbar
-    LandAPI.stop_show_actionbar(player);
-    LandAPI.stop_show_particle(player);
+    if (taskid.actionbar.hasOwnProperty(player.playerId)) {
+        system.clearRun(taskid.actionbar[player.playerId]);
+        //删除相应的taskid
+        delete taskid.actionbar[player.playerId];
+    }
+    //玩家退出服务器的时候清除粒子
+    if (taskid.particle.hasOwnProperty(player.playerId)) {
+        system.clearRun(taskid.particle[player.playerId]);
+        //删除相应的taskid
+        delete taskid.particle[player.playerId];
+        //删除相应的tickingarea
+        RunCmd(`tickingarea remove p1_${player.playerId}`);
+        RunCmd(`tickingarea remove p2_${player.playerId}`);
+    }
     //玩家退出服务器的时候清除历史数据
-    if (land_history.hasOwnProperty(player.id)) {
-        delete land_history[player.id];
+    if (land_history.hasOwnProperty(player.playerId)) {
+        delete land_history[player.playerId];
     }
 })
 

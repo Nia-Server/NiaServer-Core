@@ -116,7 +116,7 @@ export function GetShortTime() {
     if (second < 10) {
         second = "0" + second
     }
-    let timeStr = year + month + date + "_" + hour + minute + second
+    let timeStr = year.toString() + month.toString() + date.toString() + "_" + hour.toString() + minute.toString() + second.toString()
     return timeStr
 }
 
