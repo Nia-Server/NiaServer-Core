@@ -49,7 +49,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
         } else {
             //文件存在且服务器连接成功
             temp_player_money = result;
-            log("玩家金币数据获取成功，本次读取用时：" + (Date.now() - start) + "ms");
+            log("(market)玩家金币数据获取成功，本次读取用时：" + (Date.now() - start) + "ms");
         }
     })
 

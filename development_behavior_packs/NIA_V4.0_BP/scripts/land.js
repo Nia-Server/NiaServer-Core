@@ -435,6 +435,7 @@ const GUI = {
                         this.ManageLand(player);
                         break;
                     case 1:
+                        this.LandMarket(player);
                         break;
                     case 2:
                         this.CreateLand(player);
@@ -444,6 +445,7 @@ const GUI = {
         })
     },
 
+    //管理已有地皮
     ManageLand(player) {
         let own_land_data = [];
         const ManageLandForm = new ActionFormData()
@@ -474,27 +476,433 @@ const GUI = {
             }
         })
     },
-    //还是再加一个表单
-    //权限管理
-    //回收地皮
-    //转让地皮
-    //上架地皮
-    //设置传送点
-    //管理白名单
+
     ManageLandDetail(player,LandUUID) {
-        const ManageLandDetailForm = new ModalFormData()
-        .title(`[${LandUUID}] ${land_data[LandUUID].land_name}`)
-        .textField("地皮名称","请尽量简短！",land_data[LandUUID].land_name)
-        .dropdown("请选择你要进行的操作",["无","回收（摧毁）地皮","转让地皮","上架地皮至市场"])
-        .toggle("其他玩家可以摧毁方块",land_data[LandUUID].setup.DestroyBlock)
-        .toggle("其他玩家可以放置方块",land_data[LandUUID].setup.PlaceBlock)
-        .toggle("其他玩家可以使用物品",land_data[LandUUID].setup.UseItem)
-        .toggle("其他玩家可以攻击实体",land_data[LandUUID].setup.AttackEntity)
-        .toggle("其他玩家可以打开箱子",land_data[LandUUID].setup.OpenChest)
-        .toggle("自己处于地皮内时显示标题",land_data[LandUUID].setup.ShowActionbar)
-        .show(player)
+        const ManageLandDetailForm = new ActionFormData()
+        .title(`管理[${LandUUID}] ${land_data[LandUUID].land_name}`)
+        .body("§e在这里您可以管理您的地皮！")
+        .button("返回上一级")
+        .button("地皮权限管理")
+        .button("回收（摧毁）地皮")
+        .button("转让地皮至其他玩家")
+        .button("管理地皮上架状态")
+        .button("(dev)设置地皮传送点")
+        .button("管理白名单")
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                switch (response.selection) {
+                    case 0:
+                        this.ManageLand(player);
+                        break;
+                    case 1:
+                        this.ManageLandPermission(player,LandUUID);
+                        break;
+                    case 2:
+                        this.ManageLandRecycle(player,LandUUID);
+                        break;
+                    case 3:
+                        this.ManageLandTransfer(player,LandUUID);
+                        break;
+                    case 4:
+                        player.sendMessage("§c>> 该功能暂时未对外开放，敬请期待！")
+                        //this.ManageLandOnSale(player,LandUUID);
+                        break;
+                    case 5:
+                        player.sendMessage("§c>> 该功能正在开发中，敬请期待！");
+                        //this.ManageLandSetTeleport(player,LandUUID);
+                        break;
+                    case 6:
+                        this.ManageLandAllowlist(player,LandUUID);
+                        break;
+                }
+            }
+        })
     },
 
+    ManageLandPermission(player,LandUUID) {
+        const ManageLandPermissionForm = new ModalFormData()
+        .title(`权限管理[${LandUUID}] ${land_data[LandUUID].land_name}`)
+            .textField("地皮名称","请尽量简短！",land_data[LandUUID].land_name)
+            .toggle("其他玩家可以摧毁方块",land_data[LandUUID].setup.DestroyBlock)
+            .toggle("其他玩家可以放置方块",land_data[LandUUID].setup.PlaceBlock)
+            .toggle("其他玩家可以使用物品",land_data[LandUUID].setup.UseItem)
+            .toggle("其他玩家可以攻击实体",land_data[LandUUID].setup.AttackEntity)
+            .toggle("其他玩家可以打开箱子",land_data[LandUUID].setup.OpenChest)
+            .toggle("自己处于地皮内时显示标题",land_data[LandUUID].setup.ShowActionbar)
+            .show(player).then((response) => {
+                if (!response.canceled) {
+                    //先判断地皮名称是否为空
+                    if (response.formValues[0] == "") {
+                        player.sendMessage("§c>> 地皮名称不能为空！");
+                        return;
+                    }
+                    let old_land_data = Object.assign({},land_data);
+                    land_data[LandUUID].land_name = response.formValues[0];
+                    land_data[LandUUID].setup.DestroyBlock = response.formValues[1];
+                    land_data[LandUUID].setup.PlaceBlock = response.formValues[2];
+                    land_data[LandUUID].setup.UseItem = response.formValues[3];
+                    land_data[LandUUID].setup.AttackEntity = response.formValues[4];
+                    land_data[LandUUID].setup.OpenChest = response.formValues[5];
+                    land_data[LandUUID].setup.ShowActionbar = response.formValues[6];
+                    //开始覆写文件land.json
+                    fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+                        if (result === "success") {
+                            player.sendMessage("§a>> 地皮权限修改成功！");
+                        } else if (result === "-1") {
+                            player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
+                            land_data = old_land_data;
+                        } else {
+                            player.sendMessage("§c>> 未知错误，请联系在线管理员！");
+                            land_data = old_land_data;
+                        }
+                    })
+
+                } else {
+                    this.ManageLandDetail(player,LandUUID);
+                }
+            })
+    },
+
+    ManageLandRecycle(player,LandUUID) {
+        const ManageLandRecycleForm = new MessageFormData()
+        .title(`回收地皮[${LandUUID}] ${land_data[LandUUID].land_name}`)
+        .body(`§c您确定要以 §l${parseInt(land_data[LandUUID].purchase_price * 0.6)} §r§c回收该地皮吗？\n§e回收地皮后将无法恢复！`)
+        .button1("§a确定回收")
+        .button2("§c取消回收")
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                if (response.selection == 0) {
+                    //开始回收地皮
+                    let old_land_data = Object.assign({},land_data);
+                    delete land_data[LandUUID];
+                    //开始覆写文件land.json
+                    fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+                        if (result === "success") {
+                            player.sendMessage("§a>> 地皮回收成功！");
+                            //开始退款
+                            world.scoreboard.getObjective("money").addScore(player,parseInt(land_data[LandUUID].purchase_price * 0.6));
+                        } else if (result === "-1") {
+                            player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
+                            land_data = old_land_data;
+                        } else {
+                            player.sendMessage("§c>> 未知错误，请联系在线管理员！");
+                            land_data = old_land_data;
+                        }
+                    })
+                } else if (response.selection == 1) {
+                    player.sendMessage("§c>> 您已取消回收地皮！");
+                }
+            } else {
+                this.ManageLandDetail(player,LandUUID);
+            }
+        })
+    },
+
+    ManageLandTransfer(player,LandUUID) {
+        //首先获取所有在线玩家的对象
+        let players = world.getPlayers();
+        //然后获取所有在线玩家的名称
+        let players_name = ["-未选择任何玩家-"];
+        for (let i = 0; i < players.length; i++) {
+            players_name.push(players[i].name);
+        }
+        const ManageLandTransferForm = new ModalFormData()
+        .title(`转让地皮[${LandUUID}] ${land_data[LandUUID].land_name}`)
+        .dropdown("请选择要转让的玩家",players_name)
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                if (response.formValues[0] == 0) {
+                    player.sendMessage("§c>> 您未选择任何玩家！");
+                    return;
+                }
+                //开始转让地皮
+                let old_land_data = Object.assign({},land_data);
+                //首先获取要转让的玩家对象
+                land_data[LandUUID].owner = players[response.formValues[0] - 1].id;
+                //开始覆写文件land.json
+                fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+                    if (result === "success") {
+                        player.sendMessage("§a>> 地皮转让成功！");
+                    } else if (result === "-1") {
+                        player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
+                        land_data = old_land_data;
+                    } else {
+                        player.sendMessage("§c>> 未知错误，请联系在线管理员！");
+                        land_data = old_land_data;
+                    }
+                })
+            } else {
+                this.ManageLandDetail(player,LandUUID);
+            }
+        })
+    },
+
+    ManageLandOnSale(player,LandUUID) {
+        const ManageLandOnSaleForm = new ModalFormData()
+        .title(`上架地皮 [${LandUUID}] ${land_data[LandUUID].land_name} 至市场`)
+        .toggle("是否上架",land_data[LandUUID].on_sale)
+        .textField("上架价格","请输入一个正整数",(land_data[LandUUID].sale_price || land_data[LandUUID].purchase_price).toString())
+        .textField("地皮名字","请尽量简短！",land_data[LandUUID].land_name)
+        .textField("地皮描述","请尽量简短！",(land_data[LandUUID].land_description || "这是一块地皮..."))
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                //判断价格是否为空
+                if (response.formValues[1] == "") {
+                    player.sendMessage("§c>> 价格不能为空！");
+                    return;
+                }
+                //再判断价格是否为数字
+                if (isNaN(parseInt(response.formValues[1]))) {
+                    player.sendMessage("§c>> 价格必须为正整数！");
+                    return;
+                }
+                //判断地皮名称是否为空
+                if (response.formValues[2] == "") {
+                    player.sendMessage("§c>> 地皮名称不能为空！");
+                    return;
+                }
+                //判断地皮描述是否为空
+                if (response.formValues[3] == "") {
+                    player.sendMessage("§c>> 地皮描述不能为空！");
+                    return;
+                }
+                //开始上架地皮
+                let old_land_data = Object.assign({},land_data);
+                land_data[LandUUID].on_sale = response.formValues[0];
+                land_data[LandUUID].sale_price = Math.abs(parseInt(response.formValues[1]));
+                land_data[LandUUID].land_name = response.formValues[2];
+                land_data[LandUUID].land_description = response.formValues[3];
+                //开始覆写文件land.json
+                fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+                    if (result === "success") {
+                        player.sendMessage("§a>> 地皮上架成功！");
+                    } else if (result === "-1") {
+                        player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
+                        land_data = old_land_data;
+                    } else {
+                        player.sendMessage("§c>> 未知错误，请联系在线管理员！");
+                        land_data = old_land_data;
+                    }
+                })
+            } else {
+                this.ManageLandDetail(player,LandUUID);
+            }
+        })
+    },
+
+    ManageLandSetTeleport(player,LandUUID) {
+
+    },
+
+    ManageLandAllowlist(player,LandUUID) {
+        //首先获取所有白名单玩家的对象
+        let allowlist_players = [];
+        for (let key in land_data[LandUUID].allowlist) {
+            allowlist_players.push(allowlist_players[key]);
+        }
+        const ManageLandAllowlistForm = new ActionFormData()
+        .title(`白名单管理[${LandUUID}] ${land_data[LandUUID].land_name}`)
+        .body(`§e在这里您可以管理您的地皮白名单！\n${"您当前地皮的白名单玩家有：\n" + allowlist_players.join("、")}`)
+        .button("返回上一级")
+        .button("添加白名单")
+        .button("删除白名单")
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                switch (response.selection) {
+                    case 0:
+                        this.ManageLandDetail(player,LandUUID);
+                        break;
+                    case 1:
+                        this.ManageLandAllowlistAdd(player,LandUUID);
+                        break;
+                    case 2:
+                        this.ManageLandAllowlistDelete(player,LandUUID);
+                        break;
+                }
+            } else {
+                this.ManageLandDetail(player,LandUUID);
+            }
+        })
+    },
+
+    ManageLandAllowlistAdd(player,LandUUID) {
+        //首先获取所有在线玩家的对象
+        let players = world.getPlayers();
+        //然后获取所有在线玩家的名称
+        let players_name = ["-未选择任何玩家-"];
+        for (let i = 0; i < players.length; i++) {
+            players_name.push(players[i].name);
+        }
+        const ManageLandAllowlistAddForm = new ModalFormData()
+        .title(`添加白名单[${LandUUID}] ${land_data[LandUUID].land_name}`)
+        .dropdown("请选择要添加的玩家",players_name)
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                if (response.formValues[0] == 0) {
+                    player.sendMessage("§c>> 您未选择任何玩家！");
+                    return;
+                }
+                //开始添加白名单
+                let old_land_data = Object.assign({},land_data);
+                //首先获取要添加的玩家对象
+                land_data[LandUUID].allowlist[players[response.formValues[0] - 1].id] = players[response.formValues[0] - 1].name;
+                //开始覆写文件land.json
+                fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+                    if (result === "success") {
+                        player.sendMessage(`§a>> 您已将玩家 §l§e${players[response.formValues[0] - 1].name} §r§a成功添加至地皮§e ${land_data[LandUUID].land_name} §a的白名单！`);
+                    } else if (result === "-1") {
+                        player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
+                        land_data = old_land_data;
+                    } else {
+                        player.sendMessage("§c>> 未知错误，请联系在线管理员！");
+                        land_data = old_land_data;
+                    }
+                })
+            } else {
+                this.ManageLandAllowlist(player,LandUUID);
+            }
+        })
+    },
+
+    ManageLandAllowlistDelete(player,LandUUID) {
+        //首先获取所有在线玩家的对象
+        let players = world.getPlayers();
+        //然后获取所有在线玩家的名称
+        let players_name = ["-未选择任何玩家-"];
+        for (let i = 0; i < players.length; i++) {
+            players_name.push(players[i].name);
+        }
+        const ManageLandAllowlistDeleteForm = new ModalFormData()
+        .title(`删除白名单[${LandUUID}] ${land_data[LandUUID].land_name}`)
+        .dropdown("请选择要删除的玩家",players_name)
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                if (response.formValues[0] == 0) {
+                    player.sendMessage("§c>> 您未选择任何玩家！");
+                    return;
+                }
+                //开始删除白名单
+                let old_land_data = Object.assign({},land_data);
+                //首先获取要删除的玩家对象
+                delete land_data[LandUUID].allowlist[players[response.formValues[0] - 1].id];
+                //开始覆写文件land.json
+                fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+                    if (result === "success") {
+                        player.sendMessage(`§a>> 您已将玩家 §l§e${players[response.formValues[0] - 1].name} §r§a成功从地皮§e ${land_data[LandUUID].land_name} §a的白名单中删除！`);
+                    } else if (result === "-1") {
+                        player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
+                        land_data = old_land_data;
+                    } else {
+                        player.sendMessage("§c>> 未知错误，请联系在线管理员！");
+                        land_data = old_land_data;
+                    }
+                })
+            } else {
+                this.ManageLandAllowlist(player,LandUUID);
+            }
+        })
+    },
+
+    //购买出售中地皮
+    LandMarket(player) {
+        let on_sale_land_data = [];
+        const LandMarketForm = new ActionFormData()
+        .title("购买出售中地皮")
+        .body("§e在这里您可以购买出售中的地皮！")
+        LandMarketForm.button("返回上一级")
+        for (let key in land_data) {
+            if (land_data[key].on_sale == true) {
+                LandMarketForm.button(`[${key}] ${land_data[key].land_name} \n价格：${land_data[key].sale_price} 金币`);
+                on_sale_land_data.push(key);
+            }
+        }
+        LandMarketForm.show(player).then((response) => {
+            if (!response.canceled) {
+                switch (response.selection) {
+                    case 0:
+                        this.Main(player);
+                        break;
+                    default:
+                        for (let i = 0; i < on_sale_land_data.length; i++) {
+                            if (response.selection == i + 1) {
+                                this.LandMarketDetail(player,on_sale_land_data[i]);
+                                break;
+                            }
+                        }
+                        break;
+                }
+            } else {
+                this.Main(player);
+            }
+        })
+    },
+
+    LandMarketDetail(player,LandUUID) {
+        const LandMarketDetailForm = new ActionFormData()
+        .title(`购买[${LandUUID}] ${land_data[LandUUID].land_name}`)
+        .body(`§e地皮类型：${land_data[LandUUID].type}\n地皮描述：${land_data[LandUUID].land_description}\n地皮拥有者：${land_data[LandUUID].owner_name}\n地皮价格：${land_data[LandUUID].sale_price} 金币\n地皮坐标：(${land_data[LandUUID].pos1[0]},${land_data[LandUUID].pos1[1]},${land_data[LandUUID].pos1[2]}) - (${land_data[LandUUID].pos2[0]},${land_data[LandUUID].pos2[1]},${land_data[LandUUID].pos2[2]})\n§c购买地皮后将无法退款！`)
+        .button("返回上一级")
+        .button("购买地皮")
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                switch (response.selection) {
+                    case 0:
+                        this.LandMarket(player);
+                        break;
+                    case 1:
+                        this.LandMarketBuy(player,LandUUID);
+                        break;
+                }
+            } else {
+                this.LandMarket(player);
+            }
+        })
+    },
+
+    LandMarketBuy(player,LandUUID) {
+        const LandMarketBuyForm = new MessageFormData()
+        .title(`购买[${LandUUID}] ${land_data[LandUUID].land_name}`)
+        .body(`§c您确定要以 §l${land_data[LandUUID].sale_price} §r§c购买该地皮吗？\n§e购买地皮后将无法退款！`)
+        .button1("§a确定购买")
+        .button2("§c取消购买")
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                if (response.selection == 0) {
+                    //开始购买地皮
+                    let old_land_data = Object.assign({},land_data);
+                    land_data[LandUUID].owner = player.id;
+                    land_data[LandUUID].on_sale = false;
+                    //首先判断玩家余额是否足够
+                    if (world.scoreboard.getObjective("money").getScore(player) < land_data[LandUUID].sale_price) {
+                        player.sendMessage(`§c>> 您的余额不足！您当前余额为：${world.scoreboard.getObjective("money").getScore(player)}，而该地皮的价格为：${land_data[LandUUID].sale_price}`);
+                        return;
+                    }
+                    //开始覆写文件land.json
+                    fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+                        if (result === "success") {
+                            player.sendMessage("§a>> 地皮购买成功！");
+                            //开始扣款
+                            world.scoreboard.getObjective("money").addScore(player,-land_data[LandUUID].sale_price);
+                            //开始给予地皮拥有者金币
+
+                        } else if (result === "-1") {
+                            player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
+                            land_data = old_land_data;
+                        } else {
+                            player.sendMessage("§c>> 未知错误，请联系在线管理员！");
+                            land_data = old_land_data;
+                        }
+                    })
+                } else if (response.selection == 1) {
+                    player.sendMessage("§c>> 您已取消购买地皮！");
+                }
+            } else {
+                this.LandMarketDetail(player,LandUUID);
+            }
+        })
+    },
+
+    //开始自由圈地
     CreateLand(player) {
         const CreateLandForm = new ActionFormData()
         .title("创建地皮")
@@ -718,11 +1126,11 @@ const GUI = {
             return;
         }
         //开始计算价格
-        let Price = XLength * ZLength * 30;
+        let purchase_price = XLength * ZLength * 30;
         //弹出购买确认表单
         const CreateLandForm = new MessageFormData()
         .title("确认购买")
-        .body(`§e您选择的地皮面积为：§c${XLength * ZLength}§e方块\n§e您选择的地皮价格为：§c${Price}§e金币\n§e您的金币余额为：§c${GetScore("money",player.nameTag)}§e金币\n§e请确认您的购买！`)
+        .body(`§e您选择的地皮面积为：§c${XLength * ZLength}§e方块\n§e您选择的地皮价格为：§c${purchase_price}§e金币\n§e您的金币余额为：§c${GetScore("money",player.nameTag)}§e金币\n§e请确认您的购买！`)
         .button1(`§a确认购买`)
         .button2(`§c取消购买`)
         .show(player).then((response) => {
@@ -730,7 +1138,7 @@ const GUI = {
                 player.sendMessage("§c您已取消购买！");
             } else if (response.selection == 0) {
                 //首先判断余额是否足够
-                if (GetScore("money",player.nameTag) < Price) {
+                if (GetScore("money",player.nameTag) < purchase_price) {
                     player.sendMessage("§c您的金币余额不足！请充值后再购买！");
                     return;
                 }
@@ -750,12 +1158,13 @@ const GUI = {
                 //开始初始化新的地皮数据
                 let new_land_data = {};
                 new_land_data.owner = player.id;
+                new_land_data.owner_name = player.nameTag;
                 new_land_data.pos1 = land_history[player.id].pos1;
                 new_land_data.pos2 = land_history[player.id].pos2;
                 new_land_data.dimid = land_history[player.id].dimid;
                 new_land_data.type = "2d";
-                new_land_data.price = Price;
-                new_land_data.sell = false;
+                new_land_data.purchase_price = purchase_price;
+                new_land_data.on_sell = false;
                 new_land_data.get_time = GetTime();
                 new_land_data.land_name = player.nameTag + "的地皮";
                 new_land_data.allowlist = {};
@@ -769,21 +1178,25 @@ const GUI = {
                     "OpenChest":false,
                     "ShowActionbar":true
                 }
-                land_data[adler32(GetTime() + player.id + Price)] = new_land_data;
+                land_data[adler32(GetTime() + player.id + purchase_price)] = new_land_data;
                 //开始写入数据
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     if (result === "success") {
-                        player.sendMessage("§e>> 购买成功！您已经拥有该地皮,该地皮id为：§c" + adler32(GetTime() + player.id + Price) + "§e！");
+                        player.sendMessage("§e>> 购买成功！您已经拥有该地皮,该地皮id为：§c" + adler32(GetTime() + player.id + purchase_price) + "§e！");
                         RunCmd(`title ${player.nameTag} title §e§l购买圈地成功！`);
                         RunCmd(`title ${player.nameTag} subtitle §a您还可以购买 §c${5 - land_num - 1}§a 块地皮！`);
                         //扣除玩家金币
-                        world.scoreboard.getObjective("money").addScore(player,-Price);
+                        world.scoreboard.getObjective("money").addScore(player,-purchase_price);
                         //计算索引值
-                        calculate_index(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid,adler32(GetTime() + player.id + Price));
-                    } else {
+                        calculate_index(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid,adler32(GetTime() + player.id + purchase_price));
+                    } else if (result === -1) {
                         //服务器连接超时提醒
-                        player.sendMessage("§c>> 服务器连接超时！请稍后再试！");
+                        player.sendMessage("§c>> 服务器连接失败！请联系在线管理员！");
                         console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                        land_data = old_land_data;
+                    } else {
+                        //未知错误提醒
+                        player.sendMessage("§c>> 未知错误！请联系在线管理员！");
                         land_data = old_land_data;
                     }
                 })
@@ -824,11 +1237,11 @@ const GUI = {
             return;
         }
         //开始计算价格
-        let Price = XLength * YLength * ZLength * 3;
+        let purchase_price = XLength * YLength * ZLength * 3;
         //弹出购买确认表单
         const CreateLandForm = new MessageFormData()
         .title("确认购买")
-        .body(`§e您选择的地皮体积为：§c${XLength * YLength * ZLength}§e方块\n§e您选择的地皮价格为：§c${Price}§e金币\n§e您的金币余额为：§c${GetScore("money",player.nameTag)}§e金币\n§e请确认您的购买！`)
+        .body(`§e您选择的地皮体积为：§c${XLength * YLength * ZLength}§e方块\n§e您选择的地皮价格为：§c${purchase_price}§e金币\n§e您的金币余额为：§c${GetScore("money",player.nameTag)}§e金币\n§e请确认您的购买！`)
         .button1(`§a确认购买`)
         .button2(`§c取消购买`)
         .show(player).then((response) => {
@@ -836,7 +1249,7 @@ const GUI = {
                 player.sendMessage("§c您已取消购买！");
             } else if (response.selection == 0) {
                 //首先判断余额是否足够
-                if (GetScore("money",player.nameTag) < Price) {
+                if (GetScore("money",player.nameTag) < purchase_price) {
                     player.sendMessage("§c您的金币余额不足！请充值后再购买！");
                     return;
                 }
@@ -856,12 +1269,13 @@ const GUI = {
                 //开始初始化新的地皮数据
                 let new_land_data = {};
                 new_land_data.owner = player.id;
+                new_land_data.owner_name = player.nameTag;
                 new_land_data.pos1 = land_history[player.id].pos1;
                 new_land_data.pos2 = land_history[player.id].pos2;
                 new_land_data.dimid = land_history[player.id].dimid;
                 new_land_data.type = "3d";
-                new_land_data.price = Price;
-                new_land_data.sell = false;
+                new_land_data.purchase_price = purchase_price;
+                new_land_data.on_sell = false;
                 new_land_data.get_time = GetTime();
                 new_land_data.land_name = player.nameTag + "的地皮";
                 new_land_data.allowlist = {};
@@ -874,21 +1288,25 @@ const GUI = {
                     "AttackEntity":false,
                     "ShowActionbar":true
                 }
-                land_data[adler32(GetTime() + player.id + Price)] = new_land_data;
+                land_data[adler32(GetTime() + player.id + purchase_price)] = new_land_data;
                 //开始写入数据
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     if (result === "success") {
-                        player.sendMessage("§e>> 购买成功！您已经拥有该地皮,该地皮id为：§c" + adler32(GetTime() + player.id + Price) + "§e！");
+                        player.sendMessage("§e>> 购买成功！您已经拥有该地皮,该地皮id为：§c" + adler32(GetTime() + player.id + purchase_price) + "§e！");
                         RunCmd(`title ${player.nameTag} title §e§l购买圈地成功！`);
                         RunCmd(`title ${player.nameTag} subtitle §a您还可以购买 §c${5 - land_num - 1}§a 块地皮！`);
                         //扣除玩家金币
-                        world.scoreboard.getObjective("money").addScore(player,-Price);
+                        world.scoreboard.getObjective("money").addScore(player,-purchase_price);
                         //计算索引值
-                        calculate_index(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid,adler32(GetTime() + player.id + Price));
-                    } else {
+                        calculate_index(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid,adler32(GetTime() + player.id + purchase_price));
+                    } else if (result === -1) {
                         //服务器连接超时提醒
-                        player.sendMessage("§c>> 服务器连接超时！请稍后再试！");
+                        player.sendMessage("§c>> 服务器连接失败！请联系在线管理员！");
                         console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                        land_data = old_land_data;
+                    } else {
+                        //未知错误提醒
+                        player.sendMessage("§c>> 未知错误！请联系在线管理员！");
                         land_data = old_land_data;
                     }
                 })
@@ -938,6 +1356,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
             log("圈地数据获取成功，本次读取用时：" + (Date.now() - start) + "ms，共加载 " + LandNum + " 块地皮数据！" );
         }
     })
+
 })
 
 //
