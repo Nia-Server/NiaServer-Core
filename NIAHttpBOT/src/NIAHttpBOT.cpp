@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <syncstream>
 #include <cstdlib>
-#include <cstring>
+#include <cstdio> 
 
 #include <httplib.h>
 #include <rapidjson/document.h>
@@ -22,6 +22,11 @@
 #include "File_API.h"
 #include "Game_API.h"
 
+#ifdef _WIN32
+#define popen _popen
+#define pclose _pclose
+#define WEXITSTATUS
+#endif
 
 signed int main(signed int argc, char** argv) {
 
@@ -121,28 +126,30 @@ signed int main(signed int argc, char** argv) {
 	//执行cmd命令
 	svr.Post("/RunCmd",  [UseCmd](const httplib::Request& req, httplib::Response& res) {
 		//首先判断配置文件是否启用
-		res.status = 400;
-		if (!UseCmd) {
+		if (!UseCmd) [[unlikely]] {
 			XWARN("执行DOS命令的功能暂未启用！请在启用后使用！");
 			res.set_content("feature not enabled!", "text/plain");
 			return ;
 		}
-		std::string cmd = req.body;
+		const std::string& cmd = req.body;
 		WARN(X("收到一条执行DOS命令的请求：") + cmd);
-		//执行dos指令，返回执行结果，如果执行失败则返回错误原因
-		int result = system(cmd.c_str());
-	    // 检查命令执行结果
-		if (result != 0) {
-			res.set_content(strerror(result), "text/plain");
-			// 输出错误原因
-			std::cerr << "执行DOS命令失败！原因：";
-			perror(strerror(result));
-
-		} else {
-			XINFO("执行DOS命令成功！");
-			res.status = 200;
-			res.set_content("success", "text/plain");
-		}
+		auto [cmdres, excd] = ([&cmd]() -> std::pair<std::string, int> {
+			int exitCode = 0;
+			std::array<char, 64> buffer {};
+			std::string result;
+			FILE *pipe = popen(cmd.c_str(), "r");
+			if (pipe == nullptr) [[unlikely]] return {"popen() error!!", -114514};
+			std::size_t bytesRead;
+			while ((bytesRead = std::fread(buffer.data(), sizeof(buffer.at(0)), sizeof(buffer), pipe)) != 0) 
+				result += std::string(buffer.data(), bytesRead);
+			exitCode = WEXITSTATUS(pclose(pipe));
+			return {result, exitCode};
+		})();
+		if(cmdres[cmdres.size()-1]=='\n') [[likely]] cmdres.pop_back();
+		INFO(X("命令执行输出: ") + cmdres);
+		if (excd!=0) [[unlikely]] WARN(X("命令执行失败, 返回值: ")+std::to_string(excd));
+		else XINFO("命令执行成功！返回值: 0");
+		res.set_content(cmdres, "text/plain"), res.status = excd; // exitCode
 	});
 
 	init_game_API(svr);
