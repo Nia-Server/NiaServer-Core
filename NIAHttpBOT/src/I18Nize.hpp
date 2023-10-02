@@ -28,10 +28,10 @@ inline std::vector<int> findEqualSigns(const std::string& str, char tar='=') {
             int mask = _mm256_movemask_epi8(match);
             while (mask != 0) {
                 int index = 
-    #ifdef WIN32
-                _tzcnt_u32(mask); 
-    #else
+    #ifdef __GNUC__
                 __builtin_ctz(mask);
+    #else
+                _tzcnt_u32(mask); 
     #endif
                 ret.push_back(i+(unsigned)index), mask &= ~(1<<index);
             }
