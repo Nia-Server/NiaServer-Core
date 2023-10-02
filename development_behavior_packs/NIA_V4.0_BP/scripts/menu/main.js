@@ -127,40 +127,44 @@ export function Main(player) {
         }
     MainForm.show(player).then((response) => {
         if (player.hasTag(cfg.OPTAG)) {
-            switch (buttons[response.selection].type) {
-                case "runCmd":
-                    let cmd = buttons[response.selection].content.replace("%playername%",player.nameTag)
-                    RunCmd(cmd)
-                    break;
-                case "openGUI":
-                    OpenGUI(player,buttons[response.selection].GUI)
-                    break;
-                //这里相当于一个自定义功能的实例
-                case "goISLAND":
-                    if (GetScore("posX",player.nameTag) == 0 && GetScore("posY",player.nameTag) == 0 && GetScore("posZ",player.nameTag) == 0) {
-                        player.sendMessage(`§c>> 未找到相应的主岛数据！请在领取空岛后使用本功能！`,player.nameTag)
-                    } else {
-                        RunCmd(`tp @a[name=${player.nameTag}] ${GetScore("posX",player.nameTag)} ${GetScore("posY",player.nameTag)} ${GetScore("posZ",player.nameTag)}`)
-                        player.sendMessage(`§a>> 已经将您传送至主岛！`,player.nameTag)
-                    }
-                    break;
-            }
-        } else {
-            //这里的目的是为了清除管理菜单
-            let buttons = []
-            for (let i = 0; i < MainGUI.buttons.length; i++) {
-                if (!MainGUI.buttons[i].opMenu) {
-                    buttons.push(MainGUI.buttons[i])
+            if (!response.canceled) {
+                switch (buttons[response.selection].type) {
+                    case "runCmd":
+                        let cmd = buttons[response.selection].content.replace("%playername%",player.nameTag)
+                        RunCmd(cmd)
+                        break;
+                    case "openGUI":
+                        OpenGUI(player,buttons[response.selection].GUI)
+                        break;
+                    //这里相当于一个自定义功能的实例
+                    case "goISLAND":
+                        if (GetScore("posX",player.nameTag) == 0 && GetScore("posY",player.nameTag) == 0 && GetScore("posZ",player.nameTag) == 0) {
+                            player.sendMessage(`§c>> 未找到相应的主岛数据！请在领取空岛后使用本功能！`,player.nameTag)
+                        } else {
+                            RunCmd(`tp @a[name=${player.nameTag}] ${GetScore("posX",player.nameTag)} ${GetScore("posY",player.nameTag)} ${GetScore("posZ",player.nameTag)}`)
+                            player.sendMessage(`§a>> 已经将您传送至主岛！`,player.nameTag)
+                        }
+                        break;
                 }
             }
-            switch (buttons[response.selection].type) {
-                case "runCmd":
-                    let cmd = buttons[response.selection].content.replace("%playername%",player.nameTag)
-                    RunCmd(cmd)
-                    break;
-                case "openGUI":
-                    OpenGUI(player,buttons[response.selection].GUI)
-                    break;
+        } else {
+            if (!response.canceled) {
+                //这里的目的是为了清除管理菜单
+                let buttons = []
+                for (let i = 0; i < MainGUI.buttons.length; i++) {
+                    if (!MainGUI.buttons[i].opMenu) {
+                        buttons.push(MainGUI.buttons[i])
+                    }
+                }
+                switch (buttons[response.selection].type) {
+                    case "runCmd":
+                        let cmd = buttons[response.selection].content.replace("%playername%",player.nameTag)
+                        RunCmd(cmd)
+                        break;
+                    case "openGUI":
+                        OpenGUI(player,buttons[response.selection].GUI)
+                        break;
+                }
             }
         }
     })

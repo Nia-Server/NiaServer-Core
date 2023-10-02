@@ -19,6 +19,8 @@
 
 **注意：当前服务器addons包仍处于开发状态，暂时没有对其他类型服务器做适配，所以我们并不推荐您直接使用！**
 
+**为了实现更多功能，服务器使用了@minecraft/net模块，所以本插件包不能在个人存档中正常运行，只能在BDS上运行！**
+
 一个基于BDS的基岩版服务器，这里开源了由服务器开发团队制作的addons（包括基于script-api的脚本）、大部分运行于LiteLoader的插件（部分LiteLoader插件源码可以点击前往 [NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin) 查看）
 
 我们并不是专业的开发人员，所以难免会出现部分bug、代码不规范、逻辑混乱等错误，也欢迎各位大佬pr，我们也一定会仔细查看、学习、回复每一条pr
@@ -62,6 +64,8 @@
 ## 外部机器人功能&&特性
 
 新版机器人基于c++制作（特别感谢[**@jiansyuan**](https://github.com/jiansyuan)），使用HTTP实现对文件的一系列操作，具体使用示例，请前往[NIA服务器文档站](https://docs.mcnia.com/zh-CN/develop/Http-Bot.html)查看使用说明！
+
+**NIAHttpBOT**可以在windows/Linux环境下运行，windows环境下运行的exe文件可以前往release自行下载，在Linux环境下运行暂时需要自行编译后使用！
 
 为了本Addons更好的发展，自**v1.4.0**开始，部分功能将依赖**NIAHttpBOT**，目前为止以下功能依赖于**NIAHttpBOT**：
 

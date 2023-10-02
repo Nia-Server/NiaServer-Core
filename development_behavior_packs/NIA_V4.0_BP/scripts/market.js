@@ -5,6 +5,7 @@ import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-
 import { GetTime, GetScore, log } from './customFunction';
 import { adler32 } from './API/cipher_system';
 import { ExternalFS } from './API/filesystem';
+import { Main } from './menu/main';
 
 //违禁物品，等后期接入配置文件
 const fs = new ExternalFS();
@@ -35,9 +36,9 @@ world.afterEvents.worldInitialize.subscribe(() => {
             log("玩家市场数据获取成功，本次读取用时：" + (Date.now() - start) + "ms");
         }
     })
-    fs.GetJSONFileData("temp_player_money.json").then((result) => {
+    fs.GetJSONFileData("market_temp_player_money.json").then((result) => {
         if (result === 0) {
-            fs.CreateNewJsonFile("temp_player_money.json",{}).then((result) => {
+            fs.CreateNewJsonFile("market_temp_player_money.json",{}).then((result) => {
                 if (result === "success") {
                     log("玩家金币数据文件不存在，已成功创建！");
                 } else if (result === -1) {
@@ -81,6 +82,7 @@ const GUI = {
                     .button("浏览市场")
                     .button("上架商品")
                     .button("管理商品")
+                    .button("取出下线后收益")
                     .button("返回上一级")
                 MainForm.show(player).then((response) => {
                     switch (response.selection) {
@@ -94,7 +96,10 @@ const GUI = {
                             this.Manage(player);
                             break;
                         case 3:
-
+                            this.GetOfflineMoney(player);
+                            break;
+                        case 4:
+                            Main(player);
                             break;
                     }
                 })
@@ -142,7 +147,7 @@ const GUI = {
                         } else if (response.selection == 0) {
                             //预览商品
                             //开始构建预览商品
-                            let pre_item_lores = Object.assign([],pre_item_data.Lores);
+                            let pre_item_lores = JSON.parse(JSON.stringify(pre_item_data.Lores));
                             //标记商品标签
                             pre_item_lores.push("§c预览商品请勿进行其他操作！","§c预览商品关联id：" + pre_item_data.id)
                             let preview_item = new ItemStack(pre_item_data.typeid);
@@ -243,16 +248,16 @@ const GUI = {
                             if (MarketData[i].id == item_data.id) {
                                 MarketData[i].amount = item_data.amount - response.formValues[0];
                                 //判断商品数量是否为0，如果为0则删除相应物品数据
-                                let old_MarketData = Object.assign({},MarketData);
+                                let old_MarketData = JSON.parse(JSON.stringify(MarketData));
                                 if (MarketData[i].amount == 0) {
                                     MarketData.splice(i,1);
                                 }
                                 //开始连接服务器
                                 fs.OverwriteJsonFile("market.json",MarketData).then((result) => {
                                     if (result === "success") {
-                                        let old_temp_player_money = Object.assign({},temp_player_money);
+                                        let old_temp_player_money = JSON.parse(JSON.stringify(temp_player_money));
                                         temp_player_money[player.id] = response.formValues[0] * item_data.price;
-                                        fs.OverwriteJsonFile("temp_player_money.json",temp_player_money).then((result) => {
+                                        fs.OverwriteJsonFile("market_temp_player_money.json",temp_player_money).then((result) => {
                                             if (result === "success") {
                                                 player.sendMessage("§e>> 购买成功！已将商品送至您的背包中！");
                                                 //扣除玩家金币
@@ -486,7 +491,7 @@ const GUI = {
                             new_item.getComponent("minecraft:durability").damage = item_data.damage;
                         }
                         //首先将旧的MarketData缓存起来
-                        let old_MarketData = Object.assign({},MarketData);
+                        let old_MarketData = JSON.parse(JSON.stringify(MarketData));
                         //根据商品id寻找，然后删除相应的数据
                         for (let i = 0; i < MarketData.length; i++) {
                             if (MarketData[i].id == item_data.id) {
@@ -530,7 +535,7 @@ const GUI = {
                             } else {
                                 //数据格式正确且没有被下架
                                 //首先更新缓存中MarketData的值，然后修改相应的数据，最后覆写market.json
-                                let old_MarketData = Object.assign({},MarketData);
+                                let old_MarketData = JSON.parse(JSON.stringify(MarketData));
                                 //如果玩家下架一定数量的商品
                                 if (response.formValues[0] != 0) {
                                     //开始构建预览商品
@@ -619,6 +624,35 @@ const GUI = {
 
     },
 
+    //取出下线后收益
+    GetOfflineMoney(player) {
+        //首先检查玩家金币缓存是否存在
+        if (temp_player_money.hasOwnProperty(player.id)) {
+            let old_temp_player_money = JSON.parse(JSON.stringify(temp_player_money));
+            //重置缓存
+            temp_player_money[player.id] = 0;
+            //连接服务器覆写文件
+            fs.OverwriteJsonFile("market_temp_player_money.json",temp_player_money).then((result) => {
+                if (result === "success") {
+                    //存在，给钱
+                    if (old_temp_player_money[player.id] != 0) {
+                        world.scoreboard.getObjective("money").addScore(player,old_temp_player_money[player.id])
+                        player.sendMessage("§e>> 您有一笔来自玩家交易市场的 " + old_temp_player_money[player.id] + " 金币已到账！请注意查收！");
+                    }  else {
+                        player.sendMessage("§e>> 您目前没有任何玩家交易市场收益，尝试售卖物品来获得收益！");
+                    }
+                } else {
+                    this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
+                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                    temp_player_money = old_temp_player_money;
+                }
+            })
+        } else {
+            player.sendMessage("§e>> 您目前没有任何玩家交易市场收益，尝试售卖物品来获得收益！");
+        }
+    },
+
+    //错误提示
     Error(player,info,ErrorCode,Form) {
         const ErrorForm = new MessageFormData()
             .title("§c出错了！错误码(" + ErrorCode +")")
@@ -670,26 +704,25 @@ world.afterEvents.playerSpawn.subscribe((event) => {
                 log("玩家未正常归还的预览商品已被自动回收！");
             }
         }
-        //其次检查玩家金币缓存是否存在
-        if (temp_player_money[event.player.id] != undefined) {
-            let old_temp_player_money = Object.assign({},temp_player_money);
-            //重置缓存
-            temp_player_money[event.player.id] = 0;
-            //连接服务器覆写文件
-            fs.OverwriteJsonFile("temp_player_money.json",temp_player_money).then((result) => {
-                if (result === "success") {
-                    //存在，给钱
-                    if (old_temp_player_money[event.player.id] != 0) {
-                        world.scoreboard.getObjective("money").addScore(event.player,old_temp_player_money[event.player.id])
-                        event.player.sendMessage("§e>> 您有一笔来自玩家交易市场的 " + old_temp_player_money[event.player.id] + " 金币已到账！请注意查收！");
-                    }
-                } else {
-                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
-                    this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainForm");
-                    temp_player_money = old_temp_player_money;
-                }
-            })
-        }
+        // //其次检查玩家金币缓存是否存在
+        // if (temp_player_money[event.player.id] != undefined) {
+        //     let old_temp_player_money = JSON.parse(JSON.stringify(temp_player_money));
+        //     //重置缓存
+        //     temp_player_money[event.player.id] = 0;
+        //     //连接服务器覆写文件
+        //     fs.OverwriteJsonFile("market_temp_player_money.json",temp_player_money).then((result) => {
+        //         if (result === "success") {
+        //             //存在，给钱
+        //             if (old_temp_player_money[event.player.id] != 0) {
+        //                 world.scoreboard.getObjective("money").addScore(event.player,old_temp_player_money[event.player.id])
+        //                 event.player.sendMessage("§e>> 您有一笔来自玩家交易市场的 " + old_temp_player_money[event.player.id] + " 金币已到账！请注意查收！");
+        //             }
+        //         } else {
+        //             console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+        //             temp_player_money = old_temp_player_money;
+        //         }
+        //     })
+        // }
     }
 
 })

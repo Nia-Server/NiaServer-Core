@@ -7,11 +7,13 @@ import { Broadcast, GetScore, GetTime, RunCmd, log } from './customFunction';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 import { adler32 } from './API/cipher_system';
 import { cfg } from './config';
+import { Main } from './menu/main';
 
 //初始化一些变量
 var land_index = {};
 var land_data = {};
 var land_history = {};
+var temp_player_money = {};
 var taskid = {"actionbar":{},"particle":{}};
 
 //导入文件系统
@@ -120,7 +122,11 @@ function pos_in_index(pos,dimid) {
 function player_in_index(player) {
     let land = pos_in_index([player.location.x, player.location.y,player.location.z],player.dimension.id);
     if (land) {
-        player.onScreenDisplay.setActionBar(`§b您正在 ${land.land_name} 中`);
+        if (player.id != land.owner) {
+            player.onScreenDisplay.setActionBar(`§b您正在 ${land.land_name} §r§b中`);
+        } else if (land.setup.ShowActionbar) {
+            player.onScreenDisplay.setActionBar(`§a欢迎回到 ${land.land_name} §r§a中！`);
+        }
     }
 }
 
@@ -129,11 +135,11 @@ function player_in_index(player) {
  * @param {object} player
  * @returns {boolean}
  */
-function in_allowlist(player) {
-    if (land_data.owner == player.id) {
+function in_allowlist(player,target_land) {
+    if (target_land.owner == player.id) {
         return true;
     }
-    if(land_data.allowlist.hasOwnProperty(player.id)) {
+    if(target_land.allowlist.hasOwnProperty(player.id)) {
         return true;
     }
     return false;
@@ -428,6 +434,8 @@ const GUI = {
         .button("管理已有地皮")
         .button("购买出售中地皮")
         .button("开始自由圈地")
+        .button("取出下线后收益")
+        .button("返回上一级")
         .show(player).then((response) => {
             if (!response.canceled) {
                 switch (response.selection) {
@@ -440,6 +448,13 @@ const GUI = {
                     case 2:
                         this.CreateLand(player);
                         break;
+                    case 3:
+                        this.GetOfflineMoney(player);
+                        break;
+                    case 4:
+                        Main(player);
+                        break;
+
                 }
             }
         })
@@ -454,7 +469,7 @@ const GUI = {
         ManageLandForm.button("返回上一级")
         for (let key in land_data) {
             if (land_data[key].owner == player.id) {
-                ManageLandForm.button(`[${key}] ${land_data[key].land_name} \npos1: (${land_data[key].pos1[0]},${land_data[key].pos1[1]},${land_data[key].pos1[2]})`);
+                ManageLandForm.button(`[${key}] ${land_data[key].land_name} \n[是否上架市场售卖] ${land_data[key].on_sale} [地皮类型] ${land_data[key].type}`);
                 own_land_data.push(key);
             }
         }
@@ -482,7 +497,7 @@ const GUI = {
         .title(`管理[${LandUUID}] ${land_data[LandUUID].land_name}`)
         .body("§e在这里您可以管理您的地皮！")
         .button("返回上一级")
-        .button("地皮权限管理")
+        .button("地皮管理")
         .button("回收（摧毁）地皮")
         .button("转让地皮至其他玩家")
         .button("管理地皮上架状态")
@@ -504,8 +519,7 @@ const GUI = {
                         this.ManageLandTransfer(player,LandUUID);
                         break;
                     case 4:
-                        player.sendMessage("§c>> 该功能暂时未对外开放，敬请期待！")
-                        //this.ManageLandOnSale(player,LandUUID);
+                        this.ManageLandOnSale(player,LandUUID);
                         break;
                     case 5:
                         player.sendMessage("§c>> 该功能正在开发中，敬请期待！");
@@ -526,7 +540,7 @@ const GUI = {
             .toggle("其他玩家可以摧毁方块",land_data[LandUUID].setup.DestroyBlock)
             .toggle("其他玩家可以放置方块",land_data[LandUUID].setup.PlaceBlock)
             .toggle("其他玩家可以使用物品",land_data[LandUUID].setup.UseItem)
-            .toggle("其他玩家可以攻击实体",land_data[LandUUID].setup.AttackEntity)
+            .toggle("（暂时没用）",land_data[LandUUID].setup.AttackEntity)
             .toggle("其他玩家可以打开箱子",land_data[LandUUID].setup.OpenChest)
             .toggle("自己处于地皮内时显示标题",land_data[LandUUID].setup.ShowActionbar)
             .show(player).then((response) => {
@@ -536,7 +550,7 @@ const GUI = {
                         player.sendMessage("§c>> 地皮名称不能为空！");
                         return;
                     }
-                    let old_land_data = Object.assign({},land_data);
+                    let old_land_data = JSON.parse(JSON.stringify(land_data));
                     land_data[LandUUID].land_name = response.formValues[0];
                     land_data[LandUUID].setup.DestroyBlock = response.formValues[1];
                     land_data[LandUUID].setup.PlaceBlock = response.formValues[2];
@@ -573,7 +587,7 @@ const GUI = {
             if (!response.canceled) {
                 if (response.selection == 0) {
                     //开始回收地皮
-                    let old_land_data = Object.assign({},land_data);
+                    let old_land_data = JSON.parse(JSON.stringify(land_data));
                     delete land_data[LandUUID];
                     //开始覆写文件land.json
                     fs.OverwriteJsonFile("land.json",land_data).then((result) => {
@@ -616,9 +630,10 @@ const GUI = {
                     return;
                 }
                 //开始转让地皮
-                let old_land_data = Object.assign({},land_data);
+                let old_land_data = JSON.parse(JSON.stringify(land_data));
                 //首先获取要转让的玩家对象
                 land_data[LandUUID].owner = players[response.formValues[0] - 1].id;
+                land_data[LandUUID].owner_name = players[response.formValues[0] - 1].name;
                 //开始覆写文件land.json
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     if (result === "success") {
@@ -667,7 +682,7 @@ const GUI = {
                     return;
                 }
                 //开始上架地皮
-                let old_land_data = Object.assign({},land_data);
+                let old_land_data = JSON.parse(JSON.stringify(land_data));
                 land_data[LandUUID].on_sale = response.formValues[0];
                 land_data[LandUUID].sale_price = Math.abs(parseInt(response.formValues[1]));
                 land_data[LandUUID].land_name = response.formValues[2];
@@ -675,7 +690,11 @@ const GUI = {
                 //开始覆写文件land.json
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     if (result === "success") {
-                        player.sendMessage("§a>> 地皮上架成功！");
+                        if (land_data[LandUUID].on_sale) {
+                            player.sendMessage(`§a>> 地皮上架成功！您的地皮已上架至市场，售价为 §l${land_data[LandUUID].sale_price} §r§a金币！在地皮售出前权限不会发生任何变化！`);
+                        } else {
+                            player.sendMessage("§a>> 地皮下架成功！您的地皮已下架！");
+                        }
                     } else if (result === "-1") {
                         player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
                         land_data = old_land_data;
@@ -743,7 +762,7 @@ const GUI = {
                     return;
                 }
                 //开始添加白名单
-                let old_land_data = Object.assign({},land_data);
+                let old_land_data = JSON.parse(JSON.stringify(land_data));
                 //首先获取要添加的玩家对象
                 land_data[LandUUID].allowlist[players[response.formValues[0] - 1].id] = players[response.formValues[0] - 1].name;
                 //开始覆写文件land.json
@@ -782,7 +801,7 @@ const GUI = {
                     return;
                 }
                 //开始删除白名单
-                let old_land_data = Object.assign({},land_data);
+                let old_land_data = JSON.parse(JSON.stringify(land_data));
                 //首先获取要删除的玩家对象
                 delete land_data[LandUUID].allowlist[players[response.formValues[0] - 1].id];
                 //开始覆写文件land.json
@@ -869,8 +888,9 @@ const GUI = {
             if (!response.canceled) {
                 if (response.selection == 0) {
                     //开始购买地皮
-                    let old_land_data = Object.assign({},land_data);
+                    let old_land_data = JSON.parse(JSON.stringify(land_data));
                     land_data[LandUUID].owner = player.id;
+                    land_data[LandUUID].owner_name = player.name;
                     land_data[LandUUID].on_sale = false;
                     //首先判断玩家余额是否足够
                     if (world.scoreboard.getObjective("money").getScore(player) < land_data[LandUUID].sale_price) {
@@ -880,11 +900,20 @@ const GUI = {
                     //开始覆写文件land.json
                     fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                         if (result === "success") {
-                            player.sendMessage("§a>> 地皮购买成功！");
-                            //开始扣款
-                            world.scoreboard.getObjective("money").addScore(player,-land_data[LandUUID].sale_price);
                             //开始给予地皮拥有者金币
-
+                            let old_temp_player_money = JSON.parse(JSON.stringify(temp_player_money));
+                            temp_player_money[old_land_data[LandUUID].owner] = land_data[LandUUID].sale_price;
+                            fs.OverwriteJsonFile("land_temp_player_money.json",temp_player_money).then((result) => {
+                                if (result === "success") {
+                                    player.sendMessage("§a>> 地皮购买成功！");
+                                    //开始扣款
+                                    world.scoreboard.getObjective("money").addScore(player,-land_data[LandUUID].sale_price);
+                                } else {
+                                    this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
+                                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                                    temp_player_money = old_temp_player_money;
+                                }
+                            })
                         } else if (result === "-1") {
                             player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
                             land_data = old_land_data;
@@ -1154,7 +1183,7 @@ const GUI = {
                     return;
                 }
                 //开始连接服务器
-                let old_land_data = Object.assign({},land_data);
+                let old_land_data = JSON.parse(JSON.stringify(land_data));
                 //开始初始化新的地皮数据
                 let new_land_data = {};
                 new_land_data.owner = player.id;
@@ -1164,7 +1193,7 @@ const GUI = {
                 new_land_data.dimid = land_history[player.id].dimid;
                 new_land_data.type = "2d";
                 new_land_data.purchase_price = purchase_price;
-                new_land_data.on_sell = false;
+                new_land_data.on_sale = false;
                 new_land_data.get_time = GetTime();
                 new_land_data.land_name = player.nameTag + "的地皮";
                 new_land_data.allowlist = {};
@@ -1176,6 +1205,7 @@ const GUI = {
                     "UseItem":false,
                     "AttackEntity":false,
                     "OpenChest":false,
+                    "Expoplosion": false,
                     "ShowActionbar":true
                 }
                 land_data[adler32(GetTime() + player.id + purchase_price)] = new_land_data;
@@ -1265,7 +1295,7 @@ const GUI = {
                     return;
                 }
                 //开始连接服务器
-                let old_land_data = Object.assign({},land_data);
+                let old_land_data = JSON.parse(JSON.stringify(land_data));
                 //开始初始化新的地皮数据
                 let new_land_data = {};
                 new_land_data.owner = player.id;
@@ -1275,7 +1305,7 @@ const GUI = {
                 new_land_data.dimid = land_history[player.id].dimid;
                 new_land_data.type = "3d";
                 new_land_data.purchase_price = purchase_price;
-                new_land_data.on_sell = false;
+                new_land_data.on_sale = false;
                 new_land_data.get_time = GetTime();
                 new_land_data.land_name = player.nameTag + "的地皮";
                 new_land_data.allowlist = {};
@@ -1286,6 +1316,8 @@ const GUI = {
                     "PlaceBlock":false,
                     "UseItem":false,
                     "AttackEntity":false,
+                    "OpenChest":false,
+                    "Expoplosion": false,
                     "ShowActionbar":true
                 }
                 land_data[adler32(GetTime() + player.id + purchase_price)] = new_land_data;
@@ -1314,7 +1346,35 @@ const GUI = {
                 player.sendMessage("§c>> 购买失败！您已取消购买！");
             }
         })
-    }
+    },
+
+    //取出下线后收益
+    GetOfflineMoney(player) {
+        //首先检查玩家金币缓存是否存在
+        if (temp_player_money.hasOwnProperty(player.id)) {
+            let old_temp_player_money = JSON.parse(JSON.stringify(temp_player_money));
+            //重置缓存
+            temp_player_money[player.id] = 0;
+            //连接服务器覆写文件
+            fs.OverwriteJsonFile("land_temp_player_money.json",temp_player_money).then((result) => {
+                if (result === "success") {
+                    //存在，给钱
+                    if (old_temp_player_money[player.id] != 0) {
+                        world.scoreboard.getObjective("money").addScore(player,old_temp_player_money[player.id])
+                        player.sendMessage("§e>> 您有一笔来自圈地系统的 " + old_temp_player_money[player.id] + " 金币已到账！请注意查收！");
+                    } else {
+                        player.sendMessage("§e>> 您目前没有任何圈地收益，尝试售卖地皮来获得收益！");
+                    }
+                } else {
+                    this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
+                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                    temp_player_money = old_temp_player_money;
+                }
+            })
+        } else {
+            player.sendMessage("§e>> 您目前没有任何圈地收益，尝试售卖地皮来获得收益！");
+        }
+    },
 
 
 
@@ -1357,13 +1417,31 @@ world.afterEvents.worldInitialize.subscribe(() => {
         }
     })
 
+    fs.GetJSONFileData("land_temp_player_money.json").then((result) => {
+        if (result === 0) {
+            fs.CreateNewJsonFile("land_temp_player_money.json",{}).then((result) => {
+                if (result === "success") {
+                    log("玩家金币数据文件不存在，已成功创建！");
+                } else if (result === -1) {
+                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                }
+            });
+        } else if (result === -1) {
+            console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+        } else {
+            //文件存在且服务器连接成功
+            temp_player_money = result;
+            log("(land)玩家金币数据获取成功，本次读取用时：" + (Date.now() - start) + "ms");
+        }
+    })
+
 })
 
 //
 world.beforeEvents.playerBreakBlock.subscribe((event) => {
     let land = pos_in_index([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
     if (land) {
-        if (!event.player.hasTag(cfg.OPTAG) && !in_allowlist(event.player) && !land.setup.DestroyBlock) {
+        if (!event.player.hasTag(cfg.OPTAG) && !in_allowlist(event.player,land) && !land.setup.DestroyBlock) {
             event.cancel = true;
             event.player.sendMessage("§c您没有相关权限在此处破坏方块！");
         }
@@ -1373,7 +1451,7 @@ world.beforeEvents.playerBreakBlock.subscribe((event) => {
 world.beforeEvents.playerPlaceBlock.subscribe((event) => {
     let land = pos_in_index([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
     if (land) {
-        if (!event.player.hasTag(cfg.OPTAG) && !in_allowlist(event.player) && !land.setup.PlaceBlock) {
+        if (!event.player.hasTag(cfg.OPTAG) && !in_allowlist(event.player,land) && !land.setup.PlaceBlock) {
             event.cancel = true;
             event.player.sendMessage("§c您没有相关权限在此处放置方块！");
         }
@@ -1396,13 +1474,10 @@ world.beforeEvents.itemUseOn.subscribe((event) => {
         "minecraft:wooden_door","minecraft:spruce_door","minecraft:mangrove_door","minecraft:birch_door","minecraft:jungle_door","minecraft:acacia_door","minecraft:dark_oak_door","minecraft:crimson_door","minecraft:iron_door","minecraft:warped_door",
         "minecraft:trapdoor","minecraft:spruce_trapdoor","minecraft:birch_trapdoor","minecraft:jungle_trapdoor","minecraft:acacia_trapdoor","minecraft:dark_oak_trapdoor","minecraft:mangrove_trapdoor","minecraft:iron_trapdoor","minecraft:crimson_trapdoor","minecraft:warped_trapdoor",
         "minecraft:fence_gate","minecraft:spruce_fence_gate","minecraft:birch_fence_gate","minecraft:jungle_fence_gate","minecraft:acacia_fence_gate","minecraft:dark_oak_fence_gate","minecraft:mangrove_fence_gate","minecraft:crimson_fence_gate","minecraft:warped_fence_gate",
-        "minecraft:lever","minecraft:unpowered_repeater","minecraft:unpowered_comparator","minecraft:wooden_button",
-        "minecraft:chest","minecraft:trapped_chest","minecraft:ender_chest","minecraft:barrel","minecraft:frame","minecraft:anvil","minecraft:enchanting_table","minecraft:cartography_table","minecraft:smithing_table",
-        "minecraft:black_shulker_box","minecraft:blue_shulker_box","minecraft:brown_shulker_box","minecraft:cyan_shulker_box","minecraft:gray_shulker_box","minecraft:green_shulker_box","minecraft:light_blue_shulker_box","minecraft:lime_shulker_box","minecraft:orange_shulker_box",
-        "minecraft:pink_shulker_box","minecraft:purple_shulker_box","minecraft:red_shulker_box","minecraft:undyed_shulker_box","minecraft:white_shulker_box","minecraft:yellow_shulker_box"
+        "minecraft:lever","minecraft:unpowered_repeater","minecraft:unpowered_comparator","minecraft:wooden_button"
     ]
     let land = pos_in_index([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
-    if (land && !event.source.hasTag(cfg.OPTAG) && !in_allowlist(event.player) && !land.setup.UseItem) {
+    if (land && !event.source.hasTag(cfg.OPTAG) && !in_allowlist(event.source,land) && !land.setup.UseItem) {
         if (tools.includes(event.itemStack.typeId) || blocks.includes(event.block.typeId)) {
             event.cancel = true;
             event.source.sendMessage("§c您没有相关权限在此处使用物品！");
@@ -1419,7 +1494,7 @@ world.beforeEvents.itemUseOn.subscribe((event) => {
         "minecraft:pink_shulker_box","minecraft:purple_shulker_box","minecraft:red_shulker_box","minecraft:undyed_shulker_box","minecraft:white_shulker_box","minecraft:yellow_shulker_box"
     ]
     let land = pos_in_index([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
-    if (land && !event.source.hasTag(cfg.OPTAG) && !in_allowlist(event.player) && !land.setup.OpenChest) {
+    if (land && !event.source.hasTag(cfg.OPTAG) && !in_allowlist(event.source,land) && !land.setup.OpenChest) {
         if (blocks.includes(event.block.typeId)) {
             event.cancel = true;
             event.source.sendMessage("§c您没有相关权限在此处进行相关交互动作！");

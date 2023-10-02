@@ -13,8 +13,11 @@ const config = {
         "IPAddress": "http://127.0.0.1",
         "Port": 10086
     },
-    "landCfg": {
+    "LandCfg": {
     },
+    "MarketCfg": {
+        "BanItems" : ["minecraft:paper","minecraft:clock"]
+    }
 }
 
 
