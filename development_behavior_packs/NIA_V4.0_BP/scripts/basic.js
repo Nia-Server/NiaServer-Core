@@ -150,6 +150,7 @@ world.afterEvents.worldInitialize.subscribe((event) => {
     } else if (world.getDynamicProperty("state") == true) {
         log("NIA V4已经初始化完成！")
     }
+
 })
 
 // 玩家死亡后重生的检测
