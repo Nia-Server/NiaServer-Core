@@ -1,0 +1,19 @@
+{
+  "format_version": "1.13.0",
+  "minecraft:scatter_feature": {
+    "description": {
+      "identifier": "dave:island_bottom"
+    },
+    "iterations": "t.height =  ((q.noise(v.originz/512,v.originx/512))*32 - 15) * 3; return t.height;",
+    "places_feature": "dave:stone",
+    "x": 0,
+    "z": 0,
+    "y": {
+      "extent": [
+        "-t.height",
+        0
+      ],
+      "distribution": "fixed_grid"
+    }
+  }
+}

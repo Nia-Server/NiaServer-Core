@@ -8,13 +8,16 @@
 [![QQ GROUNP](https://img.shields.io/badge/QQ%20GROUNP-724360499-blue?style=for-the-badge)](https://jq.qq.com/?_wv=1027&k=uk57fVr0)
 [![website](https://img.shields.io/badge/website-docs.mcnia.top-blue?style=for-the-badge)](https://docs.mcnia.top)
 
-![NIASERVER-V4](https://socialify.git.ci/NIANIANKNIA/NIASERVER-V4/image?description=1&descriptionEditable=A%20BDS-based%20Minecraft%20server!&font=KoHo&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.top%2Flogo.png&name=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Auto)
+![NIASERVER-V4](https://socialify.git.ci/NIANIANKNIA/NIASERVER-V4/image?description=1&descriptionEditable=A%20BDS-based%20Minecraft%20server!&font=KoHo&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.com%2Flogo.png&name=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Light)
 
 **language: [简体中文](README.md) | English**
+
+> **Due to changes in the NIA server development plan since 2023/8/1, the v1.4.0 version adapted to 1.20.10 has been postponed. The final v1.4.0 version will have extensive changes (including but not limited to gameplay , mechanism, etc.)**
 
 ## Introduction
 
 **Since the NIA server currently only provides game servers in China, the addons language are all Chinese at the moment. But you don't have to worry too much, a version with multi-language support is already in the making, so stay tuned!**
+
 
 The bedrock version server based on BDS, open source of the addons R&D by NIA Group (including some codes using script-api) & almost our plugins running on LiteLoader.
 
@@ -23,6 +26,12 @@ We arenot professional extremely, some problems may be here like bug, none stand
 Though you may not use this addons right away on your local system without revising (due to the different game mechanics of each server) , but we hope that the addons & plugins may inspirate you, or be revised by yourself to adapt own server.
 
 **Hope the project & server in the common development of the better & better. If the project does help you, CLICK A STAR PLZ!**
+
+## About the use of resources in the resource package
+
+> Just read this clause when you want to use the materials in the resource package. Use the source code in the behavior package to comply with the [Open Source Agreement](https://github.com/NIANIANKNIA/NIASERVER-V4/blob/main/LICENSE ) without notifying us
+
+If you want to use the resources in the resource package (including but not limited to structures, textures and other resources), **please be sure to send an email to `server@mcnia.com` before use** to obtain the authorization to use the relevant textures (including but not limited to Not limited to **commercial or non-commercial** use by individuals, organizations, etc.) to avoid unnecessary trouble!
 
 
 ## Folder Description
@@ -33,6 +42,18 @@ Though you may not use this addons right away on your local system without revis
 - `plugins` Folder: Stores all plugins the server using.
 
 **But I don't recommend downloading the files directly, because they are probably still in development! You can go to the release to download tested resource packs, behavior packs, plugins, etc.**
+
+## About NIAHttpBOT
+
+The new version of the robot is based on C++ (special thanks to [**@jiansyuan**](https://github.com/jiansyuan)), and uses HTTP to implement a series of operations on files. For specific usage examples, please go to [NIA Server Documentation Station ](https://docs.mcnia.com/en-US/develop/Http-Bot.html)View the instructions for use!
+
+For the better development of this Addons, starting from **v1.4.0**, some functions will depend on **NIAHttpBOT**. So far, the following functions depend on **NIAHttpBOT**:
+
+- Shop system (`shop_data.json`)
+- Player trading system (`trade_data.json`)
+- Enclosure system (`land_data.json`)
+
+More functions are being gradually added...
 
 ## Instruction
 

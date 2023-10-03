@@ -1,0 +1,22 @@
+{
+  "format_version": "1.13.0",
+  "minecraft:single_block_feature": {
+    "description": {
+      "identifier": "dave:dirt"
+    },
+    "places_block": "minecraft:dirt",
+    "enforce_placement_rules": false,
+    "enforce_survivability_rules": false,
+    "may_attach_to": {
+      "auto_rotate": false,
+      "min_sides_must_attach": 2,
+      "top": [
+        "minecraft:air"
+      ],
+      "bottom": [
+        "minecraft:stone",
+        "minecraft:dirt"
+      ]
+    }
+  }
+}

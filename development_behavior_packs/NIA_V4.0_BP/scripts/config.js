@@ -1,6 +1,5 @@
 
 const config = {
-    "ServerMode": "Island",
     "MENUITEM": "minecraft:clock",
     "USERandomDATA": true,
     "MoneyScoreboardName": "money",
@@ -8,15 +7,16 @@ const config = {
     "TimeScoreboardName":"time",
     "OPTAG": "op",
     "OPMENUPassword": "123456",
-    "islandCfg": {
-        "R":  1000,
-        "CX": 402,
-        "CY": 100,
-        "CZ": 547
-    },
+    "MapFolder":"..\\..\\..\\worlds\\NEWTEST",
+    "BackupFolder":"\\backup",
     "HttpCfg": {
         "IPAddress": "http://127.0.0.1",
         "Port": 10086
+    },
+    "LandCfg": {
+    },
+    "MarketCfg": {
+        "BanItems" : ["minecraft:paper","minecraft:clock"]
     }
 }
 

@@ -1,15 +1,19 @@
 /*
 
 !/development_behavior_packs
-!/development_rescourse_packs
+/development_behavior_packs/*
+!/development_behavior_packs/blocks/
+!/development_behavior_packs/entities/
+!/development_behavior_packs/feature_rules/
+!/development_behavior_packs/features/
+!/development_behavior_packs/items/
+!/development_behavior_packs/loot_tables/
+!/development_behavior_packs/scripts/
+!/development_behavior_packs/stuctures/
+!/development_behavior_packs/mainfest.json
+!/development_behavior_packs/pack_icon.png
+!/development_resource_packs
 !/NIAServerPlugin
-!/NIAHttpBOT
-/NIAHttpBOT/out
-/NIAHttpBOT/.vs
-!/NIA-Server-BOT
-/NIA-Server-BOT/node_modules/
-/NIA-Server-BOT/data/
-/NIA-Server-BOT/config.json
 
 !/plugins/
 /plugins/*
@@ -27,8 +31,11 @@
 !README-EN.md
 !README.md
 
+!/NIAHttpBOT/
 /NIAHttpBOT/*
 !/NIAHttpBOT/header/
 !/NIAHttpBOT/src/
+!/NIAHttpBOT/I18N/
+!/NIAHttpBOT/test/
 !/NIAHttpBOT/CMakeLists.txt
 

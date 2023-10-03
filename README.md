@@ -6,15 +6,20 @@
 [![Latest Release](https://img.shields.io/github/v/release/NIANIANKNIA/NIASERVER-V4?include_prereleases&style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/releases/latest)
 [![GitHub last commit](https://img.shields.io/github/last-commit/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/commits)
 [![QQ GROUNP](https://img.shields.io/badge/QQ%20GROUNP-724360499-blue?style=for-the-badge)](https://jq.qq.com/?_wv=1027&k=uk57fVr0)
-[![website](https://img.shields.io/badge/website-docs.mcnia.top-blue?style=for-the-badge)](https://docs.mcnia.top)
-
-![NIASERVER-V4](https://socialify.git.ci/NIANIANKNIA/NIASERVER-V4/image?description=1&descriptionEditable=%E4%B8%80%E4%B8%AA%E5%9F%BA%E4%BA%8EBDS%E7%9A%84Minecraft%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%81&font=KoHo&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.top%2Flogo.png&name=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Auto)
+[![website](https://img.shields.io/badge/website-docs.mcnia.com-blue?style=for-the-badge)](https://docs.mcnia.com)
+![NIASERVER-V4](https://socialify.git.ci/NIANIANKNIA/NIASERVER-V4/image?description=1&font=KoHo&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.com%2Flogo.png&name=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Light)
 
 **语言: 简体中文 | [English](README-EN.md)**
+
+> **自2023/8/1之后由于NIA服务器开发计划有所变动，适配后续版本的v1.4.0版本暂缓发布，最终发布的v1.4.0版本将会有大范围变动（包括但不限于玩法、机制等）**
+
+> 一般而言如果你想看到最新的开发进度，请前往[dev分支](https://github.com/NIANIANKNIA/NIASERVER-V4/tree/dev)查看，但是由于我们的开发进度并不是很稳定，所以我们并不推荐您直接使用dev分支的代码!
 
 ## 写在前面
 
 **注意：当前服务器addons包仍处于开发状态，暂时没有对其他类型服务器做适配，所以我们并不推荐您直接使用！**
+
+**为了实现更多功能，服务器使用了@minecraft/server-net模块，所以本插件包不能在个人存档中正常运行，只能在BDS上运行！**
 
 一个基于BDS的基岩版服务器，这里开源了由服务器开发团队制作的addons（包括基于script-api的脚本）、大部分运行于LiteLoader的插件（部分LiteLoader插件源码可以点击前往 [NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin) 查看）
 
@@ -24,13 +29,22 @@
 
 **最后，希望这个项目&&服务器在大家的共同推进下发展的越来越好，如果本项目确实对您有所帮助，不妨点个star吧！**
 
+## 关于资源包内资源使用说明
+
+> 只限于您要使用资源包内的素材时看一下这个条款即可，使用行为包内的源码遵守[开源协议](https://github.com/NIANIANKNIA/NIASERVER-V4/blob/main/LICENSE)即可，无需通知我们
+
+如果您要使用资源包内的资源（包括但不限于结构、贴图等资源），**请务必在使用前向`server@mcnia.com`发送邮件**，获得相关贴图的使用授权（包括但不限于个人、组织等**商业或非商业**用途），以避免不必要的麻烦！
+
 ## 开发计划
 
-预计将在1.4.0版本上线玩家市场功能
+> 由于NIA服务器开发计划（V4->V4.5）有所变动，玩法机制将有大范围变动（包括但不限于玩法、机制等）
+> 所以我们计划分几个版本分布上线玩法、机制，具体如下：
 
-将在1.5.0版本优化插件整体逻辑来适配更多服务器
+- [x] v1.4.0（2023-10） 上线基础玩法（包括但不限于圈地系统、玩家交易市场等）
+- [ ] v1.5.0（2023-11） 上线游戏设定所用到的所有方块，物品等，并完成相应材质包制作
+- [ ] v1.6.0（2023-12） 上线七大空岛生成逻辑，完善整体玩法机制
 
-...
+**注意：在完成上述开发前，addons版本号并不一定会随mc版本发布！具体请以上线为准！**
 
 ## Addons功能&&特性
 
@@ -40,19 +54,26 @@
 - [x] 兑换码系统
 - [x] 回收系统
 - [x] 传送系统
-- [x] 空岛生成
 - [x] 氧气值玩法
 - [x] 支持修改配置文件
-- [x] q群机器人
-- [ ] 玩家交易市场
+- [x] 玩家交易市场
+- [x] 圈地系统
 - [ ] 支持自定义
 - [ ] 多语言支持
 
 ## 外部机器人功能&&特性
 
-（已弃用）旧版机器人基于icqq制作，使用前请安装**nodejs**
-
 新版机器人基于c++制作（特别感谢[**@jiansyuan**](https://github.com/jiansyuan)），使用HTTP实现对文件的一系列操作，具体使用示例，请前往[NIA服务器文档站](https://docs.mcnia.com/zh-CN/develop/Http-Bot.html)查看使用说明！
+
+**NIAHttpBOT**可以在windows/Linux环境下运行，windows环境下运行的exe文件可以前往release自行下载，在Linux环境下运行暂时需要自行编译后使用！
+
+为了本Addons更好的发展，自**v1.4.0**开始，部分功能将依赖**NIAHttpBOT**，目前为止以下功能依赖于**NIAHttpBOT**：
+
+- 商店系统（`shop_data.json`）
+- 玩家交易系统（`market.json`、`market_temp_player_money.json`）
+- 圈地系统（`land.json`、`land_temp_player_money.json`）
+
+更多功能正在逐步接入...
 
 ## 部分文件夹说明
 
@@ -120,19 +141,25 @@
 
 然后修改完配置文件即可使用！
 
-启动服务器时应当先启动NIAHttpBOT，待看到成功启动的字样再启动BDS服务器！
+启动服务器时应当先启动**NIAHttpBOT**，待看到成功启动的字样再启动BDS服务器！
 
-**更加具体的配置教程请前往[NIA服务器文档站](https://docs.mcnia.top/zh-CN/deploy.html)查看！**
+**更加具体的配置教程请前往[NIA服务器文档站](https://docs.mcnia.com/zh-CN/deploy.html)查看！**
 
 ## Bug反馈/提建议
 
 如果您在使用过程中遇到了问题、bug，或者拥有好的建议您都可以前往[issues](https://github.com/NIANIANKNIA/NIASERVER-V4/issues)反馈，我会在看到后第一时间回复！
+
+## 特别鸣谢
+
+[@Dave](https://abcdavk.github.io/) 服务器的空岛生成受他的行为包所启发！
 
 ## 服务器开发者名单 （排名不分先后）
 
 @NIANIANKNIA
 
 @jiansyuan
+
+@lonely
 
 @sliverplus
 
@@ -144,8 +171,6 @@
 
 @DoorCarey
 
-@lonely
-
 @stsx686868
 
 @Samcrybut
@@ -153,6 +178,7 @@
 @Songs001
 
 ...
+
 
 ## 许可证
 

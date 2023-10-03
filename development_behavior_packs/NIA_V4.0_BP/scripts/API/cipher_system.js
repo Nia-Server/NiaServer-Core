@@ -1,5 +1,3 @@
-
-
 function __2UTF8(str) {
     var back = [], byteSize = 0;
     for (var i = 0; i < str.length; i++) {

@@ -1,0 +1,42 @@
+语言配置已加载成功
+Configuración de idioma cargada exitosamente
+项目地址：https://github.com/NIANIANKNIA/NIASERVER-V4/tree/main/NIAHttpBOT
+Nuestro enlace de proyecto: https://github.com/NIANIANKNIA/NIASERVER-V4/tree/main/NIAHttpBOT
+NIAHttpBOT 已在 
+NIAHttpBOT ha sido lanzado en
+ 上成功启动!
+!
+项目作者：@NIANIANKNIA @jiansyuan
+Autores del proyecto: @NIANIANKNIA @jiansyuan
+在使用中遇到问题请前往项目下的 issue 反馈，如果觉得本项目不错不妨点个 star！
+Si encuentras problemas durante el uso, por favor dirígete a la sección de informe de problemas en el proyecto. ¡Si consideras que este proyecto es bueno, considera darle una estrella!
+Minecraft 服务器连接成功！
+Conexión exitosa al servidor de Minecraft.
+服务器已启动
+Servidor iniciado
+玩家 
+El jugador
+ 进入了服务器
+ha entrado al servidor
+ 离开了服务器
+ha salido del servidor
+玩家发言 
+Chat del jugador
+检测到执行DOS命令功能已启用，请注意服务器安全！
+Detectando que la función de ejecución de comandos DOS ha sido habilitada, ¡por favor ten cuidado con la seguridad del servidor!
+接收到检查文件是否存在的请求，请求检查的文件名称: 
+Se recibió una solicitud para verificar si el archivo existe, nombre de archivo solicitado para verificar:
+接收到创建文件的请求！
+Se recibió una solicitud para crear un archivo.
+接收到创建 json 文件的请求！
+Se recibió una solicitud para crear un archivo JSON.
+接收到获取文件数据的请求,请求获取的文件名称为： 
+Se recibió una solicitud para obtener los datos del archivo, nombre de archivo solicitado:
+接收到获取文件数据的请求,请求获取的文件名称为： 
+Se recibió una solicitud para obtener los datos del archivo, nombre de archivo solicitado:
+接收到覆写文件的请求！
+Se recibió una solicitud para sobrescribir un archivo.
+接收到覆写json文件的请求！
+Se recibió una solicitud para sobrescribir un archivo JSON.
+接收到向目标文件写入一行内容的请求！
+Se recibió una solicitud para escribir una línea de contenido en el archivo objetivo.
