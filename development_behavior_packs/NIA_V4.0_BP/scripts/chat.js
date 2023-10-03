@@ -67,13 +67,14 @@ world.afterEvents.chatSend.subscribe(t => {
                 case "-backup":
                     hasCommand = true;
                     t.cancel = true;
-                    fs.Backup(`${cfg.MapFolder}`,`.${cfg.BackupFolder}\\${GetShortTime()}`).then((result) => {
-                        if (result === "success") {
-                            t.sender.sendMessage(`§e>> 地图备份成功！备份文件夹为：${cfg.BackupFolder}\\${GetShortTime()}`)
-                        } else {
-                            t.sender.sendMessage("§c>> 地图备份失败！失败错误码：" + result)
-                        }
-                    })
+                    //暂时不可用
+                    // fs.Backup(`${cfg.MapFolder}`,`.${cfg.BackupFolder}\\${GetShortTime()}`).then((result) => {
+                    //     if (result === "success") {
+                    //         t.sender.sendMessage(`§e>> 地图备份成功！备份文件夹为：${cfg.BackupFolder}\\${GetShortTime()}`)
+                    //     } else {
+                    //         t.sender.sendMessage("§c>> 地图备份失败！失败错误码：" + result)
+                    //     }
+                    // })
                     break;
             }
             if (!hasCommand) {

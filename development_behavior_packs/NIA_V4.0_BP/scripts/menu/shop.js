@@ -9,10 +9,10 @@ var SellData = [];
 var RecycleData = [];
 
 //商店数据读取
-const start = Date.now();
 
 //服务器启动监听&&获得商店数据
 world.afterEvents.worldInitialize.subscribe(() => {
+    const start = Date.now();
     fs.GetJSONFileData("shop_data.json").then((result) => {
         //文件不存在
         if (result === 0) {
@@ -28,7 +28,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
         } else {
             SellData = result.sell_data;
             RecycleData = result.recycle_data;
-            log("商店数据获取成功！" );
+            log("商店数据获取成功,本次读取用时：" + (Date.now() - start) + "ms");
         }
     })
 })

@@ -123,15 +123,9 @@ const equLevelData = {
 //服务器启动监听
 //服务器初始化
 world.afterEvents.worldInitialize.subscribe((event) => {
-    log("NIA V4 已经成功在本服务器上启动！")
-    log("版本: v1.4.0-pre-2 based on BDS-1.20.30(last upgrate:2023/10/3)")
-    log("作者: @NIANIANKNIA(https://github.com/NIANIANKNIA)")
-    log("不会部署？前往文档站查看详细的部署过程==>(https://docs.mcnia.com/zh-CN/deploy.html)")
-    log("本项目基于AGPL-3.0开源协议，注意遵守开源协议！")
     //检测服务器是否初始化
     const INIT = new DynamicPropertiesDefinition().defineBoolean("state");
-    event.propertyRegistry.registerWorldDynamicProperties(INIT)
-
+    event.propertyRegistry.registerWorldDynamicProperties(INIT);
     if (world.getDynamicProperty("state") == null) {
         log("NIA V4 首次在此服务器上运行，开始初始化！")
         AddScoreboard("UUID","玩家识别码");
@@ -145,10 +139,10 @@ world.afterEvents.worldInitialize.subscribe((event) => {
         AddScoreboard("AnoxicTime","缺氧时间");
         AddScoreboard("CDK","CDK数据");
         AddScoreboard("stamina","体力值");
-        log("NIA V4 初始化成功！")
-        world.setDynamicProperty("state",true)
+        log("NIA V4 初始化成功！");
+        world.setDynamicProperty("state",true);
     } else if (world.getDynamicProperty("state") == true) {
-        log("NIA V4已经初始化完成！")
+        log("NIA V4已经初始化完成！");
     }
 
 })
@@ -178,14 +172,15 @@ system.runInterval(() => {
         RunCmd(`title @a title §c物价指数发生变动！`)
         RunCmd(`title @a subtitle §7物价指数由 §l§e${GetScore("DATA","RN") / 100} §r§7变为 §l§e${RN / 100}`)
         //自动备份
-        Broadcast(`§e>> 服务器自动备份中！可能出现卡顿，请勿在此时进行较大负载活动！`)
-        fs.Backup(`${cfg.MapFolder}`,`.${cfg.BackupFolder}\\${GetShortTime()}`).then((result) => {
-            if (result === "success") {
-                Broadcast(`§a>> 服务器自动备份成功！备份存档校验码：${GetShortTime()}`)
-            } else {
-                Broadcast("§c>> 服务器备份失败！失败错误码：" + result + " 请联系管理员！")
-            }
-        })
+        Broadcast(`§e>> 服务器自动备份中！可能出现卡顿，请勿在此时进行较大负载活动！`);
+        //暂时不可用
+        // fs.Backup(`${cfg.MapFolder}`,`.${cfg.BackupFolder}\\${GetShortTime()}`).then((result) => {
+        //     if (result === "success") {
+        //         Broadcast(`§a>> 服务器自动备份成功！备份存档校验码：${GetShortTime()}`)
+        //     } else {
+        //         Broadcast("§c>> 服务器备份失败！失败错误码：" + result + " 请联系管理员！")
+        //     }
+        // })
         if (TIME.getHours() == 16) {
             let ScoreBoards = world.scoreboard.getObjectives()
             for (let i = 0; i < ScoreBoards.length; i++) {
@@ -252,11 +247,6 @@ system.runInterval(() => {
             RunCmd(`effect "${playerList[i].nameTag}" slowness 15 0 true`)
             RunCmd(`effect "${playerList[i].nameTag}" weakness 15 3 true`)
         }
-        // if (playerList[i].hasTag("GetIsland")) {
-        //     guiAPI.CreIsland(playerList[i])
-        //     RunCmd(`tag ${playerList[i].nameTag} remove GetIsland`)
-        // }
-
         if ((Math.pow(playerList[i].getVelocity().x,2) + Math.pow(playerList[i].getVelocity().y,2) + Math.pow(playerList[i].getVelocity().z,2)) > 0.07 && GetScore("equLevel",playerList[i].nameTag) <= 10) {
             RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -1`);
         }
@@ -310,7 +300,7 @@ system.runInterval(() => {
             if (GetScore("AnoxicTime",playerList[i].nameTag) > 0) {
                 titleActionbar = titleActionbar + "§r\n§c§l⚠警告！您已经进入缺氧状态 " + GetScore("AnoxicTime",playerList[i].nameTag) + " 秒，请及时补充氧气否则将会死亡！"
             }
-            RunCmd(`title @a[name=${playerList[i].nameTag}] actionbar ${titleActionbar}`)
+            playerList[i].onScreenDisplay.setActionBar(titleActionbar);
         }
     }
 },20)

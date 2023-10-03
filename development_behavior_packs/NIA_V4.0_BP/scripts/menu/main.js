@@ -12,6 +12,7 @@ import { FlyGUI } from './Fly.js';
 import { TransferGUI } from './Transfer.js';
 import { OpGUI } from './op.js';
 import { MarketGUI } from '../market.js';
+import { LandGUI } from '../land.js';
 
 
 const MainGUI = {
@@ -79,6 +80,13 @@ const MainGUI = {
             "icon": "textures/ui/enable_editor",
             "type": "openGUI",
             "GUI": "MarketGUI",
+            "opMenu": false
+        },
+        {
+            "name": "圈地系统\n保护属于自己的小家",
+            "icon": "textures/ui/world_glyph_color",
+            "type": "openGUI",
+            "GUI": "LandGUI",
             "opMenu": false
         },
         {
@@ -199,6 +207,9 @@ function OpenGUI(player,GUINAME) {
             break;
         case "MarketGUI":
             MarketGUI.Main(player);
+            break;
+        case "LandGUI":
+            LandGUI.Main(player);
             break;
 
     }

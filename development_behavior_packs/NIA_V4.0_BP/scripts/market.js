@@ -13,10 +13,10 @@ const BanItems = ["minecraft:paper","minecraft:clock"]
 var MarketData = [];
 var temp_player_money = {};
 
-let start = Date.now();
 
 //服务器启动监听&&获得玩家市场数据
 world.afterEvents.worldInitialize.subscribe(() => {
+    let start = Date.now();
     fs.GetJSONFileData("market.json").then((result) => {
         //文件不存在
         if (result === 0) {
@@ -704,25 +704,6 @@ world.afterEvents.playerSpawn.subscribe((event) => {
                 log("玩家未正常归还的预览商品已被自动回收！");
             }
         }
-        // //其次检查玩家金币缓存是否存在
-        // if (temp_player_money[event.player.id] != undefined) {
-        //     let old_temp_player_money = JSON.parse(JSON.stringify(temp_player_money));
-        //     //重置缓存
-        //     temp_player_money[event.player.id] = 0;
-        //     //连接服务器覆写文件
-        //     fs.OverwriteJsonFile("market_temp_player_money.json",temp_player_money).then((result) => {
-        //         if (result === "success") {
-        //             //存在，给钱
-        //             if (old_temp_player_money[event.player.id] != 0) {
-        //                 world.scoreboard.getObjective("money").addScore(event.player,old_temp_player_money[event.player.id])
-        //                 event.player.sendMessage("§e>> 您有一笔来自玩家交易市场的 " + old_temp_player_money[event.player.id] + " 金币已到账！请注意查收！");
-        //             }
-        //         } else {
-        //             console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
-        //             temp_player_money = old_temp_player_money;
-        //         }
-        //     })
-        // }
     }
 
 })

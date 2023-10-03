@@ -1,6 +1,6 @@
 # v1.4.0-pre-2 更新日志
 
-[![BDS VERSION](https://img.shields.io/badge/BDS-1.20.30.02-green?style=for-the-badge&logo=appveyor)](https://www.minecraft.net/en-us/download/server/bedrock)
+[![BDS VERSION](https://img.shields.io/badge/BDS-1.20.31.01-green?style=for-the-badge&logo=appveyor)](https://www.minecraft.net/en-us/download/server/bedrock)
 [![LiteLoader VERSION](https://img.shields.io/badge/LiteLoader-2.16.2-green?style=for-the-badge&logo=appveyor)](https://github.com/LiteLDev/LiteLoaderBDS/releases/)
 
 > **预发布版本提醒**：这是一个**预览版本**，可能存在一些bug，仅供测试，请勿在正式生产环境使用本版本！
@@ -14,7 +14,13 @@
 
 ## 调整
 
-玩家交易市场离线收益获取途径
+1.修改玩家交易市场离线收益获取途径
+
+2.暂时下线自动备份系统
+
+## 优化
+
+文件读取时间计算方式
 
 ## 修复
 

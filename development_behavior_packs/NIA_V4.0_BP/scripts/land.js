@@ -1,7 +1,6 @@
 //圈地系统
-//开发中功能请勿使用！
 
-import { system, world, Dimension } from '@minecraft/server';
+import { system, world, DynamicPropertiesDefinition } from '@minecraft/server';
 import { ExternalFS } from './API/filesystem';
 import { Broadcast, GetScore, GetTime, RunCmd, log } from './customFunction';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
@@ -19,8 +18,7 @@ var taskid = {"actionbar":{},"particle":{}};
 //导入文件系统
 const fs = new ExternalFS();
 
-//删除所有常加载区块
-RunCmd("tickingarea remove_all");
+
 
 /**
  * 输入坐标范围信息，以及当前的索引值数据，添加索引值,并返回新的索引值
@@ -325,11 +323,22 @@ const LandAPI = {
         //判断pos1是否为空，如果为空则不显示粒子
         try {
             if (pos1.length != 0) {
+                let land_tickingarea = JSON.parse(world.getDynamicProperty("land_tickingarea"));
+                //判断land_tickingarea中是否有p1_${player.id}，如果有则不再次添加
+                if (land_tickingarea.indexOf(`p1_${player.id}`) == -1) {
+                    land_tickingarea.push(`p1_${player.id}`);
+                }
+                world.setDynamicProperty("land_tickingarea",JSON.stringify(land_tickingarea));
                 RunCmd(`tickingarea add circle ${pos1[0]} ${pos1[1]} ${pos1[2]} 3 p1_${player.id}`);
                 world.getDimension(dimid).spawnParticle("minecraft:balloon_gas_particle",{x:pos1[0],y:pos1[1],z:pos1[2]});
             }
             //判断pos2是否为空，如果为空则不显示粒子
             if (pos2.length != 0) {
+                let land_tickingarea = JSON.parse(world.getDynamicProperty("land_tickingarea"));
+                if (land_tickingarea.indexOf(`p2_${player.id}`) == -1) {
+                    land_tickingarea.push(`p2_${player.id}`);
+                }
+                world.setDynamicProperty("land_tickingarea",JSON.stringify(land_tickingarea));
                 RunCmd(`tickingarea add circle ${pos2[0]} ${pos2[1]} ${pos2[2]} 3 p2_${player.id}`);
                 world.getDimension(dimid).spawnParticle("minecraft:balloon_gas_particle",{x:pos2[0],y:pos2[1],z:pos2[2]});
             }
@@ -421,6 +430,16 @@ const LandAPI = {
             //删除相应的tickingarea
             RunCmd(`tickingarea remove p1_${player.id}`);
             RunCmd(`tickingarea remove p2_${player.id}`);
+            let land_tickingarea = JSON.parse(world.getDynamicProperty("land_tickingarea"));
+            //删除相应的tickingarea
+            for (let i = 0; i < land_tickingarea.length; i++) {
+                if (land_tickingarea[i] == `p1_${player.id}` || land_tickingarea[i] == `p2_${player.id}`) {
+                    // log(JSON.stringify(land_tickingarea) + "+" + land_tickingarea[i]);
+                    land_tickingarea.splice(i,1);
+                    i--;
+                }
+            }
+            world.setDynamicProperty("land_tickingarea",JSON.stringify(land_tickingarea));
         }
     }
 }
@@ -1388,10 +1407,12 @@ system.runInterval(() => {
     }
 },1)
 
-const start = Date.now();
+
 
 //服务器启动监听&&获得玩家市场数据
-world.afterEvents.worldInitialize.subscribe(() => {
+world.afterEvents.worldInitialize.subscribe((event) => {
+    //圈地系统文件
+    let start = Date.now();
     fs.GetJSONFileData("land.json").then((result) => {
         //文件不存在
         if (result === 0) {
@@ -1417,6 +1438,8 @@ world.afterEvents.worldInitialize.subscribe(() => {
         }
     })
 
+    //玩家金币缓存文件
+    start = Date.now();
     fs.GetJSONFileData("land_temp_player_money.json").then((result) => {
         if (result === 0) {
             fs.CreateNewJsonFile("land_temp_player_money.json",{}).then((result) => {
@@ -1435,7 +1458,18 @@ world.afterEvents.worldInitialize.subscribe(() => {
         }
     })
 
+    //注册动态属性
+    event.propertyRegistry.registerWorldDynamicProperties(new DynamicPropertiesDefinition().defineString("land_tickingarea",10000,"[]"));
+    //删除所有常加载区块
+    let land_tickingarea = JSON.parse(world.getDynamicProperty("land_tickingarea"));
+    for (let key = 0;key < land_tickingarea.length;key++) {
+        RunCmd(`tickingarea remove ${land_tickingarea[key]}`);
+        log("已删除临时常加载区块：" + land_tickingarea[key]);
+    }
+
+
 })
+
 
 //
 world.beforeEvents.playerBreakBlock.subscribe((event) => {
@@ -1535,5 +1569,6 @@ world.afterEvents.playerLeave.subscribe((player) => {
     }
 })
 
+export const LandGUI = GUI;
 
 

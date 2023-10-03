@@ -19,7 +19,7 @@
 
 **注意：当前服务器addons包仍处于开发状态，暂时没有对其他类型服务器做适配，所以我们并不推荐您直接使用！**
 
-**为了实现更多功能，服务器使用了@minecraft/net模块，所以本插件包不能在个人存档中正常运行，只能在BDS上运行！**
+**为了实现更多功能，服务器使用了@minecraft/server-net模块，所以本插件包不能在个人存档中正常运行，只能在BDS上运行！**
 
 一个基于BDS的基岩版服务器，这里开源了由服务器开发团队制作的addons（包括基于script-api的脚本）、大部分运行于LiteLoader的插件（部分LiteLoader插件源码可以点击前往 [NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin) 查看）
 
@@ -40,7 +40,7 @@
 > 由于NIA服务器开发计划（V4->V4.5）有所变动，玩法机制将有大范围变动（包括但不限于玩法、机制等）
 > 所以我们计划分几个版本分布上线玩法、机制，具体如下：
 
-- [ ] v1.4.0（2023-10） 上线基础玩法（包括但不限于圈地系统、玩家交易市场等）
+- [x] v1.4.0（2023-10） 上线基础玩法（包括但不限于圈地系统、玩家交易市场等）
 - [ ] v1.5.0（2023-11） 上线游戏设定所用到的所有方块，物品等，并完成相应材质包制作
 - [ ] v1.6.0（2023-12） 上线七大空岛生成逻辑，完善整体玩法机制
 
@@ -57,7 +57,7 @@
 - [x] 氧气值玩法
 - [x] 支持修改配置文件
 - [x] 玩家交易市场
-- [ ] 圈地系统
+- [x] 圈地系统
 - [ ] 支持自定义
 - [ ] 多语言支持
 
@@ -70,8 +70,8 @@
 为了本Addons更好的发展，自**v1.4.0**开始，部分功能将依赖**NIAHttpBOT**，目前为止以下功能依赖于**NIAHttpBOT**：
 
 - 商店系统（`shop_data.json`）
-- 玩家交易系统（`market.json`、`market_temp_plyer_money.json`）
-- 圈地系统（`land.json`、`land_temp_plyer_money.json`）
+- 玩家交易系统（`market.json`、`market_temp_player_money.json`）
+- 圈地系统（`land.json`、`land_temp_player_money.json`）
 
 更多功能正在逐步接入...
 
