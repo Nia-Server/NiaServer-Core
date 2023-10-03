@@ -22,7 +22,7 @@ import './basic.js'
 import './newFunction.js'
 import './log.js'
 
-export const VERSION = "1.4.0-pre-2";
+export const VERSION = "1.4.0";
 export const BDS_VERSION = "1.20.31.01";
 export const LAST_UPGRATE = "2023/10/3";
 
