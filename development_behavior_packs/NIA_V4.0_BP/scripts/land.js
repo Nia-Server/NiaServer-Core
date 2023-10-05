@@ -561,6 +561,7 @@ const GUI = {
             .toggle("其他玩家可以使用物品",land_data[LandUUID].setup.UseItem)
             .toggle("（暂时没用）",land_data[LandUUID].setup.AttackEntity)
             .toggle("其他玩家可以打开箱子",land_data[LandUUID].setup.OpenChest)
+            .toggle("在领地内是否可以发生爆炸",land_data[LandUUID].setup.Expoplosion)
             .toggle("自己处于地皮内时显示标题",land_data[LandUUID].setup.ShowActionbar)
             .show(player).then((response) => {
                 if (!response.canceled) {
@@ -576,11 +577,12 @@ const GUI = {
                     land_data[LandUUID].setup.UseItem = response.formValues[3];
                     land_data[LandUUID].setup.AttackEntity = response.formValues[4];
                     land_data[LandUUID].setup.OpenChest = response.formValues[5];
-                    land_data[LandUUID].setup.ShowActionbar = response.formValues[6];
+                    land_data[LandUUID].setup.Expoplosion = response.formValues[6];
+                    land_data[LandUUID].setup.ShowActionbar = response.formValues[7];
                     //开始覆写文件land.json
                     fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                         if (result === "success") {
-                            player.sendMessage("§a>> 地皮权限修改成功！");
+                            player.sendMessage("§a>> 地皮属性修改成功！");
                         } else if (result === "-1") {
                             player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
                             land_data = old_land_data;
@@ -1471,7 +1473,7 @@ world.afterEvents.worldInitialize.subscribe((event) => {
 })
 
 
-//
+//玩家破坏方块监听
 world.beforeEvents.playerBreakBlock.subscribe((event) => {
     let land = pos_in_index([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
     if (land) {
@@ -1482,6 +1484,7 @@ world.beforeEvents.playerBreakBlock.subscribe((event) => {
     }
 })
 
+//玩家放置方块监听
 world.beforeEvents.playerPlaceBlock.subscribe((event) => {
     let land = pos_in_index([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
     if (land) {
@@ -1492,9 +1495,23 @@ world.beforeEvents.playerPlaceBlock.subscribe((event) => {
     }
 })
 
+//爆炸监听
+world.beforeEvents.explosion.subscribe((event) => {
+    //判断可不可以影响到地皮
+    let explosion_impacted_blocks = event.getImpactedBlocks();
+    for (let i = 0;i < explosion_impacted_blocks.length;i++) {
+        let land = pos_in_index([explosion_impacted_blocks[i].x,explosion_impacted_blocks[i].y,explosion_impacted_blocks[i].z],event.source.dimension.id);
+        if (land) {
+            if (!land.setup.Expoplosion) {
+                event.cancel = true;
+                break;
+            }
+        }
+    }
+})
 
 
-// 玩家使用物品
+//玩家使用物品
 world.beforeEvents.itemUseOn.subscribe((event) => {
     //定义一些可以改变物品地形的工具
     const tools = [
