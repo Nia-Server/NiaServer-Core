@@ -120,6 +120,12 @@ const equLevelData = {
     }
 }
 
+system.beforeEvents.watchdogTerminate.subscribe((event) => {
+    event.cancel = true;
+    Broadcast(`§c§l[warn] NIA V4运行出现异常，异常原因: ${event.terminateReason}，请及时联系腐竹！`);
+    console.error("watchdog运行出现异常，异常原因：" + event.terminateReason);
+})
+
 //服务器启动监听
 //服务器初始化
 world.afterEvents.worldInitialize.subscribe((event) => {

@@ -1,8 +1,8 @@
 //圈地系统
 
-import { system, world, DynamicPropertiesDefinition } from '@minecraft/server';
+import { system, world, DynamicPropertiesDefinition, SystemAfterEvents, System } from '@minecraft/server';
 import { ExternalFS } from './API/filesystem';
-import { Broadcast, GetScore, GetTime, RunCmd, log } from './customFunction';
+import { Broadcast, GetScore, GetShortTime, GetTime, RunCmd, log } from './customFunction';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 import { adler32 } from './API/cipher_system';
 import { cfg } from './config';
@@ -15,10 +15,30 @@ var land_history = {};
 var temp_player_money = {};
 var taskid = {"actionbar":{},"particle":{}};
 
+//以下是后续接入配置文件的设置
+//地皮计算索引值基准距离
+//为了保证服务器的流畅运行,DISTANSE参数应满足：DISTANSE * DISTANCE 等于或稍稍小于 MAX_SQUARE，否则可能会导致插件包运行超时而引发“hang”报错
+const DISTANCE = 100;
+//2d/3d地皮最大面积(两者均只计算xz平面所占面积)
+const MAX_SQUARE = 10000;
+//2d/3d地皮最小面积(两者均只计算xz平面所占面积)
+const MIN_SQUARE = 100;
+//地皮价格计算指数
+//2d地皮单面积价格
+const PRICE_2D = 300;
+//3d地皮单块价格
+const PRICE_3D = 3;
+//坐标限制范围
+const X_RANGE = [-100000,100000];
+const Y_RANGE = [-64,256];
+const Z_RANGE = [-100000,100000];
+//金币计分板名称
+const MONEY_SCOREBOARD_NAME = "money";
+const MONEY_SCOREBOARD_DISPLAY_NAME = "§e金币";
+
+
 //导入文件系统
 const fs = new ExternalFS();
-
-
 
 /**
  * 输入坐标范围信息，以及当前的索引值数据，添加索引值,并返回新的索引值
@@ -28,10 +48,10 @@ const fs = new ExternalFS();
  * @param {String} LandUUID
  */
 function calculate_index(pos1, pos2, dimid, LandUUID) {
-    let X1Index = parseInt(pos1[0] / 16);
-    let Z1Index = parseInt(pos1[2] / 16);
-    let X2Index = parseInt(pos2[0] / 16);
-    let Z2Index = parseInt(pos2[2] / 16);
+    let X1Index = parseInt(pos1[0] / DISTANCE);
+    let Z1Index = parseInt(pos1[2] / DISTANCE);
+    let X2Index = parseInt(pos2[0] / DISTANCE);
+    let Z2Index = parseInt(pos2[2] / DISTANCE);
     //将最小的转化为相应索引值
     if (X1Index > X2Index) {
         let IndexXMIN = X1Index;
@@ -67,15 +87,16 @@ function calculate_index(pos1, pos2, dimid, LandUUID) {
  * @returns {object} 如果不在返回false，如果在则返回所在的地皮数据
  */
 function pos_in_index(pos,dimid) {
+    let start = new Date();
     //根据传入的坐标计算出相应的区块编号
     let posX = parseInt(pos[0]);
     let posY = parseInt(pos[1]);
     let posZ = parseInt(pos[2]);
     let posDimid = dimid;
-    let XIndex = parseInt(posX / 16);
-    let ZIndex = parseInt(posZ / 16);
+    let XIndex = parseInt(posX / DISTANCE);
+    let ZIndex = parseInt(posZ / DISTANCE);
     //判断该区块内是否有地皮数据，根据数据层层判断
-    if(!land_index[posDimid] || !land_index[posDimid][XIndex] || !land_index[posDimid][XIndex][ZIndex]) {
+    if (!land_index.hasOwnProperty(posDimid) || !land_index[posDimid].hasOwnProperty(XIndex) || !land_index[posDimid][XIndex].hasOwnProperty(ZIndex)) {
         return false;
     }
     //如果走到了这里说明，该区块编号下有相应的地皮数据存在，然后遍历该区块存在的地皮即可
@@ -168,11 +189,11 @@ function have_land(pos1, pos2, dimid) {
         pos2[2] = posZMin;
     }
     //根据传入的最小值坐标输出最小
-    let XIndexMIN = parseInt(pos1[0] / 16);
-    let ZIndexMIN = parseInt(pos1[2] / 16);
+    let XIndexMIN = parseInt(pos1[0] / DISTANCE);
+    let ZIndexMIN = parseInt(pos1[2] / DISTANCE);
     //
-    let XIndexMAX = parseInt(pos2[0] / 16);
-    let ZIndexMAX = parseInt(pos2[2] / 16);
+    let XIndexMAX = parseInt(pos2[0] / DISTANCE);
+    let ZIndexMAX = parseInt(pos2[2] / DISTANCE);
     //判断该区块内是否有地皮数据，根据数据层层判断
     for (let XIndex = XIndexMIN; XIndex <= XIndexMAX; XIndex++) {
         for (let ZIndex = ZIndexMIN; ZIndex <= ZIndexMAX; ZIndex++) {
@@ -591,7 +612,6 @@ const GUI = {
                             land_data = old_land_data;
                         }
                     })
-
                 } else {
                     this.ManageLandDetail(player,LandUUID);
                 }
@@ -615,7 +635,7 @@ const GUI = {
                         if (result === "success") {
                             player.sendMessage("§a>> 地皮回收成功！");
                             //开始退款
-                            world.scoreboard.getObjective("money").addScore(player,parseInt(land_data[LandUUID].purchase_price * 0.6));
+                            world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).addScore(player,parseInt(land_data[LandUUID].purchase_price * 0.6));
                         } else if (result === "-1") {
                             player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
                             land_data = old_land_data;
@@ -914,8 +934,8 @@ const GUI = {
                     land_data[LandUUID].owner_name = player.name;
                     land_data[LandUUID].on_sale = false;
                     //首先判断玩家余额是否足够
-                    if (world.scoreboard.getObjective("money").getScore(player) < land_data[LandUUID].sale_price) {
-                        player.sendMessage(`§c>> 您的余额不足！您当前余额为：${world.scoreboard.getObjective("money").getScore(player)}，而该地皮的价格为：${land_data[LandUUID].sale_price}`);
+                    if (world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).getScore(player) < land_data[LandUUID].sale_price) {
+                        player.sendMessage(`§c>> 您的余额不足！您当前余额为：${world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).getScore(player)}，而该地皮的价格为：${land_data[LandUUID].sale_price}`);
                         return;
                     }
                     //开始覆写文件land.json
@@ -928,7 +948,7 @@ const GUI = {
                                 if (result === "success") {
                                     player.sendMessage("§a>> 地皮购买成功！");
                                     //开始扣款
-                                    world.scoreboard.getObjective("money").addScore(player,-land_data[LandUUID].sale_price);
+                                    world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).addScore(player,-land_data[LandUUID].sale_price);
                                 } else {
                                     this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
                                     console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
@@ -1156,31 +1176,33 @@ const GUI = {
         let XLength = Math.abs(land_history[player.id].pos1[0] - land_history[player.id].pos2[0]);
         let ZLength = Math.abs(land_history[player.id].pos1[2] - land_history[player.id].pos2[2]);
         //如果地皮过小
-        if (XLength * ZLength < 64) {
+        if (XLength * ZLength < MIN_SQUARE) {
             player.sendMessage("§c您选择的地皮面积过小！请重新选择！");
             return;
         }
         //如果地皮过大
-        if (XLength * ZLength > 1024) {
+        if (XLength * ZLength > MAX_SQUARE) {
             player.sendMessage("§c您选择的地皮面积过大！请重新选择！");
             return;
         }
         //如果地皮坐标不在限制的坐标范围内
-        if (land_history[player.id].pos1[0] < -5000 || land_history[player.id].pos1[0] > 5000 || land_history[player.id].pos1[2] < -5000 || land_history[player.id].pos1[2] > 5000 || land_history[player.id].pos2[0] < -5000 || land_history[player.id].pos2[0] > 5000 || land_history[player.id].pos2[2] < -5000 || land_history[player.id].pos2[2] > 5000) {
+        if (land_history[player.id].pos1[0] < X_RANGE[0] || land_history[player.id].pos1[0] > X_RANGE[1] || land_history[player.id].pos1[2] < Z_RANGE[0] || land_history[player.id].pos1[2] > Z_RANGE[1] || land_history[player.id].pos2[0] < X_RANGE[0] || land_history[player.id].pos2[0] > X_RANGE[1] || land_history[player.id].pos2[2] < Z_RANGE[0] || land_history[player.id].pos2[2] > Z_RANGE[1]) {
             player.sendMessage("§c您选择的地皮坐标不在限制的坐标范围内！请重新选择！");
+            delete land_history[player.id];
             return;
         }
         //开始判断地皮是否重合
         if (have_land(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid)) {
             player.sendMessage("§c您选择的地皮与已有地皮重合！请重新选择！");
+            delete land_history[player.id];
             return;
         }
         //开始计算价格
-        let purchase_price = XLength * ZLength * 30;
+        let purchase_price = XLength * ZLength * PRICE_2D;
         //弹出购买确认表单
         const CreateLandForm = new MessageFormData()
         .title("确认购买")
-        .body(`§e您选择的地皮面积为：§c${XLength * ZLength}§e方块\n§e您选择的地皮价格为：§c${purchase_price}§e金币\n§e您的金币余额为：§c${GetScore("money",player.nameTag)}§e金币\n§e请确认您的购买！`)
+        .body(`§e您选择的地皮面积为：§c${XLength * ZLength}§e方块\n§e您选择的地皮价格为：§c${purchase_price}§e金币\n§e您的金币余额为：§c${GetScore(MONEY_SCOREBOARD_NAME,player.nameTag)}§e金币\n§e请确认您的购买！`)
         .button1(`§a确认购买`)
         .button2(`§c取消购买`)
         .show(player).then((response) => {
@@ -1188,8 +1210,8 @@ const GUI = {
                 player.sendMessage("§c您已取消购买！");
             } else if (response.selection == 0) {
                 //首先判断余额是否足够
-                if (GetScore("money",player.nameTag) < purchase_price) {
-                    player.sendMessage("§c您的金币余额不足！请充值后再购买！");
+                if (GetScore(MONEY_SCOREBOARD_NAME,player.nameTag) < purchase_price) {
+                    player.sendMessage("§c您的金币余额不足！请在有足够金币后再购买！");
                     return;
                 }
                 //再判断该玩家已经拥有了几块地皮，如果超出5块则不允许购买
@@ -1201,6 +1223,8 @@ const GUI = {
                 }
                 if (land_num >= 5) {
                     player.sendMessage("§c您已经拥有了5块地皮！请先出售一些地皮后再购买！");
+                    //删除历史数据
+                    delete land_history[player.id];
                     return;
                 }
                 //开始连接服务器
@@ -1229,17 +1253,19 @@ const GUI = {
                     "Expoplosion": false,
                     "ShowActionbar":true
                 }
-                land_data[adler32(GetTime() + player.id + purchase_price)] = new_land_data;
+                land_data[adler32(new_land_data.get_time + player.id + purchase_price)] = new_land_data;
                 //开始写入数据
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     if (result === "success") {
-                        player.sendMessage("§e>> 购买成功！您已经拥有该地皮,该地皮id为：§c" + adler32(GetTime() + player.id + purchase_price) + "§e！");
+                        player.sendMessage("§e>> 购买成功！您已经拥有该地皮,该地皮id为：§c" + adler32(new_land_data.get_time + player.id + purchase_price) + "§e！");
                         RunCmd(`title ${player.nameTag} title §e§l购买圈地成功！`);
                         RunCmd(`title ${player.nameTag} subtitle §a您还可以购买 §c${5 - land_num - 1}§a 块地皮！`);
                         //扣除玩家金币
-                        world.scoreboard.getObjective("money").addScore(player,-purchase_price);
+                        world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).addScore(player,-purchase_price);
                         //计算索引值
-                        calculate_index(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid,adler32(GetTime() + player.id + purchase_price));
+                        calculate_index(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid,adler32(new_land_data.get_time + player.id + purchase_price));
+                        //删除历史数据
+                        delete land_history[player.id];
                     } else if (result === -1) {
                         //服务器连接超时提醒
                         player.sendMessage("§c>> 服务器连接失败！请联系在线管理员！");
@@ -1268,17 +1294,17 @@ const GUI = {
         let YLength = Math.abs(land_history[player.id].pos1[1] - land_history[player.id].pos2[1]);
         let ZLength = Math.abs(land_history[player.id].pos1[2] - land_history[player.id].pos2[2]);
         //如果地皮过小
-        if (XLength * YLength * ZLength < 64) {
+        if (XLength * ZLength < MIN_SQUARE) {
             player.sendMessage("§c您选择的地皮体积过小！请重新选择！");
             return;
         }
         //如果地皮过大
-        if (XLength * YLength * ZLength > 1000000) {
+        if (XLength  * ZLength > MAX_SQUARE) {
             player.sendMessage("§c您选择的地皮体积过大！请重新选择！");
             return;
         }
         //如果地皮坐标不在限制的坐标范围内
-        if (land_history[player.id].pos1[0] < -5000 || land_history[player.id].pos1[0] > 5000 || land_history[player.id].pos1[2] < -5000 || land_history[player.id].pos1[2] > 5000 || land_history[player.id].pos2[0] < -5000 || land_history[player.id].pos2[0] > 5000 || land_history[player.id].pos2[2] < -5000 || land_history[player.id].pos2[2] > 5000) {
+        if (land_data[LandUUID].pos1[0] < X_RANGE[0] || land_data[LandUUID].pos1[0] > X_RANGE[1] || land_data[LandUUID].pos1[1] < Y_RANGE[0] || land_data[LandUUID].pos1[1] > Y_RANGE[1] || land_data[LandUUID].pos1[2] < Z_RANGE[0] || land_data[LandUUID].pos1[2] > Z_RANGE[1] || land_data[LandUUID].pos2[0] < X_RANGE[0] || land_data[LandUUID].pos2[0] > X_RANGE[1] || land_data[LandUUID].pos2[1] < Y_RANGE[0] || land_data[LandUUID].pos2[1] > Y_RANGE[1] || land_data[LandUUID].pos2[2] < Z_RANGE[0] || land_data[LandUUID].pos2[2] > Z_RANGE[1]) {
             player.sendMessage("§c您选择的地皮坐标不在限制的坐标范围内！请重新选择！");
             return;
         }
@@ -1288,11 +1314,11 @@ const GUI = {
             return;
         }
         //开始计算价格
-        let purchase_price = XLength * YLength * ZLength * 3;
+        let purchase_price = XLength * YLength * ZLength * PRICE_3D;
         //弹出购买确认表单
         const CreateLandForm = new MessageFormData()
         .title("确认购买")
-        .body(`§e您选择的地皮体积为：§c${XLength * YLength * ZLength}§e方块\n§e您选择的地皮价格为：§c${purchase_price}§e金币\n§e您的金币余额为：§c${GetScore("money",player.nameTag)}§e金币\n§e请确认您的购买！`)
+        .body(`§e您选择的地皮体积为：§c${XLength * YLength * ZLength}§e方块\n§e您选择的地皮价格为：§c${purchase_price}§e金币\n§e您的金币余额为：§c${GetScore(MONEY_SCOREBOARD_NAME,player.nameTag)}§e金币\n§e请确认您的购买！`)
         .button1(`§a确认购买`)
         .button2(`§c取消购买`)
         .show(player).then((response) => {
@@ -1300,7 +1326,7 @@ const GUI = {
                 player.sendMessage("§c您已取消购买！");
             } else if (response.selection == 0) {
                 //首先判断余额是否足够
-                if (GetScore("money",player.nameTag) < purchase_price) {
+                if (GetScore(MONEY_SCOREBOARD_NAME,player.nameTag) < purchase_price) {
                     player.sendMessage("§c您的金币余额不足！请充值后再购买！");
                     return;
                 }
@@ -1313,6 +1339,8 @@ const GUI = {
                 }
                 if (land_num >= 5) {
                     player.sendMessage("§c您已经拥有了5块地皮！请先出售一些地皮后再购买！");
+                    //删除历史数据
+                    delete land_history[player.id];
                     return;
                 }
                 //开始连接服务器
@@ -1341,17 +1369,19 @@ const GUI = {
                     "Expoplosion": false,
                     "ShowActionbar":true
                 }
-                land_data[adler32(GetTime() + player.id + purchase_price)] = new_land_data;
+                land_data[adler32(new_land_data.get_time + player.id + purchase_price)] = new_land_data;
                 //开始写入数据
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     if (result === "success") {
-                        player.sendMessage("§e>> 购买成功！您已经拥有该地皮,该地皮id为：§c" + adler32(GetTime() + player.id + purchase_price) + "§e！");
+                        player.sendMessage("§e>> 购买成功！您已经拥有该地皮,该地皮id为：§c" + adler32(new_land_data.get_time + player.id + purchase_price) + "§e！");
                         RunCmd(`title ${player.nameTag} title §e§l购买圈地成功！`);
                         RunCmd(`title ${player.nameTag} subtitle §a您还可以购买 §c${5 - land_num - 1}§a 块地皮！`);
                         //扣除玩家金币
-                        world.scoreboard.getObjective("money").addScore(player,-purchase_price);
+                        world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).addScore(player,-purchase_price);
                         //计算索引值
-                        calculate_index(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid,adler32(GetTime() + player.id + purchase_price));
+                        calculate_index(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid,adler32(new_land_data.get_time + player.id + purchase_price));
+                        //删除历史数据
+                        delete land_history[player.id];
                     } else if (result === -1) {
                         //服务器连接超时提醒
                         player.sendMessage("§c>> 服务器连接失败！请联系在线管理员！");
@@ -1381,7 +1411,7 @@ const GUI = {
                 if (result === "success") {
                     //存在，给钱
                     if (old_temp_player_money[player.id] != 0) {
-                        world.scoreboard.getObjective("money").addScore(player,old_temp_player_money[player.id])
+                        world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).addScore(player,old_temp_player_money[player.id])
                         player.sendMessage("§e>> 您有一笔来自圈地系统的 " + old_temp_player_money[player.id] + " 金币已到账！请注意查收！");
                     } else {
                         player.sendMessage("§e>> 您目前没有任何圈地收益，尝试售卖地皮来获得收益！");
@@ -1421,7 +1451,7 @@ world.afterEvents.worldInitialize.subscribe((event) => {
             fs.CreateNewJsonFile("land.json",{}).then((result) => {
                 if (result === "success") {
                     land_data = {};
-                    log("玩家市场文件不存在，已成功创建！");
+                    log("圈地系统数据文件不存在，已成功创建！");
                 } else if (result === -1) {
                     console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
                 }
@@ -1467,6 +1497,7 @@ world.afterEvents.worldInitialize.subscribe((event) => {
     for (let key = 0;key < land_tickingarea.length;key++) {
         RunCmd(`tickingarea remove ${land_tickingarea[key]}`);
         log("已删除临时常加载区块：" + land_tickingarea[key]);
+        world.setDynamicProperty("land_tickingarea",JSON.stringify(land_tickingarea));
     }
 
 
@@ -1585,6 +1616,126 @@ world.afterEvents.playerLeave.subscribe((player) => {
         delete land_history[player.playerId];
     }
 })
+
+//调试语句
+//script-event监听
+// system.afterEvents.scriptEventReceive.subscribe((event) => {
+//     if (event.id == "mcnia:land") {
+//         switch (event.message) {
+//             case "generate_land":
+//                 generate_land(10000);
+//                 break;
+//             case "reload":
+//                 let start = Date.now();
+//                 fs.GetJSONFileData("land.json").then((result) => {
+//                     //文件不存在
+//                     if (result === 0) {
+//                         fs.CreateNewJsonFile("land.json",{}).then((result) => {
+//                             if (result === "success") {
+//                                 land_data = {};
+//                                 log("圈地系统数据文件不存在，已成功创建！");
+//                             } else if (result === -1) {
+//                                 console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+//                             }
+//                         });
+//                     } else if (result === -1) {
+//                         console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+//                     } else {
+//                         //文件存在且服务器连接成功
+//                         land_data = result;
+//                         let LandNum = 0;
+//                         for (let Land in land_data) {
+//                             calculate_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
+//                             LandNum++;
+//                         }
+//                         log("圈地数据获取成功，本次读取用时：" + (Date.now() - start) + "ms，共加载 " + LandNum + " 块地皮数据！" );
+//                     }
+//                 })
+
+//                 //玩家金币缓存文件
+//                 start = Date.now();
+//                 fs.GetJSONFileData("land_temp_player_money.json").then((result) => {
+//                     if (result === 0) {
+//                         fs.CreateNewJsonFile("land_temp_player_money.json",{}).then((result) => {
+//                             if (result === "success") {
+//                                 log("玩家金币数据文件不存在，已成功创建！");
+//                             } else if (result === -1) {
+//                                 console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+//                             }
+//                         });
+//                     } else if (result === -1) {
+//                         console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+//                     } else {
+//                         //文件存在且服务器连接成功
+//                         temp_player_money = result;
+//                         log("(land)玩家金币数据获取成功，本次读取用时：" + (Date.now() - start) + "ms");
+//                     }
+//                 })
+
+//                 //删除所有常加载区块
+//                 let land_tickingarea = JSON.parse(world.getDynamicProperty("land_tickingarea"));
+//                 for (let key = 0;key < land_tickingarea.length;key++) {
+//                     RunCmd(`tickingarea remove ${land_tickingarea[key]}`);
+//                     log("已删除临时常加载区块：" + land_tickingarea[key]);
+//                     world.setDynamicProperty("land_tickingarea",JSON.stringify(land_tickingarea));
+//                 }
+//                 break;
+//             default:
+//                 event.sourceEntity.sendMessage("§c>> 未知指令！请检查指令是否正确！");
+//                 break;
+//         }
+//     }
+// })
+
+// //随机生成num数量个地皮，并将地皮数据写入文件
+// function generate_land(num) {
+//     let start = Date.now();
+//     for (let i = 0; i < num; i++) {
+//         let new_land_data = {};
+//         let pos1 = Math.round((Math.random() * 2 - 1) * 100000);
+//         let pos2 = Math.round((Math.random() * 2 - 1) * 100000);
+//         new_land_data.owner = 0;
+//         new_land_data.owner_name = "无";
+//         new_land_data.pos1 = [pos1,0,pos2];
+//         new_land_data.pos2 = [pos1+100,64,pos2+300];
+//         new_land_data.dimid = "minecraft:overworld";
+//         new_land_data.type = "2d";
+//         new_land_data.purchase_price = pos1;
+//         new_land_data.on_sale = false;
+//         new_land_data.get_time = GetTime();
+//         new_land_data.land_name = i + "的领地";
+//         new_land_data.allowlist = {};
+//         new_land_data.banlist = [];
+//         new_land_data.teleport = [];
+//         new_land_data.setup = {
+//             "DestroyBlock":false,
+//             "PlaceBlock":false,
+//             "UseItem":false,
+//             "AttackEntity":false,
+//             "OpenChest":false,
+//             "Expoplosion": false,
+//             "ShowActionbar":true
+//         }
+//         //首先判断地皮是否重合
+//         if (have_land(new_land_data.pos1,new_land_data.pos2,new_land_data.dimid)) {
+//             i--;
+//             continue;
+//         }
+//         //再计算索引值
+//         calculate_index(new_land_data.pos1,new_land_data.pos2,new_land_data.dimid,adler32((i + "@" + new_land_data.purchase_price).toString()));
+//         //最后写入数据
+//         //log(i + JSON.stringify(land_data));
+//         log(`已生成${i}块地皮`)
+//         land_data[adler32((i + "@" + new_land_data.purchase_price).toString())] = new_land_data;
+//     }
+//     fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+//         if (result === "success") {
+//             log("随机生成地皮数据成功，本次生成用时：" + (Date.now() - start) + "ms");
+//         } else if (result === -1) {
+//             console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+//         }
+//     })
+// }
 
 export const LandGUI = GUI;
 

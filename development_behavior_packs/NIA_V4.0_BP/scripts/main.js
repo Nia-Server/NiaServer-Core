@@ -22,13 +22,13 @@ import './basic.js'
 import './newFunction.js'
 import './log.js'
 
-export const VERSION = "1.4.0";
+export const VERSION = "v1.4.0";
 export const BDS_VERSION = "1.20.31.01";
-export const LAST_UPGRATE = "2023/10/3";
+export const LAST_UPGRATE = "2023/10/7";
 
 
 console.log(`\x1b[33m[NIA V4] NIA V4 已经成功在本服务器上启动！\x1b[0m`);
 console.log(`\x1b[33m[NIA V4] 版本: ${VERSION} based on ${BDS_VERSION}(last upgrate:${LAST_UPGRATE})\x1b[0m`);
-console.log(`\x1b[33m[NIA V4] 作者: @NIANIANKNIA(https://github.com/NIANIANKNIA)\x1b[0m`);
+console.log(`\x1b[33m[NIA V4] 作者: @NIANIANKNIA(https://github.com/NIANIANKNIA) @jiansyuan(https://github.com/jiansyuan)\x1b[0m`);
 console.log(`\x1b[33m[NIA V4] 不会部署？前往文档站查看详细的部署过程==>(https://docs.mcnia.com/zh-CN/deploy.html)\x1b[0m`);
 console.log(`\x1b[33m[NIA V4] 本项目基于AGPL-3.0开源协议，注意遵守开源协议！\x1b[0m`);
