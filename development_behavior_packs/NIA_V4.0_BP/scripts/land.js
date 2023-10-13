@@ -140,11 +140,34 @@ function pos_in_index(pos,dimid) {
  */
 function player_in_index(player) {
     let land = pos_in_index([player.location.x, player.location.y,player.location.z],player.dimension.id);
-    if (land) {
-        if (player.id != land.owner) {
-            player.onScreenDisplay.setActionBar(`§b您正在 ${land.land_name} §r§b中`);
-        } else if (land.setup.ShowActionbar) {
-            player.onScreenDisplay.setActionBar(`§a欢迎回到 ${land.land_name} §r§a中！`);
+    if (player.hasTag("inland")) {
+        //原来在地皮中
+        if (land) {
+            if (player.id != land.owner) {
+                player.onScreenDisplay.setActionBar(`§b您正在 ${land.land_name} §r§b中`);
+            } else if (land.setup.ShowActionbar) {
+                player.onScreenDisplay.setActionBar(`§a欢迎回到 ${land.land_name} §r§a中！`);
+            }
+        } else {
+            //现在不在地皮中
+            player.removeTag("inland");
+            //显示离开地皮的提示
+            player.onScreenDisplay.setActionBar(`§c您已离开地皮！`);
+        }
+    } else {
+        //原来不在地皮中
+        if (land) {
+            //现在在地皮中
+            player.addTag("inland");
+            if (player.id != land.owner) {
+                RunCmd(`title "${player.name}" title §b您已进入他人领地之中！`);
+                RunCmd(`title "${player.name}" subtitle §e== ${land.land_name} §r§e==`);
+                player.playSound("random.levelup");
+            } else if (land.setup.ShowActionbar) {
+                RunCmd(`title "${player.name}" title §b欢迎回家 ╰(*°▽°*)╯`);
+                RunCmd(`title "${player.name}" subtitle §e== ${land.land_name} §r§e==`);
+                player.playSound("random.levelup");
+            }
         }
     }
 }
@@ -343,6 +366,7 @@ const LandAPI = {
     show_particle(player,pos1,pos2,dimid) {
         //判断pos1是否为空，如果为空则不显示粒子
         try {
+            RunCmd(`title "${player.name}" subtitle §c`);
             if (pos1.length != 0) {
                 let land_tickingarea = JSON.parse(world.getDynamicProperty("land_tickingarea"));
                 //判断land_tickingarea中是否有p1_${player.id}，如果有则不再次添加
@@ -509,7 +533,7 @@ const GUI = {
         ManageLandForm.button("返回上一级")
         for (let key in land_data) {
             if (land_data[key].owner == player.id) {
-                ManageLandForm.button(`[${key}] ${land_data[key].land_name} \n[是否上架市场售卖] ${land_data[key].on_sale} [地皮类型] ${land_data[key].type}`);
+                ManageLandForm.button(`[${key}] ${land_data[key].land_name}§r \n[是否上架市场售卖] ${land_data[key].on_sale} [地皮类型] ${land_data[key].type}`);
                 own_land_data.push(key);
             }
         }
@@ -758,11 +782,20 @@ const GUI = {
         //首先获取所有白名单玩家的对象
         let allowlist_players = [];
         for (let key in land_data[LandUUID].allowlist) {
-            allowlist_players.push(allowlist_players[key]);
+            allowlist_players.push(land_data[LandUUID].allowlist[key]);
+        }
+        let str_players = "";
+        if (allowlist_players.length == 0) {
+            str_players = "§c该地皮暂无任何白名单玩家！";
+        } else {
+            str_players = "§e白名单玩家：§r§e\n"
+            for (let i = 0; i < allowlist_players.length; i++) {
+                str_players = str_players +  `§e${allowlist_players[i]}§r§e `;
+            }
         }
         const ManageLandAllowlistForm = new ActionFormData()
         .title(`白名单管理[${LandUUID}] ${land_data[LandUUID].land_name}`)
-        .body(`§e在这里您可以管理您的地皮白名单！\n${"您当前地皮的白名单玩家有：\n" + allowlist_players.join("、")}`)
+        .body(`§e在这里您可以管理您的地皮白名单！\n${str_players}`)
         .button("返回上一级")
         .button("添加白名单")
         .button("删除白名单")
@@ -1055,14 +1088,20 @@ const GUI = {
                         }
                         break;
                     case 3:
-                        //首先取消当前的actionbar
-                        LandAPI.stop_show_actionbar(player);
-                        LandAPI.stop_show_particle(player);
-                        this.ChoseLandType(player);
+                        //判断玩家是否已经选择了两个点
+                        if (land_history[player.id].pos1.length == 0 || land_history[player.id].pos2.length == 0) {
+                            player.sendMessage("§c>> 您还没有选择两个点！");
+                        } else {
+                            //首先取消当前的actionbar
+                            LandAPI.stop_show_actionbar(player);
+                            LandAPI.stop_show_particle(player);
+                            this.ChoseLandType(player);
+                        }
                         break;
                     case 4:
                         LandAPI.stop_show_actionbar(player);
                         LandAPI.stop_show_particle(player);
+                        delete land_history[player.id];
                         this.Main(player);
                         break;
                 }
@@ -1304,7 +1343,7 @@ const GUI = {
             return;
         }
         //如果地皮坐标不在限制的坐标范围内
-        if (land_data[LandUUID].pos1[0] < X_RANGE[0] || land_data[LandUUID].pos1[0] > X_RANGE[1] || land_data[LandUUID].pos1[1] < Y_RANGE[0] || land_data[LandUUID].pos1[1] > Y_RANGE[1] || land_data[LandUUID].pos1[2] < Z_RANGE[0] || land_data[LandUUID].pos1[2] > Z_RANGE[1] || land_data[LandUUID].pos2[0] < X_RANGE[0] || land_data[LandUUID].pos2[0] > X_RANGE[1] || land_data[LandUUID].pos2[1] < Y_RANGE[0] || land_data[LandUUID].pos2[1] > Y_RANGE[1] || land_data[LandUUID].pos2[2] < Z_RANGE[0] || land_data[LandUUID].pos2[2] > Z_RANGE[1]) {
+        if (land_history[player.id].pos1[0] < X_RANGE[0] || land_history[player.id].pos1[0] > X_RANGE[1] || land_history[player.id].pos1[1] < Y_RANGE[0] || land_history[player.id].pos1[1] > Y_RANGE[1] || land_history[player.id].pos1[2] < Z_RANGE[0] || land_history[player.id].pos1[2] > Z_RANGE[1] || land_history[player.id].pos2[0] < X_RANGE[0] || land_history[player.id].pos2[0] > X_RANGE[1] || land_history[player.id].pos2[1] < Y_RANGE[0] || land_history[player.id].pos2[1] > Y_RANGE[1] || land_history[player.id].pos2[2] < Z_RANGE[0] || land_history[player.id].pos2[2] > Z_RANGE[1]) {
             player.sendMessage("§c您选择的地皮坐标不在限制的坐标范围内！请重新选择！");
             return;
         }
@@ -1432,14 +1471,6 @@ const GUI = {
 }
 
 
-system.runInterval(() => {
-    let players = world.getAllPlayers();
-    for (let i = 0; i < players.length; i++) {
-        player_in_index(players[i]);
-    }
-},1)
-
-
 
 //服务器启动监听&&获得玩家市场数据
 world.afterEvents.worldInitialize.subscribe((event) => {
@@ -1502,6 +1533,13 @@ world.afterEvents.worldInitialize.subscribe((event) => {
 
 
 })
+
+system.runInterval(() => {
+    for (const player of world.getAllPlayers()) {
+        player_in_index(player);
+    }
+},1)
+
 
 
 //玩家破坏方块监听
