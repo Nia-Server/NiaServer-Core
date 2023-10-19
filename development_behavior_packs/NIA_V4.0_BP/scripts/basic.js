@@ -158,7 +158,7 @@ world.afterEvents.playerSpawn.subscribe(event => {
     if (!event.initialSpawn) {
         if (GetScore("equLevel",event.player.nameTag) < 17) {
             RunCmd(`scoreboard players set @a[name="${event.player.nameTag}"] oxygen ${parseInt(GetScore("oxygen",event.player.nameTag) * 0.9)}`)
-            event.player.sendMessage(`§c>> 您由于死亡损失了剩余的10%的氧气值！`)
+            event.player.sendMessage(`§c 您由于死亡损失了剩余的10%的氧气值！`)
         }
     }
 })
@@ -178,13 +178,13 @@ system.runInterval(() => {
         RunCmd(`title @a title §c物价指数发生变动！`)
         RunCmd(`title @a subtitle §7物价指数由 §l§e${GetScore("DATA","RN") / 100} §r§7变为 §l§e${RN / 100}`)
         //自动备份
-        Broadcast(`§e>> 服务器自动备份中！可能出现卡顿，请勿在此时进行较大负载活动！`);
+        Broadcast(`§e 服务器自动备份中！可能出现卡顿，请勿在此时进行较大负载活动！`);
         //暂时不可用
         // fs.Backup(`${cfg.MapFolder}`,`.${cfg.BackupFolder}\\${GetShortTime()}`).then((result) => {
         //     if (result === "success") {
-        //         Broadcast(`§a>> 服务器自动备份成功！备份存档校验码：${GetShortTime()}`)
+        //         Broadcast(`§a 服务器自动备份成功！备份存档校验码：${GetShortTime()}`)
         //     } else {
-        //         Broadcast("§c>> 服务器备份失败！失败错误码：" + result + " 请联系管理员！")
+        //         Broadcast("§c 服务器备份失败！失败错误码：" + result + " 请联系管理员！")
         //     }
         // })
         if (TIME.getHours() == 16) {
@@ -194,7 +194,7 @@ system.runInterval(() => {
                     RunCmd(`scoreboard objectives remove "${ScoreBoards[i].id}"`)
                 }
             }
-            Broadcast(`§a>> 服务器时间已更新！`)
+            Broadcast(`§a 服务器时间已更新！`)
         }
     }
     //每秒钟更新一次
@@ -264,7 +264,7 @@ system.runInterval(() => {
         if (GetScore("AnoxicTime",playerList[i].nameTag) == 1) {
             RunCmd(`title "${playerList[i].nameTag}" title §c您已缺氧！`)
             RunCmd(`title "${playerList[i].nameTag}" subtitle §7请及时补充氧气！`)
-            Tell("§c>> 您已进入缺氧状态！请及时补充氧气，否则会导致死亡！5秒后系统将自动打开氧气购买界面！",playerList[i].nameTag)
+            Tell("§c 您已进入缺氧状态！请及时补充氧气，否则会导致死亡！5秒后系统将自动打开氧气购买界面！",playerList[i].nameTag)
         }
         if (GetScore("AnoxicTime",playerList[i].nameTag) == 6) {
             OxygenGUI.OxygenBuy(playerList[i])
@@ -281,7 +281,7 @@ system.runInterval(() => {
         //缺氧达到一定时间后直接进行死亡程序
         if (GetScore("AnoxicTime",playerList[i].nameTag) >= 240) {
             RunCmd(`kill "${playerList[i].nameTag}"`)
-            Tell("§c>> 我们很遗憾的通知您，由于您缺氧过长时间，昏倒在家中...幸亏您被巡逻机器人及时发现并送到了医院，才救回一条命...",playerList[i].nameTag)
+            Tell("§c 我们很遗憾的通知您，由于您缺氧过长时间，昏倒在家中...幸亏您被巡逻机器人及时发现并送到了医院，才救回一条命...",playerList[i].nameTag)
             RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] oxygen 200`)
             RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] AnoxicTime 0`)
             RunCmd(`scoreboard players add @a[name="${playerList[i].nameTag}"] money -50`)

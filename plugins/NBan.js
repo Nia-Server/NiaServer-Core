@@ -355,7 +355,7 @@ mc.listen("onServerStarted",function () {
             File.writeTo(banlist_path,JSON.stringify(banlist, null, 2));
             let now = system.getTimeStr();
             if (origin.type == "player") {
-                origin.player.tell("§c>> 玩家 " + res.playername + " 已被成功封禁!他的账号将于 " + banplayer.endTime + " 由系统自动解封。如果封禁错误请使用/unban <name>指令进行解封！")
+                origin.player.tell("§c 玩家 " + res.playername + " 已被成功封禁!他的账号将于 " + banplayer.endTime + " 由系统自动解封。如果封禁错误请使用/unban <name>指令进行解封！")
             } else {
                 colorLog("yellow", "玩家 " + res.playername + " 已被成功封禁!他的账号将于 " + banplayer.endTime + " 由系统自动解封。如果封禁错误请使用/unban <name>指令进行解封！")
             }
@@ -377,7 +377,7 @@ mc.listen("onServerStarted",function () {
         for (let xuid in banlist) {
             if (banlist[xuid].name == res.playername) {
                 if (origin.type == "player") {
-                    origin.player.tell("§a>> 玩家 " + banlist[xuid].name + " §a解封成功！");
+                    origin.player.tell("§a 玩家 " + banlist[xuid].name + " §a解封成功！");
                 } else {
                     colorLog("yellow", "玩家 " + banlist[xuid].name + " 解封成功！")
                 }
@@ -389,7 +389,7 @@ mc.listen("onServerStarted",function () {
         }
         if (!UNBANresult) {
             if (origin.type == "player") {
-                origin.player.tell("§c>> 玩家 " + res.playername + " §c没有存在于封禁玩家数据文件中！");
+                origin.player.tell("§c 玩家 " + res.playername + " §c没有存在于封禁玩家数据文件中！");
             } else {
                 colorLog("red", "玩家 " + res.playername + " 没有存在于封禁玩家数据文件中！")
             }

@@ -133,11 +133,11 @@ const GUI = {
                 this.ShopPurchaseSub(player,index1)
             }
             if (parseInt(result.formValues[0]) <= 0 || isNaN(parseInt(Number(result.formValues[0])))) {
-                player.sendMessage(`§c>> 错误的数字格式，请重新输入！`)
-                // Tell(`§c>> 错误的数字格式，请重新输入！`,player.nameTag)
+                player.sendMessage(`§c 错误的数字格式，请重新输入！`)
+                // Tell(`§c 错误的数字格式，请重新输入！`,player.nameTag)
                 this.ShopBuy(player,index1,index2)
             } else if (parseInt(result.formValues[0]) >= 1025) {
-                player.sendMessage(`§c>> 单次购买物品的数量上限是1024，请重新输入！`);
+                player.sendMessage(`§c 单次购买物品的数量上限是1024，请重新输入！`);
                 this.ShopBuy(player,index1,index2)
             } else {
                 this.ShopBuySub(player,index1,index2,result.formValues[0])
@@ -157,13 +157,13 @@ const GUI = {
                     if (GetScore("money",player.nameTag) >= parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num) {
                         RunCmd(`give "${player.nameTag}" ${SellData[i].content[j].type} ${num} ${SellData[i].content[j].data}`)
                         RunCmd(`scoreboard players add @a[name="${player.nameTag}"] money -${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num}`)
-                        Tell("§a>> 购买成功！§e您以 §l" + parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num + "§r§e 能源币，成功购买 §l" + num + " §r§e个" + SellData[i].content[j].name + "!期待您的下次光临！",player.nameTag)
+                        Tell("§a 购买成功！§e您以 §l" + parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num + "§r§e 能源币，成功购买 §l" + num + " §r§e个" + SellData[i].content[j].name + "!期待您的下次光临！",player.nameTag)
                     } else {
-                        Tell(`§c>> 购买失败！余额不足，您的余额为 ${GetScore("money",player.nameTag)} 能源币，而本次购买需要 ${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num} 能源币，您还缺少 ${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num - GetScore("money",player.nameTag)} 能源币，请在攒够足够能源币后尝试再次购买！`,player.nameTag)
+                        Tell(`§c 购买失败！余额不足，您的余额为 ${GetScore("money",player.nameTag)} 能源币，而本次购买需要 ${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num} 能源币，您还缺少 ${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num - GetScore("money",player.nameTag)} 能源币，请在攒够足够能源币后尝试再次购买！`,player.nameTag)
                     }
                     break;
                 case 0:
-                    Tell("§c>> 购买失败！原因是您自己取消了本次购买！",player.nameTag)
+                    Tell("§c 购买失败！原因是您自己取消了本次购买！",player.nameTag)
                     break;
             }
         })
@@ -283,7 +283,7 @@ const GUI = {
                                 this.ShopRecycleSub(player,index1);
                                 break;
                             case 0:
-                                Tell("§c>> 回收失败！原因是该物品已达到本日回收最大数量，请明天再次尝试回收哦！",player.nameTag)
+                                Tell("§c 回收失败！原因是该物品已达到本日回收最大数量，请明天再次尝试回收哦！",player.nameTag)
                                 break;
                         }
                     })
@@ -302,7 +302,7 @@ const GUI = {
                             this.ShopRecycleSub(player,index1);
                             break;
                         case 0:
-                            Tell("§c>> 回收失败！原因是没有在您的背包中找到相应物品！请检查背包后再次尝试！",player.nameTag)
+                            Tell("§c 回收失败！原因是没有在您的背包中找到相应物品！请检查背包后再次尝试！",player.nameTag)
                             break;
                     }
                 })
@@ -329,10 +329,10 @@ const GUI = {
                     RunCmd(`clear @a[name="${player.nameTag}"] ${RecycleData[index1].content[index2].type} ${RecycleData[index1].content[index2].data} ${num}`)
                     //然后执行加钱的操作！
                     RunCmd(`scoreboard players add @a[name="${player.nameTag}"] money ${parseInt(RecycleData[index1].content[index2].price * GetScore("DATA","RN") / 100) * num}`)
-                    Tell(`§a>> 回收成功！您成功回收 §l${num}§r§a 个 §l${RecycleData[index1].content[index2].name}§r§a，并获得了 §l${parseInt(RecycleData[index1].content[index2].price * GetScore("DATA","RN") / 100) * num} §r§a能源币！期待您的下次光临！`,player.nameTag)
+                    Tell(`§a 回收成功！您成功回收 §l${num}§r§a 个 §l${RecycleData[index1].content[index2].name}§r§a，并获得了 §l${parseInt(RecycleData[index1].content[index2].price * GetScore("DATA","RN") / 100) * num} §r§a能源币！期待您的下次光临！`,player.nameTag)
                     break;
                 case 0:
-                    Tell("§c>> 回收失败！原因是您自己取消了本次回收！",player.nameTag)
+                    Tell("§c 回收失败！原因是您自己取消了本次回收！",player.nameTag)
                     break;
             }
         })

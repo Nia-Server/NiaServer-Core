@@ -43,11 +43,11 @@ const GUI = {
                 let Tags = ["NightVision"]
                 for (let i = 0; i < Tags.length; i++) {
                     player.removeTag(Tags[i])
-                    player.sendMessage("§c>> 夜视效果已关闭！")
+                    player.sendMessage("§c 夜视效果已关闭！")
                 }
                 if (result.formValues[0] == 1) {
                     player.addTag("NightVision")
-                    player.sendMessage("§a>> 夜视效果已开启！")
+                    player.sendMessage("§a 夜视效果已开启！")
                 }
             } else {
                 this.SetupMain(player)
@@ -70,7 +70,7 @@ const GUI = {
                 if (result.formValues[0] == 1) {
                     player.addTag("ShowActionbar")
                 }
-                player.sendMessage("§e>> 标题栏设置更改成功！")
+                player.sendMessage("§e 标题栏设置更改成功！")
             } else {
                 this.SetupMain(player)
             }

@@ -147,10 +147,10 @@ export function Main(player) {
                     //这里相当于一个自定义功能的实例
                     case "goISLAND":
                         if (GetScore("posX",player.nameTag) == 0 && GetScore("posY",player.nameTag) == 0 && GetScore("posZ",player.nameTag) == 0) {
-                            player.sendMessage(`§c>> 未找到相应的主岛数据！请在领取空岛后使用本功能！`,player.nameTag)
+                            player.sendMessage(`§c 未找到相应的主岛数据！请在领取空岛后使用本功能！`,player.nameTag)
                         } else {
                             RunCmd(`tp @a[name=${player.nameTag}] ${GetScore("posX",player.nameTag)} ${GetScore("posY",player.nameTag)} ${GetScore("posZ",player.nameTag)}`)
-                            player.sendMessage(`§a>> 已经将您传送至主岛！`,player.nameTag)
+                            player.sendMessage(`§a 已经将您传送至主岛！`,player.nameTag)
                         }
                         break;
                 }

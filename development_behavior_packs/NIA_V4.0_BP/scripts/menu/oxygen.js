@@ -136,7 +136,7 @@ const GUI = {
                     this.OxygenEqu(player)
                     break;
                 case 3:
-                    Tell(`§7>> 开发中内容，敬请期待！`)
+                    Tell(`§7 开发中内容，敬请期待！`)
                     break;
             }
         })
@@ -164,13 +164,13 @@ const GUI = {
                         if (parseInt(num / 10) <= GetScore("money",player.nameTag)) {
                             RunCmd(`scoreboard players add @a[name="${player.nameTag}"] oxygen ${num}`)
                             RunCmd(`scoreboard players add @a[name="${player.nameTag}"] money -${parseInt(num / 10)}`)
-                            Tell(`§a>> 您使用 §l${parseInt(num / 10)} §r§a能源币，成功购买 §l${num} §r§a氧气值！`,player.nameTag)
+                            Tell(`§a 您使用 §l${parseInt(num / 10)} §r§a能源币，成功购买 §l${num} §r§a氧气值！`,player.nameTag)
                         } else {
-                            Tell(`§c>> 购买失败！余额不足，您的余额为 ${GetScore("money",player.nameTag)} 能源币，而本次购买需要 ${parseInt(num / 10)} 能源币，您还缺少 ${parseInt(num / 10) - GetScore("money",player.nameTag)} 能源币，请在攒够足够货币后尝试再次购买！`,player.nameTag)
+                            Tell(`§c 购买失败！余额不足，您的余额为 ${GetScore("money",player.nameTag)} 能源币，而本次购买需要 ${parseInt(num / 10)} 能源币，您还缺少 ${parseInt(num / 10) - GetScore("money",player.nameTag)} 能源币，请在攒够足够货币后尝试再次购买！`,player.nameTag)
                         }
                         break;
                     case 0:
-                        Tell(`§c>> 购买失败！原因是您取消了本次购买！`,player.nameTag)
+                        Tell(`§c 购买失败！原因是您取消了本次购买！`,player.nameTag)
                         break;
                 }
             })
@@ -194,11 +194,11 @@ const GUI = {
                 } else if (result.selection == 1) {
                     if (equLevelData[GetScore("equLevel",player.nameTag) + 1].price <= GetScore("money",player.nameTag)) {
                         RunCmd(`scoreboard players add @a[name="${player.nameTag}"] money -${equLevelData[GetScore("equLevel",player.nameTag) + 1].price}`)
-                        Tell("§a>> 升级成功！您当前的氧气装备已经升级为 " + equLevelData[GetScore("equLevel",player.nameTag) + 1].name,player.nameTag)
+                        Tell("§a 升级成功！您当前的氧气装备已经升级为 " + equLevelData[GetScore("equLevel",player.nameTag) + 1].name,player.nameTag)
                         RunCmd(`scoreboard players add @a[name="${player.nameTag}"] equLevel 1`)
                         this.OxygenEqu(player)
                     } else {
-                        Tell("§c>> 升级失败！原因是余额不足！",player.nameTag)
+                        Tell("§c 升级失败！原因是余额不足！",player.nameTag)
                         this.OxygenEqu(player)
                     }
                 }

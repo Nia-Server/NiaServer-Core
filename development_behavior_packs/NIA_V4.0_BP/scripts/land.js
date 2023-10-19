@@ -611,7 +611,7 @@ const GUI = {
                         this.ManageLandOnSale(player,LandUUID);
                         break;
                     case 5:
-                        player.sendMessage("§c>> 该功能正在开发中，敬请期待！");
+                        player.sendMessage("§c 该功能正在开发中，敬请期待！");
                         //this.ManageLandSetTeleport(player,LandUUID);
                         break;
                     case 6:
@@ -638,7 +638,7 @@ const GUI = {
                 if (!response.canceled) {
                     //先判断领地名称是否为空
                     if (response.formValues[0] == "") {
-                        player.sendMessage("§c>> 领地名称不能为空！");
+                        player.sendMessage("§c 领地名称不能为空！");
                         return;
                     }
                     let old_land_data = JSON.parse(JSON.stringify(land_data));
@@ -654,12 +654,12 @@ const GUI = {
                     //开始覆写文件land.json
                     fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                         if (result === "success") {
-                            player.sendMessage("§a>> 领地属性修改成功！");
+                            player.sendMessage("§a 领地属性修改成功！");
                         } else if (result === "-1") {
-                            player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
+                            player.sendMessage("§c 服务器连接失败，请联系在线管理员！");
                             land_data = old_land_data;
                         } else {
-                            player.sendMessage("§c>> 未知错误，请联系在线管理员！");
+                            player.sendMessage("§c 未知错误，请联系在线管理员！");
                             land_data = old_land_data;
                         }
                     })
@@ -684,19 +684,19 @@ const GUI = {
                     //开始覆写文件land.json
                     fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                         if (result === "success") {
-                            player.sendMessage("§a>> 领地回收成功！");
+                            player.sendMessage("§a 领地回收成功！");
                             //开始退款
                             world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).addScore(player,parseInt(land_data[LandUUID].purchase_price * 0.6));
                         } else if (result === "-1") {
-                            player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
+                            player.sendMessage("§c 服务器连接失败，请联系在线管理员！");
                             land_data = old_land_data;
                         } else {
-                            player.sendMessage("§c>> 未知错误，请联系在线管理员！");
+                            player.sendMessage("§c 未知错误，请联系在线管理员！");
                             land_data = old_land_data;
                         }
                     })
                 } else if (response.selection == 1) {
-                    player.sendMessage("§c>> 您已取消回收领地！");
+                    player.sendMessage("§c 您已取消回收领地！");
                 }
             } else {
                 this.ManageLandDetail(player,LandUUID);
@@ -718,7 +718,7 @@ const GUI = {
         .show(player).then((response) => {
             if (!response.canceled) {
                 if (response.formValues[0] == 0) {
-                    player.sendMessage("§c>> 您未选择任何玩家！");
+                    player.sendMessage("§c 您未选择任何玩家！");
                     return;
                 }
                 //开始转让领地
@@ -729,12 +729,12 @@ const GUI = {
                 //开始覆写文件land.json
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     if (result === "success") {
-                        player.sendMessage("§a>> 领地转让成功！");
+                        player.sendMessage("§a 领地转让成功！");
                     } else if (result === "-1") {
-                        player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
+                        player.sendMessage("§c 服务器连接失败，请联系在线管理员！");
                         land_data = old_land_data;
                     } else {
-                        player.sendMessage("§c>> 未知错误，请联系在线管理员！");
+                        player.sendMessage("§c 未知错误，请联系在线管理员！");
                         land_data = old_land_data;
                     }
                 })
@@ -755,22 +755,22 @@ const GUI = {
             if (!response.canceled) {
                 //判断价格是否为空
                 if (response.formValues[1] == "") {
-                    player.sendMessage("§c>> 价格不能为空！");
+                    player.sendMessage("§c 价格不能为空！");
                     return;
                 }
                 //再判断价格是否为数字
                 if (isNaN(parseInt(response.formValues[1]))) {
-                    player.sendMessage("§c>> 价格必须为正整数！");
+                    player.sendMessage("§c 价格必须为正整数！");
                     return;
                 }
                 //判断领地名称是否为空
                 if (response.formValues[2] == "") {
-                    player.sendMessage("§c>> 领地名称不能为空！");
+                    player.sendMessage("§c 领地名称不能为空！");
                     return;
                 }
                 //判断领地描述是否为空
                 if (response.formValues[3] == "") {
-                    player.sendMessage("§c>> 领地描述不能为空！");
+                    player.sendMessage("§c 领地描述不能为空！");
                     return;
                 }
                 //开始上架领地
@@ -783,15 +783,15 @@ const GUI = {
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     if (result === "success") {
                         if (land_data[LandUUID].on_sale) {
-                            player.sendMessage(`§a>> 领地上架成功！您的领地已上架至市场，售价为 §l${land_data[LandUUID].sale_price} §r§a金币！在领地售出前权限不会发生任何变化！`);
+                            player.sendMessage(`§a 领地上架成功！您的领地已上架至市场，售价为 §l${land_data[LandUUID].sale_price} §r§a金币！在领地售出前权限不会发生任何变化！`);
                         } else {
-                            player.sendMessage("§a>> 领地下架成功！您的领地已下架！");
+                            player.sendMessage("§a 领地下架成功！您的领地已下架！");
                         }
                     } else if (result === "-1") {
-                        player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
+                        player.sendMessage("§c 服务器连接失败，请联系在线管理员！");
                         land_data = old_land_data;
                     } else {
-                        player.sendMessage("§c>> 未知错误，请联系在线管理员！");
+                        player.sendMessage("§c 未知错误，请联系在线管理员！");
                         land_data = old_land_data;
                     }
                 })
@@ -859,7 +859,7 @@ const GUI = {
         .show(player).then((response) => {
             if (!response.canceled) {
                 if (response.formValues[0] == 0) {
-                    player.sendMessage("§c>> 您未选择任何玩家！");
+                    player.sendMessage("§c 您未选择任何玩家！");
                     return;
                 }
                 //开始添加白名单
@@ -869,12 +869,12 @@ const GUI = {
                 //开始覆写文件land.json
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     if (result === "success") {
-                        player.sendMessage(`§a>> 您已将玩家 §l§e${players[response.formValues[0] - 1].name} §r§a成功添加至领地§e ${land_data[LandUUID].land_name} §a的白名单！`);
+                        player.sendMessage(`§a 您已将玩家 §l§e${players[response.formValues[0] - 1].name} §r§a成功添加至领地§e ${land_data[LandUUID].land_name} §a的白名单！`);
                     } else if (result === "-1") {
-                        player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
+                        player.sendMessage("§c 服务器连接失败，请联系在线管理员！");
                         land_data = old_land_data;
                     } else {
-                        player.sendMessage("§c>> 未知错误，请联系在线管理员！");
+                        player.sendMessage("§c 未知错误，请联系在线管理员！");
                         land_data = old_land_data;
                     }
                 })
@@ -898,7 +898,7 @@ const GUI = {
         .show(player).then((response) => {
             if (!response.canceled) {
                 if (response.formValues[0] == 0) {
-                    player.sendMessage("§c>> 您未选择任何玩家！");
+                    player.sendMessage("§c 您未选择任何玩家！");
                     return;
                 }
                 //开始删除白名单
@@ -908,12 +908,12 @@ const GUI = {
                 //开始覆写文件land.json
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     if (result === "success") {
-                        player.sendMessage(`§a>> 您已将玩家 §l§e${players[response.formValues[0] - 1].name} §r§a成功从领地§e ${land_data[LandUUID].land_name} §a的白名单中删除！`);
+                        player.sendMessage(`§a 您已将玩家 §l§e${players[response.formValues[0] - 1].name} §r§a成功从领地§e ${land_data[LandUUID].land_name} §a的白名单中删除！`);
                     } else if (result === "-1") {
-                        player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
+                        player.sendMessage("§c 服务器连接失败，请联系在线管理员！");
                         land_data = old_land_data;
                     } else {
-                        player.sendMessage("§c>> 未知错误，请联系在线管理员！");
+                        player.sendMessage("§c 未知错误，请联系在线管理员！");
                         land_data = old_land_data;
                     }
                 })
@@ -995,7 +995,7 @@ const GUI = {
                     land_data[LandUUID].on_sale = false;
                     //首先判断玩家余额是否足够
                     if (world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).getScore(player) < land_data[LandUUID].sale_price) {
-                        player.sendMessage(`§c>> 您的余额不足！您当前余额为：${world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).getScore(player)}，而该领地的价格为：${land_data[LandUUID].sale_price}`);
+                        player.sendMessage(`§c 您的余额不足！您当前余额为：${world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).getScore(player)}，而该领地的价格为：${land_data[LandUUID].sale_price}`);
                         return;
                     }
                     //开始覆写文件land.json
@@ -1006,7 +1006,7 @@ const GUI = {
                             temp_player_money[old_land_data[LandUUID].owner] = land_data[LandUUID].sale_price;
                             fs.OverwriteJsonFile("land_temp_player_money.json",temp_player_money).then((result) => {
                                 if (result === "success") {
-                                    player.sendMessage("§a>> 领地购买成功！");
+                                    player.sendMessage("§a 领地购买成功！");
                                     //开始扣款
                                     world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).addScore(player,-land_data[LandUUID].sale_price);
                                 } else {
@@ -1016,15 +1016,15 @@ const GUI = {
                                 }
                             })
                         } else if (result === "-1") {
-                            player.sendMessage("§c>> 服务器连接失败，请联系在线管理员！");
+                            player.sendMessage("§c 服务器连接失败，请联系在线管理员！");
                             land_data = old_land_data;
                         } else {
-                            player.sendMessage("§c>> 未知错误，请联系在线管理员！");
+                            player.sendMessage("§c 未知错误，请联系在线管理员！");
                             land_data = old_land_data;
                         }
                     })
                 } else if (response.selection == 1) {
-                    player.sendMessage("§c>> 您已取消购买领地！");
+                    player.sendMessage("§c 您已取消购买领地！");
                 }
             } else {
                 this.LandMarketDetail(player,LandUUID);
@@ -1117,7 +1117,7 @@ const GUI = {
                     case 3:
                         //判断玩家是否已经选择了两个点
                         if (land_history[player.id].pos1.length == 0 || land_history[player.id].pos2.length == 0) {
-                            player.sendMessage("§c>> 您还没有选择两个点！");
+                            player.sendMessage("§c 您还没有选择两个点！");
                         } else {
                             //首先取消当前的actionbar
                             LandAPI.stop_show_actionbar(player);
@@ -1259,7 +1259,7 @@ const GUI = {
         }
         //开始判断领地是否重合
         if (have_land(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid)) {
-            player.sendMessage("§c您选择的领地与已有领地重合！请重新选择！");
+            player.sendMessage("§c您选择的领地与已有领地重合！请重新选择！");
             delete land_history[player.id];
             return;
         }
@@ -1324,7 +1324,7 @@ const GUI = {
                 //开始写入数据
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     if (result === "success") {
-                        player.sendMessage("§e>> 购买成功！您已经拥有该领地,该领地id为：§c" + adler32(new_land_data.get_time + player.id + purchase_price) + "§e！");
+                        player.sendMessage("§e 购买成功！您已经拥有该领地,该领地id为：§c" + adler32(new_land_data.get_time + player.id + purchase_price) + "§e！");
                         RunCmd(`title ${player.nameTag} title §e§l购买圈地成功！`);
                         RunCmd(`title ${player.nameTag} subtitle §a您还可以购买 §c${5 - land_num - 1}§a 块领地！`);
                         //扣除玩家金币
@@ -1335,17 +1335,17 @@ const GUI = {
                         delete land_history[player.id];
                     } else if (result === -1) {
                         //服务器连接超时提醒
-                        player.sendMessage("§c>> 服务器连接失败！请联系在线管理员！");
+                        player.sendMessage("§c 服务器连接失败！请联系在线管理员！");
                         console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
                         land_data = old_land_data;
                     } else {
                         //未知错误提醒
-                        player.sendMessage("§c>> 未知错误！请联系在线管理员！");
+                        player.sendMessage("§c 未知错误！请联系在线管理员！");
                         land_data = old_land_data;
                     }
                 })
             } else {
-                player.sendMessage("§c>> 购买失败！您已取消购买！");
+                player.sendMessage("§c 购买失败！您已取消购买！");
             }
         })
 
@@ -1363,21 +1363,29 @@ const GUI = {
         //如果领地过小
         if (XLength * ZLength < MIN_SQUARE) {
             player.sendMessage("§c您选择的领地体积过小！请重新选择！");
+            //删除历史数据
+            delete land_history[player.id];
             return;
         }
         //如果领地过大
         if (XLength  * ZLength > MAX_SQUARE) {
             player.sendMessage("§c您选择的领地体积过大！请重新选择！");
+            //删除历史数据
+            delete land_history[player.id];
             return;
         }
         //如果领地坐标不在限制的坐标范围内
         if (land_history[player.id].pos1[0] < X_RANGE[0] || land_history[player.id].pos1[0] > X_RANGE[1] || land_history[player.id].pos1[1] < Y_RANGE[0] || land_history[player.id].pos1[1] > Y_RANGE[1] || land_history[player.id].pos1[2] < Z_RANGE[0] || land_history[player.id].pos1[2] > Z_RANGE[1] || land_history[player.id].pos2[0] < X_RANGE[0] || land_history[player.id].pos2[0] > X_RANGE[1] || land_history[player.id].pos2[1] < Y_RANGE[0] || land_history[player.id].pos2[1] > Y_RANGE[1] || land_history[player.id].pos2[2] < Z_RANGE[0] || land_history[player.id].pos2[2] > Z_RANGE[1]) {
             player.sendMessage("§c您选择的领地坐标不在限制的坐标范围内！请重新选择！");
+            //删除历史数据
+            delete land_history[player.id];
             return;
         }
         //开始判断领地是否重合
         if (have_land(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid)) {
-            player.sendMessage("§c您选择的领地与已有领地重合！请重新选择！");
+            player.sendMessage("§c 您选择的领地与已有领地重合！请重新选择！");
+            //删除历史数据
+            delete land_history[player.id];
             return;
         }
         //开始计算价格
@@ -1441,7 +1449,7 @@ const GUI = {
                 //开始写入数据
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     if (result === "success") {
-                        player.sendMessage("§e>> 购买成功！您已经拥有该领地,该领地id为：§c" + adler32(new_land_data.get_time + player.id + purchase_price) + "§e！");
+                        player.sendMessage("§e 购买成功！您已经拥有该领地,该领地id为：§c" + adler32(new_land_data.get_time + player.id + purchase_price) + "§e！");
                         RunCmd(`title ${player.nameTag} title §e§l购买圈地成功！`);
                         RunCmd(`title ${player.nameTag} subtitle §a您还可以购买 §c${5 - land_num - 1}§a 块领地！`);
                         //扣除玩家金币
@@ -1452,17 +1460,17 @@ const GUI = {
                         delete land_history[player.id];
                     } else if (result === -1) {
                         //服务器连接超时提醒
-                        player.sendMessage("§c>> 服务器连接失败！请联系在线管理员！");
+                        player.sendMessage("§c 服务器连接失败！请联系在线管理员！");
                         console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
                         land_data = old_land_data;
                     } else {
                         //未知错误提醒
-                        player.sendMessage("§c>> 未知错误！请联系在线管理员！");
+                        player.sendMessage("§c 未知错误！请联系在线管理员！");
                         land_data = old_land_data;
                     }
                 })
             } else {
-                player.sendMessage("§c>> 购买失败！您已取消购买！");
+                player.sendMessage("§c 购买失败！您已取消购买！");
             }
         })
     },
@@ -1480,9 +1488,9 @@ const GUI = {
                     //存在，给钱
                     if (old_temp_player_money[player.id] != 0) {
                         world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).addScore(player,old_temp_player_money[player.id])
-                        player.sendMessage("§e>> 您有一笔来自圈地系统的 " + old_temp_player_money[player.id] + " 金币已到账！请注意查收！");
+                        player.sendMessage("§e 您有一笔来自圈地系统的 " + old_temp_player_money[player.id] + " 金币已到账！请注意查收！");
                     } else {
-                        player.sendMessage("§e>> 您目前没有任何圈地收益，尝试售卖领地来获得收益！");
+                        player.sendMessage("§e 您目前没有任何圈地收益，尝试售卖领地来获得收益！");
                     }
                 } else {
                     this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
@@ -1491,7 +1499,7 @@ const GUI = {
                 }
             })
         } else {
-            player.sendMessage("§e>> 您目前没有任何圈地收益，尝试售卖领地来获得收益！");
+            player.sendMessage("§e 您目前没有任何圈地收益，尝试售卖领地来获得收益！");
         }
     },
 
@@ -1779,7 +1787,7 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
                 }
                 break;
             default:
-                event.sourceEntity.sendMessage("§c>> 未知指令！请检查指令是否正确！");
+                event.sourceEntity.sendMessage("§c 未知指令！请检查指令是否正确！");
                 break;
         }
     }

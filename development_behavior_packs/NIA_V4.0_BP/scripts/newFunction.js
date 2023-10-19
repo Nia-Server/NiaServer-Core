@@ -272,57 +272,57 @@ const EQGUI = {
                     switch (true) {
                         case random_num <= 0.02:
                             sword_data.getComponent("minecraft:durability").damage = parseInt(sword_data.getComponent("minecraft:durability").damage / 2);
-                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + sword_data.getComponent("minecraft:durability").damage +"\n§r§c§l强化失败，耐久损失一半！\n\n§r=================\n";
+                            info = info + "\n等级 §c§l" + now_level + "§r  §c§l" + (now_level + 1) + sword_data.getComponent("minecraft:durability").damage +"\n§r§c§l强化失败，耐久损失一半！\n\n§r=================\n";
                             now_level = now_level + 1;
                             break;
                         case random_num > 0.02 && random_num <= 0.2:
-                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r§c§l强化失败，无事发生！\n\n§r=================\n";
+                            info = info + "\n等级 §c§l" + now_level + "§r  §c§l" + (now_level + 1) + "\n§r§c§l强化失败，无事发生！\n\n§r=================\n";
                             now_level = now_level + 1;
                             break;
                         case random_num > 0.2 && random_num <= 0.5:
                             store_random_data = Math.random() * 9 + 1
                             add_cr = add_cr + store_random_data;
-                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r暴击率 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
+                            info = info + "\n等级 §c§l" + now_level + "§r  §c§l" + (now_level + 1) + "\n§r暴击率 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
                             now_level = now_level + 1;
                             break;
                         case random_num > 0.5 && random_num <= 0.8:
                             store_random_data = Math.random() * 18 + 2;
                             add_cd = add_cd + store_random_data;
-                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r暴击伤害 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
+                            info = info + "\n等级 §c§l" + now_level + "§r  §c§l" + (now_level + 1) + "\n§r暴击伤害 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
                             now_level = now_level + 1;
                             break;
                         case random_num > 0.8 && random_num <= 0.89:
                             store_random_data = Math.random() * 7 + 8;
                             add_cr = add_cr + store_random_data;
-                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r暴击率 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
+                            info = info + "\n等级 §c§l" + now_level + "§r  §c§l" + (now_level + 1) + "\n§r暴击率 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
                             now_level = now_level + 1;
                             break;
                         case random_num > 0.89 && random_num <= 0.98:
                             store_random_data = Math.random() * 14 + 16;
                             add_cd = add_cd + store_random_data;
-                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r暴击伤害 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
+                            info = info + "\n等级 §c§l" + now_level + "§r  §c§l" + (now_level + 1) + "\n§r暴击伤害 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
                             now_level = now_level + 1;
                             break;
                         case random_num > 0.98 && random_num <= 0.989:
                             store_random_data = Math.random() * 30 + 30;
                             add_cr = add_cr + store_random_data;
-                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r暴击率 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
+                            info = info + "\n等级 §c§l" + now_level + "§r  §c§l" + (now_level + 1) + "\n§r暴击率 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
                             now_level = now_level + 1;
                             break;
                         case random_num > 0.989 && random_num <= 0.998:
                             store_random_data = Math.random() * 60 + 60;
                             add_cd = add_cd + store_random_data;
-                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r暴击伤害 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
+                            info = info + "\n等级 §c§l" + now_level + "§r  §c§l" + (now_level + 1) + "\n§r暴击伤害 +§c§l" + store_random_data.toFixed(2) + "%%\n\n§r=================\n";
                             now_level = now_level + 1;
                             break;
                         case random_num > 0.998 && random_num <= 0.999:
                             add_cr = add_cr + 100;
-                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r暴击率 +§c§l100%%\n\n§r=================\n";
+                            info = info + "\n等级 §c§l" + now_level + "§r  §c§l" + (now_level + 1) + "\n§r暴击率 +§c§l100%%\n\n§r=================\n";
                             now_level = now_level + 1;
                             break;
                         case random_num > 0.999 && random_num <= 1:
                             add_cd = add_cd + 200;
-                            info = info + "\n等级 §c§l" + now_level + "§r >>>> §c§l" + (now_level + 1) + "\n§r暴击伤害 +§c§l200%%\n\n§r=================\n";
+                            info = info + "\n等级 §c§l" + now_level + "§r  §c§l" + (now_level + 1) + "\n§r暴击伤害 +§c§l200%%\n\n§r=================\n";
                             now_level = now_level + 1;
                             break;
 

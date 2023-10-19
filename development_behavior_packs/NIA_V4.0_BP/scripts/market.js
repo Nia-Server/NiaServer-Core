@@ -127,7 +127,7 @@ const GUI = {
             if (response.canceled) {
                 this.Main(player)
             } else if (response.selection == 0) {
-                player.sendMessage("§c>> 该功能正在开发中，敬请期待！");
+                player.sendMessage("§c 该功能正在开发中，敬请期待！");
             } else {
                 let pre_item_data = {};
                 const MarketSubForm = new ActionFormData()
@@ -180,12 +180,12 @@ const GUI = {
                                 }
                             }
                             if (!has_empty_slot) {
-                                player.sendMessage("§c>> 您背包没有多余的空间来放置预览商品，请清空后重试！");
+                                player.sendMessage("§c 您背包没有多余的空间来放置预览商品，请清空后重试！");
                             } else {
-                                player.sendMessage("§e>> 已成功将预览商品送至您的背包中，预览商品将在10s后自动收回！请及时查看！");
+                                player.sendMessage("§e 已成功将预览商品送至您的背包中，预览商品将在10s后自动收回！请及时查看！");
                                 system.runTimeout(()=>{
                                     try {
-                                        player.sendMessage("§e>> 预览时间已到，物品已自动收回！");
+                                        player.sendMessage("§e 预览时间已到，物品已自动收回！");
                                         for (let i = 9 ; i < 36; i++) {
                                             if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).getLore()[player.getComponent("minecraft:inventory").container.getItem(i).getLore().length - 2] == "§c预览商品请勿进行其他操作！") {
                                                 player.getComponent("minecraft:inventory").container.setItem(i,new ItemStack("minecraft:air"));
@@ -243,7 +243,7 @@ const GUI = {
                         has_empty_slot = true;
                     }
                     if (!has_empty_slot) {
-                        player.sendMessage("§c>> 购买失败！您背包没有多余的空间来放置商品，请清空后重试！");
+                        player.sendMessage("§c 购买失败！您背包没有多余的空间来放置商品，请清空后重试！");
                     } else {
                         //根据商品id寻找
                         for (let i = 0; i < MarketData.length; i++) {
@@ -261,7 +261,7 @@ const GUI = {
                                         temp_player_money[player.id] = response.formValues[0] * item_data.price;
                                         fs.OverwriteJsonFile("market_temp_player_money.json",temp_player_money).then((result) => {
                                             if (result === "success") {
-                                                player.sendMessage("§e>> 购买成功！已将商品送至您的背包中！");
+                                                player.sendMessage("§e 购买成功！已将商品送至您的背包中！");
                                                 //扣除玩家金币
                                                 world.scoreboard.getObjective("money").setScore(player,GetScore("money",player.nameTag) - (response.formValues[0] * item_data.price));
                                                 //发送物品
@@ -284,7 +284,7 @@ const GUI = {
                     }
                 } else if (response.formValues[0] * item_data.price > GetScore("money",player.nameTag)) {
                     //玩家金币不够
-                    player.sendMessage("§c>> 购买失败！您的金币不足！");
+                    player.sendMessage("§c 购买失败！您的金币不足！");
                 }
             })
 
@@ -568,7 +568,7 @@ const GUI = {
                                     }
                                     //如果没有空间
                                     if (!has_empty_slot) {
-                                        player.sendMessage("§c>> 本次对商品的所有操作失败！您背包没有多余的空间来放置商品，请清空后重试！");
+                                        player.sendMessage("§c 本次对商品的所有操作失败！您背包没有多余的空间来放置商品，请清空后重试！");
                                     } else {
                                         //如果有足够空间
                                         //根据商品id寻找
@@ -639,9 +639,9 @@ const GUI = {
                     //存在，给钱
                     if (old_temp_player_money[player.id] != 0) {
                         world.scoreboard.getObjective("money").addScore(player,old_temp_player_money[player.id])
-                        player.sendMessage("§e>> 您有一笔来自玩家交易市场的 " + old_temp_player_money[player.id] + " 金币已到账！请注意查收！");
+                        player.sendMessage("§e 您有一笔来自玩家交易市场的 " + old_temp_player_money[player.id] + " 金币已到账！请注意查收！");
                     }  else {
-                        player.sendMessage("§e>> 您目前没有任何玩家交易市场收益，尝试售卖物品来获得收益！");
+                        player.sendMessage("§e 您目前没有任何玩家交易市场收益，尝试售卖物品来获得收益！");
                     }
                 } else {
                     this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
@@ -650,7 +650,7 @@ const GUI = {
                 }
             })
         } else {
-            player.sendMessage("§e>> 您目前没有任何玩家交易市场收益，尝试售卖物品来获得收益！");
+            player.sendMessage("§e 您目前没有任何玩家交易市场收益，尝试售卖物品来获得收益！");
         }
     },
 
@@ -702,7 +702,7 @@ world.afterEvents.playerSpawn.subscribe((event) => {
         for (let i = 9 ; i < 36; i++) {
             if (event.player.getComponent("minecraft:inventory").container.getItem(i) != undefined && event.player.getComponent("minecraft:inventory").container.getItem(i).getLore()[event.player.getComponent("minecraft:inventory").container.getItem(i).getLore().length - 2] == "§c预览商品请勿进行其他操作！") {
                 event.player.getComponent("minecraft:inventory").container.setItem(i,new ItemStack("minecraft:air"));
-                event.player.sendMessage("§c>> 未正常去除的预览商品已回收！");
+                event.player.sendMessage("§c 未正常去除的预览商品已回收！");
                 log("玩家未正常归还的预览商品已被自动回收！");
             }
         }
