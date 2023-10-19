@@ -16,7 +16,7 @@ var temp_player_money = {};
 
 //服务器启动监听&&获得玩家市场数据
 world.afterEvents.worldInitialize.subscribe(() => {
-    let start = Date.now();
+    let start_1 = Date.now();
     fs.GetJSONFileData("market.json").then((result) => {
         //文件不存在
         if (result === 0) {
@@ -33,9 +33,11 @@ world.afterEvents.worldInitialize.subscribe(() => {
         } else {
             //文件存在且服务器连接成功
             MarketData = result;
-            log("玩家市场数据获取成功，本次读取用时：" + (Date.now() - start) + "ms");
+            log("玩家市场数据获取成功，本次读取用时：" + (Date.now() - start_1) + "ms");
         }
     })
+
+    let start_2 = Date.now();
     fs.GetJSONFileData("market_temp_player_money.json").then((result) => {
         if (result === 0) {
             fs.CreateNewJsonFile("market_temp_player_money.json",{}).then((result) => {
@@ -50,7 +52,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
         } else {
             //文件存在且服务器连接成功
             temp_player_money = result;
-            log("(market)玩家金币数据获取成功，本次读取用时：" + (Date.now() - start) + "ms");
+            log("(market)玩家金币数据获取成功，本次读取用时：" + (Date.now() - start_2) + "ms");
         }
     })
 
