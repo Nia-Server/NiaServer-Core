@@ -43,7 +43,7 @@ const Y_RANGE = [-64,256];
 const Z_RANGE = [-100000,100000];
 //金币计分板名称
 const MONEY_SCOREBOARD_NAME = "money";
-const MONEY_SCOREBOARD_DISPLAY_NAME = "§e金币";
+const MONEY_SCOREBOARD_DISPLAY_NAME = "金币";
 
 
 
@@ -58,7 +58,7 @@ const fs = new ExternalFS();
  * @param {String} dimid
  * @param {String} LandUUID
  */
-function calculate_index(pos1, pos2, dimid, LandUUID) {
+function add_index(pos1, pos2, dimid, LandUUID) {
     let X1Index = parseInt(pos1[0] / DISTANCE);
     let Z1Index = parseInt(pos1[2] / DISTANCE);
     let X2Index = parseInt(pos2[0] / DISTANCE);
@@ -92,13 +92,58 @@ function calculate_index(pos1, pos2, dimid, LandUUID) {
 }
 
 /**
+ * 输入坐标范围信息，以及当前的索引值数据，删除索引值
+ * @param {Array} pos1
+ * @param {Array} pos2
+ * @param {String} dimid
+ * @param {String} LandUUID
+ */
+function delete_index(pos1, pos2, dimid, LandUUID) {
+    let X1Index = parseInt(pos1[0] / DISTANCE);
+    let Z1Index = parseInt(pos1[2] / DISTANCE);
+    let X2Index = parseInt(pos2[0] / DISTANCE);
+    let Z2Index = parseInt(pos2[2] / DISTANCE);
+    //将最小的转化为相应索引值
+    if (X1Index > X2Index) {
+        let IndexXMIN = X1Index;
+        X1Index = X2Index;
+        X2Index = IndexXMIN;
+    }
+    if (Z1Index > Z2Index) {
+        let IndexZMIN = Z1Index;
+        Z1Index = Z2Index;
+        Z2Index = IndexZMIN;
+    }
+    //开始删除索引值
+    for (let XIndex = X1Index; XIndex <= X2Index; XIndex++) {
+        for (let ZIndex = Z1Index; ZIndex <= Z2Index; ZIndex++) {
+            let index = land_index[dimid][XIndex][ZIndex].indexOf(LandUUID);
+            if (index != -1) {
+                land_index[dimid][XIndex][ZIndex].splice(index,1);
+                //判断数组是否为空，如果为空则删除该数组
+                if (land_index[dimid][XIndex][ZIndex].length == 0) {
+                    delete land_index[dimid][XIndex][ZIndex];
+                    //再判断对象是否为空，如果为空则删除该对象
+                    if (Object.keys(land_index[dimid][XIndex]).length == 0) {
+                        delete land_index[dimid][XIndex];
+                        //再判断对象是否为空，如果为空则删除该对象
+                        if (Object.keys(land_index[dimid]).length == 0) {
+                            delete land_index[dimid];
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
  * 判断坐标对应的区块是否有领地数据
  * @param {Array} pos
  * @param {number} dimid
  * @returns {object} 如果不在返回false，如果在则返回所在的领地数据
  */
-function pos_in_index(pos,dimid) {
-    let start = new Date();
+function pos_in_land(pos,dimid) {
     //根据传入的坐标计算出相应的区块编号
     let posX = parseInt(pos[0]);
     let posY = parseInt(pos[1]);
@@ -107,7 +152,7 @@ function pos_in_index(pos,dimid) {
     let XIndex = parseInt(posX / DISTANCE);
     let ZIndex = parseInt(posZ / DISTANCE);
     //判断该区块内是否有领地数据，根据数据层层判断
-    if (!land_index.hasOwnProperty(posDimid) || !land_index[posDimid].hasOwnProperty(XIndex) || !land_index[posDimid][XIndex].hasOwnProperty(ZIndex)) {
+    if(!land_index[posDimid] || !land_index[posDimid][XIndex] || !land_index[posDimid][XIndex][ZIndex]) {
         return false;
     }
     //如果走到了这里说明，该区块编号下有相应的领地数据存在，然后遍历该区块存在的领地即可
@@ -150,7 +195,7 @@ function pos_in_index(pos,dimid) {
  * @param {object} player
  */
 function player_in_index(player) {
-    let land = pos_in_index([player.location.x, player.location.y,player.location.z],player.dimension.id);
+    let land = pos_in_land([player.location.x, player.location.y,player.location.z],player.dimension.id);
     //获取玩家矢量速度
     let player_velocity = player.getVelocity();
     //获取玩家当前坐标
@@ -162,9 +207,9 @@ function player_in_index(player) {
         player.addTag("inland");
         if (land) {
             if (in_allowlist(player,land)) {
-                player.onScreenDisplay.setActionBar(`§b您正在 ${land.land_name} §r§b中`);
-            } else if (land.setup.ShowActionbar) {
                 player.onScreenDisplay.setActionBar(`§a欢迎回到 ${land.land_name} §r§a中！`);
+            } else if (land.setup.ShowActionbar) {
+                player.onScreenDisplay.setActionBar(`§b您正在 ${land.land_name} §r§b中`);
             }
         } else {
             //现在不在领地中
@@ -178,7 +223,7 @@ function player_in_index(player) {
             //现在在领地中
             player.addTag("inland");
             if (!in_allowlist(player,land)) {
-                if (land.setup.VirtualFence) {
+                if (!player.hasTag(cfg.OPTAG) && land.setup.VirtualFence) {
                     player.teleport(player_last_pos);
                     RunCmd(`title "${player.name}" title §c无法进入该领地！`);
                     RunCmd(`title "${player.name}" subtitle §e== ${land.land_name} §r§e==`);
@@ -186,6 +231,9 @@ function player_in_index(player) {
                 } else {
                     RunCmd(`title "${player.name}" title §b您已进入他人领地之中！`);
                     RunCmd(`title "${player.name}" subtitle §e== ${land.land_name} §r§e==`);
+                    if (player.hasTag(cfg.OPTAG)) {
+                        player.sendMessage(`§c 尊敬的管理员，您正在玩家 ${land.owner_name} 的领地中，由于您是管理员，所以在领地中不会受到任何限制，但请注意不要破坏玩家领地！`);
+                    }
                     player.playSound("random.levelup");
                 }
             } else if (land.setup.ShowActionbar) {
@@ -586,11 +634,11 @@ const GUI = {
         .title(`管理[${LandUUID}] ${land_data[LandUUID].land_name}`)
         .body("§e在这里您可以管理您的领地！")
         .button("返回上一级")
-        .button("领地管理")
+        .button("领地基础设置")
         .button("回收（摧毁）领地")
         .button("转让领地至其他玩家")
         .button("管理领地上架状态")
-        .button("(dev)设置领地传送点")
+        .button("设置领地传送点")
         .button("管理白名单")
         .show(player).then((response) => {
             if (!response.canceled) {
@@ -633,7 +681,7 @@ const GUI = {
             .toggle("其他玩家可以打开箱子",land_data[LandUUID].setup.OpenChest)
             .toggle("在领地内是否可以发生爆炸",land_data[LandUUID].setup.Expoplosion)
             .toggle("自己处于领地内时显示标题",land_data[LandUUID].setup.ShowActionbar)
-            .toggle("是否启用虚拟围墙",land_data[LandUUID].setup.VirtualFence)
+            .toggle("启用虚拟围墙",land_data[LandUUID].setup.VirtualFence)
             .show(player).then((response) => {
                 if (!response.canceled) {
                     //先判断领地名称是否为空
@@ -672,27 +720,28 @@ const GUI = {
     ManageLandRecycle(player,LandUUID) {
         const ManageLandRecycleForm = new MessageFormData()
         .title(`回收领地[${LandUUID}] ${land_data[LandUUID].land_name}`)
-        .body(`§c您确定要以 §l${parseInt(land_data[LandUUID].purchase_price * 0.6)} §r§c回收该领地吗？\n§e回收领地后将无法恢复！`)
+        .body(`§c您确定要以 ${parseInt(land_data[LandUUID].purchase_price * 0.6)} ${MONEY_SCOREBOARD_DISPLAY_NAME}§r§c回收该领地吗？\n§e回收领地后将无法恢复！`)
         .button1("§a确定回收")
         .button2("§c取消回收")
         .show(player).then((response) => {
             if (!response.canceled) {
                 if (response.selection == 0) {
                     //开始回收领地
-                    let old_land_data = JSON.parse(JSON.stringify(land_data));
-                    delete land_data[LandUUID];
+                    let new_land_data = JSON.parse(JSON.stringify(land_data));
+                    delete new_land_data[LandUUID];
                     //开始覆写文件land.json
-                    fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+                    fs.OverwriteJsonFile("land.json",new_land_data).then((result) => {
                         if (result === "success") {
-                            player.sendMessage("§a 领地回收成功！");
+                            player.sendMessage(`§a 领地回收成功，成功获得 §l§e${parseInt(land_data[LandUUID].purchase_price * 0.6)} §r§a${MONEY_SCOREBOARD_DISPLAY_NAME}！`);
                             //开始退款
                             world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).addScore(player,parseInt(land_data[LandUUID].purchase_price * 0.6));
+                            //重新计算索引值
+                            delete_index(land_data[LandUUID].pos1, land_data[LandUUID].pos2, land_data[LandUUID].dimid, LandUUID);
+                            land_data = JSON.parse(JSON.stringify(new_land_data));
                         } else if (result === "-1") {
                             player.sendMessage("§c 服务器连接失败，请联系在线管理员！");
-                            land_data = old_land_data;
                         } else {
                             player.sendMessage("§c 未知错误，请联系在线管理员！");
-                            land_data = old_land_data;
                         }
                     })
                 } else if (response.selection == 1) {
@@ -729,7 +778,8 @@ const GUI = {
                 //开始覆写文件land.json
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     if (result === "success") {
-                        player.sendMessage("§a 领地转让成功！");
+                        player.sendMessage(`§a 领地转让成功！您已将领地转让至玩家 §l${players[response.formValues[0] - 1].name} §r§a名下！`);
+                        players[response.formValues[0] - 1].sendMessage(`§a 您已收到一块领地！领地名字为 §l${land_data[LandUUID].land_name} §r§a，请前往查看！`);
                     } else if (result === "-1") {
                         player.sendMessage("§c 服务器连接失败，请联系在线管理员！");
                         land_data = old_land_data;
@@ -903,6 +953,11 @@ const GUI = {
                 }
                 //开始删除白名单
                 let old_land_data = JSON.parse(JSON.stringify(land_data));
+                //检查该玩家是否在白名单中
+                if (!land_data[LandUUID].allowlist.hasOwnProperty(players[response.formValues[0] - 1].id)) {
+                    player.sendMessage("§c 该玩家不在白名单中！");
+                    return;
+                }
                 //首先获取要删除的玩家对象
                 delete land_data[LandUUID].allowlist[players[response.formValues[0] - 1].id];
                 //开始覆写文件land.json
@@ -979,6 +1034,7 @@ const GUI = {
         })
     },
 
+    //购买领地市场
     LandMarketBuy(player,LandUUID) {
         const LandMarketBuyForm = new MessageFormData()
         .title(`购买[${LandUUID}] ${land_data[LandUUID].land_name}`)
@@ -1184,13 +1240,13 @@ const GUI = {
             } else {
                 //判断是否输入了坐标
                 if (response.formValues[1] == "" || response.formValues[2] == "" || response.formValues[3] == "" || response.formValues[4] == "" || response.formValues[5] == "" || response.formValues[6] == "") {
-                    player.sendMessage("§c您输入的坐标不完整！请重新输入！");
+                    player.sendMessage("§c 您输入的坐标不完整！请重新输入！");
                     this.ChangePOS(player,pos1,pos2,dimid);
                     return;
                 }
                 //判断输入的坐标是否为数字
                 if (isNaN(response.formValues[1]) || isNaN(response.formValues[2]) || isNaN(response.formValues[3]) || isNaN(response.formValues[4]) || isNaN(response.formValues[5]) || isNaN(response.formValues[6])) {
-                    player.sendMessage("§c您输入的坐标不是数字！请重新输入！");
+                    player.sendMessage("§c 您输入的坐标不是数字！请重新输入！");
                     this.ChangePOS(player,pos1,pos2,dimid);
                     return;
                 }
@@ -1236,6 +1292,7 @@ const GUI = {
         })
     },
 
+    //创建2d领地
     Create2DLand(player) {
         //首先计算面积是否符合规定
         //2d类型只计算xz面积
@@ -1243,23 +1300,23 @@ const GUI = {
         let ZLength = Math.abs(land_history[player.id].pos1[2] - land_history[player.id].pos2[2]);
         //如果领地过小
         if (XLength * ZLength < MIN_SQUARE) {
-            player.sendMessage("§c您选择的领地面积过小！请重新选择！");
+            player.sendMessage("§c 您选择的领地面积过小！请重新选择！");
             return;
         }
         //如果领地过大
         if (XLength * ZLength > MAX_SQUARE) {
-            player.sendMessage("§c您选择的领地面积过大！请重新选择！");
+            player.sendMessage("§c 您选择的领地面积过大！请重新选择！");
             return;
         }
         //如果领地坐标不在限制的坐标范围内
         if (land_history[player.id].pos1[0] < X_RANGE[0] || land_history[player.id].pos1[0] > X_RANGE[1] || land_history[player.id].pos1[2] < Z_RANGE[0] || land_history[player.id].pos1[2] > Z_RANGE[1] || land_history[player.id].pos2[0] < X_RANGE[0] || land_history[player.id].pos2[0] > X_RANGE[1] || land_history[player.id].pos2[2] < Z_RANGE[0] || land_history[player.id].pos2[2] > Z_RANGE[1]) {
-            player.sendMessage("§c您选择的领地坐标不在限制的坐标范围内！请重新选择！");
+            player.sendMessage("§c 您选择的领地坐标不在限制的坐标范围内！请重新选择！");
             delete land_history[player.id];
             return;
         }
         //开始判断领地是否重合
         if (have_land(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid)) {
-            player.sendMessage("§c您选择的领地与已有领地重合！请重新选择！");
+            player.sendMessage("§c 您选择的领地与已有领地重合！请重新选择！");
             delete land_history[player.id];
             return;
         }
@@ -1273,11 +1330,11 @@ const GUI = {
         .button2(`§c取消购买`)
         .show(player).then((response) => {
             if (response.canceled) {
-                player.sendMessage("§c您已取消购买！");
+                player.sendMessage("§c 您已取消购买！");
             } else if (response.selection == 0) {
                 //首先判断余额是否足够
                 if (GetScore(MONEY_SCOREBOARD_NAME,player.nameTag) < purchase_price) {
-                    player.sendMessage("§c您的金币余额不足！请在有足够金币后再购买！");
+                    player.sendMessage("§c 您的金币余额不足！请在有足够金币后再购买！");
                     return;
                 }
                 //再判断该玩家已经拥有了几块领地，如果超出5块则不允许购买
@@ -1288,7 +1345,7 @@ const GUI = {
                     }
                 }
                 if (land_num >= 5) {
-                    player.sendMessage("§c您已经拥有了5块领地！请先出售一些领地后再购买！");
+                    player.sendMessage("§c 您已经拥有了5块领地！请先出售一些领地后再购买！");
                     //删除历史数据
                     delete land_history[player.id];
                     return;
@@ -1330,7 +1387,7 @@ const GUI = {
                         //扣除玩家金币
                         world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).addScore(player,-purchase_price);
                         //计算索引值
-                        calculate_index(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid,adler32(new_land_data.get_time + player.id + purchase_price));
+                        add_index(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid,adler32(new_land_data.get_time + player.id + purchase_price));
                         //删除历史数据
                         delete land_history[player.id];
                     } else if (result === -1) {
@@ -1362,21 +1419,21 @@ const GUI = {
         let ZLength = Math.abs(land_history[player.id].pos1[2] - land_history[player.id].pos2[2]);
         //如果领地过小
         if (XLength * ZLength < MIN_SQUARE) {
-            player.sendMessage("§c您选择的领地体积过小！请重新选择！");
+            player.sendMessage("§c 您选择的领地体积过小！请重新选择！");
             //删除历史数据
             delete land_history[player.id];
             return;
         }
         //如果领地过大
         if (XLength  * ZLength > MAX_SQUARE) {
-            player.sendMessage("§c您选择的领地体积过大！请重新选择！");
+            player.sendMessage("§c 您选择的领地体积过大！请重新选择！");
             //删除历史数据
             delete land_history[player.id];
             return;
         }
         //如果领地坐标不在限制的坐标范围内
         if (land_history[player.id].pos1[0] < X_RANGE[0] || land_history[player.id].pos1[0] > X_RANGE[1] || land_history[player.id].pos1[1] < Y_RANGE[0] || land_history[player.id].pos1[1] > Y_RANGE[1] || land_history[player.id].pos1[2] < Z_RANGE[0] || land_history[player.id].pos1[2] > Z_RANGE[1] || land_history[player.id].pos2[0] < X_RANGE[0] || land_history[player.id].pos2[0] > X_RANGE[1] || land_history[player.id].pos2[1] < Y_RANGE[0] || land_history[player.id].pos2[1] > Y_RANGE[1] || land_history[player.id].pos2[2] < Z_RANGE[0] || land_history[player.id].pos2[2] > Z_RANGE[1]) {
-            player.sendMessage("§c您选择的领地坐标不在限制的坐标范围内！请重新选择！");
+            player.sendMessage("§c 您选择的领地坐标不在限制的坐标范围内！请重新选择！");
             //删除历史数据
             delete land_history[player.id];
             return;
@@ -1398,11 +1455,11 @@ const GUI = {
         .button2(`§c取消购买`)
         .show(player).then((response) => {
             if (response.canceled) {
-                player.sendMessage("§c您已取消购买！");
+                player.sendMessage("§c 您已取消购买！");
             } else if (response.selection == 0) {
                 //首先判断余额是否足够
                 if (GetScore(MONEY_SCOREBOARD_NAME,player.nameTag) < purchase_price) {
-                    player.sendMessage("§c您的金币余额不足！请充值后再购买！");
+                    player.sendMessage("§c 您的金币余额不足！请充值后再购买！");
                     return;
                 }
                 //再判断该玩家已经拥有了几块领地，如果超出5块则不允许购买
@@ -1413,7 +1470,7 @@ const GUI = {
                     }
                 }
                 if (land_num >= 5) {
-                    player.sendMessage("§c您已经拥有了5块领地！请先出售一些领地后再购买！");
+                    player.sendMessage("§c 您已经拥有了5块领地！请先出售一些领地后再购买！");
                     //删除历史数据
                     delete land_history[player.id];
                     return;
@@ -1455,7 +1512,7 @@ const GUI = {
                         //扣除玩家金币
                         world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).addScore(player,-purchase_price);
                         //计算索引值
-                        calculate_index(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid,adler32(new_land_data.get_time + player.id + purchase_price));
+                        add_index(land_history[player.id].pos1,land_history[player.id].pos2,land_history[player.id].dimid,adler32(new_land_data.get_time + player.id + purchase_price));
                         //删除历史数据
                         delete land_history[player.id];
                     } else if (result === -1) {
@@ -1503,8 +1560,61 @@ const GUI = {
         }
     },
 
+    //管理员管理界面
+    AdminMain(player) {
+        const AdminMainForm = new ActionFormData()
+        .title("圈地系统管理界面")
+        .button("查看当前脚下领地")
+        .button("按照玩家查找领地")
+        .button("按照领地id查找领地")
+        .button("管理领地市场")
+        AdminMainForm.show(player).then((response) => {
+            if (!response.canceled) {
+                switch (response.selection) {
+                    case 0:
+                        //查看当前脚下领地
+                        this.AdminCheckLand(player);
+                        break;
+                    case 1:
+                        //按照玩家查找领地
+                        this.AdminFindLand(player);
+                        break;
+                    case 2:
+                        //按照领地id查找领地
+                        this.AdminFindLandByID(player);
+                        break;
+                    case 3:
+                        //管理领地市场
+                        this.AdminMarket(player);
+                        break;
+                }
+            }
+        })
+    },
 
+    //管理玩家领地
+    AdminLandInfo(player,land) {
+        //构建玩家领地表单
+        const AdminLandInfoForm = new ActionFormData()
+        .title(`管理 ${land.land_name} 领地`)
+        .body(`领地基本属性：\n领地所有人id： ${land.owner}\n领地所有人名称： ${land.owner_name}\n领地id： ${adler32(land.get_time + land.owner + land.purchase_price)}\n领地类型： ${land.type}\n领地坐标： (${land.pos1[0]},${land.pos1[1]},${land.pos1[2]}) - (${land.pos2[0]},${land.pos2[1]},${land.pos2[2]})\n领地维度： ${land.dimid}\n领地初创价格： ${land.purchase_price}\n领地是否上架： ${land.on_sale ? "是" : "否"}\n领地名称： ${land.land_name}\n领地是否开启虚拟围栏： ${land.setup.VirtualFence ? "是" : "否"}\n领地是否可以破坏方块： ${land.setup.DestroyBlock ? "是" : "否"}\n领地是否可以放置方块： ${land.setup.PlaceBlock ? "是" : "否"}\n领地是否可以使用物品： ${land.setup.UseItem ? "是" : "否"}\n领地是否可以攻击实体： ${land.setup.AttackEntity ? "是" : "否"}\n领地是否可以打开箱子： ${land.setup.OpenChest ? "是" : "否"}\n领地是否可以引爆方块： ${land.setup.Expoplosion ? "是" : "否"}\n领地白名单玩家名称： ${Object.values(land.allowlist).join(",")}`)
+        .button("修改领地基本属性")
+        .button("强制删除领地不退款")
+        .button("强制删除领地并退款")
+        .button("修改领地坐标范围")
+        .button("修改玩家领地白名单")
+        .show(player)
+    },
 
+    //查看当前脚下领地
+    AdminCheckLand(player) {
+        let land = pos_in_land([player.location.x,player.location.y,player.location.z],player.dimension.id);
+        if (land) {
+            this.AdminLandInfo(player,land);
+        } else {
+            player.sendMessage("§c 您当前脚下没有任何领地！");
+        }
+    }
 }
 
 //玩家进入领地判断
@@ -1516,22 +1626,22 @@ system.runInterval(() => {
 
 //玩家破坏方块监听
 world.beforeEvents.playerBreakBlock.subscribe((event) => {
-    let land = pos_in_index([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
+    let land = pos_in_land([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
     if (land) {
         if (!event.player.hasTag(cfg.OPTAG) && !in_allowlist(event.player,land) && !land.setup.DestroyBlock) {
             event.cancel = true;
-            event.player.sendMessage("§c您没有相关权限在此处破坏方块！");
+            event.player.sendMessage("§c 您没有相关权限在此处破坏方块！");
         }
     }
 })
 
 //玩家放置方块监听
 world.beforeEvents.playerPlaceBlock.subscribe((event) => {
-    let land = pos_in_index([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
+    let land = pos_in_land([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
     if (land) {
         if (!event.player.hasTag(cfg.OPTAG) && !in_allowlist(event.player,land) && !land.setup.PlaceBlock) {
             event.cancel = true;
-            event.player.sendMessage("§c您没有相关权限在此处放置方块！");
+            event.player.sendMessage("§c 您没有相关权限在此处放置方块！");
         }
     }
 })
@@ -1541,16 +1651,14 @@ world.beforeEvents.explosion.subscribe((event) => {
     //判断可不可以影响到领地
     let explosion_impacted_blocks = event.getImpactedBlocks();
     for (let i = 0;i < explosion_impacted_blocks.length;i++) {
-        let land = pos_in_index([explosion_impacted_blocks[i].x,explosion_impacted_blocks[i].y,explosion_impacted_blocks[i].z],event.source.dimension.id);
-        if (land) {
-            if (!land.setup.Expoplosion) {
-                event.cancel = true;
-                break;
-            }
+        let land = pos_in_land([explosion_impacted_blocks[i].x,explosion_impacted_blocks[i].y,explosion_impacted_blocks[i].z],event.source.dimension.id);
+        if (land && !land.setup.Expoplosion) {
+            event.cancel = true;
+            RunCmd(`tellraw @a[name="${land.owner_name}"] {"rawtext":[{"text":" §e"},{"translate": "${"entity." + event.source.typeId.split(":")[1] + ".name"}"},{"text":"§c 在 §e(${explosion_impacted_blocks[i].x},${explosion_impacted_blocks[i].y},${explosion_impacted_blocks[i].z}) §c处引发的爆炸，已被领地保护系统自动拦截！"}]}`)
+            break;
         }
     }
 })
-
 
 //玩家使用物品
 world.beforeEvents.itemUseOn.subscribe((event) => {
@@ -1568,11 +1676,11 @@ world.beforeEvents.itemUseOn.subscribe((event) => {
         "minecraft:fence_gate","minecraft:spruce_fence_gate","minecraft:birch_fence_gate","minecraft:jungle_fence_gate","minecraft:acacia_fence_gate","minecraft:dark_oak_fence_gate","minecraft:mangrove_fence_gate","minecraft:crimson_fence_gate","minecraft:warped_fence_gate",
         "minecraft:lever","minecraft:unpowered_repeater","minecraft:unpowered_comparator","minecraft:wooden_button"
     ]
-    let land = pos_in_index([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
+    let land = pos_in_land([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
     if (land && !event.source.hasTag(cfg.OPTAG) && !in_allowlist(event.source,land) && !land.setup.UseItem) {
         if (tools.includes(event.itemStack.typeId) || blocks.includes(event.block.typeId)) {
             event.cancel = true;
-            event.source.sendMessage("§c您没有相关权限在此处使用物品！");
+            event.source.sendMessage("§c 您没有相关权限在此处使用物品！");
         }
     }
 })
@@ -1585,11 +1693,11 @@ world.beforeEvents.itemUseOn.subscribe((event) => {
         "minecraft:black_shulker_box","minecraft:blue_shulker_box","minecraft:brown_shulker_box","minecraft:cyan_shulker_box","minecraft:gray_shulker_box","minecraft:green_shulker_box","minecraft:light_blue_shulker_box","minecraft:lime_shulker_box","minecraft:orange_shulker_box",
         "minecraft:pink_shulker_box","minecraft:purple_shulker_box","minecraft:red_shulker_box","minecraft:undyed_shulker_box","minecraft:white_shulker_box","minecraft:yellow_shulker_box"
     ]
-    let land = pos_in_index([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
+    let land = pos_in_land([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
     if (land && !event.source.hasTag(cfg.OPTAG) && !in_allowlist(event.source,land) && !land.setup.OpenChest) {
         if (blocks.includes(event.block.typeId)) {
             event.cancel = true;
-            event.source.sendMessage("§c您没有相关权限在此处进行相关交互动作！");
+            event.source.sendMessage("§c 您没有相关权限在此处进行相关交互动作！");
         }
     }
 })
@@ -1601,6 +1709,9 @@ world.afterEvents.itemUse.subscribe(event => {
     }
     if (event.itemStack.typeId == "minecraft:stick" && event.itemStack.nameTag == "圈地") {
         GUI.CreateLand(event.source);
+    }
+    if (event.itemStack.typeId == "minecraft:stick" && event.itemStack.nameTag == "圈地管理菜单" && event.source.hasTag(cfg.OPTAG)) {
+       GUI.AdminMain(event.source);
     }
 })
 
@@ -1649,7 +1760,7 @@ world.afterEvents.worldInitialize.subscribe((event) => {
             land_data = result;
             let LandNum = 0;
             for (let Land in land_data) {
-                calculate_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
+                add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
                 LandNum++;
             }
             log("圈地数据获取成功，本次读取用时：" + (Date.now() - start_1) + "ms，共加载&&计算 " + LandNum + " 块领地数据！" );
@@ -1658,7 +1769,7 @@ world.afterEvents.worldInitialize.subscribe((event) => {
             //         if (result === 0) {
             //             //计算索引值
             //             for (let Land in land_data) {
-            //                 calculate_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
+            //                 add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
             //             }
             //             fs.CreateNewJsonFile("land_index.json",land_index).then((result) => {
             //                 if (result === "success") {
@@ -1682,7 +1793,7 @@ world.afterEvents.worldInitialize.subscribe((event) => {
             // } else {
             //     let LandNum = 0;
             //     for (let Land in land_data) {
-            //         calculate_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
+            //         add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
             //         LandNum++;
             //     }
             //     log("圈地数据获取成功，本次读取用时：" + (Date.now() - start_1) + "ms，共加载&&计算 " + LandNum + " 块领地数据！" );
@@ -1751,7 +1862,7 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
                         land_data = result;
                         let LandNum = 0;
                         for (let Land in land_data) {
-                            calculate_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
+                            add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
                             LandNum++;
                         }
                         log("圈地数据获取成功，本次读取用时：" + (Date.now() - start) + "ms，共加载 " + LandNum + " 块领地数据！" );
@@ -1829,7 +1940,7 @@ function generate_land(num) {
             continue;
         }
         //再计算索引值
-        calculate_index(new_land_data.pos1,new_land_data.pos2,new_land_data.dimid,adler32((i + "@" + new_land_data.purchase_price).toString()));
+        add_index(new_land_data.pos1,new_land_data.pos2,new_land_data.dimid,adler32((i + "@" + new_land_data.purchase_price).toString()));
         //最后写入数据
         //log(i + JSON.stringify(land_data));
         log(`已生成${i}块领地`)

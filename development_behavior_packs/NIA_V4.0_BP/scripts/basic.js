@@ -295,16 +295,16 @@ system.runInterval(() => {
                 titleActionbar = "§c飞行模式§r "
             }
             if (GetScore("oxygen",playerList[i].nameTag) <= 200 && GetScore("oxygen",playerList[i].nameTag) > 0) {
-                titleActionbar = titleActionbar + "§r\n§c§l您即将进入缺氧状态，请及时补充氧气！"
+                titleActionbar = titleActionbar + "§r§c§l您即将进入缺氧状态，请及时补充氧气！"
             }
             if (playerList[i].dimension.id == "minecraft:nether" && GetScore("equLevel",playerList[i].nameTag) <= 8) {
-                titleActionbar = titleActionbar + "§r\n§c§l⚠警告！您目前呼吸装备等级过低，氧气消耗速度是原有的1倍！"
+                titleActionbar = titleActionbar + "§r§c§l⚠警告！您目前呼吸装备等级过低，氧气消耗速度是原有的1倍！"
             }
             if (playerList[i].dimension.id == "minecraft:the_end" && GetScore("equLevel",playerList[i].nameTag) <= 13) {
-                titleActionbar = titleActionbar + "§r\n§c§l⚠警告！您目前呼吸装备等级过低，氧气消耗速度是原有的2倍！"
+                titleActionbar = titleActionbar + "§r§c§l⚠警告！您目前呼吸装备等级过低，氧气消耗速度是原有的2倍！"
             }
             if (GetScore("AnoxicTime",playerList[i].nameTag) > 0) {
-                titleActionbar = titleActionbar + "§r\n§c§l⚠警告！您已经进入缺氧状态 " + GetScore("AnoxicTime",playerList[i].nameTag) + " 秒，请及时补充氧气否则将会死亡！"
+                titleActionbar = titleActionbar + "§r§c§l⚠警告！您已经进入缺氧状态 " + GetScore("AnoxicTime",playerList[i].nameTag) + " 秒，请及时补充氧气否则将会死亡！"
             }
             playerList[i].onScreenDisplay.setActionBar(titleActionbar);
         }

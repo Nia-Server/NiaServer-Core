@@ -145,6 +145,12 @@
 
 **更加具体的配置教程请前往[NIA服务器文档站](https://docs.mcnia.com/zh-CN/deploy.html)查看！**
 
+## 特殊问题解决方案
+
+1.BDS服务器启动后输出中文乱码
+
+将系统语言区域设置改为UTF-8即可
+
 ## Bug反馈/提建议
 
 如果您在使用过程中遇到了问题、bug，或者拥有好的建议您都可以前往[issues](https://github.com/NIANIANKNIA/NIASERVER-V4/issues)反馈，我会在看到后第一时间回复！
