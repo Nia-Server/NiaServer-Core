@@ -372,6 +372,123 @@ function have_land(pos1, pos2, dimid) {
     return false;
 }
 
+/**
+ * 输入坐标范围信息，以及当前的地皮uuid，判断领地有没有重合
+ * @param {Array} pos1
+ * @param {Array} pos2
+ * @param {number} dimid
+ * @param {String} LandUUID
+ */
+function have_other_land(pos1, pos2, dimid, LandUUID) {
+    //首先根据输入的领地坐标构建最大/最小的坐标
+    //这里规定最小的坐标为pos1，最大的坐标为pos2
+    if (pos1[0] > pos2[0]) {
+        let posXMin = pos1[0];
+        pos1[0] = pos2[0];
+        pos2[0] = posXMin;
+    }
+    if (pos1[1] > pos2[1]) {
+        let posYMin = pos1[1];
+        pos1[1] = pos2[1];
+        pos2[1] = posYMin;
+    }
+    if (pos1[2] > pos2[2]) {
+        let posZMin = pos1[2];
+        pos1[2] = pos2[2];
+        pos2[2] = posZMin;
+    }
+    //根据传入的最小值坐标输出最小
+    let XIndexMIN = parseInt(pos1[0] / DISTANCE);
+    let ZIndexMIN = parseInt(pos1[2] / DISTANCE);
+    //
+    let XIndexMAX = parseInt(pos2[0] / DISTANCE);
+    let ZIndexMAX = parseInt(pos2[2] / DISTANCE);
+    //判断该区块内是否有领地数据，根据数据层层判断
+    for (let XIndex = XIndexMIN; XIndex <= XIndexMAX; XIndex++) {
+        for (let ZIndex = ZIndexMIN; ZIndex <= ZIndexMAX; ZIndex++) {
+            //判断该索引值下领地是否有领地数据
+            if(land_index[dimid] && land_index[dimid][XIndex] && land_index[dimid][XIndex][ZIndex]) {
+                //如果走到了这里说明，该区块编号下有相应的领地数据存在，然后遍历该区块存在的领地即可
+                let this_index_data = land_index[dimid][XIndex][ZIndex];
+                //定义一些变量
+                let pos3 = [];
+                let pos4 = [];
+                let result_x = false;
+                let result_y = false;
+                let result_z = false;
+                for (let key = 0;key < this_index_data.length;key++) {
+                    //如果是自己的领地则跳过
+                    if (this_index_data[key] == LandUUID) {
+                        continue;
+                    }
+                    //根据相应的领地类型进行计算
+                    switch (land_data[this_index_data[key]].type) {
+                        case "3d":
+                            //首先根据输入的领地坐标构建最大/最小的坐标
+                            //这里规定最小的坐标为pos3，最大的坐标为pos4
+                            pos3 = land_data[this_index_data[key]].pos1
+                            pos4 = land_data[this_index_data[key]].pos2
+                            if (pos3[0] > pos4[0]) {
+                                let posXMin = pos3[0];
+                                pos3[0] = pos4[0];
+                                pos4[0] = posXMin;
+                            }
+                            if (pos3[1] > pos4[1]) {
+                                let posYMin = pos3[1];
+                                pos3[1] = pos4[1];
+                                pos3[1] = posYMin;
+                            }
+                            if (pos3[2] > pos4[2]) {
+                                let posZMin = pos3[2];
+                                pos3[2] = pos4[2];
+                                pos3[2] = posZMin;
+                            }
+                            //为保证部分功能正常取消等于情况
+                            //x轴方向线段重合结果，没有重合为true，有重合为false
+                            result_x = (pos1[0] > pos4[0]) || (pos2[0] < pos3[0]);
+                            //y轴方向线段重合结果，没有重合为true，有重合为false
+                            result_y = (pos1[1] > pos4[1]) || (pos2[1] < pos3[1]);
+                            //z轴方向线段重合结果，没有重合为true，有重合为false
+                            result_z = (pos1[2] > pos4[2]) || (pos2[2] < pos3[2]);
+                            //如果重合，那么x轴方向和z轴方向投影线段一定有重合，两者缺一不可,并且y轴方向也要重合
+                            if (dimid == land_data[this_index_data[key]].dimid && !result_x && !result_y && !result_z) {
+                                return true;
+                            }
+                            break;
+                        case "2d":
+                            //首先根据输入的领地坐标构建最大/最小的坐标
+                            pos3 = land_data[this_index_data[key]].pos1
+                            pos4 = land_data[this_index_data[key]].pos2
+                            if (pos3[0] > pos4[0]) {
+                                let posXMin = pos3[0];
+                                pos3[0] = pos4[0];
+                                pos4[0] = posXMin;
+                            }
+                            if (pos3[2] > pos4[2]) {
+                                let posZMin = pos3[2];
+                                pos3[2] = pos4[2];
+                                pos3[2] = posZMin;
+                            }
+                            //为保证部分功能正常取消等于情况
+                            //x轴方向线段重合结果，没有重合为true，有重合为false
+                            result_x = (pos1[0] > pos4[0]) || (pos2[0] < pos3[0]);
+                            //z轴方向线段重合结果，没有重合为true，有重合为false
+                            result_z = (pos1[2] > pos4[2]) || (pos2[2] < pos3[2]);
+                            //如果重合，那么x轴方向和z轴方向投影线段一定有重合，两者缺一不可
+                            if (dimid == land_data[this_index_data[key]].dimid && !result_x && !result_z) {
+                                return true;
+                            }
+                            break;
+                        case "cylinder":
+                            //根据两点间的距离进行相应的判断操作
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
 //圈地相关API
 const LandAPI = {
     /**
@@ -564,6 +681,8 @@ const LandAPI = {
 
 //玩家GUI表现
 const GUI = {
+
+    //主界面
     Main(player) {
         const MainForm = new ActionFormData()
         .title("圈地系统")
@@ -673,48 +792,48 @@ const GUI = {
     ManageLandPermission(player,LandUUID) {
         const ManageLandPermissionForm = new ModalFormData()
         .title(`权限管理[${LandUUID}] ${land_data[LandUUID].land_name}`)
-            .textField("领地名称","请尽量简短！",land_data[LandUUID].land_name)
-            .toggle("其他玩家可以摧毁方块",land_data[LandUUID].setup.DestroyBlock)
-            .toggle("其他玩家可以放置方块",land_data[LandUUID].setup.PlaceBlock)
-            .toggle("其他玩家可以使用物品",land_data[LandUUID].setup.UseItem)
-            .toggle("（暂时没用）",land_data[LandUUID].setup.AttackEntity)
-            .toggle("其他玩家可以打开箱子",land_data[LandUUID].setup.OpenChest)
-            .toggle("在领地内是否可以发生爆炸",land_data[LandUUID].setup.Expoplosion)
-            .toggle("自己处于领地内时显示标题",land_data[LandUUID].setup.ShowActionbar)
-            .toggle("启用虚拟围墙",land_data[LandUUID].setup.VirtualFence)
-            .show(player).then((response) => {
-                if (!response.canceled) {
-                    //先判断领地名称是否为空
-                    if (response.formValues[0] == "") {
-                        player.sendMessage("§c 领地名称不能为空！");
-                        return;
-                    }
-                    let old_land_data = JSON.parse(JSON.stringify(land_data));
-                    land_data[LandUUID].land_name = response.formValues[0];
-                    land_data[LandUUID].setup.DestroyBlock = response.formValues[1];
-                    land_data[LandUUID].setup.PlaceBlock = response.formValues[2];
-                    land_data[LandUUID].setup.UseItem = response.formValues[3];
-                    land_data[LandUUID].setup.AttackEntity = response.formValues[4];
-                    land_data[LandUUID].setup.OpenChest = response.formValues[5];
-                    land_data[LandUUID].setup.Expoplosion = response.formValues[6];
-                    land_data[LandUUID].setup.ShowActionbar = response.formValues[7];
-                    land_data[LandUUID].setup.VirtualFence = response.formValues[8];
-                    //开始覆写文件land.json
-                    fs.OverwriteJsonFile("land.json",land_data).then((result) => {
-                        if (result === "success") {
-                            player.sendMessage("§a 领地属性修改成功！");
-                        } else if (result === "-1") {
-                            player.sendMessage("§c 服务器连接失败，请联系在线管理员！");
-                            land_data = old_land_data;
-                        } else {
-                            player.sendMessage("§c 未知错误，请联系在线管理员！");
-                            land_data = old_land_data;
-                        }
-                    })
-                } else {
-                    this.ManageLandDetail(player,LandUUID);
+        .textField("领地名称","请尽量简短！",land_data[LandUUID].land_name)
+        .toggle("其他玩家可以摧毁方块",land_data[LandUUID].setup.DestroyBlock)
+        .toggle("其他玩家可以放置方块",land_data[LandUUID].setup.PlaceBlock)
+        .toggle("其他玩家可以使用物品",land_data[LandUUID].setup.UseItem)
+        .toggle("（暂时没用）",land_data[LandUUID].setup.AttackEntity)
+        .toggle("其他玩家可以打开箱子",land_data[LandUUID].setup.OpenChest)
+        .toggle("在领地内是否可以发生爆炸",land_data[LandUUID].setup.Expoplosion)
+        .toggle("自己处于领地内时显示标题",land_data[LandUUID].setup.ShowActionbar)
+        .toggle("启用虚拟围墙",land_data[LandUUID].setup.VirtualFence)
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                //先判断领地名称是否为空
+                if (response.formValues[0] == "") {
+                    player.sendMessage("§c 领地名称不能为空！");
+                    return;
                 }
-            })
+                let old_land_data = JSON.parse(JSON.stringify(land_data));
+                land_data[LandUUID].land_name = response.formValues[0];
+                land_data[LandUUID].setup.DestroyBlock = response.formValues[1];
+                land_data[LandUUID].setup.PlaceBlock = response.formValues[2];
+                land_data[LandUUID].setup.UseItem = response.formValues[3];
+                land_data[LandUUID].setup.AttackEntity = response.formValues[4];
+                land_data[LandUUID].setup.OpenChest = response.formValues[5];
+                land_data[LandUUID].setup.Expoplosion = response.formValues[6];
+                land_data[LandUUID].setup.ShowActionbar = response.formValues[7];
+                land_data[LandUUID].setup.VirtualFence = response.formValues[8];
+                //开始覆写文件land.json
+                fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+                    if (result === "success") {
+                        player.sendMessage("§a 领地属性修改成功！");
+                    } else if (result === "-1") {
+                        player.sendMessage("§c 服务器连接失败，请联系在线管理员！");
+                        land_data = old_land_data;
+                    } else {
+                        player.sendMessage("§c 未知错误，请联系在线管理员！");
+                        land_data = old_land_data;
+                    }
+                })
+            } else {
+                this.ManageLandDetail(player,LandUUID);
+            }
+        })
     },
 
     ManageLandRecycle(player,LandUUID) {
@@ -771,21 +890,27 @@ const GUI = {
                     return;
                 }
                 //开始转让领地
-                let old_land_data = JSON.parse(JSON.stringify(land_data));
+                let new_land_data = JSON.parse(JSON.stringify(land_data));
                 //首先获取要转让的玩家对象
-                land_data[LandUUID].owner = players[response.formValues[0] - 1].id;
-                land_data[LandUUID].owner_name = players[response.formValues[0] - 1].name;
+                new_land_data[LandUUID].owner = players[response.formValues[0] - 1].id;
+                new_land_data[LandUUID].owner_name = players[response.formValues[0] - 1].name;
+                let new_LandUUID = adler32(new_land_data[LandUUID].get_time + new_land_data[LandUUID].owner + new_land_data[LandUUID].purchase_price);
+                new_land_data[new_LandUUID] = new_land_data[LandUUID];
+                delete new_land_data[LandUUID];
                 //开始覆写文件land.json
-                fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+                fs.OverwriteJsonFile("land.json",new_land_data).then((result) => {
                     if (result === "success") {
                         player.sendMessage(`§a 领地转让成功！您已将领地转让至玩家 §l${players[response.formValues[0] - 1].name} §r§a名下！`);
                         players[response.formValues[0] - 1].sendMessage(`§a 您已收到一块领地！领地名字为 §l${land_data[LandUUID].land_name} §r§a，请前往查看！`);
+                        //重新计算索引值
+                        delete_index(land_data[LandUUID].pos1, land_data[LandUUID].pos2, land_data[LandUUID].dimid, LandUUID);
+                        let new_data = new_land_data[new_LandUUID];
+                        add_index(new_data.pos1, new_data.pos2, new_data.dimid,new_LandUUID);
+                        land_data = new_land_data;
                     } else if (result === "-1") {
                         player.sendMessage("§c 服务器连接失败，请联系在线管理员！");
-                        land_data = old_land_data;
                     } else {
                         player.sendMessage("§c 未知错误，请联系在线管理员！");
-                        land_data = old_land_data;
                     }
                 })
             } else {
@@ -1045,26 +1170,34 @@ const GUI = {
             if (!response.canceled) {
                 if (response.selection == 0) {
                     //开始购买领地
-                    let old_land_data = JSON.parse(JSON.stringify(land_data));
-                    land_data[LandUUID].owner = player.id;
-                    land_data[LandUUID].owner_name = player.name;
-                    land_data[LandUUID].on_sale = false;
+                    let new_land_data = JSON.parse(JSON.stringify(land_data));
+                    new_land_data[LandUUID].owner = player.id;
+                    new_land_data[LandUUID].owner_name = player.name;
+                    new_land_data[LandUUID].on_sale = false;
                     //首先判断玩家余额是否足够
                     if (world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).getScore(player) < land_data[LandUUID].sale_price) {
                         player.sendMessage(`§c 您的余额不足！您当前余额为：${world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).getScore(player)}，而该领地的价格为：${land_data[LandUUID].sale_price}`);
                         return;
                     }
+                    let new_LandUUID = adler32(new_land_data[LandUUID].get_time + new_land_data[LandUUID].owner + new_land_data[LandUUID].purchase_price);
+                    new_land_data[new_LandUUID] = new_land_data[LandUUID];
+                    delete new_land_data[LandUUID];
                     //开始覆写文件land.json
-                    fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+                    fs.OverwriteJsonFile("land.json",new_land_data).then((result) => {
                         if (result === "success") {
                             //开始给予领地拥有者金币
                             let old_temp_player_money = JSON.parse(JSON.stringify(temp_player_money));
-                            temp_player_money[old_land_data[LandUUID].owner] = land_data[LandUUID].sale_price;
+                            temp_player_money[land_data[LandUUID].owner] = new_land_data[new_LandUUID].sale_price;
                             fs.OverwriteJsonFile("land_temp_player_money.json",temp_player_money).then((result) => {
                                 if (result === "success") {
                                     player.sendMessage("§a 领地购买成功！");
                                     //开始扣款
-                                    world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).addScore(player,-land_data[LandUUID].sale_price);
+                                    world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).addScore(player,-new_land_data[new_LandUUID].sale_price);
+                                    //重新计算索引值
+                                    delete_index(land_data[LandUUID].pos1, land_data[LandUUID].pos2, land_data[LandUUID].dimid, LandUUID);
+                                    let new_data = new_land_data[new_LandUUID];
+                                    add_index(new_data.pos1, new_data.pos2, new_data.dimid,new_LandUUID);
+                                    land_data = new_land_data;
                                 } else {
                                     this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
                                     console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
@@ -1073,10 +1206,8 @@ const GUI = {
                             })
                         } else if (result === "-1") {
                             player.sendMessage("§c 服务器连接失败，请联系在线管理员！");
-                            land_data = old_land_data;
                         } else {
                             player.sendMessage("§c 未知错误，请联系在线管理员！");
-                            land_data = old_land_data;
                         }
                     })
                 } else if (response.selection == 1) {
@@ -1564,10 +1695,11 @@ const GUI = {
     AdminMain(player) {
         const AdminMainForm = new ActionFormData()
         .title("圈地系统管理界面")
+        .body(`§e欢迎使用圈地管理系统，请注意不要在不知道如何操作的情况下随意操作！`)
         .button("查看当前脚下领地")
-        .button("按照玩家查找领地")
-        .button("按照领地id查找领地")
+        .button("查找/搜索领地")
         .button("管理领地市场")
+        .button("重新加载领地数据")
         AdminMainForm.show(player).then((response) => {
             if (!response.canceled) {
                 switch (response.selection) {
@@ -1580,13 +1712,65 @@ const GUI = {
                         this.AdminFindLand(player);
                         break;
                     case 2:
-                        //按照领地id查找领地
-                        this.AdminFindLandByID(player);
-                        break;
-                    case 3:
                         //管理领地市场
                         this.AdminMarket(player);
                         break;
+                    case 3:
+                        //重新加载领地数据
+                        let start = Date.now();
+                        fs.GetJSONFileData("land.json").then((result) => {
+                            //文件不存在
+                            if (result === 0) {
+                                fs.CreateNewJsonFile("land.json",{}).then((result) => {
+                                    if (result === "success") {
+                                        land_data = {};
+                                        player.sendMessage(" 圈地系统数据文件不存在，已成功创建！");
+                                    } else if (result === -1) {
+                                        player.sendMessage("§c 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                                    }
+                                });
+                            } else if (result === -1) {
+                                player.sendMessage("§c 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                            } else {
+                                //文件存在且服务器连接成功
+                                land_data = result;
+                                let LandNum = 0;
+                                for (let Land in land_data) {
+                                    add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
+                                    LandNum++;
+                                }
+                                player.sendMessage(" 圈地数据获取成功，本次读取用时：" + (Date.now() - start) + "ms，共加载 " + LandNum + " 块领地数据！" );
+                            }
+                        })
+
+                        //玩家金币缓存文件
+                        start = Date.now();
+                        fs.GetJSONFileData("land_temp_player_money.json").then((result) => {
+                            if (result === 0) {
+                                fs.CreateNewJsonFile("land_temp_player_money.json",{}).then((result) => {
+                                    if (result === "success") {
+                                        player.sendMessage(" 玩家金币数据文件不存在，已成功创建！");
+                                    } else if (result === -1) {
+                                        player.sendMessage("§c 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                                    }
+                                });
+                            } else if (result === -1) {
+                                player.sendMessage("§c 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                            } else {
+                                //文件存在且服务器连接成功
+                                temp_player_money = result;
+                                player.sendMessage(" (land)玩家金币数据获取成功，本次读取用时：" + (Date.now() - start) + "ms");
+                            }
+                        })
+
+                        //删除所有常加载区块
+                        let land_tickingarea = JSON.parse(world.getDynamicProperty("land_tickingarea"));
+                        for (let key = 0;key < land_tickingarea.length;key++) {
+                            RunCmd(`tickingarea remove ${land_tickingarea[key]}`);
+                            player.sendMessage(" 已删除未正常去除的临时常加载区块：" + land_tickingarea[key]);
+                            world.setDynamicProperty("land_tickingarea",JSON.stringify(land_tickingarea));
+                        }
+                    break;
                 }
             }
         })
@@ -1599,11 +1783,371 @@ const GUI = {
         .title(`管理 ${land.land_name} 领地`)
         .body(`领地基本属性：\n领地所有人id： ${land.owner}\n领地所有人名称： ${land.owner_name}\n领地id： ${adler32(land.get_time + land.owner + land.purchase_price)}\n领地类型： ${land.type}\n领地坐标： (${land.pos1[0]},${land.pos1[1]},${land.pos1[2]}) - (${land.pos2[0]},${land.pos2[1]},${land.pos2[2]})\n领地维度： ${land.dimid}\n领地初创价格： ${land.purchase_price}\n领地是否上架： ${land.on_sale ? "是" : "否"}\n领地名称： ${land.land_name}\n领地是否开启虚拟围栏： ${land.setup.VirtualFence ? "是" : "否"}\n领地是否可以破坏方块： ${land.setup.DestroyBlock ? "是" : "否"}\n领地是否可以放置方块： ${land.setup.PlaceBlock ? "是" : "否"}\n领地是否可以使用物品： ${land.setup.UseItem ? "是" : "否"}\n领地是否可以攻击实体： ${land.setup.AttackEntity ? "是" : "否"}\n领地是否可以打开箱子： ${land.setup.OpenChest ? "是" : "否"}\n领地是否可以引爆方块： ${land.setup.Expoplosion ? "是" : "否"}\n领地白名单玩家名称： ${Object.values(land.allowlist).join(",")}`)
         .button("修改领地基本属性")
-        .button("强制删除领地不退款")
-        .button("强制删除领地并退款")
+        .button("强制删除领地")
         .button("修改领地坐标范围")
         .button("修改玩家领地白名单")
-        .show(player)
+        .button("变更领地所有人")
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                switch (response.selection) {
+                    case 0:
+                        //修改领地基本属性
+                        this.AdminChangeLandInfo(player,land);
+                        break;
+                    case 1:
+                        //强制删除领地
+                        this.AdminDeleteLand(player,land);
+                        break;
+                    case 2:
+                        //修改领地坐标范围
+                        this.AdminChangeLandPOS(player,land);
+                        break;
+                    case 3:
+                        //修改玩家领地白名单
+                        this.AdminChangeLandAllowlist(player,land);
+                        break;
+                    case 4:
+                        //变更领地所有人
+                        this.AdminChangeLandOwner(player,land);
+                        break;
+                }
+            } else {
+                this.AdminMain(player);
+            }
+        })
+    },
+
+    //修改领地基本属性
+    AdminChangeLandInfo(player,land) {
+        const AdminChangeLandInfoForm = new ModalFormData()
+        .title(`修改 ${land.land_name} 基本属性`)
+        .textField("领地名称","请尽量简短！",land.land_name)
+        .toggle("是否开启虚拟围栏",land.setup.VirtualFence)
+        .toggle("是否可以破坏方块",land.setup.DestroyBlock)
+        .toggle("是否可以放置方块",land.setup.PlaceBlock)
+        .toggle("是否可以使用物品",land.setup.UseItem)
+        .toggle("是否可以攻击实体",land.setup.AttackEntity)
+        .toggle("是否可以打开箱子",land.setup.OpenChest)
+        .toggle("是否可以引爆方块",land.setup.Expoplosion)
+        .toggle("是否显示actionbar",land.setup.ShowActionbar)
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                if (response.formValues[0] == "") {
+                    player.sendMessage("§c 领地名称不能为空！");
+                    return;
+                }
+                let old_land_data = JSON.parse(JSON.stringify(land_data));
+                //开始修改数据
+                land.land_name = response.formValues[0];
+                land.setup.VirtualFence = response.formValues[1];
+                land.setup.DestroyBlock = response.formValues[2];
+                land.setup.PlaceBlock = response.formValues[3];
+                land.setup.UseItem = response.formValues[4];
+                land.setup.AttackEntity = response.formValues[5];
+                land.setup.OpenChest = response.formValues[6];
+                land.setup.Expoplosion = response.formValues[7];
+                land.setup.ShowActionbar = response.formValues[8];
+                //开始写入数据
+                fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+                    //先判断领地名称是否为空
+                    if (result === "success") {
+                        player.sendMessage(`§e 领地 §c${response.formValues[0]} §r§e基本属性修改成功！`);
+                    } else if (result === -1) {
+                        //服务器连接超时提醒
+                        player.sendMessage("§c 服务器连接失败！请联系在线管理员！");
+                        land_data = old_land_data;
+                    } else {
+                        //未知错误提醒
+                        player.sendMessage("§c 未知错误！请联系在线管理员！");
+                        land_data = old_land_data;
+                    }
+                })
+            } else {
+                this.AdminLandInfo(player,land);
+            }
+        })
+
+    },
+
+    //强制删除领地
+    AdminDeleteLand(player,land) {
+        const AdminDeleteLandForm = new MessageFormData()
+        .title(`强制删除 ${land.land_name}`)
+        .body(`§c您正在尝试强制删除领地 §e${land.land_name}\n\n§r§c请注意，此操作不可逆，§l且不会退还领地所有者购买所消耗的金币！§r§c请谨慎操作！`)
+        .button1("确认删除")
+        .button2("取消删除")
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                if (response.selection == 0) {
+                    let new_land_data = JSON.parse(JSON.stringify(land_data));
+                    //开始删除数据
+                    delete new_land_data[adler32(land.get_time + land.owner + land.purchase_price)];
+                    //开始写入数据
+                    fs.OverwriteJsonFile("land.json",new_land_data).then((result) => {
+                        if (result === "success") {
+                            player.sendMessage(`§e 领地 §c${land.land_name} §r§e强制删除成功！`);
+                            //开始删除索引
+                            delete_index(land.pos1,land.pos2,land.dimid,adler32(land.get_time + land.owner + land.purchase_price));
+                            land_data = new_land_data;
+                        } else if (result === -1) {
+                            //服务器连接超时提醒
+                            player.sendMessage("§c 服务器连接失败！请联系在线管理员！");
+                        } else {
+                            //未知错误提醒
+                            player.sendMessage("§c 未知错误！请联系在线管理员！");
+                        }
+                    })
+                } else {
+                    player.sendMessage(`§e 您已取消删除领地 ${land.land_name}！`);
+                }
+            } else {
+                this.AdminLandInfo(player,land);
+            }
+        })
+    },
+
+    //修改领地坐标范围
+    AdminChangeLandPOS(player,land) {
+        let id = 0;
+        //定义表单
+        switch (land.dimid) {
+            case "minecraft:overworld":
+                id = 0;
+                break;
+            case "minecraft:nether":
+                id = 1;
+                break;
+            case "minecraft:the_end":
+                id = 2;
+                break;
+        }
+        const AdminChangeLandPOSForm = new ModalFormData()
+        .title(`修改 ${land.land_name} 坐标范围`)
+        .dropdown("请选择领地维度",["主世界","下界","末地"],id)
+        .textField("请输入框选点坐标1的x坐标","请填写数字！",land.pos1[0].toString())
+        .textField("请输入框选点坐标1的y坐标","请填写数字！",land.pos1[1].toString())
+        .textField("请输入框选点坐标1的z坐标","请填写数字！",land.pos1[2].toString())
+        .textField("请输入框选点坐标2的x坐标","请填写数字！",land.pos2[0].toString())
+        .textField("请输入框选点坐标2的y坐标","请填写数字！",land.pos2[1].toString())
+        .textField("请输入框选点坐标2的z坐标","请填写数字！",land.pos2[2].toString())
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                //判断是否为空
+                if (response.formValues[1] == "" || response.formValues[2] == "" || response.formValues[3] == "" || response.formValues[4] == "" || response.formValues[5] == "" || response.formValues[6] == "") {
+                    player.sendMessage("§c 您输入的坐标不能为空！请重新输入！");
+                    return;
+                }
+                //开始判断坐标是否为数字
+                if (isNaN(response.formValues[1]) || isNaN(response.formValues[2]) || isNaN(response.formValues[3]) || isNaN(response.formValues[4]) || isNaN(response.formValues[5]) || isNaN(response.formValues[6])) {
+                    player.sendMessage("§c 您输入的坐标不是数字！请重新输入！");
+                    return;
+                }
+                //判断修改后的领地是否重合
+                if (have_other_land([parseInt(response.formValues[1]),parseInt(response.formValues[2]),parseInt(response.formValues[3])],[parseInt(response.formValues[4]),parseInt(response.formValues[5]),parseInt(response.formValues[6])],response.formValues[0] == 0 ? "minecraft:overworld" : response.formValues[0] == 1 ? "minecraft:nether" : "minecraft:the_end",adler32(land.get_time + land.owner + land.purchase_price),adler32(land.get_time + land.owner + land.purchase_price))) {
+                    player.sendMessage("§c 您选择的领地与已有领地重合！请重新选择！");
+                    return;
+                }
+                let old_land_data = JSON.parse(JSON.stringify(land_data));
+                //开始修改数据
+                land.dimid = response.formValues[0] == 0 ? "minecraft:overworld" : response.formValues[0] == 1 ? "minecraft:nether" : "minecraft:the_end";
+                land.pos1 = [parseInt(response.formValues[1]),parseInt(response.formValues[2]),parseInt(response.formValues[3])];
+                land.pos2 = [parseInt(response.formValues[4]),parseInt(response.formValues[5]),parseInt(response.formValues[6])];
+                //开始写入数据
+                fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+                    if (result === "success") {
+                        //开始删除索引
+                        let LandUUID = adler32(land.get_time + land.owner + land.purchase_price);
+                        delete_index(old_land_data[LandUUID].pos1,old_land_data[LandUUID].pos2,old_land_data[LandUUID].dimid,LandUUID);
+                        //开始计算索引值
+                        add_index(land.pos1,land.pos2,land.dimid,adler32(land.get_time + land.owner + land.purchase_price));
+                        player.sendMessage(`§e 领地 §c${land.land_name} §r§e坐标范围修改成功！`);
+                    } else if (result === -1) {
+                        //服务器连接超时提醒
+                        player.sendMessage("§c 服务器连接失败！请联系在线管理员！");
+                        land_data = old_land_data;
+                    } else {
+                        //未知错误提醒
+                        player.sendMessage("§c 未知错误！请联系在线管理员！");
+                        land_data = old_land_data;
+                    }
+                })
+            } else {
+                this.AdminLandInfo(player,land);
+            }
+        })
+    },
+
+    //修改玩家领地白名单
+    AdminChangeLandAllowlist(player,land) {
+        const AdminChangeLandAllowlistForm = new ActionFormData()
+        .title(`修改 ${land.land_name} 白名单`)
+        .body(`当前领地白名单玩家： ${Object.values(land.allowlist).join("\n")}`)
+        .button("添加白名单玩家")
+        .button("删除白名单玩家")
+        .button("返回上一页")
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                switch (response.selection) {
+                    case 0:
+                        //添加白名单玩家
+                        this.AdminAddAllowlist(player,land);
+                        break;
+                    case 1:
+                        //删除白名单玩家
+                        this.AdminDeleteAllowlist(player,land);
+                        break;
+                    case 2:
+                        //返回上一页
+                        this.AdminLandInfo(player,land);
+                        break;
+                }
+            } else {
+                this.AdminLandInfo(player,land);
+            }
+        })
+    },
+
+    //添加白名单玩家
+    AdminAddAllowlist(player,land) {
+        let players = world.getPlayers();
+        //然后获取所有在线玩家的名称
+        let players_name = ["-未选择任何玩家-"];
+        for (let i = 0; i < players.length; i++) {
+            players_name.push(players[i].name);
+        }
+        const AdminAddAllowlistForm = new ModalFormData()
+        .title(`添加 ${land.land_name} 白名单玩家`)
+        .dropdown("请选择要添加的玩家",players_name)
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                if (response.formValues[0] == 0) {
+                    player.sendMessage("§c 您未选择任何玩家！");
+                    return;
+                }
+                let old_land_data = JSON.parse(JSON.stringify(land_data));
+                //开始添加白名单
+                land.allowlist[players[response.formValues[0] - 1].id] = players[response.formValues[0] - 1].name;
+                //开始写入数据
+                fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+                    if (result === "success") {
+                        player.sendMessage(`§e 您已将玩家 §c${players[response.formValues[0] - 1].name} §r§e成功添加至领地§c ${land.land_name} §r§e的白名单！`);
+                    } else if (result === -1) {
+                        //服务器连接超时提醒
+                        player.sendMessage("§c 服务器连接失败！请联系在线管理员！");
+                        land_data = old_land_data;
+                    } else {
+                        //未知错误提醒
+                        player.sendMessage("§c 未知错误！请联系在线管理员！");
+                        land_data = old_land_data;
+                    }
+                })
+            } else {
+                this.AdminChangeLandAllowlist(player,land);
+            }
+        })
+    },
+
+    //删除白名单玩家
+    AdminDeleteAllowlist(player,land) {
+        let players_name = ["-未选择任何玩家-"];
+        for (let i = 0; i < Object.keys(land.allowlist).length; i++) {
+            players_name.push(land.allowlist[Object.keys(land.allowlist)[i]]);
+        }
+        const AdminDeleteAllowlistForm = new ModalFormData()
+        .title(`删除 ${land.land_name} 白名单玩家`)
+        .dropdown("请选择要删除的玩家",players_name)
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                if (response.formValues[0] == 0) {
+                    player.sendMessage("§c 您未选择任何玩家！");
+                    return;
+                }
+                let old_land_data = JSON.parse(JSON.stringify(land_data));
+                //开始删除白名单
+                delete land.allowlist[Object.keys(land.allowlist)[response.formValues[0] - 1]];
+                //开始写入数据
+                fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+                    if (result === "success") {
+                        player.sendMessage(`§e 您已将玩家 §c${players_name[response.formValues[0]]} §r§e成功从领地§c ${land.land_name} §r§e的白名单中删除！`);
+                    } else if (result === -1) {
+                        //服务器连接超时提醒
+                        player.sendMessage("§c 服务器连接失败！请联系在线管理员！");
+                        land_data = old_land_data;
+                    } else {
+                        //未知错误提醒
+                        player.sendMessage("§c 未知错误！请联系在线管理员！");
+                        land_data = old_land_data;
+                    }
+                })
+            } else {
+                this.AdminChangeLandAllowlist(player,land);
+            }
+        })
+    },
+
+    //变更领地所有人
+    AdminChangeLandOwner(player,land) {
+        let players = world.getPlayers();
+        //然后获取所有在线玩家的名称
+        let players_name = ["-未选择任何玩家-"];
+        for (let i = 0; i < players.length; i++) {
+            players_name.push(players[i].name);
+        }
+        const AdminChangeLandOwnerForm = new ModalFormData()
+        .title(`变更 ${land.land_name} 所有人`)
+        .dropdown("请选择要变更的玩家",players_name)
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                if (response.formValues[0] == 0) {
+                    player.sendMessage("§c 您未选择任何玩家！");
+                    return;
+                }
+                let LandUUID = adler32(land.get_time + land.owner + land.purchase_price);
+                let new_land_data = JSON.parse(JSON.stringify(land_data));
+                //开始变更所有人
+                new_land_data[LandUUID].owner = players[response.formValues[0] - 1].id;
+                new_land_data[LandUUID].owner_name = players[response.formValues[0] - 1].name;
+                let new_LandUUID = adler32(new_land_data[LandUUID].get_time + new_land_data[LandUUID].owner + new_land_data[LandUUID].purchase_price);
+                new_land_data[new_LandUUID] = new_land_data[LandUUID];
+                delete new_land_data[LandUUID];
+                //开始覆写文件land.json
+                fs.OverwriteJsonFile("land.json",new_land_data).then((result) => {
+                    if (result === "success") {
+                        player.sendMessage(`§e 您已将领地 §c${land.land_name} §r§e的所有人成功变更为玩家 §c${players[response.formValues[0] - 1].name}§r§e！`);
+                        players[response.formValues[0] - 1].sendMessage(`§a 您已收到一块领地！领地名字为 §l${land_data[LandUUID].land_name} §r§a，请前往查看！`);
+                        //重新计算索引值
+                        delete_index(land_data[LandUUID].pos1, land_data[LandUUID].pos2, land_data[LandUUID].dimid, LandUUID);
+                        let new_data = new_land_data[new_LandUUID];
+                        add_index(new_data.pos1, new_data.pos2, new_data.dimid,new_LandUUID);
+                        land_data = new_land_data;
+                    } else if (result === "-1") {
+                        player.sendMessage("§c 服务器连接失败，请联系在线管理员！");
+                    } else {
+                        player.sendMessage("§c 未知错误，请联系在线管理员！");
+                    }
+                })
+                // let old_land_data = JSON.parse(JSON.stringify(land_data));
+                // //开始变更所有人
+                // land.owner = players[response.formValues[0] - 1].id;
+                // land.owner_name = players[response.formValues[0] - 1].name;
+                // //开始写入数据
+                // fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+                //     if (result === "success") {
+                //         player.sendMessage(`§e 您已将领地 §c${land.land_name} §r§e的所有人成功变更为玩家 §c${players[response.formValues[0] - 1].name}§r§e！`);
+                //     } else if (result === -1) {
+                //         //服务器连接超时提醒
+                //         player.sendMessage("§c 服务器连接失败！请联系在线管理员！");
+                //         land_data = old_land_data;
+                //     } else {
+                //         //未知错误提醒
+                //         player.sendMessage("§c 未知错误！请联系在线管理员！");
+                //         land_data = old_land_data;
+                //     }
+                // })
+            } else {
+                this.AdminLandInfo(player,land);
+            }
+        })
     },
 
     //查看当前脚下领地
@@ -1614,6 +2158,231 @@ const GUI = {
         } else {
             player.sendMessage("§c 您当前脚下没有任何领地！");
         }
+    },
+
+    //按照玩家查找领地
+    AdminFindLand(player) {
+        const AdminFindLandForm = new ModalFormData()
+        .title(`查找玩家领地`)
+        .dropdown("请选择查找模式",["按照领地id查找","按照玩家名称查找","按照玩家id查找"])
+        .textField("请输入要查找的内容","请注意与查找模式保持一致")
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                if (response.formValues[1] == "") {
+                    player.sendMessage("§c 您输入的内容不能为空！");
+                    return;
+                }
+                switch (response.formValues[0]) {
+                    case 0:
+                        //按照领地id查找
+                        let land = land_data[response.formValues[1]];
+                        if (land) {
+                            this.AdminLandInfo(player,land);
+                        } else {
+                            //创建寻找失败的表单
+                            const AdminFindLandFailForm = new MessageFormData()
+                            .title("查找失败")
+                            .body(`§c您输入的领地id §e${response.formValues[1]} §r§c不存在,请检查id是否正确！`)
+                            .button1("重新查找")
+                            .button2("退出")
+                            .show(player).then((response) => {
+                                if (!response.canceled) {
+                                    if (response.selection == 0) {
+                                        this.AdminFindLand(player);
+                                    }
+                                }
+                            })
+                        }
+                        break;
+                    case 1:
+                        //按照玩家名称查找
+                        let target_player_land_id = [];
+                        for (let land in land_data) {
+                            if (land_data[land].owner_name == response.formValues[1]) {
+                                target_player_land_id.push(land);
+                            }
+                        }
+                        if (target_player_land_id.length > 0) {
+                            const AdminFindLandSuccessForm = new ActionFormData()
+                            .title(`查找结果`)
+                            .body(`玩家 §c${response.formValues[1]} §r§e共有 §c${target_player_land_id.length} §r§e块领地！`)
+                            for (let i = 0; i < target_player_land_id.length; i++) {
+                                AdminFindLandSuccessForm.button(`[${target_player_land_id[i]}]  ${land_data[target_player_land_id[i]].land_name} \ntype： ${land_data[target_player_land_id[i]].type} pos： (${land_data[target_player_land_id[i]].pos1[0]},${land_data[target_player_land_id[i]].pos1[1]},${land_data[target_player_land_id[i]].pos1[2]}) - (${land_data[target_player_land_id[i]].pos2[0]},${land_data[target_player_land_id[i]].pos2[1]},${land_data[target_player_land_id[i]].pos2[2]})`);
+                            }
+                            AdminFindLandSuccessForm.show(player).then((response) => {
+                                if (!response.canceled) {
+                                    this.AdminLandInfo(player,land_data[target_player_land_id[response.selection]]);
+                                }
+                            })
+                        } else {
+                            //创建寻找失败的表单
+                            const AdminFindLandFailForm = new MessageFormData()
+                            .title("查找失败")
+                            .body(`§c您输入的玩家名称 §e${response.formValues[1]} §r§c不存在,请检查名称是否正确！`)
+                            .button1("重新查找")
+                            .button2("退出")
+                            .show(player).then((response) => {
+                                if (!response.canceled) {
+                                    if (response.selection == 0) {
+                                        this.AdminFindLand(player);
+                                    }
+                                }
+                            })
+                        }
+                        break;
+                    case 2:
+                        //按照玩家id查找
+                        let target_player_land_id2 = [];
+                        for (let land in land_data) {
+                            if (land_data[land].owner == response.formValues[1]) {
+                                target_player_land_id2.push(land);
+                            }
+                        }
+                        if (target_player_land_id2.length > 0) {
+                            const AdminFindLandSuccessForm = new ActionFormData()
+                            .title(`查找结果`)
+                            .body(`玩家 §c${response.formValues[1]} §r§e共有 §c${target_player_land_id2.length} §r§e块领地！`)
+                            for (let i = 0; i < target_player_land_id2.length; i++) {
+                                AdminFindLandSuccessForm.button(`[${target_player_land_id2[i]}]  ${land_data[target_player_land_id2[i]].land_name} \ntype： ${land_data[target_player_land_id2[i]].type} pos： (${land_data[target_player_land_id2[i]].pos1[0]},${land_data[target_player_land_id2[i]].pos1[1]},${land_data[target_player_land_id2[i]].pos1[2]}) - (${land_data[target_player_land_id2[i]].pos2[0]},${land_data[target_player_land_id2[i]].pos2[1]},${land_data[target_player_land_id2[i]].pos2[2]})`);
+                            }
+                            AdminFindLandSuccessForm.show(player).then((response) => {
+                                if (!response.canceled) {
+                                    this.AdminLandInfo(player,land_data[target_player_land_id2[response.selection]]);
+                                }
+                            })
+                        } else {
+                            //创建寻找失败的表单
+                            const AdminFindLandFailForm = new MessageFormData()
+                            .title("查找失败")
+                            .body(`§c您输入的玩家id §e${response.formValues[1]} §r§c不存在,请检查id是否正确！`)
+                            .button1("重新查找")
+                            .button2("退出")
+                            .show(player).then((response) => {
+                                if (!response.canceled) {
+                                    if (response.selection == 0) {
+                                        this.AdminFindLand(player);
+                                    }
+                                }
+                            })
+                        }
+                        break;
+                }
+            } else {
+                this.AdminMain(player);
+            }
+        })
+    },
+
+    //管理领地市场
+    AdminMarket(player) {
+        let land_market_data = [];
+        const AdminMarketForm = new ActionFormData()
+        .title("管理领地市场")
+        .body("在这里管理玩家出售的领地")
+        .button("返回上一页")
+        for (let landid in land_data) {
+            if (land_data[landid].on_sale) {
+                land_market_data.push(landid);
+                AdminMarketForm.button(`[${landid}]  ${land_data[landid].land_name} \n价格： ${land_data[landid].sale_price} 所有者： ${land_data[landid].owner_name}`);
+            }
+        }
+        AdminMarketForm.show(player).then((response) => {
+            if (!response.canceled) {
+                if (response.selection == 0) {
+                    this.AdminMain(player);
+                } else {
+                    this.AdminMarketInfo(player,land_market_data[response.selection - 1]);
+                }
+            } else {
+                this.AdminMain(player);
+            }
+        })
+    },
+
+    //管理领地市场信息
+    AdminMarketInfo(player,LandUUID) {
+        const AdminMarketInfoForm = new ActionFormData()
+        .title(`管理 ${land_data[LandUUID].land_name} 市场信息`)
+        .body(`领地id： ${LandUUID}\n领地名称： ${land_data[LandUUID].land_name}\n领地类型： ${land_data[LandUUID].type}\n领地所有者： ${land_data[LandUUID].owner_name}\n领地价格： ${land_data[LandUUID].sale_price}`)
+        .button("下架领地")
+        .button("修改领地市场信息")
+        .button("返回上一页")
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                switch (response.selection) {
+                    case 0:
+                        //下架领地
+                        let new_land_data = JSON.parse(JSON.stringify(land_data));
+                        new_land_data[LandUUID].on_sale = false;
+                        fs.OverwriteJsonFile("land.json",new_land_data).then((result) => {
+                            if (result === "success") {
+                                player.sendMessage(`§e 您已成功下架领地 §c${land_data[LandUUID].land_name} §r§e！`);
+                                land_data = new_land_data;
+                                this.AdminMarket(player);
+                            } else if (result === -1) {
+                                player.sendMessage("§c 服务器连接失败，请联系在线管理员！");
+                            } else {
+                                player.sendMessage("§c 未知错误，请联系在线管理员！");
+                            }
+                        })
+                        break;
+                    case 1:
+                        //修改领地市场信息
+                        this.AdminChangeMarketInfo(player,LandUUID);
+                        break;
+                    case 2:
+                        //返回上一页
+                        this.AdminMarket(player);
+                        break;
+                }
+            } else {
+                this.AdminMarket(player);
+            }
+        })
+    },
+
+    //修改领地市场信息
+    AdminChangeMarketInfo(player,LandUUID) {
+        const AdminChangeMarketInfoForm = new ModalFormData()
+        .title(`修改 ${land_data[LandUUID].land_name} 市场信息`)
+        .textField("请输入领地价格","请填写数字！",land_data[LandUUID].sale_price.toString())
+        .textField("请输入领地名称","请填写领地名称！",land_data[LandUUID].land_name)
+        .textField("请输入领地描述","请填写领地描述！",land_data[LandUUID].land_description)
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                //判断是否为空
+                if (response.formValues[0] == "" || response.formValues[1] == "" || response.formValues[2] == "") {
+                    player.sendMessage("§c 您输入的内容不能为空！请重新输入！");
+                    return;
+                }
+                //开始判断价格是否为数字
+                if (isNaN(response.formValues[0])) {
+                    player.sendMessage("§c 您输入的价格不是数字！请重新输入！");
+                    return;
+                }
+                let new_land_data = JSON.parse(JSON.stringify(land_data));
+                //开始修改数据
+                new_land_data[LandUUID].sale_price = parseInt(response.formValues[0]);
+                new_land_data[LandUUID].land_name = response.formValues[1];
+                new_land_data[LandUUID].land_description = response.formValues[2];
+                //开始写入数据
+                fs.OverwriteJsonFile("land.json",new_land_data).then((result) => {
+                    if (result === "success") {
+                        player.sendMessage(`§e 领地 §c${land_data[LandUUID].land_name} §r§e市场信息修改成功！`);
+                        land_data = new_land_data;
+                        this.AdminMarketInfo(player,LandUUID);
+                    } else if (result === -1) {
+                        //服务器连接超时提醒
+                        player.sendMessage("§c 服务器连接失败！请联系在线管理员！");
+                    } else {
+                        //未知错误提醒
+                        player.sendMessage("§c 未知错误！请联系在线管理员！");
+                    }
+                })
+            } else {
+                this.AdminMarketInfo(player,LandUUID);
+            }
+        })
     }
 }
 
@@ -1839,9 +2608,9 @@ world.afterEvents.worldInitialize.subscribe((event) => {
 system.afterEvents.scriptEventReceive.subscribe((event) => {
     if (event.id == "mcnia:land") {
         switch (event.message) {
-            case "generate_land":
-                generate_land(1000);
-                break;
+            // case "generate_land":
+            //     generate_land(1000);
+            //     break;
             case "reload":
                 let start = Date.now();
                 fs.GetJSONFileData("land.json").then((result) => {
@@ -1905,55 +2674,55 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
 })
 
 //随机生成num数量个领地，并将领地数据写入文件
-function generate_land(num) {
-    let start = Date.now();
-    for (let i = 0; i < num; i++) {
-        let new_land_data = {};
-        let pos1 = Math.round((Math.random() * 2 - 1) * 100000);
-        let pos2 = Math.round((Math.random() * 2 - 1) * 100000);
-        new_land_data.owner = 0;
-        new_land_data.owner_name = "无";
-        new_land_data.pos1 = [pos1,0,pos2];
-        new_land_data.pos2 = [pos1+100,64,pos2+300];
-        new_land_data.dimid = "minecraft:overworld";
-        new_land_data.type = "2d";
-        new_land_data.purchase_price = pos1;
-        new_land_data.on_sale = false;
-        new_land_data.get_time = GetTime();
-        new_land_data.land_name = i + "的领地";
-        new_land_data.allowlist = {};
-        new_land_data.banlist = [];
-        new_land_data.teleport = [];
-        new_land_data.setup = {
-            "DestroyBlock":false,
-            "PlaceBlock":false,
-            "UseItem":false,
-            "AttackEntity":false,
-            "OpenChest":false,
-            "Expoplosion": false,
-            "ShowActionbar":true,
-            "VirtualFence": false
-        }
-        //首先判断领地是否重合
-        if (have_land(new_land_data.pos1,new_land_data.pos2,new_land_data.dimid)) {
-            i--;
-            continue;
-        }
-        //再计算索引值
-        add_index(new_land_data.pos1,new_land_data.pos2,new_land_data.dimid,adler32((i + "@" + new_land_data.purchase_price).toString()));
-        //最后写入数据
-        //log(i + JSON.stringify(land_data));
-        log(`已生成${i}块领地`)
-        land_data[adler32((i + "@" + new_land_data.purchase_price).toString())] = new_land_data;
-    }
-    fs.OverwriteJsonFile("land.json",land_data).then((result) => {
-        if (result === "success") {
-            log("随机生成领地数据成功，本次生成用时：" + (Date.now() - start) + "ms");
-        } else if (result === -1) {
-            console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
-        }
-    })
-}
+// function generate_land(num) {
+//     let start = Date.now();
+//     for (let i = 0; i < num; i++) {
+//         let new_land_data = {};
+//         let pos1 = Math.round((Math.random() * 2 - 1) * 100000);
+//         let pos2 = Math.round((Math.random() * 2 - 1) * 100000);
+//         new_land_data.owner = 0;
+//         new_land_data.owner_name = "无";
+//         new_land_data.pos1 = [pos1,0,pos2];
+//         new_land_data.pos2 = [pos1+100,64,pos2+300];
+//         new_land_data.dimid = "minecraft:overworld";
+//         new_land_data.type = "2d";
+//         new_land_data.purchase_price = pos1;
+//         new_land_data.on_sale = false;
+//         new_land_data.get_time = GetTime();
+//         new_land_data.land_name = i + "的领地";
+//         new_land_data.allowlist = {};
+//         new_land_data.banlist = [];
+//         new_land_data.teleport = [];
+//         new_land_data.setup = {
+//             "DestroyBlock":false,
+//             "PlaceBlock":false,
+//             "UseItem":false,
+//             "AttackEntity":false,
+//             "OpenChest":false,
+//             "Expoplosion": false,
+//             "ShowActionbar":true,
+//             "VirtualFence": false
+//         }
+//         //首先判断领地是否重合
+//         if (have_land(new_land_data.pos1,new_land_data.pos2,new_land_data.dimid)) {
+//             i--;
+//             continue;
+//         }
+//         //再计算索引值
+//         add_index(new_land_data.pos1,new_land_data.pos2,new_land_data.dimid,adler32((i + "@" + new_land_data.purchase_price).toString()));
+//         //最后写入数据
+//         //log(i + JSON.stringify(land_data));
+//         log(`已生成${i}块领地`)
+//         land_data[adler32((i + "@" + new_land_data.purchase_price).toString())] = new_land_data;
+//     }
+//     fs.OverwriteJsonFile("land.json",land_data).then((result) => {
+//         if (result === "success") {
+//             log("随机生成领地数据成功，本次生成用时：" + (Date.now() - start) + "ms");
+//         } else if (result === -1) {
+//             console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+//         }
+//     })
+// }
 
 export const LandGUI = GUI;
 
