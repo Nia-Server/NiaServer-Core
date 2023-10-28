@@ -24,7 +24,8 @@ import './log.js'
 
 export const VERSION = "v1.4.0";
 export const BDS_VERSION = "1.20.31.01";
-export const LAST_UPGRATE = "2023/10/20";
+export const LAST_UPGRATE = "2023/10/28";
+export const CODE_BRANCH = "dev";
 
 
 console.log(`\x1b[33m[NIA V4] NIA V4 已经成功在本服务器上启动！\x1b[0m`);

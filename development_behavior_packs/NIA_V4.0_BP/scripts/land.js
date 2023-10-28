@@ -935,7 +935,12 @@ const GUI = {
                 }
                 //再判断价格是否为数字
                 if (isNaN(parseInt(response.formValues[1]))) {
-                    player.sendMessage("§c 价格必须为正整数！");
+                    player.sendMessage("§c 价格必须为数字！");
+                    return;
+                }
+                //开始判断价格是否为大于0的数字
+                if (parseInt(response.formValues[1]) <= 0) {
+                    player.sendMessage("§c 您输入的价格必须大于0！请重新输入！");
                     return;
                 }
                 //判断领地名称是否为空
@@ -951,7 +956,7 @@ const GUI = {
                 //开始上架领地
                 let old_land_data = JSON.parse(JSON.stringify(land_data));
                 land_data[LandUUID].on_sale = response.formValues[0];
-                land_data[LandUUID].sale_price = Math.abs(parseInt(response.formValues[1]));
+                land_data[LandUUID].sale_price = parseInt(response.formValues[1]);
                 land_data[LandUUID].land_name = response.formValues[2];
                 land_data[LandUUID].land_description = response.formValues[3];
                 //开始覆写文件land.json
@@ -1037,6 +1042,13 @@ const GUI = {
                     player.sendMessage("§c 您未选择任何玩家！");
                     return;
                 }
+                //判断该玩家是否已经在白名单中
+                for (let key in land_data[LandUUID].allowlist) {
+                    if (players[response.formValues[0] - 1].id == key) {
+                        player.sendMessage("§c 该玩家已在白名单中，无需重复添加！");
+                        return;
+                    }
+                }
                 //开始添加白名单
                 let old_land_data = JSON.parse(JSON.stringify(land_data));
                 //首先获取要添加的玩家对象
@@ -1060,16 +1072,14 @@ const GUI = {
     },
 
     ManageLandAllowlistDelete(player,LandUUID) {
-        //首先获取所有在线玩家的对象
-        let players = world.getPlayers();
-        //然后获取所有在线玩家的名称
-        let players_name = ["-未选择任何玩家-"];
-        for (let i = 0; i < players.length; i++) {
-            players_name.push(players[i].name);
+        //首先获取所有白名单玩家的对象
+        let allowlist_players = ["-未选择任何玩家-"];
+        for (let key in land_data[LandUUID].allowlist) {
+            allowlist_players.push(land_data[LandUUID].allowlist[key]);
         }
         const ManageLandAllowlistDeleteForm = new ModalFormData()
         .title(`删除白名单[${LandUUID}] ${land_data[LandUUID].land_name}`)
-        .dropdown("请选择要删除的玩家",players_name)
+        .dropdown("请选择要删除的玩家",allowlist_players)
         .show(player).then((response) => {
             if (!response.canceled) {
                 if (response.formValues[0] == 0) {
@@ -1078,29 +1088,26 @@ const GUI = {
                 }
                 //开始删除白名单
                 let old_land_data = JSON.parse(JSON.stringify(land_data));
-                //检查该玩家是否在白名单中
-                if (!land_data[LandUUID].allowlist.hasOwnProperty(players[response.formValues[0] - 1].id)) {
-                    player.sendMessage("§c 该玩家不在白名单中！");
-                    return;
-                }
                 //首先获取要删除的玩家对象
-                delete land_data[LandUUID].allowlist[players[response.formValues[0] - 1].id];
+                delete land_data[LandUUID].allowlist[Object.keys(land_data[LandUUID].allowlist)[response.formValues[0] - 1]];
                 //开始覆写文件land.json
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
-                    if (result === "success") {
-                        player.sendMessage(`§a 您已将玩家 §l§e${players[response.formValues[0] - 1].name} §r§a成功从领地§e ${land_data[LandUUID].land_name} §a的白名单中删除！`);
-                    } else if (result === "-1") {
+                    if (result === "success")
+                        player.sendMessage(`§a 您已将玩家 §l§e${allowlist_players[response.formValues[0]]} §r§a成功从领地§e ${land_data[LandUUID].land_name} §a的白名单中删除！`);
+                    else if (result === "-1") {
                         player.sendMessage("§c 服务器连接失败，请联系在线管理员！");
                         land_data = old_land_data;
                     } else {
                         player.sendMessage("§c 未知错误，请联系在线管理员！");
                         land_data = old_land_data;
                     }
-                })
+                }
+                )
             } else {
                 this.ManageLandAllowlist(player,LandUUID);
             }
         })
+
     },
 
     //购买出售中领地
@@ -2360,6 +2367,11 @@ const GUI = {
                     player.sendMessage("§c 您输入的价格不是数字！请重新输入！");
                     return;
                 }
+                //开始判断价格是否为大于0的数字
+                if (parseInt(response.formValues[0]) <= 0) {
+                    player.sendMessage("§c 您输入的价格必须大于0！请重新输入！");
+                    return;
+                }
                 let new_land_data = JSON.parse(JSON.stringify(land_data));
                 //开始修改数据
                 new_land_data[LandUUID].sale_price = parseInt(response.formValues[0]);
@@ -2386,12 +2398,76 @@ const GUI = {
     }
 }
 
+
 //玩家进入领地判断
+
 system.runInterval(() => {
-    for (const player of world.getAllPlayers()) {
-        player_in_index(player);
+    try {
+        for (const player of world.getAllPlayers()) {
+            player_in_index(player);
+        }
+    } catch (error) {
+        console.warn(`[NIA V4] 领地系统发生了一次错误，错误原因：${error}`);
+        Broadcast(" §c领地系统发生了一次错误，错误原因：" + error);
+        Broadcast(" §e服务器正在尝试自动修复中，请截图并联系在线管理员！");
+        //圈地系统文件
+        let start_1 = Date.now();
+        fs.GetJSONFileData("land.json").then((result) => {
+            //文件不存在
+            if (result === 0) {
+                fs.CreateNewJsonFile("land.json",{}).then((result) => {
+                    if (result === "success") {
+                        land_data = {};
+                        Broadcast(" §e领地数据文件不存在，已成功创建！");
+                    } else if (result === -1) {
+                        Broadcast(" §c依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                    }
+                });
+            } else if (result === -1) {
+                Broadcast(" §c依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+            } else {
+                //文件存在且服务器连接成功
+                land_data = result;
+                let LandNum = 0;
+                for (let Land in land_data) {
+                    add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
+                    LandNum++;
+                }
+                Broadcast(` §e领地数据自动重载成功，共获取到 ${LandNum} 块领地，本次读取用时：${Date.now() - start_1}ms`)
+            }
+        })
+
+        //玩家金币缓存文件
+        let start_2 = Date.now();
+        fs.GetJSONFileData("land_temp_player_money.json").then((result) => {
+            if (result === 0) {
+                fs.CreateNewJsonFile("land_temp_player_money.json",{}).then((result) => {
+                    if (result === "success") {
+                        log("玩家金币数据文件不存在，已成功创建！");
+                    } else if (result === -1) {
+                        Broadcast(" §c依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                    }
+                });
+            } else if (result === -1) {
+                Broadcast(" §c依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+            } else {
+                //文件存在且服务器连接成功
+                temp_player_money = result;
+                Broadcast(` §e玩家金币数据自动重载成功，本次读取用时：${Date.now() - start_2}ms`)
+            }
+        })
+
+        //删除所有常加载区块
+        let land_tickingarea = JSON.parse(world.getDynamicProperty("land_tickingarea"));
+        for (let key = 0;key < land_tickingarea.length;key++) {
+            RunCmd(`tickingarea remove ${land_tickingarea[key]}`);
+            Broadcast(` §7已删除常加载区块：${land_tickingarea[key]}`);
+            world.setDynamicProperty("land_tickingarea",JSON.stringify(land_tickingarea));
+        }
     }
+
 },1)
+
 
 //玩家破坏方块监听
 world.beforeEvents.playerBreakBlock.subscribe((event) => {

@@ -3,6 +3,7 @@ import {system, world, DynamicPropertiesDefinition} from '@minecraft/server';
 import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution,log, GetShortTime} from './customFunction.js'
 import { cfg } from './config.js';
 import { ExternalFS } from './API/filesystem.js';
+import { LAST_UPGRATE,VERSION,CODE_BRANCH } from './main.js';
 
 //定义一些常数
 const fs = new ExternalFS();
@@ -149,6 +150,18 @@ world.afterEvents.worldInitialize.subscribe((event) => {
         world.setDynamicProperty("state",true);
     } else if (world.getDynamicProperty("state") == true) {
         log("NIA V4已经初始化完成！");
+        world.scoreboard.removeObjective("menu");
+        //英文
+        // world.scoreboard.addObjective("menu","");
+        world.scoreboard.addObjective("menu","");
+        //world.scoreboard.addObjective("menu","");
+        RunCmd(`scoreboard objectives setdisplay sidebar menu ascending`);
+        world.scoreboard.getObjective("menu").addScore(`§e当前测试阶段：PRE-2`,0);
+        world.scoreboard.getObjective("menu").addScore(`§e当前版本：${VERSION}`,1);
+        world.scoreboard.getObjective("menu").addScore("§c上次更新时间：",2);
+        world.scoreboard.getObjective("menu").addScore(`${LAST_UPGRATE}`,3);
+        world.scoreboard.getObjective("menu").addScore(`§7测试版本并不代表`,4);
+        world.scoreboard.getObjective("menu").addScore(`§7最终发布版本`,5);
     }
 
 })

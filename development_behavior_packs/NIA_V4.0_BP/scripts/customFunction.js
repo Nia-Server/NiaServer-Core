@@ -150,3 +150,4 @@ function randomNormalDistribution(){
 export function getNumberInNormalDistribution(mean,std_dev){
     return mean+(randomNormalDistribution()*std_dev);
 }
+

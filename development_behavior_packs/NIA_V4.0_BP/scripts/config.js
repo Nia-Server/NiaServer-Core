@@ -14,6 +14,14 @@ const config = {
         "Port": 10086
     },
     "LandCfg": {
+        "Distance": 100,
+        "MaxSquare": 10000,
+        "MinSquare": 100,
+        "Price_2D": 300,
+        "Price_3D": 3,
+        "XRange": [-100000,100000],
+        "ZRange": [-100000,100000],
+        "YRange": [-64,256]
     },
     "MarketCfg": {
         "BanItems" : ["minecraft:paper","minecraft:clock"]
