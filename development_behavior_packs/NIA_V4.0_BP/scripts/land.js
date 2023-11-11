@@ -2,11 +2,14 @@
 
 import { system, world, DynamicPropertiesDefinition, SystemAfterEvents, System } from '@minecraft/server';
 import { ExternalFS } from './API/filesystem';
-import { Broadcast, GetScore, GetShortTime, GetTime, RunCmd, log } from './customFunction';
+import { Broadcast, GetScore, GetTime, RunCmd, log } from './customFunction';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 import { adler32 } from './API/cipher_system';
 import { cfg } from './config';
 import { Main } from './menu/main';
+
+//导入文件系统
+const fs = new ExternalFS();
 
 //初始化一些变量
 var land_index = {};
@@ -45,11 +48,6 @@ const Z_RANGE = [-100000,100000];
 const MONEY_SCOREBOARD_NAME = "money";
 const MONEY_SCOREBOARD_DISPLAY_NAME = "金币";
 
-
-
-
-//导入文件系统
-const fs = new ExternalFS();
 
 /**
  * 输入坐标范围信息，以及当前的索引值数据，添加索引值,并返回新的索引值
@@ -1045,7 +1043,7 @@ const GUI = {
                 //判断该玩家是否已经在白名单中
                 for (let key in land_data[LandUUID].allowlist) {
                     if (players[response.formValues[0] - 1].id == key) {
-                        player.sendMessage("§c 该玩家已在白名单中，无需重复添加！");
+                        player.sendMessage("§e 该玩家已在白名单中，无需重复添加！");
                         return;
                     }
                 }
@@ -1707,6 +1705,7 @@ const GUI = {
         .button("查找/搜索领地")
         .button("管理领地市场")
         .button("重新加载领地数据")
+        .button("查看附近所有领地")
         AdminMainForm.show(player).then((response) => {
             if (!response.canceled) {
                 switch (response.selection) {
@@ -1778,6 +1777,10 @@ const GUI = {
                             world.setDynamicProperty("land_tickingarea",JSON.stringify(land_tickingarea));
                         }
                     break;
+                    case 4:
+                        //查看附近所有领地
+                        this.AdminCheckNearLand(player);
+                        break;
                 }
             }
         })
@@ -1794,6 +1797,7 @@ const GUI = {
         .button("修改领地坐标范围")
         .button("修改玩家领地白名单")
         .button("变更领地所有人")
+        .button("快捷传送到领地")
         .show(player).then((response) => {
             if (!response.canceled) {
                 switch (response.selection) {
@@ -1816,6 +1820,10 @@ const GUI = {
                     case 4:
                         //变更领地所有人
                         this.AdminChangeLandOwner(player,land);
+                        break;
+                    case 5:
+                        //快捷传送到领地
+                        this.AdminTeleportLand(player,land);
                         break;
                 }
             } else {
@@ -2395,6 +2403,82 @@ const GUI = {
                 this.AdminMarketInfo(player,LandUUID);
             }
         })
+    },
+
+    //查看附近领地
+    AdminCheckNearLand(player) {
+        //获取玩家附近的领地
+        //根据传入的坐标计算出相应的区块编号
+        let pos = [player.location.x,player.location.y,player.location.z];
+        let posX = parseInt(pos[0]);
+        let posY = parseInt(pos[1]);
+        let posZ = parseInt(pos[2]);
+        let posDimid = player.dimension.id;
+        let XIndex = parseInt(posX / DISTANCE);
+        let ZIndex = parseInt(posZ / DISTANCE);
+        //判断该区块内是否有领地数据，根据数据层层判断
+        if(!land_index[posDimid] || !land_index[posDimid][XIndex] || !land_index[posDimid][XIndex][ZIndex]) {
+            return;
+        }
+        //如果走到了这里说明，该区块编号下有相应的领地数据存在，然后遍历该区块存在的领地即可
+        let near_land_data = land_index[posDimid][XIndex][ZIndex];
+
+        const AdminCheckNearLandForm = new ActionFormData()
+        .title("附近领地")
+        .body(`您目前在领地区块标号：X_index:${XIndex} Z_index:${ZIndex}`)
+        .button("返回上一页")
+        for (let i = 0; i < near_land_data.length; i++) {
+            AdminCheckNearLandForm.button(`[${near_land_data[i]}]  ${land_data[near_land_data[i]].land_name} \ntype： ${land_data[near_land_data[i]].type} pos： (${land_data[near_land_data[i]].pos1[0]},${land_data[near_land_data[i]].pos1[1]},${land_data[near_land_data[i]].pos1[2]}) - (${land_data[near_land_data[i]].pos2[0]},${land_data[near_land_data[i]].pos2[1]},${land_data[near_land_data[i]].pos2[2]})`);
+        }
+        AdminCheckNearLandForm.show(player).then((response) => {
+            if (!response.canceled) {
+                if (response.selection == 0) {
+                    this.AdminMain(player);
+                } else {
+                    this.AdminLandInfo(player,land_data[near_land_data[response.selection - 1]]);
+                }
+            } else {
+                this.AdminMain(player);
+            }
+        })
+
+    },
+
+    //快捷传送到领地
+    AdminTeleportLand(player,land) {
+        //开始遍历pos1至pos2内的所有坐标
+        let pos1 = land.pos1;
+        let pos2 = land.pos2;
+        //使pos1全部坐标为最小值，pos2全部坐标为最大值
+        let pos1_X = pos1[0] > pos2[0] ? pos2[0] : pos1[0];
+        let pos1_Y = pos1[1] > pos2[1] ? pos2[1] : pos1[1];
+        let pos1_Z = pos1[2] > pos2[2] ? pos2[2] : pos1[2];
+        let pos2_X = pos1[0] > pos2[0] ? pos1[0] : pos2[0];
+        let pos2_Y = pos1[1] > pos2[1] ? pos1[1] : pos2[1];
+        let pos2_Z = pos1[2] > pos2[2] ? pos1[2] : pos2[2];
+        //已经遍历的数量
+        let count = 0;
+        //开始遍历
+        for (let x = pos1_X; x <= pos2_X; x++) {
+            for (let y = pos1_Y; y <= pos2_Y; y++) {
+                for (let z = pos1_Z; z <= pos2_Z; z++) {
+                    //判断坐标是否是空气
+                    count++;
+                    if (count >= 100) {
+                        player.sendMessage("§c 目标领地传送失败，原因是过多遮挡方块，请手动传送！");
+                        return;
+                    }
+                    if (world.getDimension(land.dimid.toString()).getBlock({"x":x,"y":y,"z":z}).typeId == "minecraft:air" && world.getDimension(land.dimid.toString()).getBlock({"x":x,"y":y + 1,"z":z}).typeId == "minecraft:air") {
+                        //全部是空气，可以传送
+                        player.teleport({"x":x + 0.5,"y":y + 1,"z":z + 0.5});
+                        //传送提示
+                        player.sendMessage(`§e 您已成功传送至领地 §c${land.land_name} §r§e内的坐标 §c(${x},${y},${z})§r§e！`);
+                        return;
+                    }
+                }
+            }
+        }
+        player.sendMessage("§c 目标领地传送失败，原因是过多遮挡方块，请手动传送！");
     }
 }
 
