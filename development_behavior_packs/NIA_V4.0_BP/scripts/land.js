@@ -1,6 +1,6 @@
 //圈地系统
 
-import { system, world, DynamicPropertiesDefinition, SystemAfterEvents, System } from '@minecraft/server';
+import { system, world, SystemAfterEvents, System } from '@minecraft/server';
 import { ExternalFS } from './API/filesystem';
 import { Broadcast, GetScore, GetTime, RunCmd, log } from './customFunction';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
@@ -31,6 +31,8 @@ const DISTANCE = 100;
 //const WRITE_INDEX_TO_FILE = false;
 
 //领地系统基础配置
+//单人最多圈地数量
+const MAX_LAND_NUM = 5;
 //2d/3d领地最大面积(两者均只计算xz平面所占面积)
 const MAX_SQUARE = 10000;
 //2d/3d领地最小面积(两者均只计算xz平面所占面积)
@@ -667,7 +669,6 @@ const LandAPI = {
             //删除相应的tickingarea
             for (let i = 0; i < land_tickingarea.length; i++) {
                 if (land_tickingarea[i] == `p1_${player.id}` || land_tickingarea[i] == `p2_${player.id}`) {
-                    // log(JSON.stringify(land_tickingarea) + "+" + land_tickingarea[i]);
                     land_tickingarea.splice(i,1);
                     i--;
                 }
@@ -887,6 +888,10 @@ const GUI = {
                     player.sendMessage("§c 您未选择任何玩家！");
                     return;
                 }
+                if (response.formValues[0] == player.name) {
+                    player.sendMessage("§c 您不能将领地转让给自己！");
+                    return;
+                }
                 //开始转让领地
                 let new_land_data = JSON.parse(JSON.stringify(land_data));
                 //首先获取要转让的玩家对象
@@ -1040,6 +1045,10 @@ const GUI = {
                     player.sendMessage("§c 您未选择任何玩家！");
                     return;
                 }
+                if (players[response.formValues[0] - 1].id == land_data[LandUUID].owner) {
+                    player.sendMessage("§c 不能将领地主人添加至白名单！");
+                    return;
+                }
                 //判断该玩家是否已经在白名单中
                 for (let key in land_data[LandUUID].allowlist) {
                     if (players[response.formValues[0] - 1].id == key) {
@@ -1184,6 +1193,17 @@ const GUI = {
                         player.sendMessage(`§c 您的余额不足！您当前余额为：${world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).getScore(player)}，而该领地的价格为：${land_data[LandUUID].sale_price}`);
                         return;
                     }
+                    //判断玩家领地数量是否超过上限
+                    let player_land_count = 0;
+                    for (let key in land_data) {
+                        if (land_data[key].owner == player.id) {
+                            player_land_count++;
+                        }
+                    }
+                    if (player_land_count >= MAX_LAND_NUM) {
+                        player.sendMessage(`§c 购买失败，您的领地数量已达上限！领地数量上限为：${MAX_LAND_NUM}，请尝试出售一些领地后再次购买！`);
+                        return;
+                    }
                     let new_LandUUID = adler32(new_land_data[LandUUID].get_time + new_land_data[LandUUID].owner + new_land_data[LandUUID].purchase_price);
                     new_land_data[new_LandUUID] = new_land_data[LandUUID];
                     delete new_land_data[LandUUID];
@@ -1205,7 +1225,7 @@ const GUI = {
                                     land_data = new_land_data;
                                 } else {
                                     this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
-                                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                                    console.error("[NIA V4.5] Dependency server connection failed!");
                                     temp_player_money = old_temp_player_money;
                                 }
                             })
@@ -1480,8 +1500,8 @@ const GUI = {
                         land_num++;
                     }
                 }
-                if (land_num >= 5) {
-                    player.sendMessage("§c 您已经拥有了5块领地！请先出售一些领地后再购买！");
+                if (land_num >= MAX_LAND_NUM) {
+                    player.sendMessage(`§c 您已经拥有了${MAX_LAND_NUM}块领地！请先出售一些领地后再购买！"`);
                     //删除历史数据
                     delete land_history[player.id];
                     return;
@@ -1513,6 +1533,7 @@ const GUI = {
                     "ShowActionbar":true,
                     "VirtualFence": false
                 }
+                //LAND_UUID = adler32(new_land_data.get_time + player.id + purchase_price);
                 land_data[adler32(new_land_data.get_time + player.id + purchase_price)] = new_land_data;
                 //开始写入数据
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
@@ -1529,7 +1550,7 @@ const GUI = {
                     } else if (result === -1) {
                         //服务器连接超时提醒
                         player.sendMessage("§c 服务器连接失败！请联系在线管理员！");
-                        console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                        console.error("[NIA V4.5] Dependency server connection failed!");
                         land_data = old_land_data;
                     } else {
                         //未知错误提醒
@@ -1605,8 +1626,8 @@ const GUI = {
                         land_num++;
                     }
                 }
-                if (land_num >= 5) {
-                    player.sendMessage("§c 您已经拥有了5块领地！请先出售一些领地后再购买！");
+                if (land_num >= MAX_LAND_NUM) {
+                    player.sendMessage(`§c 您已经拥有了${MAX_LAND_NUM}块领地！请先出售一些领地后再购买！`);
                     //删除历史数据
                     delete land_history[player.id];
                     return;
@@ -1654,7 +1675,7 @@ const GUI = {
                     } else if (result === -1) {
                         //服务器连接超时提醒
                         player.sendMessage("§c 服务器连接失败！请联系在线管理员！");
-                        console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                        console.error("[NIA V4.5] Dependency server connection failed!");
                         land_data = old_land_data;
                     } else {
                         //未知错误提醒
@@ -1687,7 +1708,7 @@ const GUI = {
                     }
                 } else {
                     this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
-                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                    console.error("[NIA V4.5] Dependency server connection failed!");
                     temp_player_money = old_temp_player_money;
                 }
             })
@@ -1894,6 +1915,27 @@ const GUI = {
         .show(player).then((response) => {
             if (!response.canceled) {
                 if (response.selection == 0) {
+                    this.AdminCheckDeleteLand(player,land);
+                } else {
+                    player.sendMessage(`§e 您已取消删除领地 ${land.land_name}！`);
+                }
+            } else {
+                this.AdminLandInfo(player,land);
+            }
+        })
+    },
+
+    AdminCheckDeleteLand(player,land) {
+        //随机生成一个0-99的整数
+        let random_num1 = Math.floor(Math.random() * 100);
+        let random_num2 = Math.floor(Math.random() * 100);
+        const AdminCheckDeleteLandForm = new ModalFormData()
+        .title(`删除 ${land.land_name} 验证信息`)
+        .textField(`请输入下面的计算结果来确认删除！`,`请计算：${random_num1} + ${random_num2} = ?`)
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                if (response.formValues[0] == random_num1 + random_num2) {
+                    player.sendMessage("§e 验证成功！正在删除领地，请稍后...");
                     let new_land_data = JSON.parse(JSON.stringify(land_data));
                     //开始删除数据
                     delete new_land_data[adler32(land.get_time + land.owner + land.purchase_price)];
@@ -1913,13 +1955,14 @@ const GUI = {
                         }
                     })
                 } else {
-                    player.sendMessage(`§e 您已取消删除领地 ${land.land_name}！`);
+                    player.sendMessage("§c 验证失败！请重新尝试输入！");
                 }
             } else {
-                this.AdminLandInfo(player,land);
+                this.AdminDeleteLand(player,land);
             }
         })
     },
+
 
     //修改领地坐标范围
     AdminChangeLandPOS(player,land) {
@@ -2117,13 +2160,17 @@ const GUI = {
                     player.sendMessage("§c 您未选择任何玩家！");
                     return;
                 }
+                if (players[response.formValues[0] - 1].id == land.owner) {
+                    player.sendMessage("§c 您选择的玩家已经是该领地的所有人了！");
+                    return;
+                }
                 let LandUUID = adler32(land.get_time + land.owner + land.purchase_price);
                 let new_land_data = JSON.parse(JSON.stringify(land_data));
                 //开始变更所有人
                 new_land_data[LandUUID].owner = players[response.formValues[0] - 1].id;
                 new_land_data[LandUUID].owner_name = players[response.formValues[0] - 1].name;
                 let new_LandUUID = adler32(new_land_data[LandUUID].get_time + new_land_data[LandUUID].owner + new_land_data[LandUUID].purchase_price);
-                new_land_data[new_LandUUID] = new_land_data[LandUUID];
+                new_land_data[new_LandUUID] = JSON.parse(JSON.stringify(new_land_data[LandUUID]));
                 delete new_land_data[LandUUID];
                 //开始覆写文件land.json
                 fs.OverwriteJsonFile("land.json",new_land_data).then((result) => {
@@ -2233,7 +2280,7 @@ const GUI = {
                             //创建寻找失败的表单
                             const AdminFindLandFailForm = new MessageFormData()
                             .title("查找失败")
-                            .body(`§c您输入的玩家名称 §e${response.formValues[1]} §r§c不存在,请检查名称是否正确！`)
+                            .body(`§c您输入的玩家名称 §e${response.formValues[1]} §r§c不存在/没有领地,请检查是否正确！`)
                             .button1("重新查找")
                             .button2("退出")
                             .show(player).then((response) => {
@@ -2269,7 +2316,7 @@ const GUI = {
                             //创建寻找失败的表单
                             const AdminFindLandFailForm = new MessageFormData()
                             .title("查找失败")
-                            .body(`§c您输入的玩家id §e${response.formValues[1]} §r§c不存在,请检查id是否正确！`)
+                            .body(`§c您输入的玩家id §e${response.formValues[1]} §r§c不存在/没有领地数据,请检查id是否正确！`)
                             .button1("重新查找")
                             .button2("退出")
                             .show(player).then((response) => {
@@ -2491,7 +2538,7 @@ system.runInterval(() => {
             player_in_index(player);
         }
     } catch (error) {
-        console.warn(`[NIA V4] 领地系统发生了一次错误，错误原因：${error}`);
+        console.warn(`[NIA V4.5] An error occurred in the LAND system, the cause of the error:${error}`);
         Broadcast(" §c领地系统发生了一次错误，错误原因：" + error);
         Broadcast(" §e服务器正在尝试自动修复中，请截图并联系在线管理员！");
         //圈地系统文件
@@ -2504,14 +2551,16 @@ system.runInterval(() => {
                         land_data = {};
                         Broadcast(" §e领地数据文件不存在，已成功创建！");
                     } else if (result === -1) {
-                        Broadcast(" §c依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                        Broadcast(" §c依赖服务器连接失败！请截图并联系在线管理员！");
                     }
                 });
             } else if (result === -1) {
-                Broadcast(" §c依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                Broadcast(" §c依赖服务器连接失败！请截图并联系在线管理员！");
             } else {
                 //文件存在且服务器连接成功
                 land_data = result;
+                //初始化领地索引
+                land_index = {};
                 let LandNum = 0;
                 for (let Land in land_data) {
                     add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
@@ -2527,13 +2576,13 @@ system.runInterval(() => {
             if (result === 0) {
                 fs.CreateNewJsonFile("land_temp_player_money.json",{}).then((result) => {
                     if (result === "success") {
-                        log("玩家金币数据文件不存在，已成功创建！");
+                        Broadcast(" §e玩家金币数据文件不存在，已成功创建！");
                     } else if (result === -1) {
-                        Broadcast(" §c依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                        Broadcast(" §c依赖服务器连接失败！请截图并联系在线管理员！");
                     }
                 });
             } else if (result === -1) {
-                Broadcast(" §c依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                Broadcast(" §c依赖服务器连接失败！请截图并联系在线管理员！");
             } else {
                 //文件存在且服务器连接成功
                 temp_player_money = result;
@@ -2677,13 +2726,13 @@ world.afterEvents.worldInitialize.subscribe((event) => {
             fs.CreateNewJsonFile("land.json",{}).then((result) => {
                 if (result === "success") {
                     land_data = {};
-                    log("圈地系统数据文件不存在，已成功创建！");
+                    log("The land data file(land_data.json) does not exist and has been successfully created!");
                 } else if (result === -1) {
-                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                    console.error("[NIA V4.5] Dependency server connection failed!");
                 }
             });
         } else if (result === -1) {
-            console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+            console.error("[NIA V4.5] Dependency server connection failed!");
         } else {
             //文件存在且服务器连接成功
             land_data = result;
@@ -2692,7 +2741,8 @@ world.afterEvents.worldInitialize.subscribe((event) => {
                 add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
                 LandNum++;
             }
-            log("圈地数据获取成功，本次读取用时：" + (Date.now() - start_1) + "ms，共加载&&计算 " + LandNum + " 块领地数据！" );
+            log("The land data acquired successfully, this read time: " + (Date.now() - start_1) + "ms,loaded a total of " + LandNum + " piece of land data" );
+            //索引值提前写入
             // if (WRITE_INDEX_TO_FILE) {
             //     fs.GetJSONFileData("land_index.json").then((result) => {
             //         if (result === 0) {
@@ -2731,32 +2781,31 @@ world.afterEvents.worldInitialize.subscribe((event) => {
     })
 
     //玩家金币缓存文件
-    let start_2 = Date.now();
     fs.GetJSONFileData("land_temp_player_money.json").then((result) => {
         if (result === 0) {
             fs.CreateNewJsonFile("land_temp_player_money.json",{}).then((result) => {
                 if (result === "success") {
-                    log("玩家金币数据文件不存在，已成功创建！");
+                    log("(land)The player money data file(land_temp_player_money.json) does not exist and has been successfully created!");
                 } else if (result === -1) {
-                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                    console.error("[NIA V4.5] Dependency server connection failed!");
                 }
             });
         } else if (result === -1) {
-            console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+            console.error("[NIA V4.5] Dependency server connection failed!");
         } else {
             //文件存在且服务器连接成功
             temp_player_money = result;
-            log("(land)玩家金币数据获取成功，本次读取用时：" + (Date.now() - start_2) + "ms");
+            log("(land)The player money data acquired successfully!");
         }
     })
 
     //注册动态属性
-    event.propertyRegistry.registerWorldDynamicProperties(new DynamicPropertiesDefinition().defineString("land_tickingarea",10000,"[]"));
+    //event.propertyRegistry.registerWorldDynamicProperties(new DynamicPropertiesDefinition().defineString("land_tickingarea",10000,"[]"));
     //删除所有常加载区块
     let land_tickingarea = JSON.parse(world.getDynamicProperty("land_tickingarea"));
     for (let key = 0;key < land_tickingarea.length;key++) {
         RunCmd(`tickingarea remove ${land_tickingarea[key]}`);
-        log("已删除临时常加载区块：" + land_tickingarea[key]);
+        log("The temporary tickingarea block has been deleted:" + land_tickingarea[key]);
         world.setDynamicProperty("land_tickingarea",JSON.stringify(land_tickingarea));
     }
 
@@ -2779,13 +2828,13 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
                         fs.CreateNewJsonFile("land.json",{}).then((result) => {
                             if (result === "success") {
                                 land_data = {};
-                                log("圈地系统数据文件不存在，已成功创建！");
+                                log("The land system data file(land_data.json) does not exist and has been successfully created!");
                             } else if (result === -1) {
-                                console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                                console.error("[NIA V4.5] Dependency server connection failed!");
                             }
                         });
                     } else if (result === -1) {
-                        console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                        console.error("[NIA V4.5] Dependency server connection failed!");
                     } else {
                         //文件存在且服务器连接成功
                         land_data = result;
@@ -2794,27 +2843,26 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
                             add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
                             LandNum++;
                         }
-                        log("圈地数据获取成功，本次读取用时：" + (Date.now() - start) + "ms，共加载 " + LandNum + " 块领地数据！" );
+                        log("The land data acquired successfully, this read time: " + (Date.now() - start) + "ms,loaded a total of " + LandNum + " piece of land data" );
                     }
                 })
 
                 //玩家金币缓存文件
-                start = Date.now();
                 fs.GetJSONFileData("land_temp_player_money.json").then((result) => {
                     if (result === 0) {
                         fs.CreateNewJsonFile("land_temp_player_money.json",{}).then((result) => {
                             if (result === "success") {
-                                log("玩家金币数据文件不存在，已成功创建！");
+                                log("(land)The player money data file(land_temp_player_money.json) does not exist and has been successfully created!");
                             } else if (result === -1) {
-                                console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                                console.error("[NIA V4.5] Dependency server connection failed!");
                             }
                         });
                     } else if (result === -1) {
-                        console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                        console.error("[NIA V4.5] Dependency server connection failed!");
                     } else {
                         //文件存在且服务器连接成功
                         temp_player_money = result;
-                        log("(land)玩家金币数据获取成功，本次读取用时：" + (Date.now() - start) + "ms");
+                        log("(land)The player money data acquired successfully!");
                     }
                 })
 
@@ -2822,7 +2870,7 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
                 let land_tickingarea = JSON.parse(world.getDynamicProperty("land_tickingarea"));
                 for (let key = 0;key < land_tickingarea.length;key++) {
                     RunCmd(`tickingarea remove ${land_tickingarea[key]}`);
-                    log("已删除临时常加载区块：" + land_tickingarea[key]);
+                    log("The temporary tickingarea block has been deleted:" + land_tickingarea[key]);
                     world.setDynamicProperty("land_tickingarea",JSON.stringify(land_tickingarea));
                 }
                 break;

@@ -3,6 +3,7 @@ import {Tell,RunCmd,GetScore} from '../customFunction.js'
 import { world } from '@minecraft/server'
 import { Main } from './main'
 
+//将在未来基于HTTP-BOT重构
 export function CDKGUI(player) {
     const CDKForm = new ModalFormData()
     .title("兑换码系统")

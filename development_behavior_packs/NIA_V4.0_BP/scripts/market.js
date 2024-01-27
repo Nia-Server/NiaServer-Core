@@ -16,43 +16,41 @@ var temp_player_money = {};
 
 //服务器启动监听&&获得玩家市场数据
 world.afterEvents.worldInitialize.subscribe(() => {
-    let start_1 = Date.now();
     fs.GetJSONFileData("market.json").then((result) => {
         //文件不存在
         if (result === 0) {
             fs.CreateNewJsonFile("market.json",[]).then((result) => {
                 if (result === "success") {
                     MarketData = [];
-                    log("玩家市场文件不存在，已成功创建！");
+                    log("The player market file does not exist and has been successfully created!");
                 } else if (result === -1) {
-                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                    console.error("[NIA V4.5] Dependency server connection failed!");
                 }
             });
         } else if (result === -1) {
-            console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+            console.error("[NIA V4.5] Dependency server connection failed!");
         } else {
             //文件存在且服务器连接成功
             MarketData = result;
-            log("玩家市场数据获取成功，本次读取用时：" + (Date.now() - start_1) + "ms");
+            log("The player market data acquisition success!");
         }
     })
 
-    let start_2 = Date.now();
     fs.GetJSONFileData("market_temp_player_money.json").then((result) => {
         if (result === 0) {
             fs.CreateNewJsonFile("market_temp_player_money.json",{}).then((result) => {
                 if (result === "success") {
-                    log("玩家金币数据文件不存在，已成功创建！");
+                    log("(market)The player money Data File does not exist, it has been successfully created!");
                 } else if (result === -1) {
-                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                    console.error("[NIA V4.5] Dependency server connection failed!");
                 }
             });
         } else if (result === -1) {
-            console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+            console.error("[NIA V4.5] Dependency server connection failed!");
         } else {
             //文件存在且服务器连接成功
             temp_player_money = result;
-            log("(market)玩家金币数据获取成功，本次读取用时：" + (Date.now() - start_2) + "ms");
+            log("(market)The player money data acquired successfully!");
         }
     })
 
@@ -192,7 +190,7 @@ const GUI = {
                                             }
                                         }
                                     } catch (e) {
-                                        console.error("[NIA V4] 玩家预览商品没有正常回收（回收失败）！");
+                                        console.error("[NIA V4.5] Player preview items are not recycled properly (recycling failure)!");
                                     }
                                 },200);
                             }
@@ -268,13 +266,13 @@ const GUI = {
                                                 player.getComponent("minecraft:inventory").container.addItem(new_item);
                                             } else {
                                                 this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
-                                                console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                                                console.error("[NIA V4.5] Dependency server connection failed!");
                                                 temp_player_money = old_temp_player_money;
                                             }
                                         })
                                     } else {
                                         this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
-                                        console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                                        console.error("[NIA V4.5] Dependency server connection failed!");
                                         MarketData = old_MarketData;
                                     }
                                 })
@@ -510,7 +508,7 @@ const GUI = {
                                 player.getComponent("minecraft:inventory").container.addItem(new_item);
                             } else {
                                 this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ManageForm");
-                                console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                                console.error("[NIA V4.5] Dependency server connection failed!");
                                 MarketData = old_MarketData;
                             }
                         })
@@ -645,7 +643,7 @@ const GUI = {
                     }
                 } else {
                     this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
-                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                    console.error("[NIA V4.5] Dependency server connection failed!");
                     temp_player_money = old_temp_player_money;
                 }
             })
@@ -703,7 +701,7 @@ world.afterEvents.playerSpawn.subscribe((event) => {
             if (event.player.getComponent("minecraft:inventory").container.getItem(i) != undefined && event.player.getComponent("minecraft:inventory").container.getItem(i).getLore()[event.player.getComponent("minecraft:inventory").container.getItem(i).getLore().length - 2] == "§c预览商品请勿进行其他操作！") {
                 event.player.getComponent("minecraft:inventory").container.setItem(i,new ItemStack("minecraft:air"));
                 event.player.sendMessage("§c 未正常去除的预览商品已回收！");
-                log("玩家未正常归还的预览商品已被自动回收！");
+                log("Preview items not returned properly by the player have been automatically recalled!");
             }
         }
     }

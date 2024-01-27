@@ -18,17 +18,17 @@ world.afterEvents.worldInitialize.subscribe(() => {
         if (result === 0) {
             fs.CreateNewJsonFile("shop_data.json",{"sell_data":[],"recycle_data":[]}).then((result) => {
                 if (result === "success") {
-                    console.warn("[NIA V4] 商店原始数据没有成功读取，已成功创建初始化数据文件，请打开shop_data.json修改后输入reload重载！");
+                    console.warn("[NIA V4.5] The shop raw data was not read successfully, the initialisation data file has been created successfully, please open shop_data.json to modify it and enter reload to reload it!");
                 } else if (result === -1) {
-                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                    console.error("[NIA V4.5] Dependency server connection failed!");
                 }
             });
         } else if (result === -1) {
-            console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+            console.error("[NIA V4.5] Dependency server connection failed!");
         } else {
             SellData = result.sell_data;
             RecycleData = result.recycle_data;
-            log("商店数据获取成功,本次读取用时：" + (Date.now() - start) + "ms");
+            log("The shop data acquisition successful!");
         }
     })
 })

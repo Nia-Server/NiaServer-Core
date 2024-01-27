@@ -1,6 +1,6 @@
 import { OxygenGUI } from './menu/oxygen.js';
-import {system, world, DynamicPropertiesDefinition} from '@minecraft/server';
-import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution,log, GetShortTime} from './customFunction.js'
+import {system, world} from '@minecraft/server';
+import { Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution,log, GetShortTime} from './customFunction.js'
 import { cfg } from './config.js';
 import { ExternalFS } from './API/filesystem.js';
 import { LAST_UPGRATE,VERSION,CODE_BRANCH } from './main.js';
@@ -124,17 +124,17 @@ const equLevelData = {
 system.beforeEvents.watchdogTerminate.subscribe((event) => {
     event.cancel = true;
     Broadcast(`§c§l[warn] NIA V4运行出现异常，异常原因: ${event.terminateReason}，请及时联系腐竹！`);
-    console.error("[watchdog] 运行出现异常，异常原因：" + event.terminateReason);
+    console.error("[watchdog] Abnormal operation, reason for abnormality:" + event.terminateReason);
 })
 
 //服务器启动监听
 //服务器初始化
 world.afterEvents.worldInitialize.subscribe((event) => {
     //检测服务器是否初始化
-    const INIT = new DynamicPropertiesDefinition().defineBoolean("state");
-    event.propertyRegistry.registerWorldDynamicProperties(INIT);
+    //const INIT = new DynamicPropertiesDefinition().defineBoolean("state");
+    //event.propertyRegistry.registerWorldDynamicProperties(INIT);
     if (world.getDynamicProperty("state") == null) {
-        log("NIA V4 首次在此服务器上运行，开始初始化！")
+        log("NIA V4.5 is running on this server for the first time to start initialisation!")
         AddScoreboard("UUID","玩家识别码");
         AddScoreboard("DATA","服务器数据");
         AddScoreboard("money","能源币");
@@ -146,10 +146,10 @@ world.afterEvents.worldInitialize.subscribe((event) => {
         AddScoreboard("AnoxicTime","缺氧时间");
         AddScoreboard("CDK","CDK数据");
         AddScoreboard("stamina","体力值");
-        log("NIA V4 初始化成功！");
+        log("NIA V4 initialisation was successful!");
         world.setDynamicProperty("state",true);
     } else if (world.getDynamicProperty("state") == true) {
-        log("NIA V4已经初始化完成！");
+        log("The NIA V4.5 has been initialised!");
         world.scoreboard.removeObjective("menu");
         //英文
         // world.scoreboard.addObjective("menu","");

@@ -365,6 +365,48 @@ const EQGUI = {
     },
 }
 
+system.runInterval(() => {
+    for (let player of world.getAllPlayers()) {
+        let view_entity = world.getDimension(player.dimension.id).getEntitiesFromRay(player.getHeadLocation(),player.getViewDirection());
+        if (view_entity.length != 0) {
+            for (let i = 0; i < view_entity.length; i++) {
+                if (view_entity[i].entity.nameTag != player.nameTag) {
+                    player.sendMessage("§e[" + i + "] §cdistance: §e" + view_entity[i].distance.toFixed(2) + " §ctypeid: §e" + view_entity[i].entity.typeId);
+                    if (view_entity[i].entity.typeId == "minecraft:item") {
+                        view_entity[i].entity.teleport(player.location);
+                    }
+                }
+            }
+        }
+    }
+
+},1)
+
+system.runInterval(() => {
+    for (let player of world.getAllPlayers()) {
+        //以玩家坐标为中心，遍历边长为20的正方形
+        for (let x = player.location.x - 8; x < player.location.x + 8; x++) {
+            for (let y = player.location.y - 4; y < player.location.y + 2; y++) {
+                for (let z = player.location.z - 8; z < player.location.z + 8; z++) {
+                    let target_block = world.getDimension(player.dimension.id).getBlock({"x":x,"y":y,"z":z});
+                    if (target_block.typeId == "minecraft:diamond_block") {
+                        //获取玩家当前坐标到钻石坐标的距离
+                        let distance = Math.sqrt(Math.pow(player.location.x - x,2) + Math.pow(player.location.y - y,2) + Math.pow(player.location.z - z,2));
+                        //计算两坐标之间的单位向量
+                        let unit_vector = {"x":(x - player.location.x) / distance,"y":(y - player.location.y) / distance,"z":(z - player.location.z) / distance}
+                        //根据单位向量开始在两坐标的直线上生成粒子
+                        for (let i = 0; i < distance; i = i + 0.5) {
+                            world.getDimension(player.dimension.id).spawnParticle("minecraft:balloon_gas_particle",{"x":player.location.x + unit_vector.x * i,"y":player.location.y + unit_vector.y * i,"z":player.location.z + unit_vector.z * i})
+                        }
+                    }
+                }
+            }
+        }
+
+
+    }
+},20)
+
 
 // 2%概率强化大失败 - 耐久损失一半
 // 18%概率强化失败 - 无事发生

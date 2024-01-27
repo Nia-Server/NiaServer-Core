@@ -1,11 +1,11 @@
 {
 	"format_version": 2,
 	"header": {
-	  "name": "NIA V4.0 BP",
+	  "name": "NIA V4.5-1.5.0 BP",
 	  "description": "§bNIA服务器V4-行为包\n作者：NIANIANKNIA\n项目地址：https://github.com/NIANIANKNIA/NIASERVER-V4",
 	  "uuid": "cab0bbe3-eb10-465e-b1de-b09facc076c8",
-	  "version": [ 1, 4, 1 ],
-	  "min_engine_version": [ 1, 20, 30 ]
+	  "version": [ 1, 5, 0 ],
+	  "min_engine_version": [ 1, 20, 50 ]
 	},
 	"modules": [
 		{
@@ -14,13 +14,13 @@
 			"description": "gametest module",
 			"uuid": "92cd3fe1-e764-425a-aa40-a7e4d7760922",
 			"entry": "scripts/main.js",
-			"version": [ 1, 4, 1 ]
+			"version": [ 1, 5, 0 ]
 		}
 	],
 	"dependencies": [
 		{
 			"module_name": "@minecraft/server",
-			"version": "1.6.0-beta"
+			"version": "1.8.0-beta"
 		},
 		{
 			"module_name": "@minecraft/server-ui",
