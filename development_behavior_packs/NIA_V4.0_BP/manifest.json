@@ -1,7 +1,7 @@
 {
 	"format_version": 2,
 	"header": {
-	  "name": "NIA V4.5-1.5.0 BP",
+	  "name": "NiaServer-Core-1.5.0 BP",
 	  "description": "§bNIA服务器V4-行为包\n作者：NIANIANKNIA\n项目地址：https://github.com/NIANIANKNIA/NiaServer-Core",
 	  "uuid": "cab0bbe3-eb10-465e-b1de-b09facc076c8",
 	  "version": [ 1, 5, 0 ],

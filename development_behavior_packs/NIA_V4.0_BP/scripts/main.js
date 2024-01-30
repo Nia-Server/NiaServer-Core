@@ -15,12 +15,12 @@
 //In addition, you are required to comply with the terms of the AGPL-3.0 (https://github.com/NIANIANKNIA/NiaServer-Core/blob/main/LICENSE) open source licence for this project, and the related open source agreements used by all sub-projects of this project.
 //If you do not accept these terms, please delete this project immediately.
 ////////////////////////////////////////////////////////////////////////////
-//作者： NIANIANKNIA
+//作者： NIANIANKNIA && jiansyuan
 //email: nianianknia@163.com
 //项目地址：https://github.com/NIANIANKNIA/NiaServer-Core/
 //如果您在使用本项目时遇到任何问题，请联系作者
 ////////////////////////////////////////////////////////////////////////////
-//author: NIANIANKNIA
+//authors: NIANIANKNIA && jiansyuan
 //email: nianianknia@163.com
 //Project address: https://github.com/NIANIANKNIA/NiaServer-Core/
 ///If you have any problems with this project, please contact the authors
@@ -37,18 +37,18 @@ import './log.js'
 
 export const VERSION = "v1.5.0-pre-1";
 export const BDS_VERSION = "1.20.51.01";
-export const LAST_UPGRATE = "2024/01/29";
+export const LAST_UPGRATE = "2024/01/30";
 export const CODE_BRANCH = "dev";
 
 
-console.log(`\x1b[33m[\x1b[36mNIA V4.5\x1b[33m] NIA V4.5 has been successfully started on this server!\x1b[0m\n
-    _   __ ____ ___         _    __ __ __      ______
-   / | / //  _//   |       | |  / // // /     / ____/
-  /  |/ / / / / /| | ______| | / // // /_    /___ \\
- / /|  /_/ / / ___ |/_____/| |/ //__  __/_  ____/ /
-/_/ |_//___//_/  |_|       |___/   /_/  (_)/_____/
-`);
-console.log(`\x1b[33m[\x1b[36mNIA V4.5\x1b[33m] version: \x1b[32m${VERSION}\x1b[33m based on \x1b[32m${BDS_VERSION}\x1b[33m(last update:\x1b[32m${LAST_UPGRATE}\x1b[33m)\x1b[0m`);
-console.log(`\x1b[33m[\x1b[36mNIA V4.5\x1b[33m] author: @NIANIANKNIA(https://github.com/NIANIANKNIA) @jiansyuan(https://github.com/jiansyuan)\x1b[0m`);
-console.log(`\x1b[33m[\x1b[36mNIA V4.5\x1b[33m] Don't know how to deploy? Head over to the documentation site for detailed deployment procedures==>(\x1b[36mhttps://docs.mcnia.com/dev/\x1b[33m)\x1b[0m`);
-console.log(`\x1b[33m[\x1b[36mNIA V4.5\x1b[33m] \x1b[31mThis project is based on the AGPL-3.0 open source protocol , note that to comply with the open source agreement !\x1b[0m`);
+console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] NiaServer-Core has been successfully started on this server!\x1b[36m\n
+    _   ___       _____                                 ______
+   / | / (_)___ _/ ___/___  ______   _____  _____      / ____/___  ________
+  /  |/ / / __ \`/\\__ \\/ _ \\/ ___/ | / / _ \\/ ___/_____/ /   / __ \\/ ___/ _ \\
+ / /|  / / /_/ /___/ /  __/ /   | |/ /  __/ /  /_____/ /___/ /_/ / /  /  __/
+/_/ |_/_/\\__,_//____/\\___/_/    |___/\\___/_/         \\____/\\____/_/   \\___/\x1b[0m
+
+    \x1b[33mversion: \x1b[32m${VERSION}\x1b[33m based on \x1b[32m${BDS_VERSION}\x1b[33m(last update:\x1b[32m${LAST_UPGRATE}\x1b[33m)\x1b[0m\n`);
+console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] authors: @NIANIANKNIA(https://github.com/NIANIANKNIA) @jiansyuan(https://github.com/jiansyuan)\x1b[0m`);
+console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] Don't know how to deploy? Head over to the documentation site for detailed deployment procedures==>(\x1b[36mhttps://docs.mcnia.com/dev/\x1b[33m)\x1b[0m`);
+console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] \x1b[31mThis project is based on the AGPL-3.0 open source protocol , note that to comply with the open source agreement !\x1b[0m`);

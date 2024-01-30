@@ -134,7 +134,7 @@ world.afterEvents.worldInitialize.subscribe((event) => {
     //const INIT = new DynamicPropertiesDefinition().defineBoolean("state");
     //event.propertyRegistry.registerWorldDynamicProperties(INIT);
     if (world.getDynamicProperty("state") == null) {
-        log("NIA V4.5 is running on this server for the first time to start initialisation!")
+        log("NiaServer-Core is running on this server for the first time to start initialisation!")
         AddScoreboard("UUID","玩家识别码");
         AddScoreboard("DATA","服务器数据");
         AddScoreboard("money","能源币");
@@ -149,7 +149,7 @@ world.afterEvents.worldInitialize.subscribe((event) => {
         log("NIA V4 initialisation was successful!");
         world.setDynamicProperty("state",true);
     } else if (world.getDynamicProperty("state") == true) {
-        log("The NIA V4.5 has been initialised!");
+        log("The NiaServer-Core has been initialised!");
         world.scoreboard.removeObjective("menu");
         //英文
         // world.scoreboard.addObjective("menu","");

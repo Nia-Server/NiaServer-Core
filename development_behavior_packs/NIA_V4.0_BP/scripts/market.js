@@ -24,11 +24,11 @@ world.afterEvents.worldInitialize.subscribe(() => {
                     MarketData = [];
                     log("The player market file does not exist and has been successfully created!");
                 } else if (result === -1) {
-                    console.error("[NIA V4.5] Dependency server connection failed!");
+                    console.error("[NiaServer-Core] Dependency server connection failed!");
                 }
             });
         } else if (result === -1) {
-            console.error("[NIA V4.5] Dependency server connection failed!");
+            console.error("[NiaServer-Core] Dependency server connection failed!");
         } else {
             //文件存在且服务器连接成功
             MarketData = result;
@@ -42,11 +42,11 @@ world.afterEvents.worldInitialize.subscribe(() => {
                 if (result === "success") {
                     log("(market)The player money data file does not exist, it has been successfully created!");
                 } else if (result === -1) {
-                    console.error("[NIA V4.5] Dependency server connection failed!");
+                    console.error("[NiaServer-Core] Dependency server connection failed!");
                 }
             });
         } else if (result === -1) {
-            console.error("[NIA V4.5] Dependency server connection failed!");
+            console.error("[NiaServer-Core] Dependency server connection failed!");
         } else {
             //文件存在且服务器连接成功
             temp_player_money = result;
@@ -190,7 +190,7 @@ const GUI = {
                                             }
                                         }
                                     } catch (e) {
-                                        console.error("[NIA V4.5] Player preview items are not recycled properly (recycling failure)!");
+                                        console.error("[NiaServer-Core] Player preview items are not recycled properly (recycling failure)!");
                                     }
                                 },200);
                             }
@@ -266,13 +266,13 @@ const GUI = {
                                                 player.getComponent("minecraft:inventory").container.addItem(new_item);
                                             } else {
                                                 this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
-                                                console.error("[NIA V4.5] Dependency server connection failed!");
+                                                console.error("[NiaServer-Core] Dependency server connection failed!");
                                                 temp_player_money = old_temp_player_money;
                                             }
                                         })
                                     } else {
                                         this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
-                                        console.error("[NIA V4.5] Dependency server connection failed!");
+                                        console.error("[NiaServer-Core] Dependency server connection failed!");
                                         MarketData = old_MarketData;
                                     }
                                 })
@@ -508,7 +508,7 @@ const GUI = {
                                 player.getComponent("minecraft:inventory").container.addItem(new_item);
                             } else {
                                 this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ManageForm");
-                                console.error("[NIA V4.5] Dependency server connection failed!");
+                                console.error("[NiaServer-Core] Dependency server connection failed!");
                                 MarketData = old_MarketData;
                             }
                         })
@@ -643,7 +643,7 @@ const GUI = {
                     }
                 } else {
                     this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
-                    console.error("[NIA V4.5] Dependency server connection failed!");
+                    console.error("[NiaServer-Core] Dependency server connection failed!");
                     temp_player_money = old_temp_player_money;
                 }
             })

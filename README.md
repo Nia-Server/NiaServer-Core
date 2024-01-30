@@ -42,8 +42,8 @@
 > 所以我们计划分几个版本分布上线玩法、机制，具体如下：
 
 - [x] v1.4.0（2023-10） 上线基础玩法（包括但不限于圈地系统、玩家交易市场等）
-- [ ] v1.5.0（2023-11） 上线游戏设定所用到的所有方块，物品等，并完成相应材质包制作
-- [ ] v1.6.0（2023-12） 上线七大空岛生成逻辑，完善整体玩法机制
+- [ ] v1.5.0（2023-11-因学业延期发布） 上线游戏设定所用到的所有方块，物品等，并完成相应材质包制作
+- [ ] v1.6.0（2023-12-因学业延期发布） 上线七大空岛生成逻辑，完善整体玩法机制
 
 **注意：在完成上述开发前，addons版本号并不一定会随mc版本发布！具体请以上线为准！**
 
@@ -62,7 +62,7 @@
 - [ ] 支持自定义
 - [ ] 多语言支持
 
-## 外部机器人功能&&特性
+## 关于NIAHttpBOT
 
 新版机器人基于c++制作（特别感谢[**@jiansyuan**](https://github.com/jiansyuan)），使用HTTP实现对文件的一系列操作，具体使用示例，请前往[NIA服务器文档站](https://docs.mcnia.com/zh-CN/develop/Http-Bot.html)查看使用说明！
 
@@ -98,7 +98,7 @@
 
 > 别忘记根据自己下的addons包修改版本号!
 
-然后在`worlds/MAPNAME`目录下添加`world_behavior_packs.json`
+然后在`worlds/[Map name]`目录下添加`world_behavior_packs.json`
 
 ```json
 [
@@ -144,13 +144,8 @@
 
 启动服务器时应当先启动**NIAHttpBOT**，待看到成功启动的字样再启动BDS服务器！
 
-**更加具体的配置教程请前往[NIA服务器文档站](https://docs.mcnia.com/zh-CN/deploy.html)查看！**
+**更加具体的配置教程请前往[NIA服务器文档站](https://docs.mcnia.com/dev)查看！**
 
-## 特殊问题解决方案
-
-1.BDS服务器启动后输出中文乱码
-
-将系统语言区域设置改为UTF-8即可
 
 ## Bug反馈/提建议
 
@@ -159,6 +154,13 @@
 ## 特别鸣谢
 
 [@Dave](https://abcdavk.github.io/) 服务器的空岛生成受他的行为包所启发！
+
+
+## 第三方开源引用
+
+#### [rapidjson](https://github.com/Tencent/rapidjson) - [MIT License](https://github.com/Tencent/rapidjson?tab=License-1-ov-file#readme)
+
+#### [cpp-httplib](https://github.com/yhirose/cpp-httplib) - [MIT License](https://github.com/yhirose/cpp-httplib?tab=MIT-1-ov-file#readme)
 
 ## 服务器开发者名单 （排名不分先后）
 
@@ -197,4 +199,8 @@
 - **开发者不对您负责，开发者没有义务为你编写代码、为你使用造成的任何后果负责**
 
 另外，您需要遵守本项目的[`AGPL-3.0`](https://github.com/NIANIANKNIA/NiaServer-Core/blob/main/LICENSE)开源许可证条款, 以及本项目所有子项目使用的相关开源协议
+
+## 关于商业化
+
+**由于项目的特殊性，我们并不是很赞成您运用本项目进行商业化，但是并不反对您将本项目进行商业化**
 

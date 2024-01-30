@@ -1,6 +1,6 @@
 //圈地系统
 
-import { system, world, SystemAfterEvents, System } from '@minecraft/server';
+import { system, world, SystemAfterEvents, System, CommandResult } from '@minecraft/server';
 import { ExternalFS } from './API/filesystem';
 import { Broadcast, GetScore, GetTime, RunCmd, log } from './customFunction';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
@@ -792,8 +792,7 @@ const GUI = {
                         this.ManageLandOnSale(player,LandUUID);
                         break;
                     case 5:
-                        player.sendMessage("§c 该功能正在开发中，敬请期待！");
-                        //this.ManageLandSetTeleport(player,LandUUID);
+                        this.ManageLandSetTeleport(player,LandUUID);
                         break;
                     case 6:
                         this.ManageLandAllowlist(player,LandUUID);
@@ -1011,7 +1010,34 @@ const GUI = {
     },
 
     ManageLandSetTeleport(player,LandUUID) {
+        const ManageLandSetTeleportForm = new ActionFormData()
+        .title(`设置传送点[${LandUUID}] ${land_data[LandUUID].land_name}`)
+        .body("§e在这里您可以设置您领地内的传送点！\n每个领地内至多设置1(主传送点)个+3(副传送点)个传送点")
+        .button("返回上一级")
+        .button("添加传送点")
+        .button("删除传送点")
+        .show(player).then((response) => {
+            if (!response.canceled) {
+                switch (response.selection) {
+                    case 0:
+                        this.ManageLandDetail(player,LandUUID);
+                        break;
+                    case 1:
+                        this.ManageLandSetTeleportAdd(player,LandUUID);
+                        break;
+                    case 2:
+                        this.ManageLandSetTeleportDelete(player,LandUUID);
+                        break;
+                }
+            } else {
+                this.ManageLandDetail(player,LandUUID);
+            }
+        })
 
+    },
+
+    ManageLandSetTeleportAdd(player,LandUUID) {
+        
     },
 
     ManageLandAllowlist(player,LandUUID) {
@@ -1230,9 +1256,6 @@ const GUI = {
                         player.sendMessage(`§c 购买失败，您的领地数量已达上限！领地数量上限为：${MAX_LAND_NUM}，请尝试出售一些领地后再次购买！`);
                         return;
                     }
-                    //let new_LandUUID = adler32(new_land_data[LandUUID].get_time + new_land_data[LandUUID].create_owner + new_land_data[LandUUID].purchase_price);
-                    //new_land_data[new_LandUUID] = new_land_data[LandUUID];
-                    //delete new_land_data[LandUUID];
                     //开始覆写文件land.json
                     fs.OverwriteJsonFile("land.json",new_land_data).then((result) => {
                         if (result === "success") {
@@ -1244,14 +1267,10 @@ const GUI = {
                                     player.sendMessage("§a 领地购买成功！");
                                     //开始扣款
                                     world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).addScore(player,-new_land_data[new_LandUUID].sale_price);
-                                    //重新计算索引值
-                                    //delete_index(land_data[LandUUID].pos1, land_data[LandUUID].pos2, land_data[LandUUID].dimid, LandUUID);
-                                    //let new_data = new_land_data[LandUUID];
-                                    //add_index(new_data.pos1, new_data.pos2, new_data.dimid,new_LandUUID);
                                     land_data = new_land_data;
                                 } else {
                                     this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
-                                    console.error("[NIA V4.5] Dependency server connection failed!");
+                                    console.error("[NiaServer-Core] Dependency server connection failed!");
                                     temp_player_money = old_temp_player_money;
                                 }
                             })
@@ -1550,7 +1569,7 @@ const GUI = {
                 new_land_data.land_name = player.nameTag + "的领地";
                 new_land_data.allowlist = {};
                 new_land_data.banlist = [];
-                new_land_data.teleport = [];
+                new_land_data.teleport = {};
                 new_land_data.setup = {
                     "DestroyBlock":false,
                     "PlaceBlock":false,
@@ -1577,7 +1596,7 @@ const GUI = {
                     } else if (result === -1) {
                         //服务器连接超时提醒
                         player.sendMessage("§c 服务器连接失败！请联系在线管理员！");
-                        console.error("[NIA V4.5] Dependency server connection failed!");
+                        console.error("[NiaServer-Core] Dependency server connection failed!");
                         land_data = old_land_data;
                     } else {
                         //未知错误提醒
@@ -1677,7 +1696,7 @@ const GUI = {
                 new_land_data.land_name = player.nameTag + "的领地";
                 new_land_data.allowlist = {};
                 new_land_data.banlist = [];
-                new_land_data.teleport = [];
+                new_land_data.teleport = {};
                 new_land_data.setup = {
                     "DestroyBlock":false,
                     "PlaceBlock":false,
@@ -1704,7 +1723,7 @@ const GUI = {
                     } else if (result === -1) {
                         //服务器连接超时提醒
                         player.sendMessage("§c 服务器连接失败！请联系在线管理员！");
-                        console.error("[NIA V4.5] Dependency server connection failed!");
+                        console.error("[NiaServer-Core] Dependency server connection failed!");
                         land_data = old_land_data;
                     } else {
                         //未知错误提醒
@@ -1737,7 +1756,7 @@ const GUI = {
                     }
                 } else {
                     this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
-                    console.error("[NIA V4.5] Dependency server connection failed!");
+                    console.error("[NiaServer-Core] Dependency server connection failed!");
                     temp_player_money = old_temp_player_money;
                 }
             })
@@ -2554,7 +2573,7 @@ system.runInterval(() => {
             player_in_index(player);
         }
     } catch (error) {
-        console.warn(`[NIA V4.5] An error occurred in the LAND system, the cause of the error:${error}`);
+        console.warn(`[NiaServer-Core] An error occurred in the LAND system, the cause of the error:${error}`);
         Broadcast(" §c领地系统发生了一次错误，错误原因：" + error);
         Broadcast(" §e服务器正在尝试自动修复中，请截图并联系在线管理员！");
         //圈地系统文件
@@ -2744,11 +2763,11 @@ world.afterEvents.worldInitialize.subscribe((event) => {
                     land_data = {};
                     log("The land data file(land_data.json) does not exist and has been successfully created!");
                 } else if (result === -1) {
-                    console.error("[NIA V4.5] Dependency server connection failed!");
+                    console.error("[NiaServer-Core] Dependency server connection failed!");
                 }
             });
         } else if (result === -1) {
-            console.error("[NIA V4.5] Dependency server connection failed!");
+            console.error("[NiaServer-Core] Dependency server connection failed!");
         } else {
             //文件存在且服务器连接成功
             land_data = result;
@@ -2803,11 +2822,11 @@ world.afterEvents.worldInitialize.subscribe((event) => {
                 if (result === "success") {
                     log("(land)The player money data file(land_temp_player_money.json) does not exist and has been successfully created!");
                 } else if (result === -1) {
-                    console.error("[NIA V4.5] Dependency server connection failed!");
+                    console.error("[NiaServer-Core] Dependency server connection failed!");
                 }
             });
         } else if (result === -1) {
-            console.error("[NIA V4.5] Dependency server connection failed!");
+            console.error("[NiaServer-Core] Dependency server connection failed!");
         } else {
             //文件存在且服务器连接成功
             temp_player_money = result;
@@ -2846,11 +2865,11 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
                                 land_data = {};
                                 log("The land system data file(land_data.json) does not exist and has been successfully created!");
                             } else if (result === -1) {
-                                console.error("[NIA V4.5] Dependency server connection failed!");
+                                console.error("[NiaServer-Core] Dependency server connection failed!");
                             }
                         });
                     } else if (result === -1) {
-                        console.error("[NIA V4.5] Dependency server connection failed!");
+                        console.error("[NiaServer-Core] Dependency server connection failed!");
                     } else {
                         //文件存在且服务器连接成功
                         land_data = result;
@@ -2870,11 +2889,11 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
                             if (result === "success") {
                                 log("(land)The player money data file(land_temp_player_money.json) does not exist and has been successfully created!");
                             } else if (result === -1) {
-                                console.error("[NIA V4.5] Dependency server connection failed!");
+                                console.error("[NiaServer-Core] Dependency server connection failed!");
                             }
                         });
                     } else if (result === -1) {
-                        console.error("[NIA V4.5] Dependency server connection failed!");
+                        console.error("[NiaServer-Core] Dependency server connection failed!");
                     } else {
                         //文件存在且服务器连接成功
                         temp_player_money = result;

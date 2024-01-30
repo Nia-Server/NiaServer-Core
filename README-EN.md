@@ -69,6 +69,16 @@ After completing the configuration, extract the behavior packs and resource pack
 
 If you encounter problems, bugs, or have good suggestions in the use of the process can go to [issues](https://github.com/NIANIANKNIA/NiaServer-Core/issues) feedback, I will see the first time to reply!
 
+## Special thanks
+
+[@Dave](https://abcdavk.github.io/) The server's sky island generation inspired by his behavioural package!
+
+## Third party open source references
+
+#### [rapidjson](https://github.com/Tencent/rapidjson) - [MIT License](https://github.com/Tencent/rapidjson?tab=License-1-ov-file#readme)
+
+#### [cpp-httplib](https://github.com/yhirose/cpp-httplib) - [MIT License](https://github.com/yhirose/cpp-httplib?tab=MIT-1-ov-file#readme)
+
 ## Server Developer List
 
 @NIANIANKNIA
