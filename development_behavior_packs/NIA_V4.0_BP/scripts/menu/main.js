@@ -26,13 +26,13 @@ const MainGUI = {
             "content": "tp @a[name=%playername%] 702 82 554",
             "opMenu": false
         },
-        {
-            "name": "个人传送点\n设置属于自己的传送点",
-            "icon": "textures/ui/icon_new",
-            "type": "runCmd",
-            "content": "openhomegui %playername%",
-            "opMenu": false
-        },
+        // {
+        //     "name": "个人传送点\n设置属于自己的传送点",
+        //     "icon": "textures/ui/icon_new",
+        //     "type": "runCmd",
+        //     "content": "openhomegui %playername%",
+        //     "opMenu": false
+        // },
         {
             "name": "调节生存模式\n不调节生存你怎么开始玩？",
             "icon": "textures/ui/controller_glyph_color",
