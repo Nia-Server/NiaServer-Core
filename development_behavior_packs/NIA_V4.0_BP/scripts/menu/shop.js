@@ -18,7 +18,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
         if (result === 0) {
             fs.CreateNewJsonFile("shop_data.json",{"sell_data":[],"recycle_data":[]}).then((result) => {
                 if (result === "success") {
-                    console.warn("[NIA V4.5] The shop raw data was not read successfully, the initialisation data file has been created successfully, please open shop_data.json to modify it and enter reload to reload it!");
+                    console.warn("[NIA V4.5] The shop data was not read successfully, the initialisation data file has been created successfully, please open shop_data.json to modify it and enter reload to reload it!");
                 } else if (result === -1) {
                     console.error("[NIA V4.5] Dependency server connection failed!");
                 }
@@ -28,7 +28,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
         } else {
             SellData = result.sell_data;
             RecycleData = result.recycle_data;
-            log("The shop data acquisition successful!");
+            log("The shop data acquired successfully!");
         }
     })
 })

@@ -156,7 +156,6 @@ world.afterEvents.worldInitialize.subscribe((event) => {
         world.scoreboard.addObjective("menu","");
         //world.scoreboard.addObjective("menu","");
         RunCmd(`scoreboard objectives setdisplay sidebar menu ascending`);
-        world.scoreboard.getObjective("menu").addScore(`§e当前测试阶段：PRE-2`,0);
         world.scoreboard.getObjective("menu").addScore(`§e当前版本：${VERSION}`,1);
         world.scoreboard.getObjective("menu").addScore("§c上次更新时间：",2);
         world.scoreboard.getObjective("menu").addScore(`${LAST_UPGRATE}`,3);
@@ -167,14 +166,14 @@ world.afterEvents.worldInitialize.subscribe((event) => {
 })
 
 // 玩家死亡后重生的检测
-world.afterEvents.playerSpawn.subscribe(event => {
-    if (!event.initialSpawn) {
-        if (GetScore("equLevel",event.player.nameTag) < 17) {
-            RunCmd(`scoreboard players set @a[name="${event.player.nameTag}"] oxygen ${parseInt(GetScore("oxygen",event.player.nameTag) * 0.9)}`)
-            event.player.sendMessage(`§c 您由于死亡损失了剩余的10%的氧气值！`)
-        }
-    }
-})
+// world.afterEvents.playerSpawn.subscribe(event => {
+//     if (!event.initialSpawn) {
+//         if (GetScore("equLevel",event.player.nameTag) < 17) {
+//             RunCmd(`scoreboard players set @a[name="${event.player.nameTag}"] oxygen ${parseInt(GetScore("oxygen",event.player.nameTag) * 0.9)}`)
+//             event.player.sendMessage(`§c 您由于死亡损失了剩余的10%的氧气值！`)
+//         }
+//     }
+// })
 
 system.runInterval(() => {
     let players = world.getPlayers()
@@ -211,116 +210,116 @@ system.runInterval(() => {
         }
     }
     //每秒钟更新一次
-    if (TIME.getSeconds() == 0) {
-        for (let playername in posData) {
-            posData[playername].num = 0
-        }
-        RunCmd(`scoreboard players add @a time 1`);
-        for (let i = 0; i < playerList.length; i++) {
-            RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume}`);
-            if (playerList[i].dimension.id == "minecraft:nether" && GetScore("equLevel",playerList[i].nameTag) <= 8) {
-                RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume}`)
-            }
-            if (playerList[i].dimension.id == "minecraft:the_end" && GetScore("equLevel",playerList[i].nameTag) <= 13) {
-                RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume * 2}`)
-            }
-            if (playerList[i].hasTag("fly") && GetScore("equLevel",playerList[i].nameTag) >= 13) {
-                RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume * 99}`)
-            }
-        }
-    }
-    for (let i = 0; i < playerList.length; i++) {
-        if (playerList[i].dimension.id == "minecraft:the_end" || playerList[i].dimension.id == "minecraft:nether") {
-            playerList[i].removeTag("fly")
-            RunCmd(`ability @a[name="${playerList[i].nameTag}",tag=!op] mayfly false`)
-        }
-        //这里控制玩家氧气值不超过100%
-        if (GetScore("oxygen",playerList[i].nameTag) > equLevelData[GetScore("equLevel",playerList[i].nameTag)].max) {
-            RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] oxygen ${equLevelData[GetScore("equLevel",playerList[i].nameTag)].max}`)
-        }
-        //这里控制玩家氧气值不低于0
-        if (GetScore("oxygen",playerList[i].nameTag) < 0) {
-            RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] oxygen 0`)
-        }
-        //生命恢复
-        if (GetScore("oxygen",playerList[i].nameTag) > 3500 && GetScore("equLevel",playerList[i].nameTag) < 14) {
-            RunCmd(`effect "${playerList[i].nameTag}" regeneration 15 0 true`)
-        } else if (GetScore("oxygen",playerList[i].nameTag) > 3500 && GetScore("equLevel",playerList[i].nameTag) >= 14) {
-            RunCmd(`effect "${playerList[i].nameTag}" regeneration 15 1 true`)
-        }
-        //夜视
-        if (playerList[i].hasTag("NightVision") && GetScore("equLevel",playerList[i].nameTag) > 16) {
-            RunCmd(`effect "${playerList[i].nameTag}" night_vision 15 0 true`)
-        }
-        //力量
-        if (GetScore("oxygen",playerList[i].nameTag) > 4800 && GetScore("equLevel",playerList[i].nameTag) < 16) {
-            RunCmd(`effect "${playerList[i].nameTag}" strength 15 0 true`)
-        } else if (GetScore("oxygen",playerList[i].nameTag) > 4800 && GetScore("equLevel",playerList[i].nameTag) >= 16) {
-            RunCmd(`effect "${playerList[i].nameTag}" strength 15 1 true`)
-        }
-        if (playerList[i].dimension.id == "minecraft:nether" && GetScore("equLevel",playerList[i].nameTag) <= 8) {
-            RunCmd(`effect "${playerList[i].nameTag}" slowness 15 0 true`)
-            RunCmd(`effect "${playerList[i].nameTag}" weakness 15 2 true`)
-        }
-        if (playerList[i].dimension.id == "minecraft:the_end" && GetScore("equLevel",playerList[i].nameTag) <= 13) {
-            RunCmd(`effect "${playerList[i].nameTag}" slowness 15 0 true`)
-            RunCmd(`effect "${playerList[i].nameTag}" weakness 15 3 true`)
-        }
-        if ((Math.pow(playerList[i].getVelocity().x,2) + Math.pow(playerList[i].getVelocity().y,2) + Math.pow(playerList[i].getVelocity().z,2)) > 0.07 && GetScore("equLevel",playerList[i].nameTag) <= 10) {
-            RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -1`);
-        }
-        if (GetScore("oxygen",playerList[i].nameTag) <= 0) {
-            RunCmd(`scoreboard players add @a[name="${playerList[i].nameTag}"] AnoxicTime 1`)
-        } else {
-            RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] AnoxicTime 0`)
-        }
-        if (GetScore("AnoxicTime",playerList[i].nameTag) == 1) {
-            RunCmd(`title "${playerList[i].nameTag}" title §c您已缺氧！`)
-            RunCmd(`title "${playerList[i].nameTag}" subtitle §7请及时补充氧气！`)
-            Tell("§c 您已进入缺氧状态！请及时补充氧气，否则会导致死亡！5秒后系统将自动打开氧气购买界面！",playerList[i].nameTag)
-        }
-        if (GetScore("AnoxicTime",playerList[i].nameTag) == 6) {
-            OxygenGUI.OxygenBuy(playerList[i])
-        }
-        if (GetScore("oxygen",playerList[i].nameTag) <= 200) {
-            RunCmd(`effect "${playerList[i].nameTag}" slowness 15 0`)
-            RunCmd(`effect "${playerList[i].nameTag}" weakness 15 2`)
-        }
-        if (GetScore("AnoxicTime",playerList[i].nameTag) >= 60) {
-            RunCmd(`effect "${playerList[i].nameTag}" blindness 15 0`)
-            RunCmd(`effect "${playerList[i].nameTag}" mining_fatigue 15 2`)
-            RunCmd(`effect "${playerList[i].nameTag}" nausea 15 0`)
-        }
-        //缺氧达到一定时间后直接进行死亡程序
-        if (GetScore("AnoxicTime",playerList[i].nameTag) >= 240) {
-            RunCmd(`kill "${playerList[i].nameTag}"`)
-            Tell("§c 我们很遗憾的通知您，由于您缺氧过长时间，昏倒在家中...幸亏您被巡逻机器人及时发现并送到了医院，才救回一条命...",playerList[i].nameTag)
-            RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] oxygen 200`)
-            RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] AnoxicTime 0`)
-            RunCmd(`scoreboard players add @a[name="${playerList[i].nameTag}"] money -50`)
-            Tell("§r======================\n§cNIA服务器医院 账单§r\n======================§c\n氧气费用 --- 20 能源币\n诊疗费用 --- 20 能源币\n转运费用 --- 10 能源币\n合计费用 --- 50 能源币§r\n======================",playerList[i].nameTag)
-            Tell("§r===============================\n§cNIA服务器自动扣费通知§r\n===============================§c\n50 能源币 已自动从您账户扣除\n如果您发现账户余额为负请及时补齐\n否则可能影响您的信誉值！§r\n===============================",playerList[i].nameTag)
-        }
-        ///////////////////////////////////
-        let titleActionbar = "";
-        if(playerList[i].hasTag("ShowActionbar")) {
-            if (playerList[i].hasTag("fly")) {
-                titleActionbar = "§c飞行模式§r "
-            }
-            if (GetScore("oxygen",playerList[i].nameTag) <= 200 && GetScore("oxygen",playerList[i].nameTag) > 0) {
-                titleActionbar = titleActionbar + "§r§c§l您即将进入缺氧状态，请及时补充氧气！"
-            }
-            if (playerList[i].dimension.id == "minecraft:nether" && GetScore("equLevel",playerList[i].nameTag) <= 8) {
-                titleActionbar = titleActionbar + "§r§c§l⚠警告！您目前呼吸装备等级过低，氧气消耗速度是原有的1倍！"
-            }
-            if (playerList[i].dimension.id == "minecraft:the_end" && GetScore("equLevel",playerList[i].nameTag) <= 13) {
-                titleActionbar = titleActionbar + "§r§c§l⚠警告！您目前呼吸装备等级过低，氧气消耗速度是原有的2倍！"
-            }
-            if (GetScore("AnoxicTime",playerList[i].nameTag) > 0) {
-                titleActionbar = titleActionbar + "§r§c§l⚠警告！您已经进入缺氧状态 " + GetScore("AnoxicTime",playerList[i].nameTag) + " 秒，请及时补充氧气否则将会死亡！"
-            }
-            playerList[i].onScreenDisplay.setActionBar(titleActionbar);
-        }
-    }
+    // if (TIME.getSeconds() == 0) {
+    //     for (let playername in posData) {
+    //         posData[playername].num = 0
+    //     }
+    //     RunCmd(`scoreboard players add @a time 1`);
+    //     for (let i = 0; i < playerList.length; i++) {
+    //         RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume}`);
+    //         if (playerList[i].dimension.id == "minecraft:nether" && GetScore("equLevel",playerList[i].nameTag) <= 8) {
+    //             RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume}`)
+    //         }
+    //         if (playerList[i].dimension.id == "minecraft:the_end" && GetScore("equLevel",playerList[i].nameTag) <= 13) {
+    //             RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume * 2}`)
+    //         }
+    //         if (playerList[i].hasTag("fly") && GetScore("equLevel",playerList[i].nameTag) >= 13) {
+    //             RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -${equLevelData[GetScore("equLevel",playerList[i].nameTag)].consume * 99}`)
+    //         }
+    //     }
+    // }
+    // for (let i = 0; i < playerList.length; i++) {
+    //     if (playerList[i].dimension.id == "minecraft:the_end" || playerList[i].dimension.id == "minecraft:nether") {
+    //         playerList[i].removeTag("fly")
+    //         RunCmd(`ability @a[name="${playerList[i].nameTag}",tag=!op] mayfly false`)
+    //     }
+    //     //这里控制玩家氧气值不超过100%
+    //     if (GetScore("oxygen",playerList[i].nameTag) > equLevelData[GetScore("equLevel",playerList[i].nameTag)].max) {
+    //         RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] oxygen ${equLevelData[GetScore("equLevel",playerList[i].nameTag)].max}`)
+    //     }
+    //     //这里控制玩家氧气值不低于0
+    //     if (GetScore("oxygen",playerList[i].nameTag) < 0) {
+    //         RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] oxygen 0`)
+    //     }
+    //     //生命恢复
+    //     if (GetScore("oxygen",playerList[i].nameTag) > 3500 && GetScore("equLevel",playerList[i].nameTag) < 14) {
+    //         RunCmd(`effect "${playerList[i].nameTag}" regeneration 15 0 true`)
+    //     } else if (GetScore("oxygen",playerList[i].nameTag) > 3500 && GetScore("equLevel",playerList[i].nameTag) >= 14) {
+    //         RunCmd(`effect "${playerList[i].nameTag}" regeneration 15 1 true`)
+    //     }
+    //     //夜视
+    //     if (playerList[i].hasTag("NightVision") && GetScore("equLevel",playerList[i].nameTag) > 16) {
+    //         RunCmd(`effect "${playerList[i].nameTag}" night_vision 15 0 true`)
+    //     }
+    //     //力量
+    //     if (GetScore("oxygen",playerList[i].nameTag) > 4800 && GetScore("equLevel",playerList[i].nameTag) < 16) {
+    //         RunCmd(`effect "${playerList[i].nameTag}" strength 15 0 true`)
+    //     } else if (GetScore("oxygen",playerList[i].nameTag) > 4800 && GetScore("equLevel",playerList[i].nameTag) >= 16) {
+    //         RunCmd(`effect "${playerList[i].nameTag}" strength 15 1 true`)
+    //     }
+    //     if (playerList[i].dimension.id == "minecraft:nether" && GetScore("equLevel",playerList[i].nameTag) <= 8) {
+    //         RunCmd(`effect "${playerList[i].nameTag}" slowness 15 0 true`)
+    //         RunCmd(`effect "${playerList[i].nameTag}" weakness 15 2 true`)
+    //     }
+    //     if (playerList[i].dimension.id == "minecraft:the_end" && GetScore("equLevel",playerList[i].nameTag) <= 13) {
+    //         RunCmd(`effect "${playerList[i].nameTag}" slowness 15 0 true`)
+    //         RunCmd(`effect "${playerList[i].nameTag}" weakness 15 3 true`)
+    //     }
+    //     if ((Math.pow(playerList[i].getVelocity().x,2) + Math.pow(playerList[i].getVelocity().y,2) + Math.pow(playerList[i].getVelocity().z,2)) > 0.07 && GetScore("equLevel",playerList[i].nameTag) <= 10) {
+    //         RunCmd(`scoreboard players add @e[name="${playerList[i].nameTag}",type=player] oxygen -1`);
+    //     }
+    //     if (GetScore("oxygen",playerList[i].nameTag) <= 0) {
+    //         RunCmd(`scoreboard players add @a[name="${playerList[i].nameTag}"] AnoxicTime 1`)
+    //     } else {
+    //         RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] AnoxicTime 0`)
+    //     }
+    //     if (GetScore("AnoxicTime",playerList[i].nameTag) == 1) {
+    //         RunCmd(`title "${playerList[i].nameTag}" title §c您已缺氧！`)
+    //         RunCmd(`title "${playerList[i].nameTag}" subtitle §7请及时补充氧气！`)
+    //         Tell("§c 您已进入缺氧状态！请及时补充氧气，否则会导致死亡！5秒后系统将自动打开氧气购买界面！",playerList[i].nameTag)
+    //     }
+    //     if (GetScore("AnoxicTime",playerList[i].nameTag) == 6) {
+    //         OxygenGUI.OxygenBuy(playerList[i])
+    //     }
+    //     if (GetScore("oxygen",playerList[i].nameTag) <= 200) {
+    //         RunCmd(`effect "${playerList[i].nameTag}" slowness 15 0`)
+    //         RunCmd(`effect "${playerList[i].nameTag}" weakness 15 2`)
+    //     }
+    //     if (GetScore("AnoxicTime",playerList[i].nameTag) >= 60) {
+    //         RunCmd(`effect "${playerList[i].nameTag}" blindness 15 0`)
+    //         RunCmd(`effect "${playerList[i].nameTag}" mining_fatigue 15 2`)
+    //         RunCmd(`effect "${playerList[i].nameTag}" nausea 15 0`)
+    //     }
+    //     //缺氧达到一定时间后直接进行死亡程序
+    //     if (GetScore("AnoxicTime",playerList[i].nameTag) >= 240) {
+    //         RunCmd(`kill "${playerList[i].nameTag}"`)
+    //         Tell("§c 我们很遗憾的通知您，由于您缺氧过长时间，昏倒在家中...幸亏您被巡逻机器人及时发现并送到了医院，才救回一条命...",playerList[i].nameTag)
+    //         RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] oxygen 200`)
+    //         RunCmd(`scoreboard players set @a[name="${playerList[i].nameTag}"] AnoxicTime 0`)
+    //         RunCmd(`scoreboard players add @a[name="${playerList[i].nameTag}"] money -50`)
+    //         Tell("§r======================\n§cNIA服务器医院 账单§r\n======================§c\n氧气费用 --- 20 能源币\n诊疗费用 --- 20 能源币\n转运费用 --- 10 能源币\n合计费用 --- 50 能源币§r\n======================",playerList[i].nameTag)
+    //         Tell("§r===============================\n§cNIA服务器自动扣费通知§r\n===============================§c\n50 能源币 已自动从您账户扣除\n如果您发现账户余额为负请及时补齐\n否则可能影响您的信誉值！§r\n===============================",playerList[i].nameTag)
+    //     }
+    //     ///////////////////////////////////
+    //     let titleActionbar = "";
+    //     if(playerList[i].hasTag("ShowActionbar")) {
+    //         if (playerList[i].hasTag("fly")) {
+    //             titleActionbar = "§c飞行模式§r "
+    //         }
+    //         if (GetScore("oxygen",playerList[i].nameTag) <= 200 && GetScore("oxygen",playerList[i].nameTag) > 0) {
+    //             titleActionbar = titleActionbar + "§r§c§l您即将进入缺氧状态，请及时补充氧气！"
+    //         }
+    //         if (playerList[i].dimension.id == "minecraft:nether" && GetScore("equLevel",playerList[i].nameTag) <= 8) {
+    //             titleActionbar = titleActionbar + "§r§c§l⚠警告！您目前呼吸装备等级过低，氧气消耗速度是原有的1倍！"
+    //         }
+    //         if (playerList[i].dimension.id == "minecraft:the_end" && GetScore("equLevel",playerList[i].nameTag) <= 13) {
+    //             titleActionbar = titleActionbar + "§r§c§l⚠警告！您目前呼吸装备等级过低，氧气消耗速度是原有的2倍！"
+    //         }
+    //         if (GetScore("AnoxicTime",playerList[i].nameTag) > 0) {
+    //             titleActionbar = titleActionbar + "§r§c§l⚠警告！您已经进入缺氧状态 " + GetScore("AnoxicTime",playerList[i].nameTag) + " 秒，请及时补充氧气否则将会死亡！"
+    //         }
+    //         playerList[i].onScreenDisplay.setActionBar(titleActionbar);
+    //     }
+    // }
 },20)
 

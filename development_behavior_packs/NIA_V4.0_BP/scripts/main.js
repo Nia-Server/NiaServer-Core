@@ -37,7 +37,7 @@ import './log.js'
 
 export const VERSION = "v1.5.0-pre-1";
 export const BDS_VERSION = "1.20.51.01";
-export const LAST_UPGRATE = "2024/01/27";
+export const LAST_UPGRATE = "2024/01/29";
 export const CODE_BRANCH = "dev";
 
 
@@ -48,7 +48,7 @@ console.log(`\x1b[33m[\x1b[36mNIA V4.5\x1b[33m] NIA V4.5 has been successfully s
  / /|  /_/ / / ___ |/_____/| |/ //__  __/_  ____/ /
 /_/ |_//___//_/  |_|       |___/   /_/  (_)/_____/
 `);
-console.log(`\x1b[33m[\x1b[36mNIA V4.5\x1b[33m] version: \x1b[32m${VERSION}\x1b[33m based on \x1b[32m${BDS_VERSION}\x1b[33m(last upgrate:\x1b[32m${LAST_UPGRATE}\x1b[33m)\x1b[0m`);
+console.log(`\x1b[33m[\x1b[36mNIA V4.5\x1b[33m] version: \x1b[32m${VERSION}\x1b[33m based on \x1b[32m${BDS_VERSION}\x1b[33m(last update:\x1b[32m${LAST_UPGRATE}\x1b[33m)\x1b[0m`);
 console.log(`\x1b[33m[\x1b[36mNIA V4.5\x1b[33m] author: @NIANIANKNIA(https://github.com/NIANIANKNIA) @jiansyuan(https://github.com/jiansyuan)\x1b[0m`);
-console.log(`\x1b[33m[\x1b[36mNIA V4.5\x1b[33m] Don't know how to deploy? Head over to the documentation site for detailed deployment procedures==>(\x1b[36mhttps://docs.mcnia.com/zh-CN/deploy.html\x1b[33m)\x1b[0m`);
+console.log(`\x1b[33m[\x1b[36mNIA V4.5\x1b[33m] Don't know how to deploy? Head over to the documentation site for detailed deployment procedures==>(\x1b[36mhttps://docs.mcnia.com/dev/\x1b[33m)\x1b[0m`);
 console.log(`\x1b[33m[\x1b[36mNIA V4.5\x1b[33m] \x1b[31mThis project is based on the AGPL-3.0 open source protocol , note that to comply with the open source agreement !\x1b[0m`);

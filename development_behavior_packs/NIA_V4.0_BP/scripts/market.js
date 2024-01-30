@@ -32,7 +32,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
         } else {
             //文件存在且服务器连接成功
             MarketData = result;
-            log("The player market data acquisition success!");
+            log("The player market data acquired successfully!");
         }
     })
 
@@ -40,7 +40,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
         if (result === 0) {
             fs.CreateNewJsonFile("market_temp_player_money.json",{}).then((result) => {
                 if (result === "success") {
-                    log("(market)The player money Data File does not exist, it has been successfully created!");
+                    log("(market)The player money data file does not exist, it has been successfully created!");
                 } else if (result === -1) {
                     console.error("[NIA V4.5] Dependency server connection failed!");
                 }
