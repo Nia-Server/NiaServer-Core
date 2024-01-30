@@ -1,5 +1,5 @@
 //LiteLoaderScript Dev Helper
-/// <reference path="d:\NIASERVER-V4/dts/llaids/src/index.d.ts"/>
+/// <reference path="d:\NiaServer-Core/dts/llaids/src/index.d.ts"/>
 
 //NBan
 

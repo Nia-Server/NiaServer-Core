@@ -83,7 +83,7 @@ signed int main(signed int argc, char** argv) {
 	}
 
 	INFO(X("NIAHttpBOT 已在 ") + IPAddress + ":" + std::to_string(PORT) + X(" 上成功启动!"));
-	XINFO("项目地址：https://github.com/NIANIANKNIA/NIASERVER-V4/tree/main/NIAHttpBOT");
+	XINFO("项目地址：https://github.com/NIANIANKNIA/NiaServer-Core/tree/main/NIAHttpBOT");
 	XINFO("项目作者：@NIANIANKNIA @jiansyuan");
 	XINFO("在使用中遇到问题请前往项目下的 issue 反馈，如果觉得本项目不错不妨点个 star！");
 	if (UseCmd)  XWARN("检测到执行DOS命令功能已启用，请注意服务器安全！");
