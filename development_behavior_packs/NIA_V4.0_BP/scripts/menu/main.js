@@ -26,13 +26,13 @@ const MainGUI = {
             "content": "tp @a[name=%playername%] 702 82 554",
             "opMenu": false
         },
-        {
-            "name": "个人传送点\n设置属于自己的传送点",
-            "icon": "textures/ui/icon_new",
-            "type": "runCmd",
-            "content": "openhomegui %playername%",
-            "opMenu": false
-        },
+        // {
+        //     "name": "个人传送点\n设置属于自己的传送点",
+        //     "icon": "textures/ui/icon_new",
+        //     "type": "runCmd",
+        //     "content": "openhomegui %playername%",
+        //     "opMenu": false
+        // },
         {
             "name": "调节生存模式\n不调节生存你怎么开始玩？",
             "icon": "textures/ui/controller_glyph_color",
@@ -147,10 +147,10 @@ export function Main(player) {
                     //这里相当于一个自定义功能的实例
                     case "goISLAND":
                         if (GetScore("posX",player.nameTag) == 0 && GetScore("posY",player.nameTag) == 0 && GetScore("posZ",player.nameTag) == 0) {
-                            player.sendMessage(`§c>> 未找到相应的主岛数据！请在领取空岛后使用本功能！`,player.nameTag)
+                            player.sendMessage(`§c 未找到相应的主岛数据！请在领取空岛后使用本功能！`,player.nameTag)
                         } else {
                             RunCmd(`tp @a[name=${player.nameTag}] ${GetScore("posX",player.nameTag)} ${GetScore("posY",player.nameTag)} ${GetScore("posZ",player.nameTag)}`)
-                            player.sendMessage(`§a>> 已经将您传送至主岛！`,player.nameTag)
+                            player.sendMessage(`§a 已经将您传送至主岛！`,player.nameTag)
                         }
                         break;
                 }

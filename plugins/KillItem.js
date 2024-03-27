@@ -47,7 +47,7 @@ const guiAPI = {
             MainMenu.addDropdown("选择要进行操作的物品日期文件",File.getFilesList(date_dir));
             player.sendForm(MainMenu,function(player,dates) {
                 if (dates == null) {
-                    player.tell("§c>> 您已取消本次操作！");
+                    player.tell("§c 您已取消本次操作！");
                     return false;
                 } else {
                     guiAPI.Sub(player,`${date_dir}${File.getFilesList(date_dir)[dates[0]]}`);
@@ -83,7 +83,7 @@ const guiAPI = {
                     }
                 })
         } else {
-            player.tell("§c>> 未能正确读取相应文件数据！")
+            player.tell("§c 未能正确读取相应文件数据！")
         }
     },
 
@@ -118,7 +118,7 @@ const guiAPI = {
                             for(let m = 0 ; m < Dates[i].length ; m++) {
                                 let item = mc.newItem(NBT.parseSNBT(Dates[i][date - 1]));
                                 player.giveItem(item);
-                                player.tell(`§e>> 物品 ${item.name} 已经恢复至您的背包！`);
+                                player.tell(`§e 物品 ${item.name} 已经恢复至您的背包！`);
                             }
                         }
                         num++;
@@ -149,13 +149,13 @@ function KillItem() {
         let ID = JSON.parse(File.readFrom(FileName)).ID + "\n" +system.getTimeStr();
         let Date = JSON.parse(File.readFrom(FileName));
         Date[ID] = Items;
-        mc.broadcast("§c>> 本次清理的物品名称为：§r" + ItemsName);
+        mc.broadcast("§c 本次清理的物品名称为：§r" + ItemsName);
         mc.runcmd("kill @e[type=item]");
-        mc.broadcast("§c>> 本次清理的ID为： §l【§r§l" + Date.ID + "§c§l】 §r§c如果您发现自己的物品被扫，请将本句话截图发给服主处理！");
+        mc.broadcast("§c 本次清理的ID为： §l【§r§l" + Date.ID + "§c§l】 §r§c如果您发现自己的物品被扫，请将本句话截图发给服主处理！");
         Date.ID = Date.ID + 1;
         File.writeTo(FileName,JSON.stringify(Date, null, 2));
     } else {
-        mc.broadcast("§e>> 本次没有清理任何物品！");
+        mc.broadcast("§e 本次没有清理任何物品！");
     }
 }
 

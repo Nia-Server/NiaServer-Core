@@ -1,19 +1,20 @@
-# NIA服务器v4.0--基岩版空岛服务器
+# NiaServer-Core
 
 [![wakatime](https://wakatime.com/badge/user/a2d785d3-a26c-467b-9112-333ba2bee9e8/project/9ae0abd5-b1ad-4199-bd66-0fba1a96ac45.svg?style=for-the-badge)](https://wakatime.com/@NIANIANKNIA)
-[![status](https://img.shields.io/github/actions/workflow/status/NIANIANKNIA/NIASERVER-V4/main.yml?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/actions)
-[![GitHub Release Date](https://img.shields.io/github/release-date-pre/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/releases)
-[![Latest Release](https://img.shields.io/github/v/release/NIANIANKNIA/NIASERVER-V4?include_prereleases&style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/releases/latest)
-[![GitHub last commit](https://img.shields.io/github/last-commit/NIANIANKNIA/NIASERVER-V4?style=for-the-badge)](https://github.com/NIANIANKNIA/NIASERVER-V4/commits)
+[![status](https://img.shields.io/github/actions/workflow/status/NIANIANKNIA/NiaServer-Core/main.yml?style=for-the-badge)](https://github.com/NIANIANKNIA/NiaServer-Core/actions)
+[![GitHub Release Date](https://img.shields.io/github/release-date-pre/NIANIANKNIA/NiaServer-Core?style=for-the-badge)](https://github.com/NIANIANKNIA/NiaServer-Core/releases)
+[![Latest Release](https://img.shields.io/github/v/release/NIANIANKNIA/NiaServer-Core?include_prereleases&style=for-the-badge)](https://github.com/NIANIANKNIA/NiaServer-Core/releases/latest)
+[![GitHub last commit](https://img.shields.io/github/last-commit/NIANIANKNIA/NiaServer-Core?style=for-the-badge)](https://github.com/NIANIANKNIA/NiaServer-Core/commits)
 [![QQ GROUNP](https://img.shields.io/badge/QQ%20GROUNP-724360499-blue?style=for-the-badge)](https://jq.qq.com/?_wv=1027&k=uk57fVr0)
 [![website](https://img.shields.io/badge/website-docs.mcnia.com-blue?style=for-the-badge)](https://docs.mcnia.com)
-![NIASERVER-V4](https://socialify.git.ci/NIANIANKNIA/NIASERVER-V4/image?description=1&font=KoHo&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.com%2Flogo.png&name=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Light)
+
+![NiaServer-Core](https://socialify.git.ci/NIANIANKNIA/NiaServer-Core/image?description=1&descriptionEditable=NIA%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%A0%B8%E5%BF%83%E7%B3%BB%E7%BB%9F&font=Source%20Code%20Pro&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.com%2Flogo.png&name=1&pattern=Floating%20Cogs&pulls=1&stargazers=1&theme=Auto)
+
 
 **语言: 简体中文 | [English](README-EN.md)**
 
-> **自2023/8/1之后由于NIA服务器开发计划有所变动，适配后续版本的v1.4.0版本暂缓发布，最终发布的v1.4.0版本将会有大范围变动（包括但不限于玩法、机制等）**
 
-> 一般而言如果你想看到最新的开发进度，请前往[dev分支](https://github.com/NIANIANKNIA/NIASERVER-V4/tree/dev)查看，但是由于我们的开发进度并不是很稳定，所以我们并不推荐您直接使用dev分支的代码!
+> 一般而言如果你想看到最新的开发进度，请前往[dev分支](https://github.com/NIANIANKNIA/NiaServer-Core/tree/dev)查看，但是由于我们的开发进度并不是很稳定，所以我们并不推荐您直接使用dev分支的代码!
 
 ## 写在前面
 
@@ -31,7 +32,7 @@
 
 ## 关于资源包内资源使用说明
 
-> 只限于您要使用资源包内的素材时看一下这个条款即可，使用行为包内的源码遵守[开源协议](https://github.com/NIANIANKNIA/NIASERVER-V4/blob/main/LICENSE)即可，无需通知我们
+> 只限于您要使用资源包内的素材时看一下这个条款即可，使用行为包内的源码遵守[开源协议](https://github.com/NIANIANKNIA/NiaServer-Core/blob/main/LICENSE)即可，无需通知我们
 
 如果您要使用资源包内的资源（包括但不限于结构、贴图等资源），**请务必在使用前向`server@mcnia.com`发送邮件**，获得相关贴图的使用授权（包括但不限于个人、组织等**商业或非商业**用途），以避免不必要的麻烦！
 
@@ -41,8 +42,8 @@
 > 所以我们计划分几个版本分布上线玩法、机制，具体如下：
 
 - [x] v1.4.0（2023-10） 上线基础玩法（包括但不限于圈地系统、玩家交易市场等）
-- [ ] v1.5.0（2023-11） 上线游戏设定所用到的所有方块，物品等，并完成相应材质包制作
-- [ ] v1.6.0（2023-12） 上线七大空岛生成逻辑，完善整体玩法机制
+- [ ] v1.5.0（2023-11-因学业延期发布） 上线游戏设定所用到的所有方块，物品等，并完成相应材质包制作
+- [ ] v1.6.0（2023-12-因学业延期发布） 上线七大空岛生成逻辑，完善整体玩法机制
 
 **注意：在完成上述开发前，addons版本号并不一定会随mc版本发布！具体请以上线为准！**
 
@@ -61,7 +62,7 @@
 - [ ] 支持自定义
 - [ ] 多语言支持
 
-## 外部机器人功能&&特性
+## 关于NIAHttpBOT
 
 新版机器人基于c++制作（特别感谢[**@jiansyuan**](https://github.com/jiansyuan)），使用HTTP实现对文件的一系列操作，具体使用示例，请前往[NIA服务器文档站](https://docs.mcnia.com/zh-CN/develop/Http-Bot.html)查看使用说明！
 
@@ -87,7 +88,7 @@
 
 ## 使用说明
 
-为了更加稳定的运行，推荐您直接前往[release](https://github.com/NIANIANKNIA/NIASERVER-V4/releases)页面下载打包好的资源包、行为包
+为了更加稳定的运行，推荐您直接前往[release](https://github.com/NIANIANKNIA/NiaServer-Core/releases)页面下载打包好的资源包、行为包
 
 其中`BP`代表行为包，`RP`代表资源包
 
@@ -97,7 +98,7 @@
 
 > 别忘记根据自己下的addons包修改版本号!
 
-然后在`worlds/MAPNAME`目录下添加`world_behavior_packs.json`
+然后在`worlds/[Map name]`目录下添加`world_behavior_packs.json`
 
 ```json
 [
@@ -143,15 +144,23 @@
 
 启动服务器时应当先启动**NIAHttpBOT**，待看到成功启动的字样再启动BDS服务器！
 
-**更加具体的配置教程请前往[NIA服务器文档站](https://docs.mcnia.com/zh-CN/deploy.html)查看！**
+**更加具体的配置教程请前往[NIA服务器文档站](https://docs.mcnia.com/dev)查看！**
+
 
 ## Bug反馈/提建议
 
-如果您在使用过程中遇到了问题、bug，或者拥有好的建议您都可以前往[issues](https://github.com/NIANIANKNIA/NIASERVER-V4/issues)反馈，我会在看到后第一时间回复！
+如果您在使用过程中遇到了问题、bug，或者拥有好的建议您都可以前往[issues](https://github.com/NIANIANKNIA/NiaServer-Core/issues)反馈，我会在看到后第一时间回复！
 
 ## 特别鸣谢
 
 [@Dave](https://abcdavk.github.io/) 服务器的空岛生成受他的行为包所启发！
+
+
+## 第三方开源引用
+
+#### [rapidjson](https://github.com/Tencent/rapidjson) - [MIT License](https://github.com/Tencent/rapidjson?tab=License-1-ov-file#readme)
+
+#### [cpp-httplib](https://github.com/yhirose/cpp-httplib) - [MIT License](https://github.com/yhirose/cpp-httplib?tab=MIT-1-ov-file#readme)
 
 ## 服务器开发者名单 （排名不分先后）
 
@@ -189,5 +198,9 @@
 - 如果您违反了 **EULA**，任何法律责任都与开发者**无关**
 - **开发者不对您负责，开发者没有义务为你编写代码、为你使用造成的任何后果负责**
 
-另外，您需要遵守本项目的[`AGPL-3.0`](https://github.com/NIANIANKNIA/NIASERVER-V4/blob/main/LICENSE)开源许可证条款, 以及本项目所有子项目使用的相关开源协议
+另外，您需要遵守本项目的[`AGPL-3.0`](https://github.com/NIANIANKNIA/NiaServer-Core/blob/main/LICENSE)开源许可证条款, 以及本项目所有子项目使用的相关开源协议
+
+## 关于商业化
+
+**由于项目的特殊性，我们并不是很赞成您运用本项目进行商业化，但是并不反对您将本项目进行商业化**
 

@@ -79,10 +79,10 @@ const GUI = {
                 .button2("§a同意")
             ApplyTpa1Form.show(AcceptPlayer).then(result => {
                 if (result.selection == 0) {
-                    Tell(`§c>> 对方拒绝了您的传送申请！请尝试稍后重试！（请勿短时间内多次发起申请，否则可能被对方加入黑名单！）`,ApplyPlayer.nameTag)
+                    ApplyPlayer.sendMessage(`§c 对方拒绝了您的传送申请！请尝试稍后重试！（请勿短时间内多次发起申请，否则可能被对方加入黑名单！）`);
                 } else if (result.selection == 1) {
-                    Tell(`§a>> 对方同意了您的申请，已把您传送过去！`,ApplyPlayer.nameTag)
-                    Tell(`§a>> 您已同意对方的传送申请！`,AcceptPlayer.nameTag)
+                    ApplyPlayer.sendMessage(`§a 对方同意了您的申请，已把您传送过去！`);
+                    AcceptPlayer.sendMessage(`§a 您已同意对方的传送申请！`);
                     RunCmd(`tp "${ApplyPlayer.nameTag}" "${AcceptPlayer.nameTag}"`)
                 }
             })
@@ -121,10 +121,10 @@ const GUI = {
                 .button2("§a同意")
             ApplyTpa2Form.show(AcceptPlayer).then(result => {
                 if (result.selection == 0) {
-                    Tell(`§c>> 对方拒绝了您的传送申请！请尝试稍后重试！（请勿短时间内多次发起申请，否则可能被对方加入黑名单！）`,ApplyPlayer.nameTag)
+                    ApplyPlayer.sendMessage(`§c 对方拒绝了您的传送申请！请尝试稍后重试！（请勿短时间内多次发起申请，否则可能被对方加入黑名单！）`);
                 } else if (result.selection == 1) {
-                    Tell(`§a>> 对方同意了您的申请，已把对方传送过来！`,ApplyPlayer.nameTag)
-                    Tell(`§a>> 您已同意对方的传送申请，已把您传送至对方所在位置`,AcceptPlayer.nameTag)
+                    ApplyPlayer.sendMessage(`§a 对方同意了您的申请，已把对方传送过来！`);
+                    AcceptPlayer.sendMessage(`§a 您已同意对方的传送申请，已把您传送至对方所在位置`)
                     RunCmd(`tp "${AcceptPlayer.nameTag}" "${ApplyPlayer.nameTag}"`)
                 }
             })
@@ -175,16 +175,16 @@ const GUI = {
                 } else {
                     if (result.formValues[0] == 1) {
                         player.addTag("BanTpa")
-                        player.sendMessage("§c>> 您已拒绝所有人向您发送传送申请！")
+                        player.sendMessage("§c 您已拒绝所有人向您发送传送申请！")
                     } else {
-                        player.sendMessage("§a>> 您已允许其他人向您发送传送申请！")
+                        player.sendMessage("§a 您已允许其他人向您发送传送申请！")
                     }
                     if (result.formValues[1] != 0) {
-                        Tell(`§c>> 已把玩家 ${playersName[result.formValues[1]]} 成功加入传送黑名单！`,player.nameTag)
+                        player.sendMessage(`§c 已把玩家 ${playersName[result.formValues[1]]} 成功加入传送黑名单！`);
                         RunCmd(`scoreboard players set "@${playersName[result.formValues[1]]}" T:${player.nameTag.slice(0,10)} 0`)
                     }
                     if (result.formValues[2] != 0) {
-                        Tell(`§a>> 已把玩家 ${playersName[result.formValues[2]]} 成功从传送黑名单移除！`,player.nameTag)
+                        player.sendMessage(`§a 已把玩家 ${playersName[result.formValues[2]]} 成功从传送黑名单移除！`);
                         RunCmd(`scoreboard players reset "@${playersName[result.formValues[2]]}" T:${player.nameTag.slice(0,10)}`);
                     }
                 }

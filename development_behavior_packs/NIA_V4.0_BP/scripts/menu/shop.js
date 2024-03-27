@@ -18,17 +18,17 @@ world.afterEvents.worldInitialize.subscribe(() => {
         if (result === 0) {
             fs.CreateNewJsonFile("shop_data.json",{"sell_data":[],"recycle_data":[]}).then((result) => {
                 if (result === "success") {
-                    console.warn("[NIA V4] 商店原始数据没有成功读取，已成功创建初始化数据文件，请打开shop_data.json修改后输入reload重载！");
+                    console.warn("[NiaServer-Core] The shop data was not read successfully, the initialisation data file has been created successfully, please open shop_data.json to modify it and enter reload to reload it!");
                 } else if (result === -1) {
-                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                    console.error("[NiaServer-Core] Dependency server connection failed!");
                 }
             });
         } else if (result === -1) {
-            console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+            console.error("[NiaServer-Core] Dependency server connection failed!");
         } else {
             SellData = result.sell_data;
             RecycleData = result.recycle_data;
-            log("商店数据获取成功,本次读取用时：" + (Date.now() - start) + "ms");
+            log("The shop data acquired successfully!");
         }
     })
 })
@@ -133,11 +133,11 @@ const GUI = {
                 this.ShopPurchaseSub(player,index1)
             }
             if (parseInt(result.formValues[0]) <= 0 || isNaN(parseInt(Number(result.formValues[0])))) {
-                player.sendMessage(`§c>> 错误的数字格式，请重新输入！`)
-                // Tell(`§c>> 错误的数字格式，请重新输入！`,player.nameTag)
+                player.sendMessage(`§c 错误的数字格式，请重新输入！`)
+                // Tell(`§c 错误的数字格式，请重新输入！`,player.nameTag)
                 this.ShopBuy(player,index1,index2)
             } else if (parseInt(result.formValues[0]) >= 1025) {
-                player.sendMessage(`§c>> 单次购买物品的数量上限是1024，请重新输入！`);
+                player.sendMessage(`§c 单次购买物品的数量上限是1024，请重新输入！`);
                 this.ShopBuy(player,index1,index2)
             } else {
                 this.ShopBuySub(player,index1,index2,result.formValues[0])
@@ -157,13 +157,13 @@ const GUI = {
                     if (GetScore("money",player.nameTag) >= parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num) {
                         RunCmd(`give "${player.nameTag}" ${SellData[i].content[j].type} ${num} ${SellData[i].content[j].data}`)
                         RunCmd(`scoreboard players add @a[name="${player.nameTag}"] money -${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num}`)
-                        Tell("§a>> 购买成功！§e您以 §l" + parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num + "§r§e 能源币，成功购买 §l" + num + " §r§e个" + SellData[i].content[j].name + "!期待您的下次光临！",player.nameTag)
+                        Tell("§a 购买成功！§e您以 §l" + parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num + "§r§e 能源币，成功购买 §l" + num + " §r§e个" + SellData[i].content[j].name + "!期待您的下次光临！",player.nameTag)
                     } else {
-                        Tell(`§c>> 购买失败！余额不足，您的余额为 ${GetScore("money",player.nameTag)} 能源币，而本次购买需要 ${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num} 能源币，您还缺少 ${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num - GetScore("money",player.nameTag)} 能源币，请在攒够足够能源币后尝试再次购买！`,player.nameTag)
+                        Tell(`§c 购买失败！余额不足，您的余额为 ${GetScore("money",player.nameTag)} 能源币，而本次购买需要 ${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num} 能源币，您还缺少 ${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num - GetScore("money",player.nameTag)} 能源币，请在攒够足够能源币后尝试再次购买！`,player.nameTag)
                     }
                     break;
                 case 0:
-                    Tell("§c>> 购买失败！原因是您自己取消了本次购买！",player.nameTag)
+                    Tell("§c 购买失败！原因是您自己取消了本次购买！",player.nameTag)
                     break;
             }
         })
@@ -283,7 +283,7 @@ const GUI = {
                                 this.ShopRecycleSub(player,index1);
                                 break;
                             case 0:
-                                Tell("§c>> 回收失败！原因是该物品已达到本日回收最大数量，请明天再次尝试回收哦！",player.nameTag)
+                                Tell("§c 回收失败！原因是该物品已达到本日回收最大数量，请明天再次尝试回收哦！",player.nameTag)
                                 break;
                         }
                     })
@@ -302,7 +302,7 @@ const GUI = {
                             this.ShopRecycleSub(player,index1);
                             break;
                         case 0:
-                            Tell("§c>> 回收失败！原因是没有在您的背包中找到相应物品！请检查背包后再次尝试！",player.nameTag)
+                            Tell("§c 回收失败！原因是没有在您的背包中找到相应物品！请检查背包后再次尝试！",player.nameTag)
                             break;
                     }
                 })
@@ -329,10 +329,10 @@ const GUI = {
                     RunCmd(`clear @a[name="${player.nameTag}"] ${RecycleData[index1].content[index2].type} ${RecycleData[index1].content[index2].data} ${num}`)
                     //然后执行加钱的操作！
                     RunCmd(`scoreboard players add @a[name="${player.nameTag}"] money ${parseInt(RecycleData[index1].content[index2].price * GetScore("DATA","RN") / 100) * num}`)
-                    Tell(`§a>> 回收成功！您成功回收 §l${num}§r§a 个 §l${RecycleData[index1].content[index2].name}§r§a，并获得了 §l${parseInt(RecycleData[index1].content[index2].price * GetScore("DATA","RN") / 100) * num} §r§a能源币！期待您的下次光临！`,player.nameTag)
+                    Tell(`§a 回收成功！您成功回收 §l${num}§r§a 个 §l${RecycleData[index1].content[index2].name}§r§a，并获得了 §l${parseInt(RecycleData[index1].content[index2].price * GetScore("DATA","RN") / 100) * num} §r§a能源币！期待您的下次光临！`,player.nameTag)
                     break;
                 case 0:
-                    Tell("§c>> 回收失败！原因是您自己取消了本次回收！",player.nameTag)
+                    Tell("§c 回收失败！原因是您自己取消了本次回收！",player.nameTag)
                     break;
             }
         })

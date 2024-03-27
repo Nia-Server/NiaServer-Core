@@ -55,15 +55,15 @@ export function FlyGUI(player) {
                                 if (UUID == 0) {
                                     UUID = 100000 + Math.floor(Math.random() * 100000);
                                     RunCmd(`scoreboard players set @a[name=${player.nameTag}] UUID ${UUID}`);
-                                    player.sendMessage(`§c>> 您第一次获取UUID，已经为您获取的UUID为：§a${UUID}§c，请发给腐竹获取飞行系统激活码！`);
+                                    player.sendMessage(`§c 您第一次获取UUID，已经为您获取的UUID为：§a${UUID}§c，请发给腐竹获取飞行系统激活码！`);
                                 } else {
-                                    player.sendMessage(`§c>> 您的UUID为：§a${UUID}§c，请发给腐竹获取飞行系统验证码！`);
+                                    player.sendMessage(`§c 您的UUID为：§a${UUID}§c，请发给腐竹获取飞行系统验证码！`);
                                 }
                                 break;
                             }
                         }
                     } else {
-                        player.sendMessage(`§c>> 余额不足，请尝试攒够5000能源币后再次尝试购买！`)
+                        player.sendMessage(`§c 余额不足，请尝试攒够5000能源币后再次尝试购买！`)
                     }
                 } else if (result.selection == 1) {
                     this.Main(player)
@@ -77,9 +77,9 @@ export function FlyGUI(player) {
             .show(player).then(result => {
                 let password = result.formValues[0];
                 if(password != adler32(toString(UUID)))
-                    player.sendMessage(`§c>> 您输入的激活码不正确，请再次重试！如果您还未获得激活码，请将您的UUID§a${UUID}§c发给腐竹获取飞行系统激活码！`),
+                    player.sendMessage(`§c 您输入的激活码不正确，请再次重试！如果您还未获得激活码，请将您的UUID§a${UUID}§c发给腐竹获取飞行系统激活码！`),
                     FlyGUI(player);
-                else player.sendMessage(`§a>> 验证码正确！您已获得相关权限！`), RunCmd(`tag "${player.nameTag}" add CanFly`);
+                else player.sendMessage(`§a 验证码正确！您已获得相关权限！`), RunCmd(`tag "${player.nameTag}" add CanFly`);
             })
         } else {
             const FlyForm = new ActionFormData()

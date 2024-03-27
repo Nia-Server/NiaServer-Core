@@ -8,3 +8,13 @@
 
 @NIANIANKNIA
 
+## Instructions for using the resources in the resource pack
+
+If you want to use the resources in the resource package (including but not limited to structures, textures and other resources), **please be sure to send an email to `server@mcnia.com` before use** to obtain the authorization to use the relevant textures (including but not limited to Not limited to **commercial or non-commercial** use by individuals, organizations, etc.) to avoid unnecessary trouble!
+
+## Author of part of the resource pack
+
+@lonely
+
+@NIANIANKNIA
+

@@ -3,6 +3,7 @@ import {Tell,RunCmd,GetScore} from '../customFunction.js'
 import { world } from '@minecraft/server'
 import { Main } from './main'
 
+//将在未来基于HTTP-BOT重构
 export function CDKGUI(player) {
     const CDKForm = new ModalFormData()
     .title("兑换码系统")
@@ -16,7 +17,7 @@ export function CDKGUI(player) {
             let HaveCDK = false;
             let CDKD = false;
             if (CDK == "") {
-                player.sendMessage(`§c>> CDK码为空兑换失败`)
+                player.sendMessage(`§c CDK码为空兑换失败`)
             } else if (result.formValues[0] == 0) {
                 let ScoreBoards = world.scoreboard.getObjectives()
                 for (let k = 0; k < ScoreBoards.length; k++) {
@@ -37,7 +38,7 @@ export function CDKGUI(player) {
                                 RunCmd(`scoreboard players add @a[name="${player.nameTag}"] ${ScoreBoards[i].getParticipants()[j].displayName.slice(ScoreBoards[i].getParticipants()[j].displayName.indexOf("@") + 1,ScoreBoards[i].getParticipants()[j].displayName.indexOf("#"))} ${ScoreBoards[i].getParticipants()[j].displayName.slice(ScoreBoards[i].getParticipants()[j].displayName.indexOf("#") + 1)}`)
                                 RunCmd(`scoreboard players add "${ScoreBoards[i].getParticipants()[j].displayName}" CDK -1`)
                                 RunCmd(`scoreboard players set "${player.nameTag}" "C:${CDK}" 0`)
-                                player.sendMessage("§a>> 兑换成功！")
+                                player.sendMessage("§a 兑换成功！")
                                 HaveCDK = true
                                 if (GetScore("CDK",ScoreBoards[i].getParticipants()[j].displayName) == 1) {
                                     RunCmd(`scoreboard players reset "${ScoreBoards[i].getParticipants()[j].displayName}" CDK`)
@@ -45,7 +46,7 @@ export function CDKGUI(player) {
                                 }
                                 break;
                             } else if (CDKD) {
-                                player.sendMessage("§c>> 您已兑换过此CDK!")
+                                player.sendMessage("§c 您已兑换过此CDK!")
                                 break;
                             }
                         }
@@ -72,7 +73,7 @@ export function CDKGUI(player) {
                                 RunCmd(`give @a[name="${player.nameTag}"] ${ScoreBoards[i].getParticipants()[j].displayName.slice(ScoreBoards[i].getParticipants()[j].displayName.indexOf("@") + 1,ScoreBoards[i].getParticipants()[j].displayName.indexOf("#"))} ${ScoreBoards[i].getParticipants()[j].displayName.slice(ScoreBoards[i].getParticipants()[j].displayName.indexOf("#") + 1,ScoreBoards[i].getParticipants()[j].displayName.indexOf("$"))} ${ScoreBoards[i].getParticipants()[j].displayName.slice(ScoreBoards[i].getParticipants()[j].displayName.indexOf("$") + 1)}`)
                                 RunCmd(`scoreboard players add "${ScoreBoards[i].getParticipants()[j].displayName}" CDK -1`)
                                 RunCmd(`scoreboard players set "${player.nameTag}" "C:${CDK}" 0`)
-                                player.sendMessage("§a>> 兑换成功！")
+                                player.sendMessage("§a 兑换成功！")
                                 HaveCDK = true
                                 if (GetScore("CDK",ScoreBoards[i].getParticipants()[j].displayName) == 1) {
                                     RunCmd(`scoreboard players reset "${ScoreBoards[i].getParticipants()[j].displayName}" CDK`)
@@ -80,7 +81,7 @@ export function CDKGUI(player) {
                                 }
                                 break;
                             } else if (CDKD) {
-                                player.sendMessage("§c>> 您已兑换过此CDK!")
+                                player.sendMessage("§c 您已兑换过此CDK!")
                                 break;
                             }
                         }
@@ -89,7 +90,7 @@ export function CDKGUI(player) {
                 }
             }
             if (!HaveCDK && !CDKD) {
-                player.sendMessage(`§c>> 无效的CDK兑换码，可能是输错、兑换码类型选择错误、兑换数量达到上限！您可以重新检查后再次尝试！具体情况请联系腐竹！`)
+                player.sendMessage(`§c 无效的CDK兑换码，可能是输错、兑换码类型选择错误、兑换数量达到上限！您可以重新检查后再次尝试！具体情况请联系腐竹！`)
             }
         }
     })

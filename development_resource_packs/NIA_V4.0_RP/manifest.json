@@ -1,18 +1,18 @@
 {
-	"format_version": 1,
+	"format_version": 2,
 	"header": {
-		"description": "§cNIA服务器V4-资源包\n作者：NIANIANKNIA\n项目地址：https://github.com/NIANIANKNIA/NIASERVER-V4",
-		"name": "NIA V4.0 RP",
+		"description": "§cNIA服务器V4-资源包\n作者：NIANIANKNIA\n项目地址：https://github.com/NIANIANKNIA/NiaServer-Core",
+		"name": "NiaServer-Core-1.5.0 RP",
 		"uuid": "981f1ce2-370b-4f58-99d9-9c504a118ec0",
-		"min_engine_version": [1, 20, 10],
-		"version": [1, 4, 0]
+		"min_engine_version": [1, 20, 50],
+		"version": [1, 5, 0]
 	},
 	"modules": [
 		{
 			"description": "NIANIANKNIA",
 			"type": "resources",
 			"uuid": "7e41869f-82f7-40f5-87c0-4dcfbc61d91b",
-			"version": [1, 4, 0]
+			"version": [1, 5, 0]
 		}
 	],
 	"metadata": {

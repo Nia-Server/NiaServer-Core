@@ -16,7 +16,7 @@ const GUI = {
             } else if (result.formValues[0] == cfg.OPMENUPassword) {
                 this.OpMain(player)
             } else {
-                player.sendMessage("§c>> 未经授权的访问！")
+                player.sendMessage("§c 未经授权的访问！")
             }
         })
     },
@@ -35,10 +35,10 @@ const GUI = {
         .show(player).then(result => {
             switch (result.selection) {
                 case 0:
-                    player.sendMessage("§c>> 开发中内容，敬请期待！")
+                    player.sendMessage("§c 开发中内容，敬请期待！")
                     break;
                 case 1:
-                    player.sendMessage("§c>> 开发中内容，敬请期待！")
+                    player.sendMessage("§c 开发中内容，敬请期待！")
                     break;
                 case 2:
                     this.AddCDKMain(player)
@@ -47,13 +47,13 @@ const GUI = {
                     this.SetCDK(player)
                     break;
                 case 4:
-                    player.sendMessage("§c>> 开发中内容，敬请期待！")
+                    player.sendMessage("§c 开发中内容，敬请期待！")
                     break;
                 case 5:
-                    player.sendMessage("§c>> 开发中内容，敬请期待！")
+                    player.sendMessage("§c 开发中内容，敬请期待！")
                     break;
                 case 6:
-                    player.sendMessage("§c>> 开发中内容，敬请期待！")
+                    player.sendMessage("§c 开发中内容，敬请期待！")
                     break;
             }
         })
@@ -94,9 +94,9 @@ const GUI = {
         AddCDKSub1Form.show(player).then(result => {
             //首先判断数据格式是否正确
             if (result.formValues[0] == "" || result.formValues[3] == "" || result.formValues[4] == "") {
-                player.sendMessage("§c>> 错误的数据格式！请重新检查后再次填写！")
+                player.sendMessage("§c 错误的数据格式！请重新检查后再次填写！")
             } else if (result.formValues[1] == 0 && result.formValues[2] == "") {
-                player.sendMessage("§c>> 错误的数据格式！请重新检查后再次填写！")
+                player.sendMessage("§c 错误的数据格式！请重新检查后再次填写！")
             } else {
                 //判断CDK是否重复？
                 let ScoreBoards = world.scoreboard.getObjectives()
@@ -113,15 +113,15 @@ const GUI = {
                     }
                 }
                 if (HaveCDK) {
-                    player.sendMessage("§c>> 重复的CDK！请重新检查后再次填写！")
+                    player.sendMessage("§c 重复的CDK！请重新检查后再次填写！")
                 } else if (result.formValues[1] != 0) {
                     RunCmd(`scoreboard players set "S!${result.formValues[0]}@${ScoreNames[result.formValues[1] - 1]}#${parseInt(result.formValues[3])}" CDK ${parseInt(result.formValues[4])}`)
                     world.scoreboard.addObjective(`C:${result.formValues[0]}`,`C:${result.formValues[0]}`);
-                    player.sendMessage("§a>> CDK码 " + result.formValues[0] + " 添加成功！校验值：S!" + result.formValues[0] + "@" + ScoreNames[result.formValues[1] - 1] + "#" + parseInt(result.formValues[3]) + " NUM: " + parseInt(result.formValues[4]))
+                    player.sendMessage("§a CDK码 " + result.formValues[0] + " 添加成功！校验值：S!" + result.formValues[0] + "@" + ScoreNames[result.formValues[1] - 1] + "#" + parseInt(result.formValues[3]) + " NUM: " + parseInt(result.formValues[4]))
                 } else if (result.formValues[1] == 0) {
                     RunCmd(`scoreboard players set "S!${result.formValues[0]}@${result.formValues[2]}#${parseInt(result.formValues[3])}" CDK ${parseInt(result.formValues[4])}`)
                     world.scoreboard.addObjective(`C:${result.formValues[0]}`,`C:${result.formValues[0]}`);
-                    player.sendMessage("§a>> CDK码 " + result.formValues[0] + " 添加成功！校验值：S!" + result.formValues[0] + "@" + result.formValues[2] + "#" + parseInt(result.formValues[3]) + " NUM: " + parseInt(result.formValues[4]))
+                    player.sendMessage("§a CDK码 " + result.formValues[0] + " 添加成功！校验值：S!" + result.formValues[0] + "@" + result.formValues[2] + "#" + parseInt(result.formValues[3]) + " NUM: " + parseInt(result.formValues[4]))
                 }
             }
         })
@@ -140,9 +140,9 @@ const GUI = {
         AddCDKSub2Form.show(player).then(result => {
             //首先判断数据格式是否正确
             if (result.formValues[0] == "" || result.formValues[3] == "" || result.formValues[4] == "" || result.formValues[5] == "") {
-                player.sendMessage("§c>> 错误的数据格式！请重新检查后再次填写！")
+                player.sendMessage("§c 错误的数据格式！请重新检查后再次填写！")
             } else if (result.formValues[1] == 0 && result.formValues[2] == "") {
-                player.sendMessage("§c>> 错误的数据格式！请重新检查后再次填写！")
+                player.sendMessage("§c 错误的数据格式！请重新检查后再次填写！")
             } else {
                 //判断CDK是否重复？
                 let ScoreBoards = world.scoreboard.getObjectives()
@@ -159,15 +159,15 @@ const GUI = {
                     }
                 }
                 if (HaveCDK) {
-                    player.sendMessage("§c>> 重复的CDK！请重新检查后再次填写！")
+                    player.sendMessage("§c 重复的CDK！请重新检查后再次填写！")
                 } else if (result.formValues[1] != 0) {
                     RunCmd(`scoreboard players set "I!${result.formValues[0]}@${ScoreNames[result.formValues[1] - 1]}#${parseInt(result.formValues[3])}$${parseInt(result.formValues[4])}" CDK ${parseInt(result.formValues[5])}`)
                     world.scoreboard.addObjective(`C:${result.formValues[0]}`,`C:${result.formValues[0]}`);
-                    player.sendMessage("§a>> CDK码 " + result.formValues[0] + " 添加成功！校验值：I!" + result.formValues[0] + "@" + ScoreNames[result.formValues[1] - 1] + "#" + parseInt(result.formValues[3]) + "$" + parseInt(result.formValues[4]) + " NUM: " + parseInt(result.formValues[5]))
+                    player.sendMessage("§a CDK码 " + result.formValues[0] + " 添加成功！校验值：I!" + result.formValues[0] + "@" + ScoreNames[result.formValues[1] - 1] + "#" + parseInt(result.formValues[3]) + "$" + parseInt(result.formValues[4]) + " NUM: " + parseInt(result.formValues[5]))
                 } else if (result.formValues[1] == 0) {
                     RunCmd(`scoreboard players set "I!${result.formValues[0]}@${result.formValues[2]}#${parseInt(result.formValues[3])}$${parseInt(result.formValues[4])}" CDK ${parseInt(result.formValues[5])}`)
                     world.scoreboard.addObjective(`C:${result.formValues[0]}`,`C:${result.formValues[0]}`);
-                    player.sendMessage("§a>> CDK码 " + result.formValues[0] + " 添加成功！校验值：I!" + result.formValues[0] + "@" + result.formValues[2] + "#" + parseInt(result.formValues[3]) + "$" + parseInt(result.formValues[4]) + " NUM: " + parseInt(result.formValues[5]))
+                    player.sendMessage("§a CDK码 " + result.formValues[0] + " 添加成功！校验值：I!" + result.formValues[0] + "@" + result.formValues[2] + "#" + parseInt(result.formValues[3]) + "$" + parseInt(result.formValues[4]) + " NUM: " + parseInt(result.formValues[5]))
                 }
             }
         })
@@ -248,19 +248,19 @@ const GUI = {
             }
             if (CDKData.slice(0,1) == "S") {
                 if (result.formValues[0] == "" || result.formValues[1] == "" || result.formValues[2] == "") {
-                    player.sendMessage(`§C>> 错误的CDK数据格式！请重新检查后重新输入！`)
+                    player.sendMessage(`§C 错误的CDK数据格式！请重新检查后重新输入！`)
                 } else {
                     RunCmd(`scoreboard players reset "${CDKData}" CDK`)
                     RunCmd(`scoreboard players set "S!${CDKData.slice(2,CDKData.indexOf("@"))}@${result.formValues[0]}#${parseInt(result.formValues[1])}" CDK ${parseInt(result.formValues[2])}`)
-                    player.sendMessage("§a>> CDK码 " + CDKData.slice(2,CDKData.indexOf("@")) + " 修改成功！校验值：S!" + CDKData.slice(2,CDKData.indexOf("@")) + "@" + result.formValues[0] + "#" + parseInt(result.formValues[1]) + " NUM: " + parseInt(result.formValues[2]))
+                    player.sendMessage("§a CDK码 " + CDKData.slice(2,CDKData.indexOf("@")) + " 修改成功！校验值：S!" + CDKData.slice(2,CDKData.indexOf("@")) + "@" + result.formValues[0] + "#" + parseInt(result.formValues[1]) + " NUM: " + parseInt(result.formValues[2]))
                 }
             } else if (CDKData.slice(0,1) == "I") {
                 if (result.formValues[0] == "" || result.formValues[1] == "" || result.formValues[2] == "" || result.formValues[3] == "") {
-                    player.sendMessage(`§C>> 错误的CDK数据格式！请重新检查后重新输入！`)
+                    player.sendMessage(`§C 错误的CDK数据格式！请重新检查后重新输入！`)
                 } else {
                     RunCmd(`scoreboard players reset "${CDKData}" CDK`)
                     RunCmd(`scoreboard players set "I!${CDKData.slice(2,CDKData.indexOf("@"))}@${result.formValues[0]}#${parseInt(result.formValues[1])}$${parseInt(result.formValues[2])}" CDK ${parseInt(result.formValues[3])}`)
-                    player.sendMessage("§a>> CDK码 " + CDKData.slice(2,CDKData.indexOf("@")) + " 修改成功！校验值：I!" + CDKData.slice(2,CDKData.indexOf("@")) + "@" + result.formValues[0] + "#" + parseInt(result.formValues[1]) + "$" + parseInt(result.formValues[2]) + " NUM: " + parseInt(result.formValues[3]))
+                    player.sendMessage("§a CDK码 " + CDKData.slice(2,CDKData.indexOf("@")) + " 修改成功！校验值：I!" + CDKData.slice(2,CDKData.indexOf("@")) + "@" + result.formValues[0] + "#" + parseInt(result.formValues[1]) + "$" + parseInt(result.formValues[2]) + " NUM: " + parseInt(result.formValues[3]))
                 }
             }
         })
@@ -270,7 +270,7 @@ const GUI = {
         const RemoveCDKForm = new MessageFormData()
         .title("§c§l删除CDK-" + CDKData.slice(2,CDKData.indexOf("@")))
         .body("§e是否§c删除§eCDK §l§6 " + CDKData.slice(2,CDKData.indexOf("@")) + " §r§e？ \n§r§e一旦删除数据将无法恢复！请谨慎操作！")
-        .button1("§c§l>>删除CDK<<")
+        .button1("§c§l删除CDK<<")
         .button2("§a返回上一级页面")
         RemoveCDKForm.show(player).then(result => {
             if (result.selection == 0) {
@@ -278,7 +278,7 @@ const GUI = {
             } else if (result.selection == 1) {
                 RunCmd(`scoreboard players reset "${CDKData}" CDK`)
                 RunCmd(`scoreboard objectives remove "C:${CDKData.slice(2,CDKData.indexOf("@"))}"`)
-                player.sendMessage(`§a>> CDK ${CDKData.slice(2,CDKData.indexOf("@"))} 删除成功！校验值： ${CDKData} §c如果误删请将本条信息截图发给服主！`)
+                player.sendMessage(`§a CDK ${CDKData.slice(2,CDKData.indexOf("@"))} 删除成功！校验值： ${CDKData} §c如果误删请将本条信息截图发给服主！`)
             }
         })
 

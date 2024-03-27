@@ -16,41 +16,41 @@ var temp_player_money = {};
 
 //服务器启动监听&&获得玩家市场数据
 world.afterEvents.worldInitialize.subscribe(() => {
-    let start = Date.now();
     fs.GetJSONFileData("market.json").then((result) => {
         //文件不存在
         if (result === 0) {
             fs.CreateNewJsonFile("market.json",[]).then((result) => {
                 if (result === "success") {
                     MarketData = [];
-                    log("玩家市场文件不存在，已成功创建！");
+                    log("The player market file does not exist and has been successfully created!");
                 } else if (result === -1) {
-                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                    console.error("[NiaServer-Core] Dependency server connection failed!");
                 }
             });
         } else if (result === -1) {
-            console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+            console.error("[NiaServer-Core] Dependency server connection failed!");
         } else {
             //文件存在且服务器连接成功
             MarketData = result;
-            log("玩家市场数据获取成功，本次读取用时：" + (Date.now() - start) + "ms");
+            log("The player market data acquired successfully!");
         }
     })
+
     fs.GetJSONFileData("market_temp_player_money.json").then((result) => {
         if (result === 0) {
             fs.CreateNewJsonFile("market_temp_player_money.json",{}).then((result) => {
                 if (result === "success") {
-                    log("玩家金币数据文件不存在，已成功创建！");
+                    log("(market)The player money data file does not exist, it has been successfully created!");
                 } else if (result === -1) {
-                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                    console.error("[NiaServer-Core] Dependency server connection failed!");
                 }
             });
         } else if (result === -1) {
-            console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+            console.error("[NiaServer-Core] Dependency server connection failed!");
         } else {
             //文件存在且服务器连接成功
             temp_player_money = result;
-            log("(market)玩家金币数据获取成功，本次读取用时：" + (Date.now() - start) + "ms");
+            log("(market)The player money data acquired successfully!");
         }
     })
 
@@ -125,7 +125,7 @@ const GUI = {
             if (response.canceled) {
                 this.Main(player)
             } else if (response.selection == 0) {
-                player.sendMessage("§c>> 该功能正在开发中，敬请期待！");
+                player.sendMessage("§c 该功能正在开发中，敬请期待！");
             } else {
                 let pre_item_data = {};
                 const MarketSubForm = new ActionFormData()
@@ -178,19 +178,19 @@ const GUI = {
                                 }
                             }
                             if (!has_empty_slot) {
-                                player.sendMessage("§c>> 您背包没有多余的空间来放置预览商品，请清空后重试！");
+                                player.sendMessage("§c 您背包没有多余的空间来放置预览商品，请清空后重试！");
                             } else {
-                                player.sendMessage("§e>> 已成功将预览商品送至您的背包中，预览商品将在10s后自动收回！请及时查看！");
+                                player.sendMessage("§e 已成功将预览商品送至您的背包中，预览商品将在10s后自动收回！请及时查看！");
                                 system.runTimeout(()=>{
                                     try {
-                                        player.sendMessage("§e>> 预览时间已到，物品已自动收回！");
+                                        player.sendMessage("§e 预览时间已到，物品已自动收回！");
                                         for (let i = 9 ; i < 36; i++) {
                                             if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).getLore()[player.getComponent("minecraft:inventory").container.getItem(i).getLore().length - 2] == "§c预览商品请勿进行其他操作！") {
                                                 player.getComponent("minecraft:inventory").container.setItem(i,new ItemStack("minecraft:air"));
                                             }
                                         }
                                     } catch (e) {
-                                        console.error("[NIA V4] 玩家预览商品没有正常回收（回收失败）！");
+                                        console.error("[NiaServer-Core] Player preview items are not recycled properly (recycling failure)!");
                                     }
                                 },200);
                             }
@@ -241,7 +241,7 @@ const GUI = {
                         has_empty_slot = true;
                     }
                     if (!has_empty_slot) {
-                        player.sendMessage("§c>> 购买失败！您背包没有多余的空间来放置商品，请清空后重试！");
+                        player.sendMessage("§c 购买失败！您背包没有多余的空间来放置商品，请清空后重试！");
                     } else {
                         //根据商品id寻找
                         for (let i = 0; i < MarketData.length; i++) {
@@ -259,20 +259,20 @@ const GUI = {
                                         temp_player_money[player.id] = response.formValues[0] * item_data.price;
                                         fs.OverwriteJsonFile("market_temp_player_money.json",temp_player_money).then((result) => {
                                             if (result === "success") {
-                                                player.sendMessage("§e>> 购买成功！已将商品送至您的背包中！");
+                                                player.sendMessage("§e 购买成功！已将商品送至您的背包中！");
                                                 //扣除玩家金币
                                                 world.scoreboard.getObjective("money").setScore(player,GetScore("money",player.nameTag) - (response.formValues[0] * item_data.price));
                                                 //发送物品
                                                 player.getComponent("minecraft:inventory").container.addItem(new_item);
                                             } else {
                                                 this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
-                                                console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                                                console.error("[NiaServer-Core] Dependency server connection failed!");
                                                 temp_player_money = old_temp_player_money;
                                             }
                                         })
                                     } else {
                                         this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
-                                        console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                                        console.error("[NiaServer-Core] Dependency server connection failed!");
                                         MarketData = old_MarketData;
                                     }
                                 })
@@ -282,7 +282,7 @@ const GUI = {
                     }
                 } else if (response.formValues[0] * item_data.price > GetScore("money",player.nameTag)) {
                     //玩家金币不够
-                    player.sendMessage("§c>> 购买失败！您的金币不足！");
+                    player.sendMessage("§c 购买失败！您的金币不足！");
                 }
             })
 
@@ -508,7 +508,7 @@ const GUI = {
                                 player.getComponent("minecraft:inventory").container.addItem(new_item);
                             } else {
                                 this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ManageForm");
-                                console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                                console.error("[NiaServer-Core] Dependency server connection failed!");
                                 MarketData = old_MarketData;
                             }
                         })
@@ -566,7 +566,7 @@ const GUI = {
                                     }
                                     //如果没有空间
                                     if (!has_empty_slot) {
-                                        player.sendMessage("§c>> 本次对商品的所有操作失败！您背包没有多余的空间来放置商品，请清空后重试！");
+                                        player.sendMessage("§c 本次对商品的所有操作失败！您背包没有多余的空间来放置商品，请清空后重试！");
                                     } else {
                                         //如果有足够空间
                                         //根据商品id寻找
@@ -637,18 +637,18 @@ const GUI = {
                     //存在，给钱
                     if (old_temp_player_money[player.id] != 0) {
                         world.scoreboard.getObjective("money").addScore(player,old_temp_player_money[player.id])
-                        player.sendMessage("§e>> 您有一笔来自玩家交易市场的 " + old_temp_player_money[player.id] + " 金币已到账！请注意查收！");
+                        player.sendMessage("§e 您有一笔来自玩家交易市场的 " + old_temp_player_money[player.id] + " 金币已到账！请注意查收！");
                     }  else {
-                        player.sendMessage("§e>> 您目前没有任何玩家交易市场收益，尝试售卖物品来获得收益！");
+                        player.sendMessage("§e 您目前没有任何玩家交易市场收益，尝试售卖物品来获得收益！");
                     }
                 } else {
                     this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
-                    console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
+                    console.error("[NiaServer-Core] Dependency server connection failed!");
                     temp_player_money = old_temp_player_money;
                 }
             })
         } else {
-            player.sendMessage("§e>> 您目前没有任何玩家交易市场收益，尝试售卖物品来获得收益！");
+            player.sendMessage("§e 您目前没有任何玩家交易市场收益，尝试售卖物品来获得收益！");
         }
     },
 
@@ -700,8 +700,8 @@ world.afterEvents.playerSpawn.subscribe((event) => {
         for (let i = 9 ; i < 36; i++) {
             if (event.player.getComponent("minecraft:inventory").container.getItem(i) != undefined && event.player.getComponent("minecraft:inventory").container.getItem(i).getLore()[event.player.getComponent("minecraft:inventory").container.getItem(i).getLore().length - 2] == "§c预览商品请勿进行其他操作！") {
                 event.player.getComponent("minecraft:inventory").container.setItem(i,new ItemStack("minecraft:air"));
-                event.player.sendMessage("§c>> 未正常去除的预览商品已回收！");
-                log("玩家未正常归还的预览商品已被自动回收！");
+                event.player.sendMessage("§c 未正常去除的预览商品已回收！");
+                log("Preview items not returned properly by the player have been automatically recalled!");
             }
         }
     }
