@@ -16,6 +16,8 @@
 
 3.圈地系统新增配置项`MAX_LAND_NUM`、`MONEY_SCOREBOARD_DISPLAY_NAME`
 
+4.基于[LLoneBOT](https://github.com/LLOneBot/LLOneBot)使用[onebot-11](https://github.com/botuniverse/onebot-11/)为NIAHttpBOT&&Nia-Server-Core新增部分QQ机器人功能
+
 ## 优化
 
 1.为了规避UTF-8编码问题，控制台输出所有的信息现在全部都是英文
