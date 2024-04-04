@@ -7,8 +7,7 @@ import { ExternalFS } from './API/filesystem.js';
 const fs = new ExternalFS();
 
 const BAN_WORDS = [
-    "test",
-    "测试"
+"傻逼","女装"
 ];
 
 var mute_list = {};
@@ -34,7 +33,7 @@ world.beforeEvents.chatSend.subscribe(t => {
                     t.sender.sendMessage(`§e 钟表已经成功发放！`);
                     break;
                 case "-test":
-                    RunCmd(`kick "${t.sender.nameTag}" §c测试\njjj`);
+                    RunCmd(`kick "${t.sender.nameTag}" §c哎？你在在说什么？`);
                     break;
                 default:
                     t.sender.sendMessage(`§c 未知的指令 ${t.message} ！请检查相关指令格式或输入+help获取帮助！`);

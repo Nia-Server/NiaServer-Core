@@ -34,10 +34,11 @@ import './land.js'
 import './basic.js'
 import './newFunction.js'
 import './log.js'
+import './qqBot.js'
 
 export const VERSION = "v1.5.0-pre-1";
-export const BDS_VERSION = "1.20.51.01";
-export const LAST_UPGRATE = "2024/01/30";
+export const BDS_VERSION = "1.20.61.01";
+export const LAST_UPGRATE = "2024/04/04";
 export const CODE_BRANCH = "dev";
 
 

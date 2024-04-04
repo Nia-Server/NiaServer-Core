@@ -36,24 +36,24 @@ jobs:
           type: 'zip'
           directory: 'development_behavior_packs/NIA_V4.0_BP'
           path: '.'
-          filename: NIAV4BP-${{ github.ref_name }}.zip
+          filename: NiaServer-Core-BP-${{ github.ref_name }}.zip
       - name: Upload the zip file1
         uses: actions/upload-artifact@v2
         with:
-          name: NIAV4BP-${{ github.ref_name }}.zip
-          path: ./development_behavior_packs/NIA_V4.0_BP/NIAV4BP-${{ github.ref_name }}.zip
+          name: NiaServer-Core-BP-${{ github.ref_name }}.zip
+          path: ./development_behavior_packs/NIA_V4.0_BP/NiaServer-Core-BP-${{ github.ref_name }}.zip
       - name: Archive Release2
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
           directory: 'development_resource_packs/NIA_V4.0_RP'
           path: '.'
-          filename: NIAV4RP-${{ github.ref_name }}.zip
+          filename: NiaServer-Core-RP-${{ github.ref_name }}.zip
       - name: Upload the zip file2
         uses: actions/upload-artifact@v2
         with:
-          name: NIAV4RP-${{ github.ref_name }}.zip
-          path: ./development_resource_packs/NIA_V4.0_RP/NIAV4RP-${{ github.ref_name }}.zip
+          name: NiaServer-Core-RP-${{ github.ref_name }}.zip
+          path: ./development_resource_packs/NIA_V4.0_RP/NiaServer-Core-RP-${{ github.ref_name }}.zip
 
   release:
     needs: zip
@@ -68,16 +68,16 @@ jobs:
       - name: Download the behavior_pack
         uses: actions/download-artifact@v2
         with:
-          name: NIAV4BP-${{ github.ref_name }}.zip
+          name: NiaServer-Core-BP-${{ github.ref_name }}.zip
       - name: Download the resource_pack
         uses: actions/download-artifact@v2
         with:
-          name: NIAV4RP-${{ github.ref_name }}.zip
+          name: NiaServer-Core-RP-${{ github.ref_name }}.zip
       - name: Create and upload release # 步骤：创建和上传release
         uses: ncipollo/release-action@v1.12.0 # 使用ncipollo/release-action@v1.12.0
         with:
           prerelease: true
-          artifacts: "NIAV4BP-${{ github.ref_name }}.zip,NIAV4RP-${{ github.ref_name }}.zip,NIAHttpBOT.exe,world_behavior_packs.json,world_resource_packs.json" # 指定要上传的exe文件的路径
+          artifacts: "NiaServer-Core-BP-${{ github.ref_name }}.zip,NiaServer-Core-RP-${{ github.ref_name }}.zip,NIAHttpBOT.exe,world_behavior_packs.json,world_resource_packs.json" # 指定要上传的exe文件的路径
           bodyFile: "CHANGELOG-PRE.md"
           generateReleaseNotes: false
           token: ${{ secrets.GITHUB_TOKEN }} # 指定GitHub令牌环境变量

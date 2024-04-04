@@ -5,7 +5,6 @@ import { cfg } from '../config.js'
 
 import { SetupGUI } from './Setup.js';
 import { ShopGUI } from './shop.js';
-import { OxygenGUI } from './oxygen.js';
 import { TpaGUI } from './Tpa.js';
 import { CDKGUI } from './cdk.js';
 import { FlyGUI } from './Fly.js';
@@ -17,22 +16,15 @@ import { LandGUI } from '../land.js';
 
 const MainGUI = {
     "title": "服务器菜单",
-    "body": "§l===========================\n§eHi! §l§6%playername% §r§e欢迎回来！\n§e您目前能源币余额： §6§l*money*\n§r§e您目前剩余氧气值为： §6§l*oxygen*\n§r§e您目前剩余体力值为： §6§l*stamina*\n§r§e您目前在线总时长为： §6§l*time*\n§r§e当前物价指数为： §6§l%RN%\n§r§l===========================\n§r§c§l游玩中有问题找腐竹反馈！\n祝您游玩愉快！\n§r§l===========================",
+    "body": "§l===========================\n§eHi! §l§6%playername% §r§e欢迎回来！\n§e您目前能源币余额： §6§l*money*\n§r§e您目前在线总时长为： §6§l*time*\n§r§e当前物价指数为： §6§l%RN%\n§r§l===========================\n§r§c§l游玩中有问题找腐竹反馈！\n祝您游玩愉快！\n§r§l===========================",
     "buttons": [
         {
             "name": "立即回城\n点击后立即返回主城",
             "icon": "textures/blocks/chest_front",
             "type": "runCmd",
-            "content": "tp @a[name=%playername%] 702 82 554",
+            "content": "tp @a[name=%playername%] 184 79 114",
             "opMenu": false
         },
-        // {
-        //     "name": "个人传送点\n设置属于自己的传送点",
-        //     "icon": "textures/ui/icon_new",
-        //     "type": "runCmd",
-        //     "content": "openhomegui %playername%",
-        //     "opMenu": false
-        // },
         {
             "name": "调节生存模式\n不调节生存你怎么开始玩？",
             "icon": "textures/ui/controller_glyph_color",
@@ -52,13 +44,6 @@ const MainGUI = {
             "icon": "textures/ui/icon_blackfriday",
             "type": "openGUI",
             "GUI": "ShopGUI",
-            "opMenu": false
-        },
-        {
-            "name": "氧气系统\n在这里购买呼吸装备，升级！",
-            "icon": "textures/ui/bubble",
-            "type": "openGUI",
-            "GUI": "OxygenGUI",
             "opMenu": false
         },
         {
@@ -144,15 +129,18 @@ export function Main(player) {
                     case "openGUI":
                         OpenGUI(player,buttons[response.selection].GUI)
                         break;
-                    //这里相当于一个自定义功能的实例
-                    case "goISLAND":
-                        if (GetScore("posX",player.nameTag) == 0 && GetScore("posY",player.nameTag) == 0 && GetScore("posZ",player.nameTag) == 0) {
-                            player.sendMessage(`§c 未找到相应的主岛数据！请在领取空岛后使用本功能！`,player.nameTag)
-                        } else {
-                            RunCmd(`tp @a[name=${player.nameTag}] ${GetScore("posX",player.nameTag)} ${GetScore("posY",player.nameTag)} ${GetScore("posZ",player.nameTag)}`)
-                            player.sendMessage(`§a 已经将您传送至主岛！`,player.nameTag)
-                        }
+                    default:
+                        player.sendMessage(`§c 未找到相应的功能！请联系管理员！`,player.nameTag);
                         break;
+                    //这里相当于一个自定义功能的实例
+                    //case "goISLAND":
+                        // if (GetScore("posX",player.nameTag) == 0 && GetScore("posY",player.nameTag) == 0 && GetScore("posZ",player.nameTag) == 0) {
+                        //     player.sendMessage(`§c 未找到相应的主岛数据！请在领取空岛后使用本功能！`,player.nameTag)
+                        // } else {
+                        //     RunCmd(`tp @a[name=${player.nameTag}] ${GetScore("posX",player.nameTag)} ${GetScore("posY",player.nameTag)} ${GetScore("posZ",player.nameTag)}`)
+                        //     player.sendMessage(`§a 已经将您传送至主岛！`,player.nameTag)
+                        // }
+                        // break;
                 }
             }
         } else {
@@ -186,9 +174,6 @@ function OpenGUI(player,GUINAME) {
             break;
         case "ShopGUI":
             ShopGUI.ShopMain(player)
-            break;
-        case "OxygenGUI":
-            OxygenGUI.OxygenMain(player)
             break;
         case "TpaGUI":
             TpaGUI.TpaMain(player)

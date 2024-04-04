@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <syncstream>
 #include <cstdlib>
-#include <cstdio> 
+#include <cstdio>
 
 #include <httplib.h>
 #include <rapidjson/document.h>
@@ -21,6 +21,7 @@
 
 #include "File_API.h"
 #include "Game_API.h"
+#include "QQBot_API.h"
 
 #ifdef _WIN32
 #define popen _popen
@@ -34,7 +35,7 @@ signed int main(signed int argc, char** argv) {
 	int PORT = 10086;
 	bool UseCmd = false;
 
-    std::cout << "\033]0;NIAHttpBOT V1.4.0\007";
+    std::cout << "\033]0;NIAHttpBOT V1.5.0\007";
 
 #ifdef WIN32
 	SetConsoleOutputCP(65001);
@@ -89,9 +90,11 @@ signed int main(signed int argc, char** argv) {
 	if (UseCmd)  XWARN("检测到执行DOS命令功能已启用，请注意服务器安全！");
 
 
-
+	//初始化服务器
 	httplib::Server svr;
-
+	//初始化客户端
+	//后续主要用于向QQ机器人发送消息
+	httplib::Client cli("http://127.0.0.1:10023");
 
     svr.Post("/GetConfig", [&par](const httplib::Request& req, httplib::Response& res){
 		rapidjson::Document req_json;
@@ -100,7 +103,7 @@ signed int main(signed int argc, char** argv) {
 			||!par.hasKey(req_json["Name"].GetString())) [[unlikely]] // Type: B->bool, I->int, C->char, S->string
 			return res.set_content("json data error", "text/plain");
 		switch(req_json["Type"].GetString()[0]) {
-			case 'B': 
+			case 'B':
 				if(!par.isBool("Name")) [[unlikely]] goto error;
 				res.set_content(par.getBool("Name")?"1":"0", "text/plain");
 				break;
@@ -155,6 +158,8 @@ signed int main(signed int argc, char** argv) {
 	init_game_API(svr);
 
 	init_file_API(svr);
+
+	init_qqbot_API(svr, cli);
 
 	svr.listen(IPAddress, PORT);
 
