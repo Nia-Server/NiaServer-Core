@@ -1,14 +1,14 @@
 # NIA Server v4.0--Bedrock Skyblock Server
 
 [![wakatime](https://wakatime.com/badge/user/a2d785d3-a26c-467b-9112-333ba2bee9e8/project/9ae0abd5-b1ad-4199-bd66-0fba1a96ac45.svg?style=for-the-badge)](https://wakatime.com/badge/user/a2d785d3-a26c-467b-9112-333ba2bee9e8/project/9ae0abd5-b1ad-4199-bd66-0fba1a96ac45)
-[![status](https://img.shields.io/github/actions/workflow/status/NIANIANKNIA/NiaServer-Core/main.yml?style=for-the-badge)](https://github.com/NIANIANKNIA/NiaServer-Core/actions)
-[![GitHub Release Date](https://img.shields.io/github/release-date/NIANIANKNIA/NiaServer-Core?style=for-the-badge)](https://github.com/NIANIANKNIA/NiaServer-Core/releases)
-[![Latest Release](https://img.shields.io/github/v/release/NIANIANKNIA/NiaServer-Core?style=for-the-badge)](https://github.com/NIANIANKNIA/NiaServer-Core/releases/latest)
-[![GitHub last commit](https://img.shields.io/github/last-commit/NIANIANKNIA/NiaServer-Core?style=for-the-badge)](https://github.com/NIANIANKNIA/NiaServer-Core/commits)
+[![status](https://img.shields.io/github/actions/workflow/status/Nia-Server/NiaServer-Core/main.yml?style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/actions)
+[![GitHub Release Date](https://img.shields.io/github/release-date/Nia-Server/NiaServer-Core?style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/releases)
+[![Latest Release](https://img.shields.io/github/v/release/Nia-Server/NiaServer-Core?style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/releases/latest)
+[![GitHub last commit](https://img.shields.io/github/last-commit/Nia-Server/NiaServer-Core?style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/commits)
 [![QQ GROUNP](https://img.shields.io/badge/QQ%20GROUNP-724360499-blue?style=for-the-badge)](https://jq.qq.com/?_wv=1027&k=uk57fVr0)
 [![website](https://img.shields.io/badge/website-docs.mcnia.top-blue?style=for-the-badge)](https://docs.mcnia.top)
 
-![NiaServer-Core](https://socialify.git.ci/NIANIANKNIA/NiaServer-Core/image?description=1&descriptionEditable=A%20BDS-based%20Minecraft%20server!&font=KoHo&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.com%2Flogo.png&name=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Light)
+![NiaServer-Core](https://socialify.git.ci/Nia-Server/NiaServer-Core/image?description=1&descriptionEditable=A%20BDS-based%20Minecraft%20server!&font=KoHo&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.com%2Flogo.png&name=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Light)
 
 **language: [简体中文](README.md) | English**
 
@@ -29,7 +29,7 @@ Though you may not use this addons right away on your local system without revis
 
 ## About the use of resources in the resource package
 
-> Just read this clause when you want to use the materials in the resource package. Use the source code in the behavior package to comply with the [Open Source Agreement](https://github.com/NIANIANKNIA/NiaServer-Core/blob/main/LICENSE ) without notifying us
+> Just read this clause when you want to use the materials in the resource package. Use the source code in the behavior package to comply with the [Open Source Agreement](https://github.com/Nia-Server/NiaServer-Core/blob/main/LICENSE ) without notifying us
 
 If you want to use the resources in the resource package (including but not limited to structures, textures and other resources), **please be sure to send an email to `server@mcnia.com` before use** to obtain the authorization to use the relevant textures (including but not limited to Not limited to **commercial or non-commercial** use by individuals, organizations, etc.) to avoid unnecessary trouble!
 
@@ -57,7 +57,7 @@ More functions are being gradually added...
 
 ## Instruction
 
-For more stable operation, we recommend you to go directly to the [release](https://github.com/NIANIANKNIA/NiaServer-Core/releases/latest) page to download the packaged resource package and behavior package
+For more stable operation, we recommend you to go directly to the [release](https://github.com/Nia-Server/NiaServer-Core/releases/latest) page to download the packaged resource package and behavior package
 
 Where `BP` stands for Behavior Package and `RP` stands for Resource Package
 
@@ -67,7 +67,7 @@ After completing the configuration, extract the behavior packs and resource pack
 
 ## Bug feedback&&suggestions!
 
-If you encounter problems, bugs, or have good suggestions in the use of the process can go to [issues](https://github.com/NIANIANKNIA/NiaServer-Core/issues) feedback, I will see the first time to reply!
+If you encounter problems, bugs, or have good suggestions in the use of the process can go to [issues](https://github.com/Nia-Server/NiaServer-Core/issues) feedback, I will see the first time to reply!
 
 ## Special thanks
 
@@ -114,4 +114,4 @@ You must accept the End User License Agreement (EULA) for Minecraft.
 - If you violate the **EULA**, any legal liability **is not the developer's responsibility**
 - **Developers are not responsible for you, and developers are not obligated to write code for you or be responsible for any consequences of your use**
 
-In addition, you are required to abide by the terms of the [`AGPL-3.0`](https://github.com/NIANIANKNIA/NiaServer-Core/blob/main/LICENSE) open source license for this project, and the relevant open source agreements used by all subprojects of this project
+In addition, you are required to abide by the terms of the [`AGPL-3.0`](https://github.com/Nia-Server/NiaServer-Core/blob/main/LICENSE) open source license for this project, and the relevant open source agreements used by all subprojects of this project

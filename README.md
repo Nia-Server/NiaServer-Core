@@ -1,20 +1,20 @@
 # NiaServer-Core
 
 [![wakatime](https://wakatime.com/badge/user/a2d785d3-a26c-467b-9112-333ba2bee9e8/project/9ae0abd5-b1ad-4199-bd66-0fba1a96ac45.svg?style=for-the-badge)](https://wakatime.com/@NIANIANKNIA)
-[![status](https://img.shields.io/github/actions/workflow/status/NIANIANKNIA/NiaServer-Core/main.yml?style=for-the-badge)](https://github.com/NIANIANKNIA/NiaServer-Core/actions)
-[![GitHub Release Date](https://img.shields.io/github/release-date-pre/NIANIANKNIA/NiaServer-Core?style=for-the-badge)](https://github.com/NIANIANKNIA/NiaServer-Core/releases)
-[![Latest Release](https://img.shields.io/github/v/release/NIANIANKNIA/NiaServer-Core?include_prereleases&style=for-the-badge)](https://github.com/NIANIANKNIA/NiaServer-Core/releases/latest)
-[![GitHub last commit](https://img.shields.io/github/last-commit/NIANIANKNIA/NiaServer-Core?style=for-the-badge)](https://github.com/NIANIANKNIA/NiaServer-Core/commits)
+[![status](https://img.shields.io/github/actions/workflow/status/Nia-Server/NiaServer-Core/main.yml?style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/actions)
+[![GitHub Release Date](https://img.shields.io/github/release-date-pre/Nia-Server/NiaServer-Core?style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/releases)
+[![Latest Release](https://img.shields.io/github/v/release/Nia-Server/NiaServer-Core?include_prereleases&style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/releases/latest)
+[![GitHub last commit](https://img.shields.io/github/last-commit/Nia-Server/NiaServer-Core?style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/commits)
 [![QQ GROUNP](https://img.shields.io/badge/QQ%20GROUNP-724360499-blue?style=for-the-badge)](https://jq.qq.com/?_wv=1027&k=uk57fVr0)
 [![website](https://img.shields.io/badge/website-docs.mcnia.com-blue?style=for-the-badge)](https://docs.mcnia.com)
 
-![NiaServer-Core](https://socialify.git.ci/NIANIANKNIA/NiaServer-Core/image?description=1&descriptionEditable=NIA%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%A0%B8%E5%BF%83%E7%B3%BB%E7%BB%9F&font=Source%20Code%20Pro&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.com%2Flogo.png&name=1&pattern=Floating%20Cogs&pulls=1&stargazers=1&theme=Auto)
+![NiaServer-Core](https://socialify.git.ci/Nia-Server/NiaServer-Core/image?description=1&descriptionEditable=NIA%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%A0%B8%E5%BF%83%E7%B3%BB%E7%BB%9F&font=Source%20Code%20Pro&forks=1&issues=1&logo=https%3A%2F%2Fdocs.mcnia.com%2Flogo.png&name=1&pattern=Floating%20Cogs&pulls=1&stargazers=1&theme=Auto)
 
 
 **语言: 简体中文 | [English](README-EN.md)**
 
 
-> 一般而言如果你想看到最新的开发进度，请前往[dev分支](https://github.com/NIANIANKNIA/NiaServer-Core/tree/dev)查看，但是由于我们的开发进度并不是很稳定，所以我们并不推荐您直接使用dev分支的代码!
+> 一般而言如果你想看到最新的开发进度，请前往[dev分支](https://github.com/Nia-Server/NiaServer-Core/tree/dev)查看，但是由于我们的开发进度并不是很稳定，所以我们并不推荐您直接使用dev分支的代码!
 
 ## 写在前面
 
@@ -32,7 +32,7 @@
 
 ## 关于资源包内资源使用说明
 
-> 只限于您要使用资源包内的素材时看一下这个条款即可，使用行为包内的源码遵守[开源协议](https://github.com/NIANIANKNIA/NiaServer-Core/blob/main/LICENSE)即可，无需通知我们
+> 只限于您要使用资源包内的素材时看一下这个条款即可，使用行为包内的源码遵守[开源协议](https://github.com/Nia-Server/NiaServer-Core/blob/main/LICENSE)即可，无需通知我们
 
 如果您要使用资源包内的资源（包括但不限于结构、贴图等资源），**请务必在使用前向`server@mcnia.com`发送邮件**，获得相关贴图的使用授权（包括但不限于个人、组织等**商业或非商业**用途），以避免不必要的麻烦！
 
@@ -88,7 +88,7 @@
 
 ## 使用说明
 
-为了更加稳定的运行，推荐您直接前往[release](https://github.com/NIANIANKNIA/NiaServer-Core/releases)页面下载打包好的资源包、行为包
+为了更加稳定的运行，推荐您直接前往[release](https://github.com/Nia-Server/NiaServer-Core/releases)页面下载打包好的资源包、行为包
 
 其中`BP`代表行为包，`RP`代表资源包
 
@@ -149,7 +149,7 @@
 
 ## Bug反馈/提建议
 
-如果您在使用过程中遇到了问题、bug，或者拥有好的建议您都可以前往[issues](https://github.com/NIANIANKNIA/NiaServer-Core/issues)反馈，我会在看到后第一时间回复！
+如果您在使用过程中遇到了问题、bug，或者拥有好的建议您都可以前往[issues](https://github.com/Nia-Server/NiaServer-Core/issues)反馈，我会在看到后第一时间回复！
 
 ## 特别鸣谢
 
@@ -198,7 +198,7 @@
 - 如果您违反了 **EULA**，任何法律责任都与开发者**无关**
 - **开发者不对您负责，开发者没有义务为你编写代码、为你使用造成的任何后果负责**
 
-另外，您需要遵守本项目的[`AGPL-3.0`](https://github.com/NIANIANKNIA/NiaServer-Core/blob/main/LICENSE)开源许可证条款, 以及本项目所有子项目使用的相关开源协议
+另外，您需要遵守本项目的[`AGPL-3.0`](https://github.com/Nia-Server/NiaServer-Core/blob/main/LICENSE)开源许可证条款, 以及本项目所有子项目使用的相关开源协议
 
 ## 关于商业化
 

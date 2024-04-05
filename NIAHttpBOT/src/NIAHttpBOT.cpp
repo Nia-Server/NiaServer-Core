@@ -31,9 +31,14 @@
 
 signed int main(signed int argc, char** argv) {
 
+	std::string LanguageFile = "";
 	std::string IPAddress = "127.0.0.1";
-	int PORT = 10086;
+	int ServerPort = 10086;
 	bool UseCmd = false;
+	bool UseQQBot = true;
+	int ClientPort = 10023;
+	std::string Locate = "/qqEvent";
+	std::string QQGroup = "123456789";
 
     std::cout << "\033]0;NIAHttpBOT V1.5.0\007";
 
@@ -70,21 +75,27 @@ signed int main(signed int argc, char** argv) {
 	//首先检查有没有配置文件
 	if (!par.parFromFile("./NIAHttpBOT.cfg")) {
 		std::ofstream outcfgFile("NIAHttpBOT.cfg");
-		outcfgFile << "# 基础配置:\n\nLanguageFile = \"\"\nIPAddress = \"127.0.0.1\"\nPort = 10086\n\n# 功能配置:\n\nUseCmd = false\n";
+		outcfgFile << "# 基础配置:\n\nLanguageFile = \"\"\nIPAddress = \"127.0.0.1\"\nServerPort = 10086\n\n# 功能配置:\n\nUseCmd = false\n\n# QQ机器人配置:\n\nUseQQBot = true\nClientPort = 10023\nLocate = \"/qqEvent\"\nQQGroup = \"123456789\"";
 		outcfgFile.close();
 		WARN("未找到配置文件，已自动初始化配置文件 NIAHttpBOT.cfg");
 	} else {
 		IPAddress = par.getString("IPAddress");
-		PORT = par.getInt("Port");
+		ServerPort = par.getInt("ServerPort");
 		UseCmd = par.getBool("UseCmd");
+		UseQQBot = par.getBool("UseQQBot");
+		ClientPort = par.getInt("ClientPort");
+		Locate = par.getString("Locate");
+		QQGroup = par.getString("QQGroup");
 		INFO("已成功读取配置文件！");
 		if(!par.hasKey("LanguageFile") || !par.getString("LanguageFile").size()) INFO("已使用默认语言");
 		else if(!i18n.loadFromFile(par.getString("LanguageFile"))) WARN("语言文件加载失败");
 		else XINFO("语言配置已加载成功");
 	}
 
-	INFO(X("NIAHttpBOT 已在 ") + IPAddress + ":" + std::to_string(PORT) + X(" 上成功启动!"));
-	XINFO("项目地址：https://github.com/NIANIANKNIA/NiaServer-Core/tree/main/NIAHttpBOT");
+	INFO(X("NiaHttp-BOT 监听服务器已在 ") + IPAddress + ":" + std::to_string(ServerPort) + X(" 上成功启动!"));
+	//如果配置文件中启用使用qq机器人，则输出qq机器人的监听端口
+	if (UseQQBot) INFO(X("NiaHttp-BOT 客户端已在 ") + IPAddress + ":" + std::to_string(ClientPort) + Locate + X(" 上成功启动!"));
+	XINFO("项目地址：https://github.com/Nia-Server/NiaServer-Core/tree/main/NIAHttpBOT");
 	XINFO("项目作者：@NIANIANKNIA @jiansyuan");
 	XINFO("在使用中遇到问题请前往项目下的 issue 反馈，如果觉得本项目不错不妨点个 star！");
 	if (UseCmd)  XWARN("检测到执行DOS命令功能已启用，请注意服务器安全！");
@@ -94,7 +105,7 @@ signed int main(signed int argc, char** argv) {
 	httplib::Server svr;
 	//初始化客户端
 	//后续主要用于向QQ机器人发送消息
-	httplib::Client cli("http://127.0.0.1:10023");
+	httplib::Client cli(IPAddress + ":" + std::to_string(ClientPort));
 
     svr.Post("/GetConfig", [&par](const httplib::Request& req, httplib::Response& res){
 		rapidjson::Document req_json;
@@ -159,9 +170,16 @@ signed int main(signed int argc, char** argv) {
 
 	init_file_API(svr);
 
-	init_qqbot_API(svr, cli);
+	if (UseQQBot) {
+		INFO("已启用QQ机器人相关功能！");
+		//输出QQ机器人监听的qq群号
+		INFO(X("QQ机器人监听的QQ群号为：") + QQGroup);
+		init_qqbot_API(svr, cli, Locate, QQGroup);
+	} else {
+		WARN("未启用QQ机器人相关功能！");
+	}
 
-	svr.listen(IPAddress, PORT);
+	svr.listen(IPAddress, ServerPort);
 
 	return 0;
 }
