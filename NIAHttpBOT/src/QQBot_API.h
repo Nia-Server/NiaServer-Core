@@ -13,7 +13,7 @@
 
 
 
-void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Locate, std::string &QQGroup) ;
+void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Locate, std::string &OwnerQQ, std::string &QQGroup) ;
 
 
 #endif

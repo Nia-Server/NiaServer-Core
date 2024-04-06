@@ -38,6 +38,7 @@ signed int main(signed int argc, char** argv) {
 	bool UseQQBot = true;
 	int ClientPort = 10023;
 	std::string Locate = "/qqEvent";
+	std::string OwnerQQ = "123456789";
 	std::string QQGroup = "123456789";
 
     std::cout << "\033]0;NIAHttpBOT V1.5.0\007";
@@ -75,7 +76,7 @@ signed int main(signed int argc, char** argv) {
 	//首先检查有没有配置文件
 	if (!par.parFromFile("./NIAHttpBOT.cfg")) {
 		std::ofstream outcfgFile("NIAHttpBOT.cfg");
-		outcfgFile << "# 基础配置:\n\nLanguageFile = \"\"\nIPAddress = \"127.0.0.1\"\nServerPort = 10086\n\n# 功能配置:\n\nUseCmd = false\n\n# QQ机器人配置:\n\nUseQQBot = true\nClientPort = 10023\nLocate = \"/qqEvent\"\nQQGroup = \"123456789\"";
+		outcfgFile << "# 基础配置:\n\nLanguageFile = \"\"\nIPAddress = \"127.0.0.1\"\nServerPort = 10086\n\n# 功能配置:\n\nUseCmd = false\n\n# QQ机器人配置:\n\nUseQQBot = true\nClientPort = 10023\nLocate = \"/qqEvent\"\nOwnerQQ = \"123456789\"\nQQGroup = \"123456789\"";
 		outcfgFile.close();
 		WARN("未找到配置文件，已自动初始化配置文件 NIAHttpBOT.cfg");
 	} else {
@@ -85,6 +86,7 @@ signed int main(signed int argc, char** argv) {
 		UseQQBot = par.getBool("UseQQBot");
 		ClientPort = par.getInt("ClientPort");
 		Locate = par.getString("Locate");
+		OwnerQQ = par.getString("OwnerQQ");
 		QQGroup = par.getString("QQGroup");
 		INFO("已成功读取配置文件！");
 		if(!par.hasKey("LanguageFile") || !par.getString("LanguageFile").size()) INFO("已使用默认语言");
@@ -174,7 +176,7 @@ signed int main(signed int argc, char** argv) {
 		INFO("已启用QQ机器人相关功能！");
 		//输出QQ机器人监听的qq群号
 		INFO(X("QQ机器人监听的QQ群号为：") + QQGroup);
-		init_qqbot_API(svr, cli, Locate, QQGroup);
+		init_qqbot_API(svr, cli, Locate, OwnerQQ, QQGroup);
 	} else {
 		WARN("未启用QQ机器人相关功能！");
 	}

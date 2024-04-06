@@ -1,10 +1,10 @@
 #include "QQBot_API.h"
 //使用https://github.com/botuniverse/onebot-11/
 
-void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Locate, std::string &QQGroup)
+void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Locate, std::string &OwnerQQ, std::string &QQGroup)
 {
 	//启动时向指定qq群发送消息
-	cli.Post("/send_group_msg", "{\"group_id\":"+ QQGroup +",\"message\":\"NiaServer-Bot已启动！\"}", "application/json");
+	cli.Post("/send_group_msg", "{\"group_id\":"+ QQGroup +",\"message\":\"NiaHttp-BOT已启动！\"}", "application/json");
 
 	//检查player_data.json文件是否存在,不存在则创建
 	std::ifstream player_data_file("player_data.json");
@@ -16,8 +16,49 @@ void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Loc
 		cli.Post("/send_group_msg", "{\"group_id\":"+ QQGroup +",\"message\":\"player_data.json文件不存在，已自动创建！\"}", "application/json");
 	}
 
+	//获取群列表
+	auto get_group_list_res = cli.Get("/get_group_list");
+	//检测群列表群号是否有指定的QQ群
+	rapidjson::Document groupList;
+	groupList.Parse(get_group_list_res->body.c_str());
+	bool isGroupExist = false;
+	for (int i = 0; i < groupList["data"].Size(); i++) {
+		if (groupList["data"][i]["group_id"].GetInt() == std::stoi(QQGroup)) {
+			isGroupExist = true;
+			break;
+		}
+	}
+	//如果指定的QQ群不存在
+	if (!isGroupExist) {
+		//向控制台输出
+		WARN(X("没有在机器人的群列表中找到指定的QQ群！"));
+	} else {
+		//指定的QQ群存在
+		//开始检测机器人在指定的QQ群中的权限
+		//获取机器人自己的QQ号
+		auto get_login_info_res = cli.Get("/get_login_info");
+		rapidjson::Document loginInfo;
+		loginInfo.Parse(get_login_info_res->body.c_str());
+		std::string selfQQ = std::to_string(loginInfo["data"]["user_id"].GetInt64());
+		//获取机器人在指定QQ群中的权限
+		auto get_group_member_info_res = cli.Post("/get_group_member_info", "{\"group_id\":" + QQGroup + ",\"user_id\":" + selfQQ + "}", "application/json");
+		rapidjson::Document groupMemberInfo;
+		groupMemberInfo.Parse(get_group_member_info_res->body.c_str());
+		std::string selfPermission = groupMemberInfo["data"]["role"].GetString();
+		//向控制台输出
+		INFO(X("NiaHttp-BOT 机器人在指定QQ群中的权限为：") << selfPermission);
+		//如果机器人在指定QQ群中的权限不是管理员或者群主
+		if (selfPermission != "admin" && selfPermission != "owner") {
+			//向控制台输出
+			WARN(X("机器人在指定QQ群中的权限不足,部分功能可能受限，如果要使用完整功能，请将机器人设置为管理员或者群主！"));
+			//向指定QQ群发送消息
+			cli.Post("/send_group_msg", "{\"group_id\":"+ QQGroup +",\"message\":\"机器人在指定QQ群中的权限不足,部分功能可能受限，如果要使用完整功能，请将机器人设置为管理员或者群主！\"}", "application/json");
+		}
+	}
+
 	//接收QQ消息事件
-	svr.Post(Locate, [&cli, &QQGroup](const httplib::Request& req, httplib::Response& res) {
+	svr.Post(Locate, [&cli, &OwnerQQ, &QQGroup](const httplib::Request& req, httplib::Response& res) {
+
 		INFO(X("NiaHttp-BOT 客户端接收的数据为 ") << req.body);
 		//解析字符串并创建一个json对象
 		rapidjson::Document qqEventData;
@@ -36,9 +77,11 @@ void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Loc
 			//解析sub_type字段
 			std::string sub_type = "";
 			sub_type = qqEventData["sub_type"].GetString();
+			//向控制台输出sub_type
+			INFO(X("NiaHttp-BOT sub_type为 ") << sub_type);
 
 			//如果是私聊消息
-			if (sub_type == "private") {
+			if (sub_type == "friend") {
 				//解析user_id字段
 				std::string user_id = "";
 				user_id = std::to_string(qqEventData["user_id"].GetInt64());
@@ -47,10 +90,14 @@ void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Loc
 			}
 
 			//如果是群消息
-			if (sub_type == "group") {
+			if (sub_type == "normal") {
 				//解析group_id字段
 				std::string group_id = "";
 				group_id = std::to_string(qqEventData["group_id"].GetInt());
+
+				//解析发送者的qq号
+				std::string sender_qq = "";
+				sender_qq = std::to_string(qqEventData["user_id"].GetInt64());
 
 				//判断group_id是否为指定的QQ群
 				if (group_id != QQGroup) {
@@ -89,6 +136,7 @@ void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Loc
 						helpMenu += "#封禁 @要封禁的人 <时间>: 封禁指定群成员游戏账号\\n";
 						helpMenu += "例：#封禁 @NIANIANKNIA 1d\\n";
 						helpMenu += "#解封 @要解封的人: 解封指定群成员账号\\n";
+						helpMenu += "#改权限 @要改权限的人 <权限>: 改变指定群成员的权限\\n";
 						helpMenu += "power by Nia-Http-Bot";
 						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"" + helpMenu + "\"}", "application/json");
 						return;
@@ -96,8 +144,6 @@ void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Loc
 
 					//赞我
 					if (command == "赞我") {
-						//获取发送者的qq号
-						std::string sender_qq = std::to_string(qqEventData["user_id"].GetInt64());
 						//发送好友赞
 						cli.Post("/send_like", "{\"user_id\":" + sender_qq + ",\"times\":10}", "application/json");
 						//向群聊发送消息
@@ -110,7 +156,7 @@ void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Loc
 						//判断指令执行者是否为管理员
 						std::string user_permission = "";
 						user_permission = qqEventData["sender"]["role"].GetString();
-						if (user_permission != "admin" && user_permission != "owner") {
+						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
 							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"您没有权限执行此操作！\"}", "application/json");
 							return ;
 						}
@@ -174,7 +220,7 @@ void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Loc
 						//禁言
 						cli.Post("/set_group_ban", "{\"group_id\":" + group_id + ",\"user_id\":" + band_qq + ",\"duration\":" + std::to_string(band_time_long) + "}", "application/json");
 						//向群聊发送消息
-						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"已成功禁言" + band_message + "，禁言时间为" + band_time + "\"}", "application/json");
+						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"已成功禁言 " + band_message + "，禁言时间为" + band_time + "\"}", "application/json");
 						return ;
 					}
 
@@ -183,7 +229,7 @@ void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Loc
 						//判断指令执行者是否为管理员
 						std::string user_permission = "";
 						user_permission = qqEventData["sender"]["role"].GetString();
-						if (user_permission != "admin" && user_permission != "owner") {
+						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
 							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"您没有权限执行此操作！\"}", "application/json");
 							return ;
 						}
@@ -234,9 +280,6 @@ void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Loc
 							return ;
 						}
 
-						// 获取发送者的qq号
-						std::string sender_qq = std::to_string(qqEventData["user_id"].GetInt64());
-
 						//读取player_data.json文件
 						std::ifstream players_data_file("player_data.json");
 						//文件读取失败
@@ -264,10 +307,10 @@ void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Loc
 							xbox.SetString(bind_message.c_str(), player_data.GetAllocator());
 							player_data.AddMember("xboxid", xbox, player_data.GetAllocator());
 
-							// 添加 "qqid" 键值对到 player_data 对象中
-							rapidjson::Value id(rapidjson::kStringType);
-							id.SetString(sender_qq.c_str(), player_data.GetAllocator());
-							player_data.AddMember("qqid", id, player_data.GetAllocator());
+							// 添加 "qq" 键值对到 player_data 对象中
+							rapidjson::Value qq(rapidjson::kStringType);
+							qq.SetString(sender_qq.c_str(), player_data.GetAllocator());
+							player_data.AddMember("qq", qq, player_data.GetAllocator());
 
 							// 添加 "status" 键值对到 player_data 对象中
 							rapidjson::Value status(rapidjson::kStringType);
@@ -319,7 +362,7 @@ void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Loc
 						//先判断指令执行者是否为管理员
 						std::string user_permission = "";
 						user_permission = qqEventData["sender"]["role"].GetString();
-						if (user_permission != "admin" && user_permission != "owner") {
+						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
 							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"您没有权限执行此操作！\"}", "application/json");
 							return ;
 						}
@@ -401,7 +444,7 @@ void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Loc
 						//先判断指令执行者是否为管理员
 						std::string user_permission = "";
 						user_permission = qqEventData["sender"]["role"].GetString();
-						if (user_permission != "admin" && user_permission != "owner") {
+						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
 							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"您没有权限执行此操作！\"}", "application/json");
 							return ;
 						}
@@ -507,7 +550,7 @@ void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Loc
 						//先判断指令执行者是否为管理员
 						std::string user_permission = "";
 						user_permission = qqEventData["sender"]["role"].GetString();
-						if (user_permission != "admin" && user_permission != "owner") {
+						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
 							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"您没有权限执行此操作！\"}", "application/json");
 							return ;
 						}
@@ -665,7 +708,7 @@ void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Loc
 						//先判断指令执行者是否为管理员
 						std::string user_permission = "";
 						user_permission = qqEventData["sender"]["role"].GetString();
-						if (user_permission != "admin" && user_permission != "owner") {
+						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
 							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"您没有权限执行此操作！\"}", "application/json");
 							return ;
 						}
@@ -755,6 +798,7 @@ void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Loc
 				return ;
 			}
 		}
+
 		//处理通知事件
 		if (post_type == "notice") {
 			//看看group_id，是否为指定的群聊
@@ -944,10 +988,12 @@ void init_qqbot_API(httplib::Server &svr, httplib::Client &cli, std::string &Loc
 			}
 			return ;
 		}
+
 		//处理请求事件
 		if (post_type == "request") {
 			return ;
 		}
+
 		//处理元事件
 		if (post_type == "meta_event") {
 			return ;
