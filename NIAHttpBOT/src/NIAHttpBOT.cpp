@@ -19,9 +19,10 @@
 #include "I18Nize.hpp"
 #include "Logger.hpp"
 
+//#include "QQBot_API.h"
+#include "QQBot.h"
 #include "File_API.h"
 #include "Game_API.h"
-#include "QQBot_API.h"
 
 #ifdef _WIN32
 #define popen _popen
@@ -109,6 +110,7 @@ signed int main(signed int argc, char** argv) {
 	//后续主要用于向QQ机器人发送消息
 	httplib::Client cli(IPAddress + ":" + std::to_string(ClientPort));
 
+
     svr.Post("/GetConfig", [&par](const httplib::Request& req, httplib::Response& res){
 		rapidjson::Document req_json;
 		req_json.Parse(req.body.c_str()), res.status = 400;
@@ -176,7 +178,7 @@ signed int main(signed int argc, char** argv) {
 		INFO("已启用QQ机器人相关功能！");
 		//输出QQ机器人监听的qq群号
 		INFO(X("QQ机器人监听的QQ群号为：") + QQGroup);
-		init_qqbot_API(svr, cli, Locate, OwnerQQ, QQGroup);
+		main_qqbot(svr, cli, Locate, OwnerQQ, QQGroup);
 	} else {
 		WARN("未启用QQ机器人相关功能！");
 	}
