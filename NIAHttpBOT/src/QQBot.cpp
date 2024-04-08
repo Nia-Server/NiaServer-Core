@@ -3,10 +3,6 @@
 
 void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate, std::string &OwnerQQ, std::string &QQGroup)
 {
-	//启动时向指定qq群发送消息
-	cli.Post("/send_group_msg", "{\"group_id\":"+ QQGroup +",\"message\":\"NiaHttp-BOT已启动！\"}", "application/json");
-
-	//bot.send_group_message(QQGroup, "NiaHttp-BOT已启动！", false);
 	//检查player_data.json文件是否存在,不存在则创建
 	std::ifstream player_data_file("player_data.json");
 	if (!player_data_file) {
@@ -78,8 +74,6 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 			//解析sub_type字段
 			std::string sub_type = "";
 			sub_type = qqEventData["sub_type"].GetString();
-			//向控制台输出sub_type
-			INFO(X("NiaHttp-BOT sub_type为 ") << sub_type);
 
 			//如果是私聊消息
 			if (sub_type == "friend") {
@@ -117,7 +111,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 					}
 
 					//帮助菜单
-					if (command == "帮助") {
+					if (command == "帮助" || command == "菜单") {
 						std::string helpMenu = "Nia-ServerBot菜单:\\n";
 						helpMenu += "使用方法: 在消息中以#开头，后跟指令和参数\\n";
 						helpMenu += "\\n";
@@ -153,7 +147,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 					}
 
 					//禁言
-					if (command == "禁言") {
+					if (command == "禁言" || command == "禁") {
 						//判断指令执行者是否为管理员
 						std::string user_permission = "";
 						user_permission = qqEventData["sender"]["role"].GetString();
@@ -226,7 +220,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 					}
 
 					//解除禁言
-					if (command == "解禁") {
+					if (command == "解禁" || command == "解") {
 						//判断指令执行者是否为管理员
 						std::string user_permission = "";
 						user_permission = qqEventData["sender"]["role"].GetString();
@@ -648,11 +642,11 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 								std::string role = players_data[search_qq.c_str()]["role"].GetString();
 								std::string money = players_data[search_qq.c_str()]["money"].GetString();
 								//向群聊发送类似“查询成功，Xboxid为：xxx，状态为：xxx，封禁时间为：xxx，权限为：xxx，金币为：xxx”
-								cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"查询成功，Xboxid为：" + xboxid + "，状态为：" + status + "，封禁时间为：" + ban_time + "，权限为：" + role + "，金币为：" + money + "\"}", "application/json");
+								cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"玩家信息查询成功！\\nXboxid为：" + xboxid + "\\n账号状态为：" + status + "\\n账号封禁解除时间为：" + ban_time + "\\n账号权限为：" + role + "\\n下线后金币收益为：" + money + "\"}", "application/json");
 								return ;
 							} else {
 								//向群聊发送消息“查询失败，未找到该QQ号！”
-								cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"查询失败，未找到该QQ号！\"}", "application/json");
+								cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"玩家信息查询失败！原因是玩家数据库暂时没有查询到相关数据！\"}", "application/json");
 								return ;
 							}
 							return ;
@@ -694,11 +688,11 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 							std::string role = players_data[search_qq.c_str()]["role"].GetString();
 							std::string money = players_data[search_qq.c_str()]["money"].GetString();
 							//向群聊发送类似“查询成功，Xboxid为：xxx，状态为：xxx，封禁时间为：xxx，权限为：xxx，金币为：xxx”
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"查询成功，Xboxid为：" + xboxid + "，状态为：" + status + "，封禁时间为：" + ban_time + "，权限为：" + role + "，金币为：" + money + "\"}", "application/json");
+							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"玩家信息查询成功！\\nXboxid为：" + xboxid + "\\n账号状态为：" + status + "\\n账号封禁解除时间为：" + ban_time + "\\n账号权限为：" + role + "\\n下线后金币收益为：" + money + "\"}", "application/json");
 							return ;
 						} else {
 							//向群聊发送消息“查询失败，未找到该QQ号！”
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"查询失败，未找到该QQ号！\"}", "application/json");
+							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"玩家信息查询失败！原因是玩家数据库暂时没有查询到相关数据！\"}", "application/json");
 							return ;
 						}
 					}

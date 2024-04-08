@@ -7,7 +7,6 @@
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/ostreamwrapper.h>
 #include <rapidjson/istreamwrapper.h>
-//#include "QQBot_API.h"
 
 #include "I18Nize.hpp"
 #include "Logger.hpp"

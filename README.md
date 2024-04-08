@@ -64,7 +64,7 @@
 
 ## 关于NIAHttpBOT
 
-新版机器人基于c++制作（特别感谢[**@jiansyuan**](https://github.com/jiansyuan)），使用HTTP实现对文件的一系列操作，具体使用示例，请前往[NIA服务器文档站](https://docs.mcnia.com/zh-CN/develop/Http-Bot.html)查看使用说明！
+新版机器人基于c++制作（特别感谢[**@jiansyuan**](https://github.com/jiansyuan)），使用HTTP实现对文件的一系列操作，具体使用示例，请前往[NIA服务器文档站](https://docs.mcnia.com/dev/Http-Bot.html)查看使用说明！
 
 **NIAHttpBOT**可以在windows/Linux环境下运行，windows环境下运行的exe文件可以前往release自行下载，在Linux环境下运行暂时需要自行编译后使用！
 

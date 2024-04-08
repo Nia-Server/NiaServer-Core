@@ -19,7 +19,6 @@
 #include "I18Nize.hpp"
 #include "Logger.hpp"
 
-//#include "QQBot_API.h"
 #include "QQBot.h"
 #include "File_API.h"
 #include "Game_API.h"
@@ -178,7 +177,17 @@ signed int main(signed int argc, char** argv) {
 		INFO("已启用QQ机器人相关功能！");
 		//输出QQ机器人监听的qq群号
 		INFO(X("QQ机器人监听的QQ群号为：") + QQGroup);
-		main_qqbot(svr, cli, Locate, OwnerQQ, QQGroup);
+		//尝试与QQ机器人建立连接
+		auto get_status_res = cli.Get("/get_status");
+		if (get_status_res && get_status_res->status == 200) {
+			INFO("已成功连接到QQ机器人！");
+			main_qqbot(svr, cli, Locate, OwnerQQ, QQGroup);
+			//发送指定群组消息
+			cli.Post("/send_group_msg", "{\"group_id\":"+ QQGroup +",\"message\":\"NiaHttp-BOT已启动！\"}", "application/json");
+		} else {
+			WARN("QQ机器人连接失败！请检查QQ机器人是否已启动&&配置是否正确！");
+			WARN("如需更多帮助请前往 https://docs.mcnia.com/dev/Http-Bot.html 查看！");
+		}
 	} else {
 		WARN("未启用QQ机器人相关功能！");
 	}
