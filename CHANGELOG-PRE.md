@@ -1,6 +1,6 @@
-# v1.5.0-pre-1 更新日志
+# v1.5.0-pre-2 更新日志
 
-[![BDS VERSION](https://img.shields.io/badge/BDS-1.20.51.01-green?style=for-the-badge&logo=appveyor)](https://www.minecraft.net/en-us/download/server/bedrock)
+[![BDS VERSION](https://img.shields.io/badge/BDS-1.20.61.01-green?style=for-the-badge&logo=appveyor)](https://www.minecraft.net/en-us/download/server/bedrock)
 
 
 > **预发布版本提醒**：这是一个**预览版本**，可能存在一些bug，仅供测试，请勿在正式生产环境使用本版本！
@@ -10,23 +10,19 @@
 
 ## 新增
 
-1.圈地系统新增传送点增加功能
+1.基于[LLoneBOT](https://github.com/LLOneBot/LLOneBot)使用[onebot-11](https://github.com/botuniverse/onebot-11/)为NIAHttpBOT&&Nia-Server-Core新增部分QQ机器人功能
 
-2.服务器部分物品&&方块
+2.NIAHttpBOT增加QQ机器人相关配置文件
 
-3.圈地系统新增配置项`MAX_LAND_NUM`、`MONEY_SCOREBOARD_DISPLAY_NAME`
+3.NIAHttpBOT增加主人QQ相关功能
 
-4.基于[LLoneBOT](https://github.com/LLOneBot/LLOneBot)使用[onebot-11](https://github.com/botuniverse/onebot-11/)为NIAHttpBOT&&Nia-Server-Core新增部分QQ机器人功能
-
-## 优化
-
-1.为了规避UTF-8编码问题，控制台输出所有的信息现在全部都是英文
-
-2.圈地系统LandUUID生成逻辑&&领地转移逻辑
+4.NIAHttpBOT增加QQ权限检测
 
 ## 修复
 
-圈地系统管理在使用快捷传送时，部分情况下无法传送到指定领地的问题
+1.NIAHttpBOT收到私聊消息时崩溃
+
+2.在QQ客户端没有开启的情况下，开始NiaHttp-BOT导致的报错
 
 
 
