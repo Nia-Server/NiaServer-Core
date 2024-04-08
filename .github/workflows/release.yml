@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: NIAHttpBOT
-          path: ./NIAhttpBOT/NIAHttpBOT
+          path: ./NIAHttpBOT/NIAHttpBOT
 
   zip:
     runs-on: ubuntu-latest

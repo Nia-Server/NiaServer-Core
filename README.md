@@ -39,13 +39,8 @@
 ## 开发计划
 
 > 由于NIA服务器开发计划（V4->V4.5）有所变动，玩法机制将有大范围变动（包括但不限于玩法、机制等）
-> 所以我们计划分几个版本分布上线玩法、机制，具体如下：
 
-- [x] v1.4.0（2023-10） 上线基础玩法（包括但不限于圈地系统、玩家交易市场等）
-- [ ] v1.5.0（2023-11-因学业延期发布） 上线游戏设定所用到的所有方块，物品等，并完成相应材质包制作
-- [ ] v1.6.0（2023-12-因学业延期发布） 上线七大空岛生成逻辑，完善整体玩法机制
-
-**注意：在完成上述开发前，addons版本号并不一定会随mc版本发布！具体请以上线为准！**
+暂未公布，敬请期待！
 
 ## Addons功能&&特性
 
@@ -66,7 +61,7 @@
 
 新版机器人基于c++制作（特别感谢[**@jiansyuan**](https://github.com/jiansyuan)），使用HTTP实现对文件的一系列操作，具体使用示例，请前往[NIA服务器文档站](https://docs.mcnia.com/dev/Http-Bot.html)查看使用说明！
 
-**NIAHttpBOT**可以在windows/Linux环境下运行，windows环境下运行的exe文件可以前往release自行下载，在Linux环境下运行暂时需要自行编译后使用！
+**NIAHttpBOT**可以在windows/Linux环境下运行，windows环境下请下载**NIAHttpBOT.exe**,双击**NIAHttpBOT.exe**即可运行；Linux环境下请下载**NIAHttpBOT**然后使用`./NIAHttpBOT`命令运行即可！
 
 为了本Addons更好的发展，自**v1.4.0**开始，部分功能将依赖**NIAHttpBOT**，目前为止以下功能依赖于**NIAHttpBOT**：
 
