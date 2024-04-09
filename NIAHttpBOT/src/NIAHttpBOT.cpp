@@ -169,9 +169,6 @@ signed int main(signed int argc, char** argv) {
 		res.set_content(cmdres, "text/plain"), res.status = excd; // exitCode
 	});
 
-	init_game_API(svr);
-
-	init_file_API(svr);
 
 	if (UseQQBot) {
 		INFO("已启用QQ机器人相关功能！");
@@ -191,6 +188,10 @@ signed int main(signed int argc, char** argv) {
 	} else {
 		WARN("未启用QQ机器人相关功能！");
 	}
+
+	init_game_API(svr);
+
+	init_file_API(svr);
 
 	svr.listen(IPAddress, ServerPort);
 

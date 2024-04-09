@@ -1,8 +1,11 @@
 #include "QQBot.h"
 //使用https://github.com/botuniverse/onebot-11/
 
+QQBot qqbot("127.0.0.1", 10023);
+
 void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate, std::string &OwnerQQ, std::string &QQGroup)
 {
+
 	//检查player_data.json文件是否存在,不存在则创建
 	std::ifstream player_data_file("player_data.json");
 	if (!player_data_file) {
@@ -10,7 +13,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 		player_data_file << "{}";
 		player_data_file.close();
 		//向指定qq群发送消息
-		cli.Post("/send_group_msg", "{\"group_id\":"+ QQGroup +",\"message\":\"player_data.json文件不存在，已自动创建！\"}", "application/json");
+		qqbot.send_group_message(QQGroup, "player_data.json文件不存在，已自动创建！");
 	}
 
 	//获取群列表
@@ -49,7 +52,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 			//向控制台输出
 			WARN(X("机器人在指定QQ群中的权限不足,部分功能可能受限，如果要使用完整功能，请将机器人设置为管理员或者群主！"));
 			//向指定QQ群发送消息
-			cli.Post("/send_group_msg", "{\"group_id\":"+ QQGroup +",\"message\":\"机器人在指定QQ群中的权限不足,部分功能可能受限，如果要使用完整功能，请将机器人设置为管理员或者群主！\"}", "application/json");
+			qqbot.send_group_message(QQGroup, "机器人在指定QQ群中的权限不足,部分功能可能受限，如果要使用完整功能，请将机器人设置为管理员或者群主！");
 		}
 	}
 
@@ -133,16 +136,16 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						helpMenu += "#解封 @要解封的人: 解封指定群成员账号\\n";
 						helpMenu += "#改权限 @要改权限的人 <权限>: 改变指定群成员的权限\\n";
 						helpMenu += "power by Nia-Http-Bot";
-						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"" + helpMenu + "\"}", "application/json");
+						qqbot.send_group_message(group_id, helpMenu);
 						return;
 					}
 
 					//赞我
 					if (command == "赞我") {
 						//发送好友赞
-						cli.Post("/send_like", "{\"user_id\":" + sender_qq + ",\"times\":10}", "application/json");
+						qqbot.send_like(sender_qq, 10);
 						//向群聊发送消息
-						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"已经给你点了十个赞哦！注意查收！\\n(一天只能一次，重复点赞无效！)\"}", "application/json");
+						qqbot.send_group_message(group_id, "已经给你点了十个赞哦！注意查收！\\n(一天只能一次，重复点赞无效！)");
 						return;
 					}
 
@@ -152,7 +155,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						std::string user_permission = "";
 						user_permission = qqEventData["sender"]["role"].GetString();
 						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"您没有权限执行此操作！\"}", "application/json");
+							qqbot.send_group_message(group_id, "您没有权限执行此操作！");
 							return ;
 						}
 						//获取禁言字段
@@ -172,7 +175,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						}
 						//判断band_message和band_time是否为空
 						if (band_message == "" || band_time == "") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"禁言指令格式错误，禁言格式为:#禁言 @要禁言的人 时间\"}", "application/json");
+							qqbot.send_group_message(group_id, "禁言指令格式错误，禁言格式为:#禁言 @要禁言的人 时间");
 							return ;
 						}
 						//从类似[CQ:at,qq=3374574180]中获取band_qq
@@ -186,7 +189,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						}
 						//判断band_qq是否为空
 						if (band_qq == "") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"禁言指令格式错误，禁言格式为:#禁言 @要禁言的人 时间\"}", "application/json");
+							qqbot.send_group_message(group_id, "禁言指令格式错误，禁言格式为:#禁言 @要禁言的人 时间");
 							return ;
 						}
 						//解析band_time，将时间转换为秒,用长整型
@@ -199,23 +202,23 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						} else if (band_time.find("d") != std::string::npos) {
 							band_time_long = std::stoll(band_time.substr(0, band_time.size() - 1)) * 60 * 60 * 24;
 						} else {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"禁言时间格式错误，时间格式要以min/h/d结尾\"}", "application/json");
+							qqbot.send_group_message(group_id, "禁言时间格式错误，时间格式要以min/h/d结尾");
 							return ;
 						}
 						//判断禁言时间是否超过30天
 						if (band_time_long > 60 * 60 * 24 * 30) {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"禁言时间不能超过30天！\"}", "application/json");
+							qqbot.send_group_message(group_id, "禁言时间不能超过30天！");
 							return ;
 						}
 						//判断禁言时间是否小于1分钟
 						if (band_time_long < 60) {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"禁言时间不能小于1分钟！\"}", "application/json");
+							qqbot.send_group_message(group_id, "禁言时间不能小于1分钟！");
 							return ;
 						}
 						//禁言
-						cli.Post("/set_group_ban", "{\"group_id\":" + group_id + ",\"user_id\":" + band_qq + ",\"duration\":" + std::to_string(band_time_long) + "}", "application/json");
+						qqbot.set_group_ban(group_id, band_qq, band_time_long);
 						//向群聊发送消息
-						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"已成功禁言 " + band_message + "，禁言时间为" + band_time + "\"}", "application/json");
+						qqbot.send_group_message(group_id, "已成功禁言 " + band_message + "，禁言时间为" + band_time);
 						return ;
 					}
 
@@ -225,7 +228,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						std::string user_permission = "";
 						user_permission = qqEventData["sender"]["role"].GetString();
 						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"您没有权限执行此操作！\"}", "application/json");
+							qqbot.send_group_message(group_id, "您没有权限执行此操作！");
 							return ;
 						}
 						//获取解禁字段
@@ -236,7 +239,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						}
 						//判断unband_message是否为空
 						if (unband_message == "") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"解禁指令格式错误，解禁格式为:#解 @要解禁的人\"}", "application/json");
+							qqbot.send_group_message(group_id, "解禁指令格式错误，解禁格式为:#解 @要解禁的人");
 							return ;
 						}
 						//从类似[CQ:at,qq=3374574180]中获取unband_qq
@@ -250,13 +253,13 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						}
 						//判断unband_qq是否为空
 						if (unband_qq == "") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"解禁指令格式错误，解禁格式为:#解 @要解禁的人\"}", "application/json");
+							qqbot.send_group_message(group_id, "解禁指令格式错误，解禁格式为:#解 @要解禁的人");
 							return ;
 						}
 						//解禁
-						cli.Post("/set_group_ban", "{\"group_id\":" + group_id + ",\"user_id\":" + unband_qq + ",\"duration\":0}", "application/json");
+						qqbot.set_group_ban(group_id, unband_qq, 0);
 						//向群聊发送消息
-						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"已成功解禁" + unband_message + "\"}", "application/json");
+						qqbot.send_group_message(group_id, "已成功解禁 " + unband_message);
 						return ;
 					}
 
@@ -271,7 +274,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						}
 						//判断bind_message是否为空
 						if (bind_message == "") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"绑定指令格式错误，绑定格式为:#绑定 XboxID\"}", "application/json");
+							qqbot.send_group_message(group_id, "绑定指令格式错误，绑定格式为:#绑定 XboxID");
 							return ;
 						}
 
@@ -279,7 +282,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						std::ifstream players_data_file("player_data.json");
 						//文件读取失败
 						if (!players_data_file) {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"player_data.json文件读取失败！\"}", "application/json");
+							qqbot.send_group_message(group_id, "player_data.json文件读取失败！");
 							return ;
 						}
 						//文件打开成功，读取json文件内容，并创建一个json对象
@@ -289,7 +292,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						//检查json文件中是否存在sender_qq
 						if (players_data.HasMember(sender_qq.c_str())) {
 							//向群聊发送消息“您已绑定Xboxid XXX，如需改绑请联系在线管理员！”
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"您已绑定Xboxid " + players_data[sender_qq.c_str()]["xboxid"].GetString() + "，如需改绑请联系在线管理员！\"}", "application/json");
+							qqbot.send_group_message(group_id, "您已绑定Xboxid " + std::string(players_data[sender_qq.c_str()]["xboxid"].GetString()) + "，如需改绑请联系在线管理员！");
 							return ;
 						} else {
 							//向player_data.json文件中添加形如"qq号":{"xboxid":"XBoxid"}的键值对，并写入文件
@@ -344,7 +347,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 							players_data.Accept(writer);
 							players_data_file.close();
 							//向群聊发送类似“绑定Xboxid成功,绑定的Xboxid为：xxx，如需改绑请联系在线管理员！”
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"绑定Xboxid成功,绑定的Xboxid为：" + bind_message + "，如需改绑请联系在线管理员！\"}", "application/json");
+							qqbot.send_group_message(group_id, "绑定Xboxid成功,绑定的Xboxid为：" + bind_message + "，如需改绑请联系在线管理员！");
 							return ;
 						}
 
@@ -358,7 +361,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						std::string user_permission = "";
 						user_permission = qqEventData["sender"]["role"].GetString();
 						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"您没有权限执行此操作！\"}", "application/json");
+							qqbot.send_group_message(group_id, "您没有权限执行此操作！");
 							return ;
 						}
 						//获取改绑字段
@@ -369,7 +372,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						}
 						//判断rebind_message是否为空
 						if (rebind_message == "") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"改绑指令格式错误，改绑格式为:#改绑 @要改绑的人 XboxID\"}", "application/json");
+							qqbot.send_group_message(group_id, "改绑指令格式错误，改绑格式为:#改绑 @要改绑的人 XboxID");
 							return ;
 						}
 						//从类似[CQ:at,qq=3374574180]中获取rebind_qq
@@ -386,7 +389,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						}
 						//判断rebind_qq是否为空
 						if (rebind_qq == "") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"改绑指令格式错误，改绑格式为:#改绑 @要改绑的人 XboxID\"}", "application/json");
+							qqbot.send_group_message(group_id, "改绑指令格式错误，改绑格式为:#改绑 @要改绑的人 XboxID");
 							return ;
 						}
 						//获取新的XboxID
@@ -397,14 +400,14 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						}
 						//判断new_xboxid是否为空
 						if (new_xboxid == "") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"改绑指令格式错误，改绑格式为:#改绑 @要改绑的人 XboxID\"}", "application/json");
+							qqbot.send_group_message(group_id, "改绑指令格式错误，改绑格式为:#改绑 @要改绑的人 XboxID");
 							return ;
 						}
 						//读取player_data.json文件
 						std::ifstream players_data_file("player_data.json");
 						//文件读取失败
 						if (!players_data_file) {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"player_data.json文件读取失败！\"}", "application/json");
+							qqbot.send_group_message(group_id, "player_data.json文件读取失败！");
 							return ;
 						}
 						//文件打开成功，读取json文件内容，先检查json文件中是否存在rebind_qq
@@ -422,11 +425,11 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 							players_data.Accept(writer);
 							players_data_file.close();
 							//向群聊发送类似“改绑Xboxid成功,改绑的Xboxid为：xxx”
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"改绑Xboxid成功,改绑的Xboxid为：" + new_xboxid + "\"}", "application/json");
+							qqbot.send_group_message(group_id, "改绑Xboxid成功,改绑的Xboxid为：" + new_xboxid);
 							return ;
 						} else {
 							//向群聊发送消息“改绑失败，未找到该QQ号！”
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"改绑失败，未找到该QQ号！\"}", "application/json");
+							qqbot.send_group_message(group_id, "改绑失败，未在玩家数据库中找到该QQ号！");
 							return ;
 						}
 						return ;
@@ -440,7 +443,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						std::string user_permission = "";
 						user_permission = qqEventData["sender"]["role"].GetString();
 						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"您没有权限执行此操作！\"}", "application/json");
+							qqbot.send_group_message(group_id, "您没有权限执行此操作！");
 							return ;
 						}
 						//获取封禁字段
@@ -451,7 +454,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						}
 						//判断ban_message是否为空
 						if (ban_message == "") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"封禁指令格式错误，封禁格式为:#封禁 @要封禁的人 时间\"}", "application/json");
+							qqbot.send_group_message(group_id, "封禁指令格式错误，封禁格式为:#封禁 @要封禁的人 时间");
 							return ;
 						}
 						//从类似[CQ:at,qq=3374574180]中获取ban_qq
@@ -468,7 +471,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						}
 						//判断ban_qq是否为空
 						if (ban_qq == "") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"封禁指令格式错误，封禁格式为:#封禁 @要封禁的人 时间\"}", "application/json");
+							qqbot.send_group_message(group_id, "封禁指令格式错误，封禁格式为:#封禁 @要封禁的人 时间");
 							return ;
 						}
 						//获取封禁时间
@@ -479,7 +482,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						}
 						//判断ban_time是否为空
 						if (ban_time == "") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"封禁指令格式错误，封禁格式为:#封禁 @要封禁的人 时间\"}", "application/json");
+							qqbot.send_group_message(group_id, "封禁指令格式错误，封禁格式为:#封禁 @要封禁的人 时间");
 							return ;
 						}
 						//解析ban_time，将时间转换为秒,用长整型
@@ -492,14 +495,14 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						} else if (ban_time.find("d") != std::string::npos) {
 							ban_time_long = std::stoll(ban_time.substr(0, ban_time.size() - 1)) * 60 * 60 * 24;
 						} else {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"封禁时间格式错误，时间格式要以min/h/d结尾\"}", "application/json");
+							qqbot.send_group_message(group_id, "封禁时间格式错误，时间格式要以min/h/d结尾");
 							return ;
 						}
 						//读取player_data.json文件
 						std::ifstream players_data_file("player_data.json");
 						//文件读取失败
 						if (!players_data_file) {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"player_data.json文件读取失败！\"}", "application/json");
+							qqbot.send_group_message(group_id, "player_data.json文件读取失败！");
 							return ;
 						}
 						//文件打开成功，读取json文件内容，先检查json文件中是否存在ban_qq
@@ -528,11 +531,11 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 							players_data.Accept(writer);
 							players_data_file.close();
 							//向群聊发送类似“封禁成功,封禁时间为：xxx”
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"封禁成功,封禁解除时间为：" + ban_time_str_ban + "\"}", "application/json");
+							qqbot.send_group_message(group_id, "封禁成功,封禁解除时间为：" + std::string(ban_time_str_ban));
 							return ;
 						} else {
 							//向群聊发送消息“封禁失败，未找到该QQ号！”
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"封禁失败，未找到该QQ号！\"}", "application/json");
+							qqbot.send_group_message(group_id, "封禁失败，未在玩家数据库中找到该QQ号！");
 							return ;
 						}
 						return ;
@@ -546,7 +549,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						std::string user_permission = "";
 						user_permission = qqEventData["sender"]["role"].GetString();
 						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"您没有权限执行此操作！\"}", "application/json");
+							qqbot.send_group_message(group_id, "您没有权限执行此操作！");
 							return ;
 						}
 						//获取解封字段
@@ -557,7 +560,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						}
 						//判断unban_message是否为空
 						if (unban_message == "") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"解封指令格式错误，解封格式为:#解封 @要解封的人\"}", "application/json");
+							qqbot.send_group_message(group_id, "解封指令格式错误，解封格式为:#解封 @要解封的人");
 							return ;
 						}
 						//从类似[CQ:at,qq=3374574180]中获取unban_qq
@@ -574,14 +577,14 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						}
 						//判断unban_qq是否为空
 						if (unban_qq == "") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"解封指令格式错误，解封格式为:#解封 @要解封的人\"}", "application/json");
+							qqbot.send_group_message(group_id, "解封指令格式错误，解封格式为:#解封 @要解封的人");
 							return ;
 						}
 						//读取player_data.json文件
 						std::ifstream players_data_file("player_data.json");
 						//文件读取失败
 						if (!players_data_file) {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"player_data.json文件读取失败！\"}", "application/json");
+							qqbot.send_group_message(group_id, "player_data.json文件读取失败！");
 							return ;
 						}
 						//文件打开成功，读取json文件内容，先检查json文件中是否存在unban_qq
@@ -598,12 +601,12 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 							writer.SetIndent(' ', 4); // 设置缩进为4个空格
 							players_data.Accept(writer);
 							players_data_file.close();
-							//向群聊发送类似“解封成功”
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"解封成功\"}", "application/json");
+							//向群聊发送消息“目标玩家解封成功”
+							qqbot.send_group_message(group_id, "目标玩家解封成功！");
 							return ;
 						} else {
 							//向群聊发送消息“解封失败，未找到该QQ号！”
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"解封失败，未找到该QQ号！\"}", "application/json");
+							qqbot.send_group_message(group_id, "解封失败，未在玩家数据库中找到该QQ号！");
 							return ;
 						}
 						return ;
@@ -627,7 +630,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 							std::ifstream players_data_file("player_data.json");
 							//文件读取失败
 							if (!players_data_file) {
-								cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"player_data.json文件读取失败！\"}", "application/json");
+								qqbot.send_group_message(group_id, "player_data.json文件读取失败！");
 								return ;
 							}
 							//文件打开成功，读取json文件内容，先检查json文件中是否存在search_qq
@@ -642,11 +645,11 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 								std::string role = players_data[search_qq.c_str()]["role"].GetString();
 								std::string money = players_data[search_qq.c_str()]["money"].GetString();
 								//向群聊发送类似“查询成功，Xboxid为：xxx，状态为：xxx，封禁时间为：xxx，权限为：xxx，金币为：xxx”
-								cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"玩家信息查询成功！\\nXboxid为：" + xboxid + "\\n账号状态为：" + status + "\\n账号封禁解除时间为：" + ban_time + "\\n账号权限为：" + role + "\\n下线后金币收益为：" + money + "\"}", "application/json");
+								qqbot.send_group_message(group_id, "玩家信息查询成功！\\nXboxid为：" + xboxid + "\\n账号状态为：" + status + "\\n账号封禁解除时间为：" + ban_time + "\\n账号权限为：" + role + "\\n下线后金币收益为：" + money);
 								return ;
 							} else {
 								//向群聊发送消息“查询失败，未找到该QQ号！”
-								cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"玩家信息查询失败！原因是玩家数据库暂时没有查询到相关数据！\"}", "application/json");
+								qqbot.send_group_message(group_id, "玩家信息查询失败！原因是玩家数据库暂时没有查询到相关数据！");
 								return ;
 							}
 							return ;
@@ -666,14 +669,15 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						//判断search_qq是否为空
 						if (search_qq == "") {
 							//向群聊发送消息“查询指令格式错误，查询格式为:#查 @要查询的人”
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"查询指令格式错误，查询格式为:#查 @要查询的人\"}", "application/json");
+							qqbot.send_group_message(group_id, "查询指令格式错误，查询格式为:#查 @要查询的人");
 							return ;
 						}
 						//读取player_data.json文件
 						std::ifstream players_data_file("player_data.json");
 						//文件读取失败
 						if (!players_data_file) {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"player_data.json文件读取失败！\"}", "application/json");
+							//向群聊发送消息“player_data.json文件读取失败！”
+							qqbot.send_group_message(group_id, "player_data.json文件读取失败！");
 							return ;
 						}
 						//文件打开成功，读取json文件内容，先检查json文件中是否存在search_qq
@@ -688,11 +692,11 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 							std::string role = players_data[search_qq.c_str()]["role"].GetString();
 							std::string money = players_data[search_qq.c_str()]["money"].GetString();
 							//向群聊发送类似“查询成功，Xboxid为：xxx，状态为：xxx，封禁时间为：xxx，权限为：xxx，金币为：xxx”
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"玩家信息查询成功！\\nXboxid为：" + xboxid + "\\n账号状态为：" + status + "\\n账号封禁解除时间为：" + ban_time + "\\n账号权限为：" + role + "\\n下线后金币收益为：" + money + "\"}", "application/json");
+							qqbot.send_group_message(group_id, "玩家信息查询成功！\\nXboxid为：" + xboxid + "\\n账号状态为：" + status + "\\n账号封禁解除时间为：" + ban_time + "\\n账号权限为：" + role + "\\n下线后金币收益为：" + money);
 							return ;
 						} else {
 							//向群聊发送消息“查询失败，未找到该QQ号！”
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"玩家信息查询失败！原因是玩家数据库暂时没有查询到相关数据！\"}", "application/json");
+							qqbot.send_group_message(group_id, "玩家信息查询失败！原因是玩家数据库暂时没有查询到相关数据！");
 							return ;
 						}
 					}
@@ -704,7 +708,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						std::string user_permission = "";
 						user_permission = qqEventData["sender"]["role"].GetString();
 						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"您没有权限执行此操作！\"}", "application/json");
+							qqbot.send_group_message(group_id, "您没有权限执行此操作！");
 							return ;
 						}
 						//获取改权限字段
@@ -715,7 +719,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						}
 						//判断change_permission_message是否为空
 						if (change_permission_message == "") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"改权限指令格式错误，改权限格式为:#改权限 @要改权限的人 权限\"}", "application/json");
+							qqbot.send_group_message(group_id, "改权限指令格式错误，改权限格式为:#改权限 @要改权限的人 权限");
 							return ;
 						}
 						//从类似[CQ:at,qq=3374574180]中获取change_permission_qq
@@ -732,7 +736,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						}
 						//判断change_permission_qq是否为空
 						if (change_permission_qq == "") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"改权限指令格式错误，改权限格式为:#改权限 @要改权限的人 权限\"}", "application/json");
+							qqbot.send_group_message(group_id, "改权限指令格式错误，改权限格式为:#改权限 @要改权限的人 权限");
 							return ;
 						}
 						//获取新的权限
@@ -743,19 +747,19 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						}
 						//判断new_permission是否为空
 						if (new_permission == "") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"改权限指令格式错误，改权限格式为:#改权限 @要改权限的人 权限\"}", "application/json");
+							qqbot.send_group_message(group_id, "改权限指令格式错误，改权限格式为:#改权限 @要改权限的人 权限");
 							return ;
 						}
 						//判断new_permission是否为admin、member
 						if (new_permission != "admin" && new_permission != "member") {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"改权限失败，权限只能为admin或member！\"}", "application/json");
+							qqbot.send_group_message(group_id, "改权限失败，权限只能为admin或member！");
 							return ;
 						}
 						//读取player_data.json文件
 						std::ifstream players_data_file("player_data.json");
 						//文件读取失败
 						if (!players_data_file) {
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"player_data.json文件读取失败！\"}", "application/json");
+							qqbot.send_group_message(group_id, "player_data.json文件读取失败！");
 							return ;
 						}
 						//文件打开成功，读取json文件内容，先检查json文件中是否存在change_permission_qq
@@ -773,18 +777,18 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 							players_data.Accept(writer);
 							players_data_file.close();
 							//向群聊发送类似“改权限成功,改权限为：xxx”
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"改权限成功,新权限为：" + new_permission + "\"}", "application/json");
+							qqbot.send_group_message(group_id, "改权限成功,新权限为：" + new_permission);
 							return ;
 						} else {
 							//向群聊发送消息“改权限失败，未找到该QQ号！”
-							cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"改权限失败，未找到该QQ号！\"}", "application/json");
+							qqbot.send_group_message(group_id, "改权限失败，未在玩家数据库中找到该QQ号！");
 							return ;
 						}
 						return ;
 					}
 
 					//未知指令，发送相关提示
-					cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"未知指令，请发送#帮助 获取指令帮助！\"}", "application/json");
+					qqbot.send_group_message(group_id, "未知指令，请发送#帮助 获取指令帮助！");
 					return ;
 				}
 
@@ -816,12 +820,12 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 				//获取减少类型为"kick_me"，即自己被踢出群聊
 				if (sub_type == "kick_me") {
 					//向群聊发送消息“qq:[123456] 已被移出群聊”
-					cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"[" + user_qq + "] 已被移出群聊\"}", "application/json");
+					qqbot.send_group_message(group_id, "[" + user_qq + "] 已被移出群聊");
 					//读取player_data.json文件
 					std::ifstream players_data_file("player_data.json");
 					//文件读取失败
 					if (!players_data_file) {
-						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"player_data.json文件读取失败！\"}", "application/json");
+						qqbot.send_group_message(group_id, "player_data.json文件读取失败！");
 						return ;
 					}
 					//文件打开成功，读取json文件内容，先检查json文件中是否存在user_qq
@@ -839,7 +843,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						players_data.Accept(writer);
 						players_data_file.close();
 						//向群聊发送类似“玩家账号已经被自动冻结”
-						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"由于玩家退出群聊，账号已经被自动冻结\"}", "application/json");
+						qqbot.send_group_message(group_id, "由于玩家退出群聊，账号已经被自动冻结");
 						return ;
 					}
 					return ;
@@ -847,12 +851,12 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 				//获取减少类型为"kick"，即被管理员踢出群聊
 				if (sub_type == "kick") {
 					//向群聊发送消息“qq:[123456] 已被管理员移出群聊”
-					cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"[" + user_qq + "] 被管理员扔出了群聊!\"}", "application/json");
+					qqbot.send_group_message(group_id, "[" + user_qq + "] 已被管理员移出群聊");
 					//读取player_data.json文件
 					std::ifstream players_data_file("player_data.json");
 					//文件读取失败
 					if (!players_data_file) {
-						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"player_data.json文件读取失败！\"}", "application/json");
+						qqbot.send_group_message(group_id, "player_data.json文件读取失败！");
 						return ;
 					}
 					//文件打开成功，读取json文件内容，先检查json文件中是否存在user_qq
@@ -870,7 +874,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						players_data.Accept(writer);
 						players_data_file.close();
 						//向群聊发送类似“玩家账号已经被自动冻结”
-						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"由于玩家退出群聊，账号已经被自动冻结！\"}", "application/json");
+						qqbot.send_group_message(group_id, "由于玩家退出群聊，账号已经被自动冻结");
 						return ;
 					}
 					return ;
@@ -878,12 +882,12 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 				//获取减少类型为"leave"，即有成员离开群聊
 				if (sub_type == "leave") {
 					//向群聊发送消息“qq:[123456] 已退出群聊”
-					cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"[" + user_qq + "] 离开了我们...\"}", "application/json");
+					qqbot.send_group_message(group_id, "[" + user_qq + "] 已退出群聊");
 					//读取player_data.json文件
 					std::ifstream players_data_file("player_data.json");
 					//文件读取失败
 					if (!players_data_file) {
-						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"player_data.json文件读取失败！\"}", "application/json");
+						qqbot.send_group_message(group_id, "player_data.json文件读取失败！");
 						return ;
 					}
 					//文件打开成功，读取json文件内容，先检查json文件中是否存在user_qq
@@ -901,7 +905,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						players_data.Accept(writer);
 						players_data_file.close();
 						//向群聊发送类似“玩家账号已经被自动冻结”
-						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"由于玩家退出群聊，账号已被自动冻结！\"}", "application/json");
+						qqbot.send_group_message(group_id, "由于玩家退出群聊，账号已经被自动冻结");
 						return ;
 					}
 					return ;
@@ -920,12 +924,12 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 				//获取增加类型为"invite"，即被邀请进入群聊
 				if (sub_type == "invite") {
 					//向群聊发送消息"欢迎@qq 加入本群，发送#帮助获取指令帮助，来绑定自己的Xbox账号！"
-					cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"欢迎 [CQ:at,qq=" + user_qq + "] 加入本群，发送 #帮助 获取指令帮助，来绑定自己的Xbox账号！\"}", "application/json");
+					qqbot.send_group_message(group_id, "欢迎 [CQ:at,qq=" + user_qq + "] 加入本群，发送 #帮助 获取指令帮助，来绑定自己的Xbox账号！");
 					//读取player_data.json文件
 					std::ifstream players_data_file("player_data.json");
 					//文件读取失败
 					if (!players_data_file) {
-						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"player_data.json文件读取失败！\"}", "application/json");
+						qqbot.send_group_message(group_id, "player_data.json文件读取失败！");
 						return ;
 					}
 					//文件打开成功，读取json文件内容，先检查json文件中是否存在user_qq
@@ -943,20 +947,19 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						players_data.Accept(writer);
 						players_data_file.close();
 						//向群聊发送类似“玩家账号已经被自动解封”
-						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"该玩家存在相关数据，账号状态已经自动恢复！\"}", "application/json");
-						return ;
+						qqbot.send_group_message(group_id, "该玩家存在相关数据，账号状态已经自动恢复！");
 					}
 					return ;
 				}
 				//获取增加类型为"approve"，即被管理员同意进入群聊
 				if (sub_type == "approve") {
-					//向群聊发送消息“qq:[123456] 已被管理员同意进入群聊”
-					cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"欢迎 [CQ:at,qq=" + user_qq + "] 加入本群，发送 #帮助 获取指令帮助，来绑定自己的Xbox账号！\"}", "application/json");
+					//向群聊发送消息"欢迎@qq 加入本群，发送#帮助获取指令帮助，来绑定自己的Xbox账号！"
+					qqbot.send_group_message(group_id, "欢迎 [CQ:at,qq=" + user_qq + "] 加入本群，发送 #帮助 获取指令帮助，来绑定自己的Xbox账号！");
 					//读取player_data.json文件
 					std::ifstream players_data_file("player_data.json");
 					//文件读取失败
 					if (!players_data_file) {
-						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"player_data.json文件读取失败！\"}", "application/json");
+						qqbot.send_group_message(group_id, "player_data.json文件读取失败！");
 						return ;
 					}
 					//文件打开成功，读取json文件内容，先检查json文件中是否存在user_qq
@@ -974,7 +977,7 @@ void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate,
 						players_data.Accept(writer);
 						players_data_file.close();
 						//向群聊发送类似“玩家账号已经被自动解封”
-						cli.Post("/send_group_msg", "{\"group_id\":" + group_id + ",\"message\":\"该玩家存在相关数据，账号状态已经自动恢复！\"}", "application/json");
+						qqbot.send_group_message(group_id, "该玩家存在相关数据，账号状态已经自动恢复！");
 						return ;
 					}
 					return ;
