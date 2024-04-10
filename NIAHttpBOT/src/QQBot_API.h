@@ -2,6 +2,7 @@
 #define QQBOT_API_H
 
 #include <httplib.h>
+#include <vector>
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/prettywriter.h>
@@ -111,10 +112,80 @@ public:
      */
     void set_group_request(const std::string & flag, const std::string & sub_type, const std::string & approve, const std::string & reason);
 
+    struct login_info {
+        bool status;
+        int64_t user_id;
+        std::string nickname;
+    };
+
+    /**
+     * @brief 获取登录信息
+     *
+     * @return login_info
+     */
+    login_info get_login_info();
+
+
+    struct bot_status {
+        bool status;
+        bool online;
+        bool good;
+    };
+    /**
+     * @brief 获取机器人运行状态
+     *
+     * @return status
+     */
+    bot_status get_status();
+
+    struct group_list {
+        bool status;
+        int64_t group_id;
+        std::string group_name;
+        int32_t member_count;
+        int32_t max_member_count;
+    };
+
+    /**
+     * @brief 获取群列表
+     *
+     * @return std::vector<group_list>
+     */
+    std::vector<group_list> get_group_list();
+
+    struct group_member_info {
+        bool status;
+        int64_t group_id;
+        int64_t user_id;
+        std::string nickname;
+        std::string card;
+        std::string sex;
+        int32_t age;
+        std::string area;
+        int32_t join_time;
+        int32_t last_sent_time;
+        int32_t level;
+        std::string role;
+        //std::string title;
+        int32_t title_expire_time;
+        bool card_changeable;
+    };
+
+    /**
+     * @brief 获取群成员信息
+     *
+     * @param group_id 群ID
+     * @param user_id 用户ID
+     * @param no_cache 是否不使用缓存
+     * @return group_member_info
+     */
+    group_member_info get_group_member_info(const std::string & group_id, const std::string & user_id, bool no_cache = false);
+
 
 
 private:
     httplib::Client cli;
+
 };
 
 #endif

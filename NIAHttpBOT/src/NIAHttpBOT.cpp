@@ -105,9 +105,8 @@ signed int main(signed int argc, char** argv) {
 
 	//初始化服务器
 	httplib::Server svr;
-	//初始化客户端
-	//后续主要用于向QQ机器人发送消息
-	httplib::Client cli(IPAddress + ":" + std::to_string(ClientPort));
+
+	//httplib::Client cli(IPAddress + ":" + std::to_string(ClientPort));
 
 
     svr.Post("/GetConfig", [&par](const httplib::Request& req, httplib::Response& res){
@@ -170,27 +169,13 @@ signed int main(signed int argc, char** argv) {
 	});
 
 
-	if (UseQQBot) {
-		INFO("已启用QQ机器人相关功能！");
-		//输出QQ机器人监听的qq群号
-		INFO(X("QQ机器人监听的QQ群号为：") + QQGroup);
-		//尝试与QQ机器人建立连接
-		auto get_status_res = cli.Get("/get_status");
-		if (get_status_res && get_status_res->status == 200) {
-			INFO("已成功连接到QQ机器人！");
-			main_qqbot(svr, cli, Locate, OwnerQQ, QQGroup);
-			//发送指定群组消息
-			cli.Post("/send_group_msg", "{\"group_id\":"+ QQGroup +",\"message\":\"NiaHttp-BOT已启动！\"}", "application/json");
-		} else {
-			WARN("QQ机器人连接失败！请检查QQ机器人是否已启动&&配置是否正确！");
-			WARN("如需更多帮助请前往 https://docs.mcnia.com/dev/Http-Bot.html 查看！");
-		}
-	} else {
-		WARN("未启用QQ机器人相关功能！");
-	}
+	//qq机器人主函数
+	main_qqbot(svr);
 
+	//初始化游戏API
 	init_game_API(svr);
 
+	//初始化文件API
 	init_file_API(svr);
 
 	svr.listen(IPAddress, ServerPort);

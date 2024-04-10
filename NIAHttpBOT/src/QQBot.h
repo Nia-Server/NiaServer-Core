@@ -9,12 +9,13 @@
 #include <rapidjson/istreamwrapper.h>
 
 #include "QQBot_API.h"
+#include "CFG_Parser.hpp"
 #include "I18Nize.hpp"
 #include "Logger.hpp"
 
 
 
-void main_qqbot(httplib::Server &svr, httplib::Client &cli, std::string &Locate, std::string &OwnerQQ, std::string &QQGroup) ;
+void main_qqbot(httplib::Server &svr);
 
 
 #endif
