@@ -30,6 +30,38 @@ void initialize() {
 }
 
 
+std::vector<std::string> forbiddenWords;
+
+//读取违禁词列表
+void loadForbiddenWords(const std::string& filename) {
+    std::ifstream file(filename);
+	//如果文件没有就创建一个，并写入默认的违禁词
+	if (!file) {
+		std::ofstream file(filename);
+		file << "test1\n";
+		file << "test2\n";
+		file << "test3\n";
+		file.close();
+		//向控制台输出警告
+		WARN("违禁词文件不存在，已自动创建！请编辑违禁词文件！文件路径为：" + filename);
+	}
+	//文件打开成功，读取文件内容
+    std::string word;
+    while (std::getline(file, word)) {
+        forbiddenWords.push_back(word);
+    }
+}
+
+bool containsForbiddenWords(const std::string& input) {
+    for (const auto& word : forbiddenWords) {
+        if (input.find(word) != std::string::npos) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 
 void main_qqbot(httplib::Server &svr)
 {
@@ -45,6 +77,7 @@ void main_qqbot(httplib::Server &svr)
 		if (get_status_res.status && get_status_res.good && get_status_res.online) {
 			INFO("已成功连接到QQ机器人！");
 			qqbot->send_group_message(QQGroup, "NIAHttpBOT已成功连接到QQ机器人！");
+			loadForbiddenWords("ForbiddenWords.txt");
 		} else {
 			WARN("QQ机器人连接失败！请检查QQ机器人是否已启动&&配置是否正确！");
 			WARN("如需更多帮助请前往 https://docs.mcnia.com/dev/Http-Bot.html 查看！");
@@ -103,7 +136,7 @@ void main_qqbot(httplib::Server &svr)
 	//接收QQ消息事件
 	svr.Post(Locate, [](const httplib::Request& req, httplib::Response& res) {
 
-		INFO(X("NiaHttp-BOT 客户端接收的数据为 ") << req.body);
+		//INFO(X("NiaHttp-BOT 客户端接收的数据为 ") << req.body);
 		//解析字符串并创建一个json对象
 		rapidjson::Document qqEventData;
 		qqEventData.Parse(req.body.c_str());
@@ -143,6 +176,35 @@ void main_qqbot(httplib::Server &svr)
 
 				//判断group_id是否为指定的QQ群
 				if (group_id != QQGroup) {
+					return ;
+				}
+
+				//判断消息是否包含违禁词
+				if (containsForbiddenWords(message)) {
+					//看发送者是否为管理员或者群主
+					std::string user_permission = "";
+					user_permission = qqEventData["sender"]["role"].GetString();
+					if (user_permission == "admin" || user_permission == "owner" || sender_qq == OwnerQQ) {
+						//发送警告消息
+						qqbot->send_group_message(group_id, "请注意发言规范！详情见 https://docs.mcnia.com/play-guide/regulation.html");
+						//提示由于您是管理员或者群主，所以不会被禁言
+						qqbot->send_group_message(group_id, "但由于您是管理员或者群主，所以不会被禁言！");
+						return ;
+					}
+					//发送警告消息
+					qqbot->send_group_message(group_id, "请注意发言规范！详情见 https://docs.mcnia.com/play-guide/regulation.html");
+					//撤回消息
+					auto delete_msg_res = qqbot->delete_msg(qqEventData["message_id"].GetInt());
+					//判断撤回消息是否成功
+					if (delete_msg_res) {
+						//向主人qq私聊发送消息，类似qq[123456] 在 qq群[123456] 发送了违禁消息：[违禁消息内容],已成功撤回！
+						qqbot->send_private_message(OwnerQQ, "qq[" + sender_qq + "] 在 群[" + group_id + "] 发送了违禁消息：" + message + ",已成功撤回！");
+					} else {
+						//向主人qq私聊发送消息，类似qq[123456] 在 qq群[123456] 发送了违禁消息：[违禁消息内容],撤回失败！
+						qqbot->send_private_message(OwnerQQ, "qq[" + sender_qq + "] 在 群[" + group_id + "] 发送了违禁消息：" + message + ",撤回失败,请手动撤回！");
+					}
+					//禁言发送消息
+					qqbot->set_group_ban(group_id, sender_qq, 60);
 					return ;
 				}
 

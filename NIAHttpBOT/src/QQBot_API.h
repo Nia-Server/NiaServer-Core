@@ -33,6 +33,14 @@ public:
      */
     void send_group_message(const std::string & group_id, const std::string & message, bool auto_escape = false);
 
+    /**
+     * @brief 撤回消息
+     *
+     * @param message_id 讨论组ID
+     * @return 是否撤回成功
+     */
+    bool delete_msg(const int32_t & message_id);
+
 
     /**
      * @brief 发送点赞

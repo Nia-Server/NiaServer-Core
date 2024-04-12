@@ -1,6 +1,9 @@
 #ifndef QQBOT_H
 #define QQBOT_H
 
+#include <vector>
+#include <string>
+#include <algorithm>
 #include <httplib.h>
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>

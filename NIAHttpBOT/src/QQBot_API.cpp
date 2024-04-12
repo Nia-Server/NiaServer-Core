@@ -27,6 +27,27 @@ void QQBot::send_group_message(const std::string & group_id, const std::string &
     }
 }
 
+bool QQBot::delete_msg(const int32_t &message_id)
+{
+    auto res = cli.Post("/delete_msg", "{\"message_id\":" + std::to_string(message_id) + "}", "application/json");
+    if (res) {
+        INFO(X("调用API <delete_msg()> 后，返回的数据：") + res->body);
+        rapidjson::Document doc;
+        doc.Parse(res->body.c_str());
+        if (doc.HasMember("status") && std::string(doc["status"].GetString()) == "ok") {
+            return true;
+        }
+        else {
+            WARN(X("调用API <delete_msg()> 后，返回的数据无法解析：") + res->body);
+            return false;
+        }
+    }
+    else {
+        WARN(X("调用API <delete_msg()> 超时，请检查连接！"));
+        return false;
+    }
+    return false;
+}
 
 void QQBot::send_like(const std::string & user_id, int times) {
     auto res = cli.Post("/send_like", "{\"user_id\":\"" + user_id + "\",\"times\":" + std::to_string(times) + "}", "application/json");

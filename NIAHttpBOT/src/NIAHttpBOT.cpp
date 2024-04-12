@@ -178,7 +178,36 @@ signed int main(signed int argc, char** argv) {
 	//初始化文件API
 	init_file_API(svr);
 
+		//监听reload命令
+    std::thread inputThread([&]() {
+        std::string command;
+		bool hasCommand = false;
+        while (std::cin >> command) {
+			//重载指令
+            if (command == "reload") {
+				hasCommand = true;
+				INFO("1s后重启NiaHttp-BOT...");
+				std::this_thread::sleep_for(std::chrono::seconds(1));
+                std::system((std::string(argv[0]) + " &").c_str());
+                exit(0);
+            }
+			//停止指令
+			if (command == "stop") {
+				hasCommand = true;
+				INFO("1s后将关闭NiaHttp-BOT...");
+				std::this_thread::sleep_for(std::chrono::seconds(1));
+				exit(0);
+			}
+			if (!hasCommand) {
+				WARN("未知指令，请检查后再次输入！");
+			}
+        }
+    });
+
+
 	svr.listen(IPAddress, ServerPort);
+
+	inputThread.join();
 
 	return 0;
 }
