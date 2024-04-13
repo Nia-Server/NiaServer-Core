@@ -22,7 +22,7 @@ public:
      * @param message 消息内容
      * @param auto_escape 是否自动转义
      */
-    void send_private_message(const std::string & user_id, const std::string & message, bool auto_escape = false);
+    void send_private_message(const std::string & user_id, const std::string & message, bool auto_escape = true);
 
     /**
      * @brief 发送群消息
@@ -31,7 +31,7 @@ public:
      * @param message 消息内容
      * @param auto_escape 是否自动转义
      */
-    void send_group_message(const std::string & group_id, const std::string & message, bool auto_escape = false);
+    void send_group_message(const std::string & group_id, const std::string & message, bool auto_escape = true);
 
     /**
      * @brief 撤回消息
@@ -58,7 +58,7 @@ public:
      * @param reject_add_request 是否拒绝加
      *群请求
      */
-    void set_group_kick(const std::string & group_id, const std::string & user_id, bool reject_add_request = false);
+    void set_group_kick(const std::string & group_id, const std::string & user_id, bool reject_add_request = true);
 
     /**
      * @brief 设置群成员禁言
