@@ -46,6 +46,15 @@ signed int main(signed int argc, char** argv) {
 #ifdef WIN32
 	SetConsoleOutputCP(65001);
 #endif
+
+	//检测是否有其他进程正在运行
+	HANDLE hMutex = CreateMutex(NULL, FALSE, "NIAHttpBOT");
+    if (GetLastError() == ERROR_ALREADY_EXISTS) {
+		WARN("检测到已有进程正在运行，3s后即将关闭当前进程。");
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+        return 1;
+    }
+
 	std::ios::sync_with_stdio(false), std::cin.tie(0), std::cout.tie(0);
 
 	std::cout<<"\x1b[36m"<<R"(
@@ -71,7 +80,6 @@ signed int main(signed int argc, char** argv) {
 	)" <<"\x1b[0m"<< std::endl;
 
 	CFGPAR::parser par;
-
 
 	//首先检查有没有配置文件
 	if (!par.parFromFile("./NIAHttpBOT.cfg")) {
@@ -188,7 +196,7 @@ signed int main(signed int argc, char** argv) {
 				hasCommand = true;
 				INFO("1s后重启NiaHttp-BOT...");
 				std::this_thread::sleep_for(std::chrono::seconds(1));
-                std::system((std::string(argv[0]) + " &").c_str());
+            	std::system(("start cmd /k " + std::string(argv[0])).c_str());
                 exit(0);
             }
 			//停止指令
