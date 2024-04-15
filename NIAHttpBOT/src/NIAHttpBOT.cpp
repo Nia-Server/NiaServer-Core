@@ -48,12 +48,31 @@ signed int main(signed int argc, char** argv) {
 #endif
 
 	//检测是否有其他进程正在运行
-	HANDLE hMutex = CreateMutex(NULL, FALSE, "NIAHttpBOT");
-    if (GetLastError() == ERROR_ALREADY_EXISTS) {
-		WARN("检测到已有进程正在运行，3s后即将关闭当前进程。");
-        std::this_thread::sleep_for(std::chrono::seconds(3));
-        return 1;
-    }
+	#ifdef _WIN32
+		HANDLE hMutex = CreateMutex(NULL, FALSE, "NIAHttpBOT");
+		if (hMutex == NULL) {
+			WARN("CreateMutex failed!");
+			return 1;
+		}
+		if (GetLastError() == ERROR_ALREADY_EXISTS) {
+			WARN("检测到已有进程正在运行，3s后即将关闭当前进程。");
+			std::this_thread::sleep_for(std::chrono::seconds(3));
+			CloseHandle(hMutex);
+			return 1;
+		}
+	#else
+		int fd = open("lockfile", O_RDWR | O_CREAT, 0666);
+		if (fd < 0) {
+			WARN("open lockfile failed");
+			return 1;
+		}
+		if (lockf(fd, F_TLOCK, 0) < 0) {
+			WARN("检测到已有进程正在运行，3s后即将关闭当前进程。");
+			std::this_thread::sleep_for(std::chrono::seconds(3));
+			close(fd);
+			return 1;
+		}
+	#endif
 
 	std::ios::sync_with_stdio(false), std::cin.tie(0), std::cout.tie(0);
 
