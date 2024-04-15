@@ -186,7 +186,7 @@ signed int main(signed int argc, char** argv) {
 	//初始化文件API
 	init_file_API(svr);
 
-		//监听reload命令
+	//监听终端命令输入
     std::thread inputThread([&]() {
         std::string command;
 		bool hasCommand = false;
@@ -196,7 +196,13 @@ signed int main(signed int argc, char** argv) {
 				hasCommand = true;
 				INFO("1s后重启NiaHttp-BOT...");
 				std::this_thread::sleep_for(std::chrono::seconds(1));
-            	std::system(("start cmd /k " + std::string(argv[0])).c_str());
+				#ifdef _WIN32
+                std::system(("start cmd /k " + std::string(argv[0])).c_str());
+				#else
+					if (fork() == 0) {
+						execl(argv[0], argv[0], (char*)NULL);
+					}
+				#endif
                 exit(0);
             }
 			//停止指令
