@@ -1,3 +1,28 @@
+/*
+
+You must accept Minecraft's End User Licence Agreement (EULA).
+
+It means please do not use any content that violates the EULA for commercial purposes!
+
+Accepting this licence means you also accept the Minecraft EULA(https://account.mojang.com/terms)
+
+If you violate the EULA, the developer is not liable for any damages.
+
+The developer is not responsible for you, and the developer is not obliged to write code for you, and is not liable for any consequences of your use.
+
+In addition, you are required to comply with the terms of the AGPL-3.0 (https://github.com/Nia-Server/NiaServer-Core/blob/main/LICENSE) open source licence for this project, and the related open source agreements used by all sub-projects of this project.
+
+If you do not accept these terms, please delete this project immediately.
+
+authors: NIANIANKNIA && jiansyuan
+
+email: server@mcnia.com
+
+Project address: https://github.com/Nia-Server/NiaServer-Core/
+
+If you have any problems with this project, please contact the authors.
+
+*/
 
 #include <ctime>
 #include <iostream>
@@ -121,9 +146,9 @@ signed int main(signed int argc, char** argv) {
 		else XINFO("语言配置已加载成功");
 	}
 
-	INFO(X("NiaHttp-BOT 监听服务器已在 ") + IPAddress + ":" + std::to_string(ServerPort) + X(" 上成功启动!"));
+	INFO(X("监听服务器已在 ") + IPAddress + ":" + std::to_string(ServerPort) + X(" 上成功启动!"));
 	//如果配置文件中启用使用qq机器人，则输出qq机器人的监听端口
-	if (UseQQBot) INFO(X("NiaHttp-BOT 客户端已在 ") + IPAddress + ":" + std::to_string(ClientPort) + Locate + X(" 上成功启动!"));
+	if (UseQQBot) INFO(X("客户端已在 ") + IPAddress + ":" + std::to_string(ClientPort) + Locate + X(" 上成功启动!"));
 	XINFO("项目地址：https://github.com/Nia-Server/NiaServer-Core/tree/main/NIAHttpBOT");
 	XINFO("项目作者：@NIANIANKNIA @jiansyuan");
 	XINFO("在使用中遇到问题请前往项目下的 issue 反馈，如果觉得本项目不错不妨点个 star！");

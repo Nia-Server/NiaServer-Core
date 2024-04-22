@@ -15,21 +15,6 @@ int ClientPort;
 //声明qqbot
 QQBot* qqbot;
 
-void initialize() {
-    par.parFromFile("./NIAHttpBOT.cfg");
-    Locate = par.getString("Locate");
-	UseQQBot = par.getBool("UseQQBot");
-    OwnerQQ = par.getString("OwnerQQ");
-    QQGroup = par.getString("QQGroup");
-    IPAddress = par.getString("IPAddress");
-    ClientPort = par.getInt("ClientPort");
-
-    //初始化qqbot
-    qqbot = new QQBot(IPAddress, ClientPort);
-
-}
-
-
 std::vector<std::string> forbiddenWords;
 
 //读取违禁词列表
@@ -47,9 +32,14 @@ void loadForbiddenWords(const std::string& filename) {
 	}
 	//文件打开成功，读取文件内容
     std::string word;
+	//定义违禁词数量
+	int count = 0;
     while (std::getline(file, word)) {
         forbiddenWords.push_back(word);
+		count++;
     }
+	//向控制台输出
+	INFO("已成功加载" + std::to_string(count) + "个违禁词！");
 }
 
 bool containsForbiddenWords(const std::string& input) {
@@ -66,27 +56,36 @@ bool containsForbiddenWords(const std::string& input) {
 void main_qqbot(httplib::Server &svr)
 {
 	//初始化变量
-	initialize();
-
-	//检查是否启用QQ机器人相关功能
-	if (UseQQBot) {
-		INFO("已启用QQ机器人相关功能！");
-		//尝试与QQ机器人建立连接
-		auto get_status_res = qqbot->get_status();
-		//检查是否成功连接到QQ机器人
-		if (get_status_res.status && get_status_res.good && get_status_res.online) {
-			INFO("已成功连接到QQ机器人！");
-			qqbot->send_group_message(QQGroup, "NIAHttpBOT已成功连接到QQ机器人！");
-			loadForbiddenWords("ForbiddenWords.txt");
-		} else {
-			WARN("QQ机器人连接失败！请检查QQ机器人是否已启动&&配置是否正确！");
-			WARN("如需更多帮助请前往 https://docs.mcnia.com/dev/Http-Bot.html 查看！");
-			return;
-		}
-	} else {
+	par.parFromFile("./NIAHttpBOT.cfg");
+	//获取配置文件中的UseQQBot
+	UseQQBot = par.getBool("UseQQBot");
+	if (!UseQQBot) {
 		WARN("未启用QQ机器人相关功能！");
 		return;
+	};
+	INFO("已启用QQ机器人相关功能！");
+	//获取配置文件中的Locate,OwnerQQ,QQGroup,IPAddress,ClientPort
+    Locate = par.getString("Locate");
+    OwnerQQ = par.getString("OwnerQQ");
+    QQGroup = par.getString("QQGroup");
+    IPAddress = par.getString("IPAddress");
+    ClientPort = par.getInt("ClientPort");
+
+    //初始化qqbot
+    qqbot = new QQBot(IPAddress, ClientPort);
+	//尝试与QQ机器人建立连接
+	auto get_status_res = qqbot->get_status();
+	//检查是否成功连接到QQ机器人
+	if (get_status_res.status && get_status_res.good && get_status_res.online) {
+		INFO("已成功连接到QQ机器人！");
+		qqbot->send_group_message(QQGroup, "NIAHttpBOT已成功连接到QQ机器人！");
+		loadForbiddenWords("ForbiddenWords.txt");
+	} else {
+		WARN("QQ机器人连接失败！请检查QQ机器人是否已启动&&配置是否正确！");
+		WARN("如需更多帮助请前往 https://docs.mcnia.com/dev/Http-Bot.html 查看！");
+		return;
 	}
+
 
 	//检查player_data.json文件是否存在,不存在则创建
 	std::ifstream player_data_file("player_data.json");
@@ -241,7 +240,6 @@ void main_qqbot(httplib::Server &svr)
 						helpMenu += "例：#封禁 @NIANIANKNIA 1d\\n";
 						helpMenu += "#解封 @要解封的人: 解封指定群成员账号\\n";
 						helpMenu += "#改权限 @要改权限的人 <权限>: 改变指定群成员的权限\\n";
-						helpMenu += "power by Nia-Http-Bot";
 						qqbot->send_group_message(group_id, helpMenu);
 						return;
 					}
