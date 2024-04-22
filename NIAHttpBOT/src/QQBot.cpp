@@ -28,7 +28,7 @@ void loadForbiddenWords(const std::string& filename) {
 		file << "test3\n";
 		file.close();
 		//向控制台输出警告
-		WARN("违禁词文件不存在，已自动创建！请编辑违禁词文件！文件路径为：" + filename);
+		WARN("违禁词文件不存在，已自动创建！请编辑违禁词文件！文件名称为：" + filename);
 	}
 	//文件打开成功，读取文件内容
     std::string word;
@@ -78,7 +78,7 @@ void main_qqbot(httplib::Server &svr)
 	//检查是否成功连接到QQ机器人
 	if (get_status_res.status && get_status_res.good && get_status_res.online) {
 		INFO("已成功连接到QQ机器人！");
-		qqbot->send_group_message(QQGroup, "NIAHttpBOT已成功连接到QQ机器人！");
+		//加载违禁词列表
 		loadForbiddenWords("ForbiddenWords.txt");
 	} else {
 		WARN("QQ机器人连接失败！请检查QQ机器人是否已启动&&配置是否正确！");
@@ -113,7 +113,7 @@ void main_qqbot(httplib::Server &svr)
 		WARN(X("没有在机器人的群列表中找到指定的QQ群：") + QQGroup);
 	} else {
 		//向控制台输出
-		INFO(X("QQ机器人监听已在指定QQ群开启：") + QQGroup);
+		INFO(X("机器人监听已在指定QQ群开启：") + QQGroup);
 		//开始检测机器人在指定的QQ群中的权限
 		//获取机器人自己的QQ号
 		auto get_login_info_res = qqbot->get_login_info();
@@ -122,7 +122,7 @@ void main_qqbot(httplib::Server &svr)
 		auto get_group_member_info_res = qqbot->get_group_member_info(QQGroup, selfQQ);
 		std::string selfPermission = get_group_member_info_res.role;
 		//向控制台输出
-		INFO(X("NiaHttp-BOT 机器人在指定QQ群中的权限为：") << selfPermission);
+		INFO(X("机器人在指定QQ群中的权限为：") << selfPermission);
 		//如果机器人在指定QQ群中的权限不是管理员或者群主
 		if (selfPermission != "admin" && selfPermission != "owner") {
 			//向控制台输出
@@ -184,10 +184,6 @@ void main_qqbot(httplib::Server &svr)
 					std::string user_permission = "";
 					user_permission = qqEventData["sender"]["role"].GetString();
 					if (user_permission == "admin" || user_permission == "owner" || sender_qq == OwnerQQ) {
-						//发送警告消息
-						qqbot->send_group_message(group_id, "请注意发言规范！详情见 https://docs.mcnia.com/play-guide/regulation.html");
-						//提示由于您是管理员或者群主，所以不会被禁言
-						qqbot->send_group_message(group_id, "但由于您是管理员或者群主，所以不会被禁言！");
 						return ;
 					}
 					//发送警告消息
@@ -195,11 +191,9 @@ void main_qqbot(httplib::Server &svr)
 					//撤回消息
 					auto delete_msg_res = qqbot->delete_msg(qqEventData["message_id"].GetInt());
 					//判断撤回消息是否成功
-					if (delete_msg_res) {
-						//向主人qq私聊发送消息，类似qq[123456] 在 qq群[123456] 发送了违禁消息：[违禁消息内容],已成功撤回！
+					if (delete_msg_res == 1) {
 						qqbot->send_private_message(OwnerQQ, "qq[" + sender_qq + "] 在 群[" + group_id + "] 发送了违禁消息：" + message + ",已成功撤回！");
 					} else {
-						//向主人qq私聊发送消息，类似qq[123456] 在 qq群[123456] 发送了违禁消息：[违禁消息内容],撤回失败！
 						qqbot->send_private_message(OwnerQQ, "qq[" + sender_qq + "] 在 群[" + group_id + "] 发送了违禁消息：" + message + ",撤回失败,请手动撤回！");
 					}
 					//禁言发送消息
@@ -239,7 +233,7 @@ void main_qqbot(httplib::Server &svr)
 						helpMenu += "#封禁 @要封禁的人 <时间>: 封禁指定群成员游戏账号\\n";
 						helpMenu += "例：#封禁 @NIANIANKNIA 1d\\n";
 						helpMenu += "#解封 @要解封的人: 解封指定群成员账号\\n";
-						helpMenu += "#改权限 @要改权限的人 <权限>: 改变指定群成员的权限\\n";
+						helpMenu += "#改权限 @要改权限的人 <权限>: 改变指定群成员的权限";
 						qqbot->send_group_message(group_id, helpMenu);
 						return;
 					}
@@ -247,9 +241,15 @@ void main_qqbot(httplib::Server &svr)
 					//赞我
 					if (command == "赞我") {
 						//发送好友赞
-						qqbot->send_like(sender_qq, 10);
-						//向群聊发送消息
-						qqbot->send_group_message(group_id, "已经给你点了十个赞哦！注意查收！\\n(一天只能一次，重复点赞无效！)");
+						auto send_like_res = qqbot->send_like(sender_qq, 10);
+						//判断是否发送成功
+						if (send_like_res == 1) {
+							qqbot->send_group_message(group_id, "已经给你点了十个赞哦！注意查收！");
+						} else if (send_like_res == 0) {
+							qqbot->send_group_message(group_id, "点赞失败！原因是今天已经给你点过赞了！");
+						} else {
+							qqbot->send_group_message(group_id, "点赞失败！请稍后再试！");
+						}
 						return;
 					}
 
@@ -275,14 +275,14 @@ void main_qqbot(httplib::Server &svr)
 						std::string band_time = "";
 						size_t secondSpace = message.find(' ', firstSpace + 1);
 						if (secondSpace != std::string::npos) {
-							band_time = message.substr(secondSpace + 1);  // 从第二个空格后的位置开始获取子字符串
+							band_time = message.substr(secondSpace + 1);
 						}
 						//判断band_message和band_time是否为空
 						if (band_message == "" || band_time == "") {
 							qqbot->send_group_message(group_id, "禁言指令格式错误，禁言格式为:#禁言 @要禁言的人 时间");
 							return ;
 						}
-						//从类似[CQ:at,qq=3374574180]中获取band_qq
+						//从类似[CQ:at,qq=123456]中获取band_qq
 						std::string band_qq = "";
 						size_t firstComma = band_message.find(',');
 						if (firstComma != std::string::npos) {
@@ -320,9 +320,15 @@ void main_qqbot(httplib::Server &svr)
 							return ;
 						}
 						//禁言
-						qqbot->set_group_ban(group_id, band_qq, band_time_long);
-						//向群聊发送消息
-						qqbot->send_group_message(group_id, "已成功禁言 " + band_message + "，禁言时间为" + band_time);
+						auto set_group_ban_res = qqbot->set_group_ban(group_id, band_qq, band_time_long);
+						//判断是否禁言成功
+						if (set_group_ban_res == 1) {
+							qqbot->send_group_message(group_id, "已成功禁言 " + band_message + "，禁言时间为" + band_time);
+						} else if (set_group_ban_res == 0) {
+							qqbot->send_group_message(group_id, "禁言失败！原因可能是机器人权限不足，请检查机器人权限！");
+						} else {
+							qqbot->send_group_message(group_id, "禁言失败！请稍后再试！");
+						}
 						return ;
 					}
 
@@ -346,7 +352,7 @@ void main_qqbot(httplib::Server &svr)
 							qqbot->send_group_message(group_id, "解禁指令格式错误，解禁格式为:#解 @要解禁的人");
 							return ;
 						}
-						//从类似[CQ:at,qq=3374574180]中获取unband_qq
+						//从类似[CQ:at,qq=123456]中获取unband_qq
 						std::string unband_qq = "";
 						size_t firstComma = unband_message.find(',');
 						if (firstComma != std::string::npos) {
@@ -361,9 +367,15 @@ void main_qqbot(httplib::Server &svr)
 							return ;
 						}
 						//解禁
-						qqbot->set_group_ban(group_id, unband_qq, 0);
-						//向群聊发送消息
-						qqbot->send_group_message(group_id, "已成功解禁 " + unband_message);
+						auto set_group_ban_res = qqbot->set_group_ban(group_id, unband_qq, 0);
+						//判断是否解禁成功
+						if (set_group_ban_res == 1) {
+							qqbot->send_group_message(group_id, "已成功解禁 " + unband_message);
+						} else if (set_group_ban_res == 0) {
+							qqbot->send_group_message(group_id, "解禁失败！原因可能是机器人权限不足，请检查机器人权限！");
+						} else {
+							qqbot->send_group_message(group_id, "解禁失败！请稍后再试！");
+						}
 						return ;
 					}
 
@@ -479,7 +491,7 @@ void main_qqbot(httplib::Server &svr)
 							qqbot->send_group_message(group_id, "改绑指令格式错误，改绑格式为:#改绑 @要改绑的人 XboxID");
 							return ;
 						}
-						//从类似[CQ:at,qq=3374574180]中获取rebind_qq
+						//从类似[CQ:at,qq=123456]中获取rebind_qq
 						std::string rebind_qq = "";
 						size_t firstComma = rebind_message.find(',');
 						if (firstComma != std::string::npos) {
@@ -561,7 +573,7 @@ void main_qqbot(httplib::Server &svr)
 							qqbot->send_group_message(group_id, "封禁指令格式错误，封禁格式为:#封禁 @要封禁的人 时间");
 							return ;
 						}
-						//从类似[CQ:at,qq=3374574180]中获取ban_qq
+						//从类似[CQ:at,qq=123456]中获取ban_qq
 						std::string ban_qq = "";
 						size_t firstComma = ban_message.find(',');
 						if (firstComma != std::string::npos) {
@@ -667,7 +679,7 @@ void main_qqbot(httplib::Server &svr)
 							qqbot->send_group_message(group_id, "解封指令格式错误，解封格式为:#解封 @要解封的人");
 							return ;
 						}
-						//从类似[CQ:at,qq=3374574180]中获取unban_qq
+						//从类似[CQ:at,qq=123456]中获取unban_qq
 						std::string unban_qq = "";
 						size_t firstComma = unban_message.find(',');
 						if (firstComma != std::string::npos) {
@@ -758,7 +770,7 @@ void main_qqbot(httplib::Server &svr)
 							}
 							return ;
 						}
-						//从类似[CQ:at,qq=3374574180]中获取search_qq
+						//从类似[CQ:at,qq=123456]中获取search_qq
 						std::string search_qq = "";
 						size_t firstComma = search_message.find(',');
 						if (firstComma != std::string::npos) {
@@ -826,7 +838,7 @@ void main_qqbot(httplib::Server &svr)
 							qqbot->send_group_message(group_id, "改权限指令格式错误，改权限格式为:#改权限 @要改权限的人 权限");
 							return ;
 						}
-						//从类似[CQ:at,qq=3374574180]中获取change_permission_qq
+						//从类似[CQ:at,qq=123456]中获取change_permission_qq
 						std::string change_permission_qq = "";
 						size_t firstComma = change_permission_message.find(',');
 						if (firstComma != std::string::npos) {

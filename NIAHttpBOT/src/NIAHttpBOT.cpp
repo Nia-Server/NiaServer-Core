@@ -48,6 +48,9 @@ If you have any problems with this project, please contact the authors.
 #include "File_API.h"
 #include "Game_API.h"
 
+//定义版本号
+#define VERSION "v1.5.0"
+
 #ifdef _WIN32
 #define popen _popen
 #define pclose _pclose
@@ -66,7 +69,7 @@ signed int main(signed int argc, char** argv) {
 	std::string OwnerQQ = "123456789";
 	std::string QQGroup = "123456789";
 
-    std::cout << "\033]0;NIAHttpBOT V1.5.0\007";
+	std::cout << "\033]0;NIAHttpBOT" << VERSION <<"\007";
 
 #ifdef WIN32
 	SetConsoleOutputCP(65001);
@@ -157,8 +160,6 @@ signed int main(signed int argc, char** argv) {
 
 	//初始化服务器
 	httplib::Server svr;
-
-	//httplib::Client cli(IPAddress + ":" + std::to_string(ClientPort));
 
 
     svr.Post("/GetConfig", [&par](const httplib::Request& req, httplib::Response& res){
@@ -261,7 +262,6 @@ signed int main(signed int argc, char** argv) {
 			}
         }
     });
-
 
 	svr.listen(IPAddress, ServerPort);
 

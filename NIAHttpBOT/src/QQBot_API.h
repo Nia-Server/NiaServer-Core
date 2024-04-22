@@ -1,3 +1,4 @@
+
 #ifndef QQBOT_API_H
 #define QQBOT_API_H
 
@@ -22,7 +23,7 @@ public:
      * @param message 消息内容
      * @param auto_escape 是否自动转义
      */
-    void send_private_message(const std::string & user_id, const std::string & message, bool auto_escape = true);
+    int32_t send_private_message(const std::string & user_id, const std::string & message, bool auto_escape = false);
 
     /**
      * @brief 发送群消息
@@ -31,7 +32,7 @@ public:
      * @param message 消息内容
      * @param auto_escape 是否自动转义
      */
-    void send_group_message(const std::string & group_id, const std::string & message, bool auto_escape = true);
+    int32_t send_group_message(const std::string & group_id, const std::string & message, bool auto_escape = false);
 
     /**
      * @brief 撤回消息
@@ -39,7 +40,7 @@ public:
      * @param message_id 讨论组ID
      * @return 是否撤回成功
      */
-    bool delete_msg(const int32_t & message_id);
+    int delete_msg(const int32_t & message_id);
 
 
     /**
@@ -48,7 +49,7 @@ public:
      * @param user_id 用户ID
      * @param times 点赞次数
      */
-    void send_like(const std::string & user_id, int times);
+    int send_like(const std::string & user_id, int times);
 
     /**
      * @brief 设置群成员踢出
@@ -58,7 +59,7 @@ public:
      * @param reject_add_request 是否拒绝加
      *群请求
      */
-    void set_group_kick(const std::string & group_id, const std::string & user_id, bool reject_add_request = true);
+    int set_group_kick(const std::string & group_id, const std::string & user_id, bool reject_add_request = false);
 
     /**
      * @brief 设置群成员禁言
@@ -67,14 +68,14 @@ public:
      * @param user_id 用户ID
      * @param duration 禁言时长
      */
-    void set_group_ban(const std::string & group_id, const std::string & user_id, long long duration);
+    int set_group_ban(const std::string & group_id, const std::string & user_id, long long duration);
 
     /**
      * @brief 设置全群禁言
      * @param group_id 群ID
      * @param enable 是否开启全群禁言
      */
-    void set_group_whole_ban(const std::string & group_id, bool enable);
+    int set_group_whole_ban(const std::string & group_id, bool enable);
 
     /**
      * @brief 设置群管理员
@@ -83,7 +84,7 @@ public:
      * @param user_id 用户ID
      * @param enable 是否设置为管理员
      */
-    void set_group_admin(const std::string & group_id, const std::string & user_id, bool enable);
+    int set_group_admin(const std::string & group_id, const std::string & user_id, bool enable);
 
     /**
      * @brief 设置群成员名片
@@ -92,7 +93,7 @@ public:
      * @param user_id 用户ID
      * @param card 名片内容
      */
-    void set_group_card(const std::string & group_id, const std::string & user_id, const std::string & card);
+    int set_group_card(const std::string & group_id, const std::string & user_id, const std::string & card);
 
     /**
      * @brief 设置群名称
@@ -100,7 +101,7 @@ public:
      * @param group_id 群ID
      * @param group_name 群名称
      */
-    void set_group_name(const std::string & group_id, const std::string & group_name);
+    int set_group_name(const std::string & group_id, const std::string & group_name);
 
     /**
      * @brief 退出群聊
@@ -108,7 +109,7 @@ public:
      * @param group_id 群ID
      * @param is_dismiss 是否解散群
      */
-    void set_group_leave(const std::string & group_id, bool is_dismiss);
+    int set_group_leave(const std::string & group_id, bool is_dismiss = false);
 
     /**
      * @brief 处理群请求
@@ -118,10 +119,10 @@ public:
      * @param approve 是否同意请求
      * @param reason 原因
      */
-    void set_group_request(const std::string & flag, const std::string & sub_type, const std::string & approve, const std::string & reason);
+    int set_group_request(const std::string & flag, const std::string & sub_type, const std::string & approve, const std::string & reason);
 
     struct login_info {
-        bool status;
+        int status;
         int64_t user_id;
         std::string nickname;
     };
@@ -135,7 +136,7 @@ public:
 
 
     struct bot_status {
-        bool status;
+        int status;
         bool online;
         bool good;
     };
@@ -147,7 +148,7 @@ public:
     bot_status get_status();
 
     struct group_list {
-        bool status;
+        int status;
         int64_t group_id;
         std::string group_name;
         int32_t member_count;
@@ -162,7 +163,7 @@ public:
     std::vector<group_list> get_group_list();
 
     struct group_member_info {
-        bool status;
+        int status;
         int64_t group_id;
         int64_t user_id;
         std::string nickname;
