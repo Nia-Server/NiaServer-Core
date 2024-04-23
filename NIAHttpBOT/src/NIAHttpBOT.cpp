@@ -33,12 +33,17 @@ If you have any problems with this project, please contact the authors.
 #include <cstdlib>
 #include <cstdio>
 
+#ifdef WIN32 //only enable TLS in windows
+#define CPPHTTPLIB_OPENSSL_SUPPORT
+#endif
+
 #include <httplib.h>
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/ostreamwrapper.h>
 #include <rapidjson/istreamwrapper.h>
+
 
 #include "CFG_Parser.hpp"
 #include "I18Nize.hpp"
@@ -51,13 +56,20 @@ If you have any problems with this project, please contact the authors.
 //定义版本号
 #define VERSION "v1.5.0"
 
-#ifdef _WIN32
+#ifdef WIN32
 #define popen _popen
 #define pclose _pclose
 #define WEXITSTATUS
 #endif
 
+void sslThread(){
+	 httplib::SSLClient cli("localhost", 8080);
+
+}
+
 signed int main(signed int argc, char** argv) {
+
+
 
 	std::string LanguageFile = "";
 	std::string IPAddress = "127.0.0.1";
@@ -76,7 +88,7 @@ signed int main(signed int argc, char** argv) {
 #endif
 
 	//检测是否有其他进程正在运行
-	#ifdef _WIN32
+	#ifdef WIN32
 		HANDLE hMutex = CreateMutex(NULL, FALSE, "NIAHttpBOT");
 		if (hMutex == NULL) {
 			WARN("CreateMutex failed!");
@@ -157,6 +169,11 @@ signed int main(signed int argc, char** argv) {
 	XINFO("在使用中遇到问题请前往项目下的 issue 反馈，如果觉得本项目不错不妨点个 star！");
 	if (UseCmd)  XWARN("检测到执行DOS命令功能已启用，请注意服务器安全！");
 
+
+	#ifdef WIN32
+	std::thread ssl_thread(sslThread);
+	ssl_thread.detach();
+	#endif
 
 	//初始化服务器
 	httplib::Server svr;
