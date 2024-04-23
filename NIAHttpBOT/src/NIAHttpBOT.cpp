@@ -62,13 +62,17 @@ If you have any problems with this project, please contact the authors.
 #define WEXITSTATUS
 #endif
 
+#ifndef WIN32
 void sslThread(){
-	#ifndef WIN32
-		return;
-	#endif
+
+
 	 httplib::SSLClient cli("localhost", 8080);
 
 }
+#else
+void sslThread(){
+}
+#endif
 
 signed int main(signed int argc, char** argv) {
 
