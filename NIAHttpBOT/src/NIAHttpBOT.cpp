@@ -54,7 +54,7 @@ If you have any problems with this project, please contact the authors.
 #include "Game_API.h"
 
 //定义版本号
-#define VERSION "v1.5.0"
+#define VERSION "v1.5.0-pre-3"
 
 #ifdef WIN32
 #define popen _popen
@@ -64,9 +64,71 @@ If you have any problems with this project, please contact the authors.
 
 #ifdef WIN32
 void sslThread(){
+	//与GitHub的API通信来检查更新
+	httplib::SSLClient cli("api.github.com");
+	auto res = cli.Get("/repos/Nia-Server/NiaServer-Core/releases");
+	if (res && res->status == 200) {
+		rapidjson::Document doc;
+		doc.Parse(res->body.c_str());
+		if (doc.HasParseError()) {
+			WARN("解析JSON数据失败！");
+			return;
+		}
+		if (doc.Size() == 0) {
+			WARN("未找到任何版本信息！");
+			return;
+		}
+		std::string latest_version = doc[0]["tag_name"].GetString();
+		std::string changelog = doc[0]["body"].GetString();
+		std::string download_url = doc[0]["html_url"].GetString();
+		std::string current_version = VERSION;
 
+		// 分割版本号和预发布版本号
+		std::string latest_main_version = latest_version;
+		std::string current_main_version = current_version;
+		std::string latest_pre_version, current_pre_version;
+		if (latest_version.find("-") != std::string::npos) {
+			latest_main_version = latest_version.substr(0, latest_version.find("-"));
+			latest_pre_version = latest_version.substr(latest_version.find("-") + 1);
+		}
+		if (current_version.find("-") != std::string::npos) {
+			current_main_version = current_version.substr(0, current_version.find("-"));
+			current_pre_version = current_version.substr(current_version.find("-") + 1);
+		}
 
-	 httplib::SSLClient cli("localhost", 8080);
+		bool is_latest_greater = false;
+		if (latest_main_version != current_main_version) {
+			// 如果主版本号不同，直接比较主版本号
+			is_latest_greater = latest_main_version > current_main_version;
+		} else if (!latest_pre_version.empty() && !current_pre_version.empty()) {
+			// 如果主版本号相同，并且都有预发布版本号，比较预发布版本号
+			is_latest_greater = latest_pre_version > current_pre_version;
+		} else if (!latest_pre_version.empty() && current_pre_version.empty()) {
+			// 如果主版本号相同，最新版本有预发布版本号，当前版本没有预发布版本号，那么当前版本是最新的
+			is_latest_greater = false;
+		} else if (latest_pre_version.empty() && !current_pre_version.empty()) {
+			// 如果主版本号相同，最新版本没有预发布版本号，当前版本有预发布版本号，那么最新版本是最新的
+			is_latest_greater = true;
+		}
+
+		if (is_latest_greater) {
+			//如果是预发布版本，输出警告
+			if (latest_version.find("-pre-") != std::string::npos) {
+				WARN("检查更新成功，当前github的release最新版本为：" + latest_version + "，当前版本为：" + VERSION + "，但请注意，这是一个预发布版本！可能存在未知的问题，请根据实际情况更新！");
+			} else {
+				WARN("检查更新成功，当前github的release最新版本为：" + latest_version + "，当前版本为：" + VERSION + "，请及时更新！");
+			}
+			//向控制台输出最新版本release更新日志
+			INFO(changelog);
+			INFO("下载地址：" + download_url);
+		} else {
+			INFO("检查更新成功！当前版本已是最新版本！");
+		}
+	} else {
+		//向控制台输出错误状态码
+		WARN("检查更新失败！错误状态码：" + res->status);
+		WARN("检查更新失败！");
+	}
 
 }
 #else
@@ -88,7 +150,7 @@ signed int main(signed int argc, char** argv) {
 	std::string OwnerQQ = "123456789";
 	std::string QQGroup = "123456789";
 
-	std::cout << "\033]0;NIAHttpBOT" << VERSION <<"\007";
+	std::cout << "\033]0;NIAHttpBOT " << VERSION <<"\007";
 
 #ifdef WIN32
 	SetConsoleOutputCP(65001);
@@ -146,6 +208,11 @@ signed int main(signed int argc, char** argv) {
 	)" <<"\x1b[0m"<< std::endl;
 
 	CFGPAR::parser par;
+
+	//解析版本号，如果版本号后面有-pre-则输出警告这是一个预览版本
+	if (std::string(VERSION).find("-pre-") != std::string::npos) {
+		WARN("这是一个预发布版本，仅供开发者预览，不要在正式生产环境中使用！");
+	}
 
 	//首先检查有没有配置文件
 	if (!par.parFromFile("./NIAHttpBOT.cfg")) {

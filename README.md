@@ -13,14 +13,16 @@
 
 **语言: 简体中文 | [English](README-EN.md)**
 
-
+> [!IMPORTANT]
 > 一般而言如果你想看到最新的开发进度，请前往[dev分支](https://github.com/Nia-Server/NiaServer-Core/tree/dev)查看，但是由于我们的开发进度并不是很稳定，所以我们并不推荐您直接使用dev分支的代码!
 
 ## 写在前面
 
-**注意：当前服务器addons包仍处于开发状态，暂时没有对其他类型服务器做适配，所以我们并不推荐您直接使用！**
+> [!WARNING]
+> 当前服务器addons包仍处于开发状态，暂时没有对其他类型服务器做适配，所以我们并不推荐您直接使用！
 
-**为了实现更多功能，服务器使用了@minecraft/server-net模块，所以本插件包不能在个人存档中正常运行，只能在BDS上运行！**
+> [!TIP]
+>为了实现更多功能，服务器使用了@minecraft/server-net模块，所以本插件包不能在个人存档中正常运行，只能在BDS上运行！
 
 一个基于BDS的基岩版服务器，这里开源了由服务器开发团队制作的addons（包括基于script-api的脚本）、大部分运行于LiteLoader的插件（部分LiteLoader插件源码可以点击前往 [NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin) 查看）
 
@@ -32,15 +34,18 @@
 
 ## 关于资源包内资源使用说明
 
+> [!IMPORTANT]
 > 只限于您要使用资源包内的素材时看一下这个条款即可，使用行为包内的源码遵守[开源协议](https://github.com/Nia-Server/NiaServer-Core/blob/main/LICENSE)即可，无需通知我们
 
 如果您要使用资源包内的资源（包括但不限于结构、贴图等资源），**请务必在使用前向`server@mcnia.com`发送邮件**，获得相关贴图的使用授权（包括但不限于个人、组织等**商业或非商业**用途），以避免不必要的麻烦！
 
 ## 开发计划
 
-> 由于NIA服务器开发计划（V4->V4.5）有所变动，玩法机制将有大范围变动（包括但不限于玩法、机制等）
+**v1.5.0** 上线NIAHttpBOT的QQ机器人版本，支持QQ机器人的一系列操作
 
-暂未公布，敬请期待！
+**v1.5.1** 行为包添加QQ机器人联动功能
+
+更多详细新特性开发计划&&bug修复请前往[NIA服务器开发计划](https://github.com/orgs/Nia-Server/projects/1/views/1?layout=board)查看...
 
 ## Addons功能&&特性
 
@@ -59,7 +64,7 @@
 
 ## 关于NIAHttpBOT
 
-新版机器人基于c++制作（特别感谢[**@jiansyuan**](https://github.com/jiansyuan)），使用HTTP实现对文件的一系列操作，具体使用示例，请前往[NIA服务器文档站](https://docs.mcnia.com/dev/Http-Bot.html)查看使用说明！
+新版机器人基于c++制作（特别感谢[**@jiansyuan**](https://github.com/jiansyuan)），使用HTTP实现对文件的一系列操作，并基于[LLoneBOT](https://github.com/LLOneBot/LLOneBot)为NIAHttpBOT新增部分QQ机器人功能，具体使用示例，请前往[NIA服务器文档站](https://docs.mcnia.com/dev/Http-Bot.html)查看使用说明！
 
 **NIAHttpBOT**可以在windows/Linux环境下运行，windows环境下请下载**NIAHttpBOT.exe**,双击**NIAHttpBOT.exe**即可运行；Linux环境下请下载**NIAHttpBOT**然后使用`./NIAHttpBOT`命令运行即可！
 
@@ -79,7 +84,8 @@
 - `NiaServerPlugin`文件夹 指向了服务器自主开发的dll格式插件开源项目地址[NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin)。
 - `plugins`文件夹 存储了服务器所使用的部分脚本插件
 
-**但是我并不推荐您直接下载里面的文件，因为里面的文件很可能仍处于开发状态中！您可以前往release界面下载经过测试的资源包、行为包、插件等**
+> [!TIP]
+> 但是我并不推荐您直接下载里面的文件，因为里面的文件很可能仍处于开发状态中！您可以前往release界面下载经过测试的资源包、行为包、插件等
 
 ## 使用说明
 
@@ -91,6 +97,7 @@
 
 在完成配置之后将行为包以及资源包分别解压至`development_behavior_packs`文件夹、`development_resource_packs`！
 
+> [!IMPORTANT]
 > 别忘记根据自己下的addons包修改版本号!
 
 然后在`worlds/[Map name]`目录下添加`world_behavior_packs.json`

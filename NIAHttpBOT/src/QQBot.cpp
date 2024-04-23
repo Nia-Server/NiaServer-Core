@@ -23,9 +23,9 @@ void loadForbiddenWords(const std::string& filename) {
 	//如果文件没有就创建一个，并写入默认的违禁词
 	if (!file) {
 		std::ofstream file(filename);
-		file << "test1\n";
-		file << "test2\n";
-		file << "test3\n";
+		file << "# 违禁词每个词占一行，结尾可以用“，”或“；”结尾，或者直接换行\n";
+		file << "# 违禁词前加“#”前缀则不会解析本行的违禁词\n";
+		file << "test\n";
 		file.close();
 		//向控制台输出警告
 		WARN("违禁词文件不存在，已自动创建！请编辑违禁词文件！文件名称为：" + filename);
@@ -35,6 +35,18 @@ void loadForbiddenWords(const std::string& filename) {
 	//定义违禁词数量
 	int count = 0;
     while (std::getline(file, word)) {
+		//如果违禁词结尾为；，等符号，去掉尾部符号再加入到违禁词列表中
+		if (word[word.size() - 1] == ';' || word[word.size() - 1] == ',' || word[word.size() - 1] == '；' || word[word.size() - 1] == '，') {
+			word = word.substr(0, word.size() - 1);
+		}
+		//如果违禁词开头为#，跳过这一行
+		if (word[0] == '#') {
+			continue;
+		}
+		//如果违禁词为空，跳过这一行
+		if (word == "") {
+			continue;
+		}
         forbiddenWords.push_back(word);
 		count++;
     }
@@ -76,7 +88,7 @@ void main_qqbot(httplib::Server &svr)
 	//尝试与QQ机器人建立连接
 	auto get_status_res = qqbot->get_status();
 	//检查是否成功连接到QQ机器人
-	if (get_status_res.status && get_status_res.good && get_status_res.online) {
+	if (get_status_res.status == 1) {
 		INFO("已成功连接到QQ机器人！");
 		//加载违禁词列表
 		loadForbiddenWords("ForbiddenWords.txt");
@@ -135,30 +147,49 @@ void main_qqbot(httplib::Server &svr)
 	//接收QQ消息事件
 	svr.Post(Locate, [](const httplib::Request& req, httplib::Response& res) {
 
-		//INFO(X("NiaHttp-BOT 客户端接收的数据为 ") << req.body);
+		INFO(X("客户端接收的数据为 ") << req.body);
 		//解析字符串并创建一个json对象
-		rapidjson::Document qqEventData;
-		qqEventData.Parse(req.body.c_str());
+		rapidjson::Document qq_event_data;
+		qq_event_data.Parse(req.body.c_str());
 		//解析post_type字段,用来判断事件类型
 		std::string post_type = "";
-		post_type = qqEventData["post_type"].GetString();
+		post_type = qq_event_data["post_type"].GetString();
 
 		//判断事件类型
 		//处理消息事件
 		if (post_type == "message") {
 			//解析message字段
 			std::string message = "";
-			message = qqEventData["raw_message"].GetString();
+			message = qq_event_data["raw_message"].GetString();
+			// rapidjson::Document raw_message_data;
+			// raw_message_data.Parse(qq_event_data["message"].GetString());
+			// const rapidjson::Value& raw_message_data = qq_event_data["message"];
+
+			// //单纯把所有消息内容拼接在一起
+			// for (rapidjson::SizeType i = 0; i < raw_message_data.Size(); i++) {
+			// 	//判断type字段是否为text，如果是则拼接到message中
+			// 	std::string raw_message_type = raw_message_data[i]["type"].GetString();
+			// 	if (raw_message_data[i]["type"].GetString() == "text") {
+			// 		message += raw_message_data[i]["data"]["text"].GetString();
+			// 		//向控制台输出
+			// 		std::string text = raw_message_data[i]["data"]["text"].GetString();
+			// 		INFO("text: " + text);
+			// 	}
+			// }
+
+			//向控制台输出message
+			INFO("message: " + message);
+
 
 			//解析sub_type字段
 			std::string sub_type = "";
-			sub_type = qqEventData["sub_type"].GetString();
+			sub_type = qq_event_data["sub_type"].GetString();
 
 			//如果是私聊消息
 			if (sub_type == "friend") {
 				//解析user_id字段
 				std::string user_id = "";
-				user_id = std::to_string(qqEventData["user_id"].GetInt64());
+				user_id = std::to_string(qq_event_data["user_id"].GetInt64());
 
 				return ;
 			}
@@ -167,14 +198,16 @@ void main_qqbot(httplib::Server &svr)
 			if (sub_type == "normal") {
 				//解析group_id字段
 				std::string group_id = "";
-				group_id = std::to_string(qqEventData["group_id"].GetInt());
+				group_id = std::to_string(qq_event_data["group_id"].GetInt());
 
 				//解析发送者的qq号
 				std::string sender_qq = "";
-				sender_qq = std::to_string(qqEventData["user_id"].GetInt64());
+				sender_qq = std::to_string(qq_event_data["user_id"].GetInt64());
 
 				//判断group_id是否为指定的QQ群
 				if (group_id != QQGroup) {
+					//向qq群发送消息
+					qqbot->send_group_message(group_id, "本群没有开通QQBOT功能，请联系管理员开通！");
 					return ;
 				}
 
@@ -182,14 +215,14 @@ void main_qqbot(httplib::Server &svr)
 				if (containsForbiddenWords(message)) {
 					//看发送者是否为管理员或者群主
 					std::string user_permission = "";
-					user_permission = qqEventData["sender"]["role"].GetString();
+					user_permission = qq_event_data["sender"]["role"].GetString();
 					if (user_permission == "admin" || user_permission == "owner" || sender_qq == OwnerQQ) {
 						return ;
 					}
 					//发送警告消息
 					qqbot->send_group_message(group_id, "请注意发言规范！详情见 https://docs.mcnia.com/play-guide/regulation.html");
 					//撤回消息
-					auto delete_msg_res = qqbot->delete_msg(qqEventData["message_id"].GetInt());
+					auto delete_msg_res = qqbot->delete_msg(qq_event_data["message_id"].GetInt());
 					//判断撤回消息是否成功
 					if (delete_msg_res == 1) {
 						qqbot->send_private_message(OwnerQQ, "qq[" + sender_qq + "] 在 群[" + group_id + "] 发送了违禁消息：" + message + ",已成功撤回！");
@@ -257,7 +290,7 @@ void main_qqbot(httplib::Server &svr)
 					if (command == "禁言" || command == "禁") {
 						//判断指令执行者是否为管理员
 						std::string user_permission = "";
-						user_permission = qqEventData["sender"]["role"].GetString();
+						user_permission = qq_event_data["sender"]["role"].GetString();
 						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
 							qqbot->send_group_message(group_id, "您没有权限执行此操作！");
 							return ;
@@ -336,7 +369,7 @@ void main_qqbot(httplib::Server &svr)
 					if (command == "解禁" || command == "解") {
 						//判断指令执行者是否为管理员
 						std::string user_permission = "";
-						user_permission = qqEventData["sender"]["role"].GetString();
+						user_permission = qq_event_data["sender"]["role"].GetString();
 						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
 							qqbot->send_group_message(group_id, "您没有权限执行此操作！");
 							return ;
@@ -475,7 +508,7 @@ void main_qqbot(httplib::Server &svr)
 						//指令格式为:#改绑 @qq XboxID
 						//先判断指令执行者是否为管理员
 						std::string user_permission = "";
-						user_permission = qqEventData["sender"]["role"].GetString();
+						user_permission = qq_event_data["sender"]["role"].GetString();
 						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
 							qqbot->send_group_message(group_id, "您没有权限执行此操作！");
 							return ;
@@ -557,7 +590,7 @@ void main_qqbot(httplib::Server &svr)
 						//封禁原理：将ban_time字段设置为当前时间+封禁时间后的时间字符串形似“2021-08-01 12:00:00“
 						//先判断指令执行者是否为管理员
 						std::string user_permission = "";
-						user_permission = qqEventData["sender"]["role"].GetString();
+						user_permission = qq_event_data["sender"]["role"].GetString();
 						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
 							qqbot->send_group_message(group_id, "您没有权限执行此操作！");
 							return ;
@@ -663,7 +696,7 @@ void main_qqbot(httplib::Server &svr)
 						//指令格式为：#解封 @qq
 						//先判断指令执行者是否为管理员
 						std::string user_permission = "";
-						user_permission = qqEventData["sender"]["role"].GetString();
+						user_permission = qq_event_data["sender"]["role"].GetString();
 						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
 							qqbot->send_group_message(group_id, "您没有权限执行此操作！");
 							return ;
@@ -741,7 +774,7 @@ void main_qqbot(httplib::Server &svr)
 						if (search_message == "") {
 							//为空直接查询自己
 							//获取发送者的qq号
-							std::string search_qq = std::to_string(qqEventData["user_id"].GetInt64());
+							std::string search_qq = std::to_string(qq_event_data["user_id"].GetInt64());
 							//读取player_data.json文件
 							std::ifstream players_data_file("player_data.json");
 							//文件读取失败
@@ -822,7 +855,7 @@ void main_qqbot(httplib::Server &svr)
 						//指令格式为：#改权限 @qq 权限
 						//先判断指令执行者是否为管理员
 						std::string user_permission = "";
-						user_permission = qqEventData["sender"]["role"].GetString();
+						user_permission = qq_event_data["sender"]["role"].GetString();
 						if (user_permission != "admin" && user_permission != "owner" && sender_qq != OwnerQQ) {
 							qqbot->send_group_message(group_id, "您没有权限执行此操作！");
 							return ;
@@ -917,22 +950,22 @@ void main_qqbot(httplib::Server &svr)
 		//处理通知事件
 		if (post_type == "notice") {
 			//看看group_id，是否为指定的群聊
-			std::string group_id = std::to_string(qqEventData["group_id"].GetInt64());
+			std::string group_id = std::to_string(qq_event_data["group_id"].GetInt64());
 			if (group_id != QQGroup) {
 				return ;
 			}
 
 			//解析"notice_type"字段
-			std::string notice_type = qqEventData["notice_type"].GetString();
+			std::string notice_type = qq_event_data["notice_type"].GetString();
 
 			//处理群成员减少事件
 			if (notice_type == "group_decrease") {
 				//获取操作者qq号
-				std::string operator_qq = std::to_string(qqEventData["operator_id"].GetInt64());
+				std::string operator_qq = std::to_string(qq_event_data["operator_id"].GetInt64());
 				//获取被操作者qq号
-				std::string user_qq = std::to_string(qqEventData["user_id"].GetInt64());
+				std::string user_qq = std::to_string(qq_event_data["user_id"].GetInt64());
 				//获取减少类型
-				std::string sub_type = qqEventData["sub_type"].GetString();
+				std::string sub_type = qq_event_data["sub_type"].GetString();
 				//获取减少类型为"kick_me"，即自己被踢出群聊
 				if (sub_type == "kick_me") {
 					//向群聊发送消息“qq:[123456] 已被移出群聊”
@@ -1032,11 +1065,11 @@ void main_qqbot(httplib::Server &svr)
 			//处理群成员增加事件
 			if (notice_type == "group_increase") {
 				//获取操作者qq号
-				std::string operator_qq = std::to_string(qqEventData["operator_id"].GetInt64());
+				std::string operator_qq = std::to_string(qq_event_data["operator_id"].GetInt64());
 				//获取被操作者qq号
-				std::string user_qq = std::to_string(qqEventData["user_id"].GetInt64());
+				std::string user_qq = std::to_string(qq_event_data["user_id"].GetInt64());
 				//获取增加类型
-				std::string sub_type = qqEventData["sub_type"].GetString();
+				std::string sub_type = qq_event_data["sub_type"].GetString();
 				//获取增加类型为"invite"，即被邀请进入群聊
 				if (sub_type == "invite") {
 					//向群聊发送消息"欢迎@qq 加入本群，发送#帮助获取指令帮助，来绑定自己的Xbox账号！"

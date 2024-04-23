@@ -2,6 +2,10 @@
 #ifndef QQBOT_API_H
 #define QQBOT_API_H
 
+#ifdef WIN32 //only enable TLS in windows
+#define CPPHTTPLIB_OPENSSL_SUPPORT
+#endif
+
 #include <httplib.h>
 #include <vector>
 #include <rapidjson/document.h>
@@ -193,6 +197,7 @@ public:
 
 
 private:
+    //httplib::SSLClient cli;
     httplib::Client cli;
 
 };

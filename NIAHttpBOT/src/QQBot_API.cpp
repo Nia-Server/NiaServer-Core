@@ -277,6 +277,9 @@ QQBot::bot_status QQBot::get_status() {
             status.status = 1;
             status.good = doc["data"]["good"].GetBool();
             status.online = doc["data"]["online"].GetBool();
+        } else if (doc.HasMember("status") && std::string(doc["status"].GetString()) == "failed") {
+            WARN("调用API <get_status()> 后，获取状态失败：" + res->body);
+            status.status = 0;
         } else {
             WARN("调用API <get_status()> 后，无法解析返回的数据：" + res->body);
             status.status = -1;
