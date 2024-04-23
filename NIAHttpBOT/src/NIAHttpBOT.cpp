@@ -62,7 +62,7 @@ If you have any problems with this project, please contact the authors.
 #define WEXITSTATUS
 #endif
 
-#ifndef WIN32
+#ifdef WIN32
 void sslThread(){
 
 
