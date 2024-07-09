@@ -197,7 +197,6 @@ public:
 
 
 private:
-    //httplib::SSLClient cli;
     httplib::Client cli;
 
 };

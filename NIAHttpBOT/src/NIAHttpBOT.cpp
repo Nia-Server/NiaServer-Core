@@ -1,12 +1,6 @@
 /*
 
-You must accept Minecraft's End User Licence Agreement (EULA).
-
-It means please do not use any content that violates the EULA for commercial purposes!
-
-Accepting this licence means you also accept the Minecraft EULA(https://account.mojang.com/terms)
-
-If you violate the EULA, the developer is not liable for any damages.
+Copyright (C) 2024 Nia-Server
 
 The developer is not responsible for you, and the developer is not obliged to write code for you, and is not liable for any consequences of your use.
 
@@ -16,7 +10,7 @@ If you do not accept these terms, please delete this project immediately.
 
 authors: NIANIANKNIA && jiansyuan
 
-email: server@mcnia.com
+email: dev@mcnia.com
 
 Project address: https://github.com/Nia-Server/NiaServer-Core/
 
@@ -52,6 +46,8 @@ If you have any problems with this project, please contact the authors.
 #include "QQBot.h"
 #include "File_API.h"
 #include "Game_API.h"
+#include "CommandListener.h"
+
 
 //定义版本号
 #define VERSION "v1.5.0-pre-3"
@@ -235,9 +231,11 @@ signed int main(signed int argc, char** argv) {
 		else XINFO("语言配置已加载成功");
 	}
 
-	INFO(X("监听服务器已在 ") + IPAddress + ":" + std::to_string(ServerPort) + X(" 上成功启动!"));
-	//如果配置文件中启用使用qq机器人，则输出qq机器人的监听端口
-	if (UseQQBot) INFO(X("客户端已在 ") + IPAddress + ":" + std::to_string(ClientPort) + Locate + X(" 上成功启动!"));
+	INFO(X("sapi事件监听服务器已在 ") + IPAddress + ":" + std::to_string(ServerPort) + X(" 上成功启动!"));
+	if (UseQQBot) {
+		INFO(X("qq-bot事件监听服务器已在 ") + IPAddress + ":" + std::to_string(ServerPort) + Locate + X(" 上成功启动!"));
+		INFO(X("qq-bot客户端已在 ") + IPAddress + ":" + std::to_string(ClientPort) + X(" 上成功启动!"));
+	}
 	XINFO("项目地址：https://github.com/Nia-Server/NiaServer-Core/tree/main/NIAHttpBOT");
 	XINFO("项目作者：@NIANIANKNIA @jiansyuan");
 	XINFO("在使用中遇到问题请前往项目下的 issue 反馈，如果觉得本项目不错不妨点个 star！");
@@ -245,8 +243,9 @@ signed int main(signed int argc, char** argv) {
 
 
 	#ifdef WIN32
-	std::thread ssl_thread(sslThread);
-	ssl_thread.detach();
+	// std::thread ssl_thread(sslThread);
+	// ssl_thread.detach();
+	sslThread();
 	#endif
 
 	//初始化服务器
@@ -323,40 +322,9 @@ signed int main(signed int argc, char** argv) {
 	init_file_API(svr);
 
 	//监听终端命令输入
-    std::thread inputThread([&]() {
-        std::string command;
-		bool hasCommand = false;
-        while (std::cin >> command) {
-			//重载指令
-            if (command == "reload") {
-				hasCommand = true;
-				INFO("1s后重启NiaHttp-BOT...");
-				std::this_thread::sleep_for(std::chrono::seconds(1));
-				#ifdef _WIN32
-                std::system(("start cmd /k " + std::string(argv[0])).c_str());
-				#else
-					if (fork() == 0) {
-						execl(argv[0], argv[0], (char*)NULL);
-					}
-				#endif
-                exit(0);
-            }
-			//停止指令
-			if (command == "stop") {
-				hasCommand = true;
-				INFO("1s后将关闭NiaHttp-BOT...");
-				std::this_thread::sleep_for(std::chrono::seconds(1));
-				exit(0);
-			}
-			if (!hasCommand) {
-				WARN("未知指令，请检查后再次输入！");
-			}
-        }
-    });
+	listenForCommands(argv[0]);
 
 	svr.listen(IPAddress, ServerPort);
-
-	inputThread.join();
 
 	return 0;
 }

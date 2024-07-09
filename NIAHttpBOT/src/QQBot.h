@@ -2,6 +2,7 @@
 #define QQBOT_H
 
 #include <vector>
+#include <unordered_map>
 #include <string>
 #include <algorithm>
 #include <httplib.h>

@@ -27,6 +27,28 @@ export class ExternalFS {
     }
 
     /**
+     * @function 检测特定文件是否存在
+     * @param {String} filename
+     * @return {String | Number} 获取成功返回true,文件不存在返回0，服务器连接失败返回-1
+     */
+    CheckFile(filename) {
+        const reqCheckFile = new HttpRequest(`${server_url}:${port}/CheckFile`)
+        .setBody(filename)
+        .setMethod(HttpRequestMethod.Post)
+        .addHeader("Content-Type", "text/plain");
+        return new Promise(async (resolve) => {
+            const response = await http.request(reqCheckFile);
+            if (response.status == 200) {
+                resolve(response.body);
+            } else if (response.status == 400) {
+                resolve(0);
+            } else {
+                resolve(-1);
+            }
+        })
+    }
+
+    /**
      * @function 获取文件内容
      * @param {String} filename
      * @return {String | Number} 获取成功返回文件数据，文件不存在返回0，服务器连接失败返回-1

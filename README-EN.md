@@ -1,4 +1,4 @@
-# NIA Server v4.0--Bedrock Skyblock Server
+# NiaServer-Core
 
 [![wakatime](https://wakatime.com/badge/user/a2d785d3-a26c-467b-9112-333ba2bee9e8/project/9ae0abd5-b1ad-4199-bd66-0fba1a96ac45.svg?style=for-the-badge)](https://wakatime.com/badge/user/a2d785d3-a26c-467b-9112-333ba2bee9e8/project/9ae0abd5-b1ad-4199-bd66-0fba1a96ac45)
 [![status](https://img.shields.io/github/actions/workflow/status/Nia-Server/NiaServer-Core/main.yml?style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/actions)
