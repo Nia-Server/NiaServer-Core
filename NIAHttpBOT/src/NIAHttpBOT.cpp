@@ -34,6 +34,9 @@ If you have any problems with this project, please contact the authors.
 
 #ifdef WIN32 //only enable TLS in windows
 #define CPPHTTPLIB_OPENSSL_SUPPORT
+#include <process.h>
+#else
+#include <unistd.h>
 #endif
 
 #include <httplib.h>
