@@ -348,7 +348,7 @@ signed int main(signed int argc, char** argv) {
         std::system(("start cmd /k " + std::string(programName)).c_str());
         #else
         if (fork() == 0) {
-            execl(programName, programName, (char*)NULL);
+            execl(programName.c_str(), programName.c_str(), (char*)NULL);
         }
         #endif
         exit(0);
