@@ -311,7 +311,7 @@ signed int main(signed int argc, char** argv) {
 			exitCode = WEXITSTATUS(pclose(pipe));
 			return {result, exitCode};
 		})();
-		if(cmdres[cmdres.size()-1]=='\n') [[likely]] cmdres.pop_back();
+		if(!cmdres.empty() && cmdres.back() == '\n') [[likely]] cmdres.pop_back();
 		INFO(X("命令执行输出: ") + cmdres);
 		if (excd!=0) [[unlikely]] WARN(X("命令执行失败, 返回值: ")+std::to_string(excd));
 		else XINFO("命令执行成功！返回值: 0");
