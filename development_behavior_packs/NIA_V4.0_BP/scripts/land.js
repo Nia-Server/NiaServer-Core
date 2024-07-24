@@ -1,6 +1,5 @@
 //圈地系统
-
-import { system, world, SystemAfterEvents, System, CommandResult } from '@minecraft/server';
+import { system, world } from '@minecraft/server';
 import { ExternalFS } from './API/filesystem';
 import { Broadcast, GetScore, GetTime, RunCmd, log } from './customFunction';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
@@ -225,20 +224,20 @@ function player_in_index(player) {
             if (!in_allowlist(player,land)) {
                 if (!player.hasTag(cfg.OPTAG) && land.setup.VirtualFence) {
                     player.teleport(player_last_pos);
-                    RunCmd(`title "${player.name}" title §c无法进入该领地！`);
-                    RunCmd(`title "${player.name}" subtitle §e== ${land.land_name} §r§e==`);
+                    RunCmd(`title "${player.name}" title §e== ${land.land_name} §r§e==`);
+                    RunCmd(`title "${player.name}" subtitle §c无法进入该领地！`);
                     player.playSound("random.levelup");
                 } else {
-                    RunCmd(`title "${player.name}" title §b您已进入他人领地之中！`);
-                    RunCmd(`title "${player.name}" subtitle §e== ${land.land_name} §r§e==`);
+                    RunCmd(`title "${player.name}" title §e== ${land.land_name} §r§e==`);
+                    RunCmd(`title "${player.name}" subtitle §b您已进入他人领地之中！`);
                     if (player.hasTag(cfg.OPTAG)) {
                         player.sendMessage(`§c 尊敬的管理员，您正在玩家 ${land.owner_name} 的领地中，由于您是管理员，所以在领地中不会受到任何限制，但请注意不要破坏玩家领地！`);
                     }
                     player.playSound("random.levelup");
                 }
             } else if (land.setup.ShowActionbar) {
-                RunCmd(`title "${player.name}" title §b欢迎回家 ╰(*°▽°*)╯`);
-                RunCmd(`title "${player.name}" subtitle §e== ${land.land_name} §r§e==`);
+                RunCmd(`title "${player.name}" title §e== ${land.land_name} §r§e==`);
+                RunCmd(`title "${player.name}" subtitle §b欢迎回家 ╰(*°▽°*)╯`);
                 player.playSound("random.levelup");
             }
         }
@@ -488,6 +487,8 @@ function have_other_land(pos1, pos2, dimid, LandUUID) {
     }
     return false;
 }
+
+world.setDynamicProperty("land_tickingarea","[]");
 
 //圈地相关API
 const LandAPI = {
@@ -1261,12 +1262,12 @@ const GUI = {
                         if (result === "success") {
                             //开始给予领地拥有者金币
                             let old_temp_player_money = JSON.parse(JSON.stringify(temp_player_money));
-                            temp_player_money[land_data[LandUUID].owner] = new_land_data[new_LandUUID].sale_price;
+                            temp_player_money[land_data[LandUUID].owner] = new_land_data[LandUUID].sale_price;
                             fs.OverwriteJsonFile("land_temp_player_money.json",temp_player_money).then((result) => {
                                 if (result === "success") {
                                     player.sendMessage("§a 领地购买成功！");
                                     //开始扣款
-                                    world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).addScore(player,-new_land_data[new_LandUUID].sale_price);
+                                    world.scoreboard.getObjective(MONEY_SCOREBOARD_NAME).addScore(player,-new_land_data[LandUUID].sale_price);
                                     land_data = new_land_data;
                                 } else {
                                     this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
@@ -2837,11 +2838,14 @@ world.afterEvents.worldInitialize.subscribe((event) => {
     //注册动态属性
     //event.propertyRegistry.registerWorldDynamicProperties(new DynamicPropertiesDefinition().defineString("land_tickingarea",10000,"[]"));
     //删除所有常加载区块
-    let land_tickingarea = JSON.parse(world.getDynamicProperty("land_tickingarea"));
-    for (let key = 0;key < land_tickingarea.length;key++) {
-        RunCmd(`tickingarea remove ${land_tickingarea[key]}`);
-        log("The temporary tickingarea block has been deleted:" + land_tickingarea[key]);
-        world.setDynamicProperty("land_tickingarea",JSON.stringify(land_tickingarea));
+    //检查land_tickingarea是否存在
+    if (world.getDynamicProperty("land_tickingarea")) {
+        let land_tickingarea = JSON.parse(world.getDynamicProperty("land_tickingarea"));
+        for (let key = 0;key < land_tickingarea.length;key++) {
+            RunCmd(`tickingarea remove ${land_tickingarea[key]}`);
+            log("The temporary tickingarea block has been deleted:" + land_tickingarea[key]);
+            world.setDynamicProperty("land_tickingarea",JSON.stringify(land_tickingarea));
+        }
     }
 
 

@@ -1,0 +1,74 @@
+name: Pre Build
+
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+      - name: Install CMake and Ninja
+        uses: lukka/get-cmake@latest
+      - name: Configure the project
+        uses: threeal/cmake-action@v1.3.0
+        with:
+          run-build: true
+          source-dir: NIAHttpBOT
+          build-dir: NIAHttpBOT
+      - name: Upload the exe file
+        uses: actions/upload-artifact@v4
+        with:
+          name: NIAHttpBOT.exe
+          path: ./NIAHttpBOT/Debug/NIAHttpBOT.exe
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+      - name: Install CMake and Ninja
+        uses: lukka/get-cmake@latest
+      - name: Configure the project
+        uses: threeal/cmake-action@v1.3.0
+        with:
+          run-build: true
+          source-dir: NIAHttpBOT
+          build-dir: NIAHttpBOT
+      - name: Upload the executable file
+        uses: actions/upload-artifact@v4
+        with:
+          name: NIAHttpBOT
+          path: ./NIAHttpBOT/NIAHttpBOT
+
+  zip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Archive Release1
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          directory: 'development_behavior_packs/NIA_V4.0_BP'
+          path: '.'
+          filename: NiaServer-Core-BP-PRE.zip
+      - name: Upload the zip file1
+        uses: actions/upload-artifact@v4
+        with:
+          name: NiaServer-Core-BP-PRE.zip
+          path: ./development_behavior_packs/NIA_V4.0_BP/NiaServer-Core-BP-PRE.zip
+      - name: Archive Release2
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          directory: 'development_resource_packs/NIA_V4.0_RP'
+          path: '.'
+          filename: NiaServer-Core-RP-PRE.zip
+      - name: Upload the zip file2
+        uses: actions/upload-artifact@v4
+        with:
+          name: NiaServer-Core-RP-PRE.zip
+          path: ./development_resource_packs/NIA_V4.0_RP/NiaServer-Core-RP-PRE.zip

@@ -6,6 +6,7 @@ set(CMAKE_BUILD_TYPE Release)
 
 project(${PROJECT})
 
+
 cmake_host_system_information(RESULT CPU_CORES_FIGURE QUERY NUMBER_OF_LOGICAL_CORES)
 
 if(NOT CMAKE_CXX_COMPILER_LOADED)
@@ -43,9 +44,21 @@ endif()
 
 aux_source_directory(./src/ SOURCE)
 include_directories(./header)
-
-link_libraries(${LINK_LIBRARIES_FLAG})
 add_definitions(-D__PROJECT__="${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_executable(${PROJECT} ${SOURCE})
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	target_link_libraries(${PROJECT} PRIVATE 
+		"${CMAKE_SOURCE_DIR}/lib/libcrypto.lib"
+		"${CMAKE_SOURCE_DIR}/lib/libssl.lib")
+
+	add_custom_command(TARGET ${PROJECT} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy
+				"${CMAKE_SOURCE_DIR}/lib/libssl-3-x64.dll"
+				"$<TARGET_FILE_DIR:${PROJECT}>/libssl-3-x64.dll"
+		COMMAND ${CMAKE_COMMAND} -E copy
+				"${CMAKE_SOURCE_DIR}/lib/libcrypto-3-x64.dll"
+				"$<TARGET_FILE_DIR:${PROJECT}>/libcrypto-3-x64.dll"
+		COMMENT "Copying dll to executable directory")
+endif()

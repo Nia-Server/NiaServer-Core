@@ -1,5 +1,7 @@
 /*
 
+!/.github/
+
 !/development_resource_packs
 !/development_behavior_packs
 /development_behavior_packs/NIA_V4.0_BP/node_modules
@@ -28,6 +30,6 @@
 !/NIAHttpBOT/header/
 !/NIAHttpBOT/src/
 !/NIAHttpBOT/I18N/
-!/NIAHttpBOT/test/
+!/NIAHttpBOT/lib/
 !/NIAHttpBOT/CMakeLists.txt
 

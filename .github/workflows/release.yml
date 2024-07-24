@@ -1,0 +1,109 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    if: ${{ !contains(github.ref, 'pre') }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+      - name: Install CMake and Ninja
+        uses: lukka/get-cmake@latest
+      - name: Configure the project
+        uses: threeal/cmake-action@v1.3.0
+        with:
+          run-build: true
+          source-dir: NIAHttpBOT
+          build-dir: NIAHttpBOT
+      - name: Upload the exe file
+        uses: actions/upload-artifact@v4
+        with:
+          name: NIAHttpBOT.exe
+          path: ./NIAhttpBOT/Debug/NIAHttpBOT.exe
+
+  build-linux:
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.ref, 'pre') }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+      - name: Install CMake and Ninja
+        uses: lukka/get-cmake@latest
+      - name: Configure the project
+        uses: threeal/cmake-action@v1.3.0
+        with:
+          run-build: true
+          source-dir: NIAHttpBOT
+          build-dir: NIAHttpBOT
+      - name: Upload the executable file
+        uses: actions/upload-artifact@v4
+        with:
+          name: NIAHttpBOT
+          path: ./NIAHttpBOT/NIAHttpBOT
+
+  zip:
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.ref, 'pre') }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Archive Release1
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          directory: 'development_behavior_packs/NIA_V4.0_BP'
+          path: '.'
+          filename: NiaServer-Core-BP-${{ github.ref_name }}.zip
+      - name: Upload the zip file1
+        uses: actions/upload-artifact@v4
+        with:
+          name: NiaServer-Core-BP-${{ github.ref_name }}.zip
+          path: ./development_behavior_packs/NIA_V4.0_BP/NiaServer-Core-BP-${{ github.ref_name }}.zip
+      - name: Archive Release2
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          directory: 'development_resource_packs/NIA_V4.0_RP'
+          path: '.'
+          filename: NiaServer-Core-RP-${{ github.ref_name }}.zip
+      - name: Upload the zip file2
+        uses: actions/upload-artifact@v2
+        with:
+          name: NiaServer-Core-RP-${{ github.ref_name }}.zip
+          path: ./development_resource_packs/NIA_V4.0_RP/NiaServer-Core-RP-${{ github.ref_name }}.zip
+
+  release:
+    needs: [build-windows, build-linux, zip]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+      - name: Download the exe file
+        uses: actions/download-artifact@v4
+        with:
+          name: NIAHttpBOT.exe
+      - name: Remove existing directory
+        run: rm -rf ./NIAHttpBOT
+      - name: Download the Linux executable file
+        uses: actions/download-artifact@v4
+        with:
+          name: NIAHttpBOT
+      - name: Download the behavior_pack
+        uses: actions/download-artifact@v4
+        with:
+          name: NiaServer-Core-BP-${{ github.ref_name }}.zip
+      - name: Download the resource_pack
+        uses: actions/download-artifact@v4
+        with:
+          name: NiaServer-Core-RP-${{ github.ref_name }}.zip
+      - name: Create and upload release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          artifacts: "NiaServer-Core-BP-${{ github.ref_name }}.zip,NiaServer-Core-RP-${{ github.ref_name }}.zip,NIAHttpBOT.exe,NIAHttpBOT,world_behavior_packs.json,world_resource_packs.json"
+          bodyFile: "CHANGELOG.md"
+          generateReleaseNotes: false
+          token: ${{ secrets.GITHUB_TOKEN }}
