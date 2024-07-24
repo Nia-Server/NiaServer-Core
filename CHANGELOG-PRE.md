@@ -1,6 +1,6 @@
 # v1.5.0-pre-3 更新日志
 
-[![BDS VERSION](https://img.shields.io/badge/BDS-1.20.61.01-green?style=for-the-badge&logo=appveyor)](https://www.minecraft.net/en-us/download/server/bedrock)
+[![BDS VERSION](https://img.shields.io/badge/BDS-1.21.3.01-green?style=for-the-badge&logo=appveyor)](https://www.minecraft.net/en-us/download/server/bedrock)
 
 
 > **预发布版本提醒**：这是一个**预览版本**，可能存在一些bug，仅供测试，请勿在正式生产环境使用本版本！
@@ -9,23 +9,27 @@
 
 ## 优化
 
-
+优化NIAHttpBOT的QQ机器人的指令解析逻辑
 
 ## 新增
 
-1.基于[LLoneBOT](https://github.com/LLOneBot/LLOneBot)使用[onebot-11](https://github.com/botuniverse/onebot-11/)为NIAHttpBOT&&Nia-Server-Core新增部分QQ机器人功能
+1.NIAHttpBOT增加聊天违禁词检测
 
-2.NIAHttpBOT增加QQ机器人相关配置文件
+2.NIAHttpBOT增加自动检查更新功能
 
-3.NIAHttpBOT增加主人QQ相关功能
-
-4.NIAHttpBOT增加QQ权限检测
+3.NIAHttpBOT增加https支持
 
 ## 修复
 
-1.NIAHttpBOT收到私聊消息时崩溃
+1.NIAHttpBOT输入reload指令后不能正确重载
 
-2.在QQ客户端没有开启的情况下，开始NiaHttp-BOT导致的报错
+2.NIAHttpBOT启动log ip信息显示错误
+
+3.NIAHttpBOT违禁词检查错误撤回图片等其他非消息内容
+
+4.NIAHttpBOT部分API有返回值，调用函数时确没有返回值
+
+5.NIAHttpBOT的qq功能无法正常显示@人
 
 
 

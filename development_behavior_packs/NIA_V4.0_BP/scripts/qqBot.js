@@ -14,11 +14,11 @@ const fs = new ExternalFS();
 
 console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] QQBot has been successfully started on this server!\x1b[0m\n`);
 
-world.afterEvents.worldInitialize.subscribe((event) => {
-    bot.send_group_msg(`服务器已与机器人成功连接！\nBDS当前版本:${BDS_VERSION}\nCore版本:${VERSION}\n上次更新时间:${LAST_UPGRATE}`,"724360499").then((result) => {
-        console.log(result);
-    })
-})
+// world.afterEvents.worldInitialize.subscribe((event) => {
+//     bot.send_group_msg(`服务器已与机器人成功连接！\nBDS当前版本:${BDS_VERSION}\nCore版本:${VERSION}\n上次更新时间:${LAST_UPGRATE}`,"724360499").then((result) => {
+//         console.log(result);
+//     })
+// })
 
 
 

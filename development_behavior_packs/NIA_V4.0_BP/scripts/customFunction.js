@@ -6,6 +6,9 @@ export function log(info) {
     console.log("\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] " + info + "\x1b[0m")
 }
 
+export function warn(info) {
+    console.warn("\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] " + info + "\x1b[0m")
+}
 
 /**
  * 将Msg消息广播至整个游戏
@@ -51,7 +54,7 @@ export function AddScoreboard(scoreboardName,showName) {
 export function GetTime() {
     //创建一个Date对象
     let nowTime = new Date()
-    //这里是或得北京时间
+    //这里是获得北京时间
     let addedTime = new Date(nowTime.getTime() + 28800000);
     //获取年份
     let year = addedTime.getFullYear ();

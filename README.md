@@ -26,9 +26,7 @@
 
 一个基于BDS的基岩版服务器，这里开源了由服务器开发团队制作的addons（包括基于script-api的脚本）
 
-**以下插件由于部分原因不再进更新维护：**
-
-运行于LiteLoader的插件（部分LiteLoader插件源码可以点击前往 [NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin) 查看）
+**以下插件由于部分原因不再进更新维护：** 运行于LiteLoader的插件（部分LiteLoader插件源码可以点击前往 [NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin) 查看）
 
 我们并不是专业的开发人员，所以难免会出现部分bug、代码不规范、逻辑混乱等错误，也欢迎各位大佬pr，我们也一定会仔细查看、学习、回复每一条pr
 
@@ -60,7 +58,6 @@
 - [x] 兑换码系统
 - [x] 回收系统
 - [x] 传送系统
-- [x] 氧气值玩法
 - [x] 支持修改配置文件
 - [x] 玩家交易市场
 - [x] 圈地系统
@@ -68,6 +65,9 @@
 - [ ] 多语言支持
 
 ## 关于NIAHttpBOT
+
+> [!IMPORTANT]
+> 自v1.6.0版本开始，NIAHttpBOT将作为[子项目](https://github.com/Nia-Server/NIAHttpBOT)分离主项目进行更新，主项目将不再包含NIAHttpBOT的相关源码
 
 新版机器人基于c++制作（特别感谢[**@jiansyuan**](https://github.com/jiansyuan)），使用HTTP实现对文件的一系列操作，并基于[LLoneBOT](https://github.com/LLOneBot/LLOneBot)为NIAHttpBOT新增部分QQ机器人功能，具体使用示例，请前往[NIA服务器文档站](https://docs.mcnia.com/dev/Http-Bot.html)查看使用说明！
 

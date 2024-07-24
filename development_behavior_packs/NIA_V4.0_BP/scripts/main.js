@@ -33,13 +33,13 @@ import './market.js'
 import './land.js'
 import './basic.js'
 import './newFunction.js'
-import './log.js'
+//import './log.js'
 import './qqBot.js'
 //import './AntiCheats.js'
 
 export const VERSION = "v1.5.0-pre-3";
-export const BDS_VERSION = "1.21.1.03";
-export const LAST_UPGRATE = "2024/07/09";
+export const BDS_VERSION = "1.21.3.01";
+export const LAST_UPGRATE = "2024/07/24";
 export const CODE_BRANCH = "dev";
 
 
