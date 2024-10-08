@@ -79,8 +79,7 @@ world.beforeEvents.chatSend.subscribe((event) => {
 })
 
 //
-world.afterEvents.explosion.subscribe((event) => {
-    log(event.source.location.x)
-    log_API.WriteToLog(event.dimension.id,event.source.typeId,event.source.location.x,event.source.location.y,event.source.location.z,"实体爆炸事件","","","","","");
-})
+// world.afterEvents.explosion.subscribe((event) => {
+//     log_API.WriteToLog(event.dimension.id,event.source.typeId,event.source.location.x,event.source.location.y,event.source.location.z,"实体爆炸事件","","","","","");
+// })
 

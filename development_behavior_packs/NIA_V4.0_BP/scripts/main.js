@@ -38,8 +38,8 @@ import './qqBot.js'
 //import './AntiCheats.js'
 
 export const VERSION = "v1.5.0-pre-3";
-export const BDS_VERSION = "1.21.3.01";
-export const LAST_UPGRATE = "2024/07/24";
+export const BDS_VERSION = "1.21.31.04";
+export const LAST_UPGRATE = "2024/10/03";
 export const CODE_BRANCH = "dev";
 
 

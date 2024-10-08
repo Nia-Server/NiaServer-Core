@@ -2,10 +2,10 @@
 	"format_version": 2,
 	"header": {
 	  "name": "NiaServer-Core-1.5.0 BP",
-	  "description": "§bNIA服务器V4-行为包\n作者：NIANIANKNIA\n项目地址：https://github.com/Nia-Server/NiaServer-Core",
+	  "description": "§bNIA服务器-行为包\n作者：NIANIANKNIA\n项目地址：https://github.com/Nia-Server/NiaServer-Core",
 	  "uuid": "cab0bbe3-eb10-465e-b1de-b09facc076c8",
 	  "version": [ 1, 5, 0 ],
-	  "min_engine_version": [ 1, 20, 80 ]
+	  "min_engine_version": [ 1, 21, 31 ]
 	},
 	"modules": [
 		{
@@ -20,11 +20,11 @@
 	"dependencies": [
 		{
 			"module_name": "@minecraft/server",
-			"version": "1.12.0-beta"
+			"version": "1.15.0-beta"
 		},
 		{
 			"module_name": "@minecraft/server-ui",
-			"version": "1.2.0-beta"
+			"version": "1.4.0-beta"
 		},
 		{
 			"module_name": "@minecraft/server-net",

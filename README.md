@@ -32,7 +32,6 @@
 
 虽然可能你并不能立马上手使用这个addons（由于每个服务器游戏机制不同，我们服务器的玩法设定可能不满足您的要求），但我们也希望这个addons也可以给您带来某些方面的启发，或者您自行修改来适配自己的服务器
 
-
 **最后，希望这个项目&&服务器在大家的共同推进下发展的越来越好，如果本项目确实对您有所帮助，不妨点个star吧！**
 
 ## 关于资源包内资源使用说明
@@ -47,6 +46,8 @@
 **v1.5.0** 上线NIAHttpBOT的QQ机器人版本，支持QQ机器人的一系列操作
 
 **v1.5.1** 行为包添加QQ机器人联动功能
+
+**v1.6.0** 从NiaServer-Core主项目分离出NIAHttpBOT，NiaServer-ExtraFeatures作为子项目进行更新
 
 更多详细新特性开发计划&&bug修复请前往[NIA服务器开发计划](https://github.com/orgs/Nia-Server/projects/1/views/1?layout=board)查看...
 
