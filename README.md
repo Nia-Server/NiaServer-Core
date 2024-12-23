@@ -68,7 +68,7 @@
 ## 关于NIAHttpBOT
 
 > [!IMPORTANT]
-> 自v1.6.0版本开始，NIAHttpBOT将作为[子项目](https://github.com/Nia-Server/NIAHttpBOT)分离主项目进行更新，主项目将不再包含NIAHttpBOT的相关源码
+> 自v1.5.0版本开始，NIAHttpBOT将作为[子项目](https://github.com/Nia-Server/NIAHttpBOT)分离主项目进行更新，主项目将不再包含NIAHttpBOT的相关源码
 
 新版机器人基于c++制作（特别感谢[**@jiansyuan**](https://github.com/jiansyuan)），使用HTTP实现对文件的一系列操作，并基于[LLoneBOT](https://github.com/LLOneBot/LLOneBot)为NIAHttpBOT新增部分QQ机器人功能，具体使用示例，请前往[NIA服务器文档站](https://docs.mcnia.com/dev/Http-Bot.html)查看使用说明！
 
