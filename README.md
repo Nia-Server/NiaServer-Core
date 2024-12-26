@@ -163,13 +163,6 @@
 
 [@Dave](https://abcdavk.github.io/) 服务器的空岛生成受他的行为包所启发！
 
-
-## 第三方开源引用
-
-#### [rapidjson](https://github.com/Tencent/rapidjson) - [MIT License](https://github.com/Tencent/rapidjson?tab=License-1-ov-file#readme)
-
-#### [cpp-httplib](https://github.com/yhirose/cpp-httplib) - [MIT License](https://github.com/yhirose/cpp-httplib?tab=MIT-1-ov-file#readme)
-
 ## 服务器开发者名单 （排名不分先后）
 
 @NIANIANKNIA
@@ -208,7 +201,4 @@
 
 另外，您需要遵守本项目的[`AGPL-3.0`](https://github.com/Nia-Server/NiaServer-Core/blob/main/LICENSE)开源许可证条款, 以及本项目所有子项目使用的相关开源协议
 
-## 关于商业化
-
-**由于项目的特殊性，我们并不是很赞成您运用本项目进行商业化，但是并不反对您将本项目进行商业化**
 
