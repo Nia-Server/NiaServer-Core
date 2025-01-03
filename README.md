@@ -24,6 +24,8 @@
 > [!TIP]
 >为了实现更多功能，服务器使用了@minecraft/server-net模块，所以本插件包不能在个人存档中正常运行，只能在BDS上运行！
 
+由于代码众多，部分功能存储数据仍然使用的是计分板/TAG数据存储，我们将在后续更新中逐步替换为其他数据存储方式，可能因此导致部分兼容性问题，敬请谅解！
+
 一个基于BDS的基岩版服务器，这里开源了由服务器开发团队制作的addons（包括基于script-api的脚本）
 
 **以下插件由于部分原因不再进更新维护：** 运行于LiteLoader的插件（部分LiteLoader插件源码可以点击前往 [NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin) 查看）

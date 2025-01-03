@@ -4,9 +4,9 @@
 
 !/development_resource_packs
 !/development_behavior_packs
-/development_behavior_packs/NIA_V4.0_BP/node_modules
-/development_behavior_packs/NIA_V4.0_BP/package-lock.json
-/development_behavior_packs/NIA_V4.0_BP/package.json
+/development_behavior_packs/NiaServer-Core-BP/node_modules
+/development_behavior_packs/NiaServer-Core-BP/package-lock.json
+/development_behavior_packs/NiaServer-Core-BP/package.json
 !/NIAServerPlugin
 
 !/plugins/
@@ -24,12 +24,4 @@
 !LICENSE
 !README-EN.md
 !README.md
-
-!/NIAHttpBOT/
-/NIAHttpBOT/*
-!/NIAHttpBOT/header/
-!/NIAHttpBOT/src/
-!/NIAHttpBOT/I18N/
-!/NIAHttpBOT/lib/
-!/NIAHttpBOT/CMakeLists.txt
 

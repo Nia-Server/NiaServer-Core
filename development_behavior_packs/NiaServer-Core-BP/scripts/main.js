@@ -1,6 +1,6 @@
 /*
 
-Copyright (C) 2024 Nia-Server
+Copyright (C) 2025 Nia-Server
 
 You must accept Minecraft's End User Licence Agreement (EULA).
 

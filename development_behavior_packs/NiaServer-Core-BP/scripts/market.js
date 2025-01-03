@@ -183,14 +183,15 @@ const GUI = {
                                 player.sendMessage("§e 已成功将预览商品送至您的背包中，预览商品将在10s后自动收回！请及时查看！");
                                 system.runTimeout(()=>{
                                     try {
-                                        player.sendMessage("§e 预览时间已到，物品已自动收回！");
                                         for (let i = 9 ; i < 36; i++) {
                                             if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).getLore()[player.getComponent("minecraft:inventory").container.getItem(i).getLore().length - 2] == "§c预览商品请勿进行其他操作！") {
-                                                player.getComponent("minecraft:inventory").container.setItem(i,new ItemStack("minecraft:air"));
+                                                player.getComponent("minecraft:inventory").container.setItem(i,undefined);
+                                                player.sendMessage("§e 预览时间已到，物品已自动收回！");
                                             }
                                         }
                                     } catch (e) {
                                         console.error("[NiaServer-Core] Player preview items are not recycled properly (recycling failure)!");
+                                        player.sendMessage("§c 预览时间已到，物品未能成功回收，请联系管理员处理！");
                                     }
                                 },200);
                             }
@@ -699,7 +700,7 @@ world.afterEvents.playerSpawn.subscribe((event) => {
         //首先检查是否有预览商品
         for (let i = 9 ; i < 36; i++) {
             if (event.player.getComponent("minecraft:inventory").container.getItem(i) != undefined && event.player.getComponent("minecraft:inventory").container.getItem(i).getLore()[event.player.getComponent("minecraft:inventory").container.getItem(i).getLore().length - 2] == "§c预览商品请勿进行其他操作！") {
-                event.player.getComponent("minecraft:inventory").container.setItem(i,new ItemStack("minecraft:air"));
+                event.player.getComponent("minecraft:inventory").container.setItem(i,undefined);
                 event.player.sendMessage("§c 未正常去除的预览商品已回收！");
                 log("Preview items not returned properly by the player have been automatically recalled!");
             }
