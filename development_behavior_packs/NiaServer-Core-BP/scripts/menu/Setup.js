@@ -5,7 +5,7 @@ import { TpaGUI } from './Tpa';
 
 const GUI = {
     SetupMain(player) {
-        const SetupM00ainForm = new ActionFormData()
+        const SetupMainForm = new ActionFormData()
         .title("设置")
         .button("返回上一级菜单")
         .button("游戏设置")

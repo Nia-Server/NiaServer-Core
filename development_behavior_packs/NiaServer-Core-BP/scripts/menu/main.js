@@ -1,22 +1,79 @@
-import { world } from '@minecraft/server';
+import { world,system } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
-import { Broadcast,Tell,log,RunCmd,GetScore } from '../customFunction.js';
+import { Broadcast,Tell,log,RunCmd,GetScore,error} from '../customFunction.js';
 import { cfg } from '../config.js'
 
 import { SetupGUI } from './Setup.js';
 import { ShopGUI } from './shop.js';
 import { TpaGUI } from './Tpa.js';
 import { CDKGUI } from './cdk.js';
-import { FlyGUI } from './Fly.js';
 import { TransferGUI } from './Transfer.js';
 import { OpGUI } from './op.js';
 import { MarketGUI } from '../market.js';
 import { LandGUI } from '../land.js';
 
 
+const ALL_GUI = ["MainGUI","SetupGUI","ShopGUI","TpaGUI","CdkGUI","TransferGUI","OpGUI","MarketGUI","LandGUI"];
+
+//注册scriptevent
+system.afterEvents.scriptEventReceive.subscribe((event) => {
+    if (event.id != "mcnia:openGUI") return;
+    //openGUI后的处理
+    //event.message是一个object对象，格式形如{"GUI":"GUI名称","target":"目标玩家名称","data":{}}
+    //解析event.message，判断传进的数据是否是一个object对象
+    let receive_data = event.message;
+    //将字符串转换为对象,如果转换失败则log输出错误
+    try {
+        receive_data = JSON.parse(receive_data);
+    } catch (e) {
+        error(e);
+        if (event.sourceType != "player") return;
+        event.sourceEntity.sendMessage("§c json格式解析错误，请检查传入的数据是否符合json格式！\n" +
+            "§b您传入的数据为：" + event.message + "\n" +
+            "§a正确的格式为：{\"GUI\":\"GUI名称\",\"target\":\"目标玩家名称\",\"data\":{}}"
+        );
+        return;
+    }
+    //判断obj是否符合{"GUI":"GUI名称","target":"目标玩家名称","data":{}}
+    if (receive_data.GUI == undefined || receive_data.target == undefined || receive_data.data == undefined) {
+        error("The data received is not a valid object!");
+        if (event.sourceType != "player") return;
+        event.sourceEntity.sendMessage("§c json解析错误，请检查传入的数据是否符合预设格式！\n" +
+            "§b您传入的数据为：" + event.message + "\n" +
+            "§a正确的格式为：{\"GUI\":\"GUI名称\",\"target\":\"目标玩家名称\",\"data\":{}}"
+        );
+        return;
+    }
+    //获取目标玩家
+    let player = world.getPlayers({name: receive_data.target})[0];
+    if (player == undefined) {
+        error("The target player does not exist!");
+        if (event.sourceType != "player") return;
+        event.sourceEntity.sendMessage("§c 未找到目标玩家！请检查玩家名称是否正确！");
+        return;
+    }
+    //打开GUI
+    //判断GUI是否存在
+    if (ALL_GUI.indexOf(receive_data.GUI) == -1) {
+        error("The GUI does not exist!");
+        if (event.sourceType != "player") return;
+        event.sourceEntity.sendMessage("§c 未找到相应的GUI！请检查GUI名称是否正确！");
+        return;
+    }
+    OpenGUI(player,receive_data.GUI);
+})
+
 const MainGUI = {
     "title": "服务器菜单",
-    "body": "§l===========================\n§eHi! §l§6%playername% §r§e欢迎回来！\n§e您目前能源币余额： §6§l*money*\n§r§e您目前在线总时长为： §6§l*time*\n§r§e当前物价指数为： §6§l%RN%\n§r§l===========================\n§r§c§l游玩中有问题找腐竹反馈！\n祝您游玩愉快！\n§r§l===========================",
+    "body": "§l===========================\n"+
+            "§eHi! §l§6%playername% §r§e欢迎回来！\n"+
+            "§e您目前能源币余额： §6§l*money*\n"+
+            "§r§e您目前在线总时长为： §6§l*time*\n"+
+            "§r§e当前物价指数为： §6§l%RN%\n"+
+            "§r§l===========================\n"+
+            "§r§c§l游玩中有问题找腐竹反馈！\n"+
+            "祝您游玩愉快！\n"+
+            "§r§l===========================",
     "buttons": [
         {
             "name": "立即回城\n点击后立即返回主城",
@@ -87,7 +144,7 @@ const MainGUI = {
             "type": "openGUI",
             "GUI": "OpGUI",
             "opMenu": true
-        },
+        }
     ]
 }
 
@@ -169,23 +226,23 @@ export function Main(player) {
 
 function OpenGUI(player,GUINAME) {
     switch (GUINAME) {
+        case "MainGUI":
+            Main(player);
+            break;
         case "SetupGUI":
-            SetupGUI.SetupMain(player)
+            SetupGUI.SetupMain(player);
             break;
         case "ShopGUI":
-            ShopGUI.ShopMain(player)
+            ShopGUI.ShopMain(player);
             break;
         case "TpaGUI":
-            TpaGUI.TpaMain(player)
+            TpaGUI.TpaMain(player);
             break;
         case "CdkGUI":
-            CDKGUI(player)
-            break;
-        case "FlyGUI":
-            FlyGUI(player)
+            CDKGUI(player);
             break;
         case "TransferGUI":
-            TransferGUI.Transfer(player)
+            TransferGUI.Transfer(player);
             break;
         case "OpGUI":
             OpGUI.CheckOP(player);
@@ -196,7 +253,9 @@ function OpenGUI(player,GUINAME) {
         case "LandGUI":
             LandGUI.Main(player);
             break;
-
+        default:
+            player.sendMessage(`§c 未找到相应的GUI，请联系管理员！`);
+            break;
     }
 }
 

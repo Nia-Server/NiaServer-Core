@@ -6,6 +6,7 @@ import { adler32 } from './API/cipher_system.js'
 import { ExternalFS } from './API/filesystem.js';
 const fs = new ExternalFS();
 
+
 const BAN_WORDS = [
 "傻逼","女装"
 ];
@@ -23,7 +24,9 @@ world.beforeEvents.chatSend.subscribe(t => {
             switch (t.message) {
                 //help 指令
                 case "-help":
-                    t.sender.sendMessage("§c暂无相关帮助");
+                    t.sender.sendMessage("§c服务器游玩指南：\n" +
+                        ""
+                    );
                     break;
                 case "-zc":
                     RunCmd(`tp "${t.sender.nameTag}" 702 82 554`);
@@ -39,15 +42,6 @@ world.beforeEvents.chatSend.subscribe(t => {
                     t.sender.sendMessage(`§c 未知的指令 ${t.message} ！请检查相关指令格式或输入+help获取帮助！`);
                     break;
             }
-            return;
-        }
-
-        //对于指令前缀"*"的检测
-        if (t.message.slice(0,1) == "*") {
-            //取消有自定义指令前缀的消息输出
-            t.cancel = true;
-            if (t.sender.hasTag("op"))
-            t.sender.sendMessage(`§c 密码为§a${adler32(toString(t.message.slice(1)))}`);
             return;
         }
 

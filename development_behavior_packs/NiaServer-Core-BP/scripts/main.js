@@ -16,7 +16,7 @@ In addition, you are required to comply with the terms of the AGPL-3.0 (https://
 
 If you do not accept these terms, please delete this project immediately.
 
-authors: NIANIANKNIA && jiansyuan
+authors: Nia-Server (http://github.com/Nia-Server)
 
 contact us: dev@mcnia.com
 
@@ -32,14 +32,13 @@ import './checkupdate.js'
 import './market.js'
 import './land.js'
 import './basic.js'
-import './newFunction.js'
 //import './log.js'
 import './qqBot.js'
 //import './AntiCheats.js'
 
 export const VERSION = "v1.5.0-pre-3";
-export const BDS_VERSION = "1.21.31.04";
-export const LAST_UPGRATE = "2024/10/03";
+export const BDS_VERSION = "1.21.51.02";
+export const LAST_UPGRATE = "2025/01/09";
 export const CODE_BRANCH = "dev";
 
 
@@ -52,6 +51,6 @@ console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] NiaServer-Core has been su
 
     \x1b[33mversion: \x1b[32m${VERSION}\x1b[33m based on \x1b[32m${BDS_VERSION}\x1b[33m(last update:\x1b[32m${LAST_UPGRATE}\x1b[33m)\x1b[0m\n
     \x1b[33mgithub: \x1b[32mhttps://github.com/Nia-Server/NiaServer-Core/\n`);
-console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] authors: @NIANIANKNIA(https://github.com/NIANIANKNIA) @jiansyuan(https://github.com/jiansyuan)\x1b[0m`);
+console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] authors: @Nia-Server(https://github.com/Nia-Server)\x1b[0m`);
 console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] Don't know how to deploy? Head over to the documentation site for detailed deployment procedures==>(\x1b[36mhttps://docs.mcnia.com/dev/\x1b[33m)\x1b[0m`);
 console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] This project is based on the \x1b[31mAGPL-3.0\x1b[33m license !\x1b[0m`);

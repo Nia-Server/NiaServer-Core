@@ -8,7 +8,11 @@ const GUI = {
     TpaMain(player) {
         const TpaMainForm = new ActionFormData()
         .title("传送系统")
-        .body("§r§l===========================" + "\n§c欢迎使用传送系统！" + "\n§r§l===========================")
+        .body(
+            "§r§l===========================" +
+            "\n§c欢迎使用传送系统！" +
+            "\n§r§l==========================="
+        )
         .button("开始传送")
         .button("传送设置")
         .button("返回上一级菜单")
@@ -63,7 +67,8 @@ const GUI = {
         if (AcceptPlayer.hasTag("BanTpa") || BanList.includes(ApplyPlayer.nameTag)) {
             const ErrorTpaForm = new MessageFormData()
                 .title("§c§l传送申请异常提醒")
-                .body("§e玩家 §l§6" + AcceptPlayer.nameTag + " \n§r§e无法正常接收传送申请！\n可能是因为对方关闭了传送系统！")
+                .body("§e玩家 §l§6" + AcceptPlayer.nameTag + " \n§r§e无法正常接收传送申请！"+
+                    "\n可能是因为对方关闭了传送系统！")
                 .button1("§c退出传送系统")
                 .button2("§a返回传送系统")
             ErrorTpaForm.show(ApplyPlayer).then(result => {

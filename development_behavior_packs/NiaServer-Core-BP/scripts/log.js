@@ -1,3 +1,19 @@
+/*
+
+Copyright (C) 2025 Nia-Server
+
+filename: log.js
+
+authors: NIANIANKNIA
+
+version: v1.0.0
+
+last update: 2025/01/06
+
+license: AGPL-3.0
+
+*/
+
 import { system, world } from "@minecraft/server";
 import { ExternalFS } from "./API/filesystem";
 import { log, GetTime, Broadcast, warn } from "./customFunction";

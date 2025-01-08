@@ -10,6 +10,10 @@ export function warn(info) {
     console.warn("\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] " + info + "\x1b[0m")
 }
 
+export function error(info) {
+    console.error("\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] " + info + "\x1b[0m")
+}
+
 /**
  * 将Msg消息广播至整个游戏
  * @param {string} Msg

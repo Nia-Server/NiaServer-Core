@@ -1,7 +1,6 @@
 # NiaServer-Core
 
-[![wakatime](https://wakatime.com/badge/user/a2d785d3-a26c-467b-9112-333ba2bee9e8/project/9ae0abd5-b1ad-4199-bd66-0fba1a96ac45.svg?style=for-the-badge)](https://wakatime.com/@NIANIANKNIA)
-[![status](https://img.shields.io/github/actions/workflow/status/Nia-Server/NiaServer-Core/main.yml?style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/actions)
+
 [![GitHub Release Date](https://img.shields.io/github/release-date-pre/Nia-Server/NiaServer-Core?style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/releases)
 [![Latest Release](https://img.shields.io/github/v/release/Nia-Server/NiaServer-Core?include_prereleases&style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/releases/latest)
 [![GitHub last commit](https://img.shields.io/github/last-commit/Nia-Server/NiaServer-Core?style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/commits)
@@ -70,7 +69,7 @@
 ## 关于NIAHttpBOT
 
 > [!IMPORTANT]
-> 自v1.5.0版本开始，NIAHttpBOT将作为[子项目](https://github.com/Nia-Server/NIAHttpBOT)分离主项目进行更新，主项目将不再包含NIAHttpBOT的相关源码
+> NIAHttpBOT已作为[子项目](https://github.com/Nia-Server/NIAHttpBOT)分离主项目进行更新，主项目将不再包含NIAHttpBOT的相关源码
 
 新版机器人基于c++制作（特别感谢[**@jiansyuan**](https://github.com/jiansyuan)），使用HTTP实现对文件的一系列操作，并基于[LLoneBOT](https://github.com/LLOneBot/LLOneBot)为NIAHttpBOT新增部分QQ机器人功能，具体使用示例，请前往[NIA服务器文档站](https://docs.mcnia.com/dev/Http-Bot.html)查看使用说明！
 
@@ -89,7 +88,6 @@
 - `NIAHttpBOT`文件夹 存储了全新的NIAHttpBOT的源码
 - `development_behavior_packs`文件夹 存储了服务器所使用的行为包的相关文件
 - `development_resource_packs`文件夹 存储了服务器所使用的资源包的相关文件
-- `NiaServerPlugin`文件夹 指向了服务器自主开发的dll格式插件开源项目地址[NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin)。
 - `plugins`文件夹 存储了服务器所使用的部分脚本插件
 
 > [!TIP]
