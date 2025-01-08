@@ -4,7 +4,7 @@
 
 ## 资源包部分作者
 
-@lonely
+@lonely-233
 
 @NIANIANKNIA
 
@@ -14,7 +14,7 @@ If you want to use the resources in the resource package (including but not limi
 
 ## Author of part of the resource pack
 
-@lonely
+@lonely-233
 
 @NIANIANKNIA
 
