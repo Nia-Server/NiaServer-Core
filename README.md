@@ -1,7 +1,6 @@
 # NiaServer-Core
 
-[![wakatime](https://wakatime.com/badge/user/a2d785d3-a26c-467b-9112-333ba2bee9e8/project/9ae0abd5-b1ad-4199-bd66-0fba1a96ac45.svg?style=for-the-badge)](https://wakatime.com/@NIANIANKNIA)
-[![status](https://img.shields.io/github/actions/workflow/status/Nia-Server/NiaServer-Core/main.yml?style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/actions)
+
 [![GitHub Release Date](https://img.shields.io/github/release-date-pre/Nia-Server/NiaServer-Core?style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/releases)
 [![Latest Release](https://img.shields.io/github/v/release/Nia-Server/NiaServer-Core?include_prereleases&style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/releases/latest)
 [![GitHub last commit](https://img.shields.io/github/last-commit/Nia-Server/NiaServer-Core?style=for-the-badge)](https://github.com/Nia-Server/NiaServer-Core/commits)
@@ -24,6 +23,8 @@
 > [!TIP]
 >为了实现更多功能，服务器使用了@minecraft/server-net模块，所以本插件包不能在个人存档中正常运行，只能在BDS上运行！
 
+由于代码众多，部分功能存储数据仍然使用的是计分板/TAG数据存储，我们将在后续更新中逐步替换为其他数据存储方式，可能因此导致部分兼容性问题，敬请谅解！
+
 一个基于BDS的基岩版服务器，这里开源了由服务器开发团队制作的addons（包括基于script-api的脚本）
 
 **以下插件由于部分原因不再进更新维护：** 运行于LiteLoader的插件（部分LiteLoader插件源码可以点击前往 [NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin) 查看）
@@ -31,7 +32,6 @@
 我们并不是专业的开发人员，所以难免会出现部分bug、代码不规范、逻辑混乱等错误，也欢迎各位大佬pr，我们也一定会仔细查看、学习、回复每一条pr
 
 虽然可能你并不能立马上手使用这个addons（由于每个服务器游戏机制不同，我们服务器的玩法设定可能不满足您的要求），但我们也希望这个addons也可以给您带来某些方面的启发，或者您自行修改来适配自己的服务器
-
 
 **最后，希望这个项目&&服务器在大家的共同推进下发展的越来越好，如果本项目确实对您有所帮助，不妨点个star吧！**
 
@@ -47,6 +47,8 @@
 **v1.5.0** 上线NIAHttpBOT的QQ机器人版本，支持QQ机器人的一系列操作
 
 **v1.5.1** 行为包添加QQ机器人联动功能
+
+**v1.6.0** 从NiaServer-Core主项目分离出NIAHttpBOT，NiaServer-ExtraFeatures作为子项目进行更新
 
 更多详细新特性开发计划&&bug修复请前往[NIA服务器开发计划](https://github.com/orgs/Nia-Server/projects/1/views/1?layout=board)查看...
 
@@ -67,7 +69,7 @@
 ## 关于NIAHttpBOT
 
 > [!IMPORTANT]
-> 自v1.6.0版本开始，NIAHttpBOT将作为[子项目](https://github.com/Nia-Server/NIAHttpBOT)分离主项目进行更新，主项目将不再包含NIAHttpBOT的相关源码
+> NIAHttpBOT已作为[子项目](https://github.com/Nia-Server/NIAHttpBOT)分离主项目进行更新，主项目将不再包含NIAHttpBOT的相关源码
 
 新版机器人基于c++制作（特别感谢[**@jiansyuan**](https://github.com/jiansyuan)），使用HTTP实现对文件的一系列操作，并基于[LLoneBOT](https://github.com/LLOneBot/LLOneBot)为NIAHttpBOT新增部分QQ机器人功能，具体使用示例，请前往[NIA服务器文档站](https://docs.mcnia.com/dev/Http-Bot.html)查看使用说明！
 
@@ -86,7 +88,6 @@
 - `NIAHttpBOT`文件夹 存储了全新的NIAHttpBOT的源码
 - `development_behavior_packs`文件夹 存储了服务器所使用的行为包的相关文件
 - `development_resource_packs`文件夹 存储了服务器所使用的资源包的相关文件
-- `NiaServerPlugin`文件夹 指向了服务器自主开发的dll格式插件开源项目地址[NIAServerPlugin@jiansyuan](https://github.com/jiansyuan/NIAServerPlugin)。
 - `plugins`文件夹 存储了服务器所使用的部分脚本插件
 
 > [!TIP]
@@ -162,13 +163,6 @@
 
 [@Dave](https://abcdavk.github.io/) 服务器的空岛生成受他的行为包所启发！
 
-
-## 第三方开源引用
-
-#### [rapidjson](https://github.com/Tencent/rapidjson) - [MIT License](https://github.com/Tencent/rapidjson?tab=License-1-ov-file#readme)
-
-#### [cpp-httplib](https://github.com/yhirose/cpp-httplib) - [MIT License](https://github.com/yhirose/cpp-httplib?tab=MIT-1-ov-file#readme)
-
 ## 服务器开发者名单 （排名不分先后）
 
 @NIANIANKNIA
@@ -207,7 +201,4 @@
 
 另外，您需要遵守本项目的[`AGPL-3.0`](https://github.com/Nia-Server/NiaServer-Core/blob/main/LICENSE)开源许可证条款, 以及本项目所有子项目使用的相关开源协议
 
-## 关于商业化
-
-**由于项目的特殊性，我们并不是很赞成您运用本项目进行商业化，但是并不反对您将本项目进行商业化**
 

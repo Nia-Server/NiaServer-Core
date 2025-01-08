@@ -1,4 +1,4 @@
-name: Build and Release
+name: Zip and Release
 
 on:
   push:
@@ -6,45 +6,6 @@ on:
       - 'v*.*.*'
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
-    if: ${{ !contains(github.ref, 'pre') }}
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v4
-      - name: Install CMake and Ninja
-        uses: lukka/get-cmake@latest
-      - name: Configure the project
-        uses: threeal/cmake-action@v1.3.0
-        with:
-          run-build: true
-          source-dir: NIAHttpBOT
-          build-dir: NIAHttpBOT
-      - name: Upload the exe file
-        uses: actions/upload-artifact@v4
-        with:
-          name: NIAHttpBOT.exe
-          path: ./NIAhttpBOT/Debug/NIAHttpBOT.exe
-
-  build-linux:
-    runs-on: ubuntu-latest
-    if: ${{ !contains(github.ref, 'pre') }}
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v4
-      - name: Install CMake and Ninja
-        uses: lukka/get-cmake@latest
-      - name: Configure the project
-        uses: threeal/cmake-action@v1.3.0
-        with:
-          run-build: true
-          source-dir: NIAHttpBOT
-          build-dir: NIAHttpBOT
-      - name: Upload the executable file
-        uses: actions/upload-artifact@v4
-        with:
-          name: NIAHttpBOT
-          path: ./NIAHttpBOT/NIAHttpBOT
 
   zip:
     runs-on: ubuntu-latest
@@ -77,21 +38,9 @@ jobs:
           path: ./development_resource_packs/NIA_V4.0_RP/NiaServer-Core-RP-${{ github.ref_name }}.zip
 
   release:
-    needs: [build-windows, build-linux, zip]
+    needs: [zip]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v4
-      - name: Download the exe file
-        uses: actions/download-artifact@v4
-        with:
-          name: NIAHttpBOT.exe
-      - name: Remove existing directory
-        run: rm -rf ./NIAHttpBOT
-      - name: Download the Linux executable file
-        uses: actions/download-artifact@v4
-        with:
-          name: NIAHttpBOT
       - name: Download the behavior_pack
         uses: actions/download-artifact@v4
         with:
@@ -103,7 +52,7 @@ jobs:
       - name: Create and upload release
         uses: ncipollo/release-action@v1.12.0
         with:
-          artifacts: "NiaServer-Core-BP-${{ github.ref_name }}.zip,NiaServer-Core-RP-${{ github.ref_name }}.zip,NIAHttpBOT.exe,NIAHttpBOT,world_behavior_packs.json,world_resource_packs.json"
+          artifacts: "NiaServer-Core-BP-${{ github.ref_name }}.zip,NiaServer-Core-RP-${{ github.ref_name }}.zip,world_behavior_packs.json,world_resource_packs.json"
           bodyFile: "CHANGELOG.md"
           generateReleaseNotes: false
           token: ${{ secrets.GITHUB_TOKEN }}

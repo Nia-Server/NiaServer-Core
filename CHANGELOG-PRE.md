@@ -32,6 +32,5 @@
 5.NIAHttpBOT的qq功能无法正常显示@人
 
 
-
 **配置说明：您可以前往[NIA服务器官方文档站](https://docs.mcnia.com/dev)查看具体部署过程！**
 
