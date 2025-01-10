@@ -1,6 +1,6 @@
 //圈地系统
 import { system, world } from '@minecraft/server';
-import { ExternalFS } from './API/filesystem';
+import { ExternalFS } from './API/http.js';
 import { Broadcast, GetScore, GetTime, RunCmd, log } from './customFunction';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 import { adler32 } from './API/cipher_system';

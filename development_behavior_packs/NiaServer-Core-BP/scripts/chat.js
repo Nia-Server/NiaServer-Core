@@ -3,7 +3,7 @@ import {cfg} from './config.js'
 import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution, GetTime, GetShortTime, log} from './customFunction.js'
 
 import { adler32 } from './API/cipher_system.js'
-import { ExternalFS } from './API/filesystem.js';
+import { ExternalFS } from './API/http.js';
 const fs = new ExternalFS();
 
 

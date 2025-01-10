@@ -25,7 +25,7 @@ Project address: https://github.com/Nia-Server/NiaServer-Core/
 If you have any problems with this project, please contact the authors.
 
 */
-
+import { system, world } from "@minecraft/server";
 import './chat.js'
 import './menu/main.js'
 import './checkupdate.js'
@@ -38,7 +38,7 @@ import './qqBot.js'
 
 export const VERSION = "v1.5.0-pre-3";
 export const BDS_VERSION = "1.21.51.02";
-export const LAST_UPGRATE = "2025/01/09";
+export const LAST_UPGRATE = "2025/01/10";
 export const CODE_BRANCH = "dev";
 
 

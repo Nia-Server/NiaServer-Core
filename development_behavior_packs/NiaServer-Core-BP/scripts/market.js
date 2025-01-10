@@ -4,7 +4,7 @@ import { system, world, ItemStack } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui';
 import { GetTime, GetScore, log } from './customFunction';
 import { adler32 } from './API/cipher_system';
-import { ExternalFS } from './API/filesystem';
+import { ExternalFS } from './API/http.js';
 import { Main } from './menu/main';
 
 //违禁物品，等后期接入配置文件

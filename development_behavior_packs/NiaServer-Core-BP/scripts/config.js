@@ -1,5 +1,5 @@
-
 const config = {
+    "cfgVersion": "1.0.0",
     "MENUITEM": "minecraft:clock",
     "USERandomDATA": true,
     "MoneyScoreboardName": "money",
@@ -25,6 +25,12 @@ const config = {
     },
     "MarketCfg": {
         "BanItems" : ["minecraft:paper","minecraft:clock"]
+    },
+    "QQBotCfg": {
+        "USEQQBOT": true,
+        "QQGroup": "724360499",
+        "TransferGameMessageToQQ": true,
+        "TransferQQMessageToGame": true
     }
 }
 

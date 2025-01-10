@@ -2,7 +2,7 @@ import { world } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 import { Tell,RunCmd,GetScore,log } from '../customFunction.js'
 import { Main } from './main.js';
-import { ExternalFS } from '../API/filesystem';
+import { ExternalFS } from '../API/http.js';
 
 const fs = new ExternalFS();
 var SellData = [];

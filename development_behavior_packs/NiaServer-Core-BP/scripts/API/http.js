@@ -1,8 +1,9 @@
 import { http,HttpRequestMethod,HttpRequest } from '@minecraft/server-net';
 import { world } from '@minecraft/server';
 
-const port = 10086
-const server_url = "http://127.0.0.1"
+const port = 10086;
+const qqbot_port = 10023;
+const server_url = "http://127.0.0.1";
 
 export class ExternalFS {
 
@@ -263,12 +264,27 @@ export class QQBotSystem {
      * @return {String | Number}
      */
     send_group_msg(message,qq_group_id) {
-        const req_send_group_msg = new HttpRequest(`${server_url}:10023/send_group_msg`)
+        const req_send_group_msg = new HttpRequest(`${server_url}:${qqbot_port}/send_group_msg`)
             .setBody(JSON.stringify({"group_id":qq_group_id,"message":message,"auto_escape":false}))
             .setMethod(HttpRequestMethod.Post)
             .addHeader("Content-Type", "text/plain")
         return new Promise(async (resolve) => {
             const response = await http.request(req_send_group_msg);
+            if (response.status == 200) {
+                resolve(response.body);
+            } else {
+                resolve(-1);
+            }
+        });
+    }
+
+    exchange_data(data) {
+        const req_exchange_data = new HttpRequest(`${server_url}:${port}/exchange_data`)
+            .setBody(JSON.stringify(data))
+            .setMethod(HttpRequestMethod.Post)
+            .addHeader("Content-Type", "text/plain")
+        return new Promise(async (resolve) => {
+            const response = await http.request(req_exchange_data);
             if (response.status == 200) {
                 resolve(response.body);
             } else {

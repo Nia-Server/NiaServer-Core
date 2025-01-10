@@ -1,6 +1,6 @@
 import {system, world} from '@minecraft/server';
 import { Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution,log, GetShortTime} from './customFunction.js'
-import { ExternalFS } from './API/filesystem.js';
+import { ExternalFS } from './API/http.js';
 import { LAST_UPGRATE,VERSION,CODE_BRANCH } from './main.js';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 
