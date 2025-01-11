@@ -38,7 +38,7 @@ import './qqBot.js'
 
 export const VERSION = "v1.5.0-pre-3";
 export const BDS_VERSION = "1.21.51.02";
-export const LAST_UPGRATE = "2025/01/10";
+export const LAST_UPGRATE = "2025/01/11";
 export const CODE_BRANCH = "dev";
 
 

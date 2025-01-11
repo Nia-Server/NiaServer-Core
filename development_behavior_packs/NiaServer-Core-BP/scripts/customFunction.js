@@ -19,8 +19,7 @@ export function error(info) {
  * @param {string} Msg
  */
 export function Broadcast(Msg) {
-    world.sendMessage(Msg)
-    // world.getDimension("overworld").runCommandAsync(`tellraw @a {\"rawtext\":[{\"text\":\"${Msg}\"}]}`);
+    world.sendMessage(Msg);
 }
 
 /**

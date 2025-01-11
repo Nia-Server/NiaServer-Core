@@ -4,6 +4,7 @@ const config = {
     "USERandomDATA": true,
     "MoneyScoreboardName": "money",
     "MoneyShowName": "能源币",
+    "USERandomDATA": true,
     "TimeScoreboardName":"time",
     "OPTAG": "op",
     "OPMENUPassword": "123456",
@@ -29,8 +30,7 @@ const config = {
     "QQBotCfg": {
         "USEQQBOT": true,
         "QQGroup": "724360499",
-        "TransferGameMessageToQQ": true,
-        "TransferQQMessageToGame": true
+        "TransferMessage": true
     }
 }
 
