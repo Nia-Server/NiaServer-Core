@@ -2,7 +2,8 @@
 
 import { system, world, ItemStack } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui';
-import { GetTime, GetScore, log } from './customFunction';
+import { GetTime, GetScore } from './customFunction';
+import { log,warn,error } from "./API/logger.js";
 import { adler32 } from './API/cipher_system';
 import { ExternalFS } from './API/http.js';
 import { Main } from './menu/main';
@@ -22,17 +23,17 @@ world.afterEvents.worldInitialize.subscribe(() => {
             fs.CreateNewJsonFile("market.json",[]).then((result) => {
                 if (result === "success") {
                     MarketData = [];
-                    log("The player market file does not exist and has been successfully created!");
+                    log("【交易市场】交易市场数据文件 market.json 不存在，已成功创建");
                 } else if (result === -1) {
-                    console.error("[NiaServer-Core] Dependency server connection failed!");
+                    error("【交易市场】在创建交易市场数据文件 market.json 时与NIAHttpBOT连接失败");
                 }
             });
         } else if (result === -1) {
-            console.error("[NiaServer-Core] Dependency server connection failed!");
+            error("【交易市场】在获取交易市场数据文件 market.json 时与NIAHttpBOT连接失败");
         } else {
             //文件存在且服务器连接成功
             MarketData = result;
-            log("The player market data acquired successfully!");
+            log("【交易市场】交易市场数据文件 market.json 获取成功");
         }
     })
 
@@ -40,17 +41,17 @@ world.afterEvents.worldInitialize.subscribe(() => {
         if (result === 0) {
             fs.CreateNewJsonFile("market_temp_player_money.json",{}).then((result) => {
                 if (result === "success") {
-                    log("(market)The player money data file does not exist, it has been successfully created!");
+                    log("【交易市场】玩家货币数据文件 market_temp_player_money.json 不存在，已成功创建");
                 } else if (result === -1) {
-                    console.error("[NiaServer-Core] Dependency server connection failed!");
+                    error("【交易市场】在创建玩家货币数据文件 market_temp_player_money.json 时与NIAHttpBOT连接失败");
                 }
             });
         } else if (result === -1) {
-            console.error("[NiaServer-Core] Dependency server connection failed!");
+            error("【交易市场】在获取玩家货币数据文件 market_temp_player_money.json 时与NIAHttpBOT连接失败");
         } else {
             //文件存在且服务器连接成功
             temp_player_money = result;
-            log("(market)The player money data acquired successfully!");
+            log("【交易市场】玩家货币数据文件 market_temp_player_money.json 获取成功");
         }
     })
 
@@ -267,13 +268,13 @@ const GUI = {
                                                 player.getComponent("minecraft:inventory").container.addItem(new_item);
                                             } else {
                                                 this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
-                                                console.error("[NiaServer-Core] Dependency server connection failed!");
+                                                error("【交易市场】在修改玩家金币数据文件 market_temp_player_money.json 时与NIAHttpBOT连接失败");
                                                 temp_player_money = old_temp_player_money;
                                             }
                                         })
                                     } else {
                                         this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
-                                        console.error("[NiaServer-Core] Dependency server connection failed!");
+                                        error("【交易市场】在修改交易市场数据文件 market.json 时与NIAHttpBOT连接失败");
                                         MarketData = old_MarketData;
                                     }
                                 })
@@ -388,8 +389,10 @@ const GUI = {
                     temp_MarketData.push(itemData);
                     fs.OverwriteJsonFile("market.json",temp_MarketData).then((result) => {
                         if (result === 0) {
+                            error("【交易市场】在覆写交易市场数据文件 market.json 时未找到相关文件");
                             this.Error(player,"§c未找到玩家交易市场文件，请联系腐竹处理！","105","ShelfForm");
                         } else if (result === -1) {
+                            error("【交易市场】在覆写交易市场数据文件 market.json 时与NIAHttpBOT连接失败");
                             this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ShelfForm");
                         } else {
                             //覆写成功
@@ -414,8 +417,10 @@ const GUI = {
                     temp_MarketData.push(itemData)
                     fs.OverwriteJsonFile("market.json",temp_MarketData).then((result) => {
                         if (result === 0) {
+                            error("【交易市场】在覆写交易市场数据文件 market.json 时未找到相关文件");
                             this.Error(player,"§c未找到玩家交易市场文件，请联系腐竹处理！","105","ShelfForm");
                         } else if (result === -1) {
+                            error("【交易市场】在覆写交易市场数据文件 market.json 时与NIAHttpBOT连接失败");
                             this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ShelfForm");
                         } else {
                             //覆写成功
@@ -509,7 +514,7 @@ const GUI = {
                                 player.getComponent("minecraft:inventory").container.addItem(new_item);
                             } else {
                                 this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ManageForm");
-                                console.error("[NiaServer-Core] Dependency server connection failed!");
+                                error("【交易市场】在覆写交易市场数据文件 market.json 时与NIAHttpBOT连接失败");
                                 MarketData = old_MarketData;
                             }
                         })
@@ -592,6 +597,7 @@ const GUI = {
                                                 //发送物品
                                                 player.getComponent("minecraft:inventory").container.addItem(new_item);
                                             } else {
+                                                error("【交易市场】在覆写交易市场数据文件 market.json 时与NIAHttpBOT连接失败");
                                                 this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ManageForm");
                                                 MarketData = old_MarketData;
                                             }
@@ -613,6 +619,7 @@ const GUI = {
                                             //覆写成功
                                             this.Success(player,`[商品修改成功]\n商品名称: ${response.formValues[1]} (${item_data.typeid}) \n商品简介: ${response.formValues[3]} \n商品单价: ${response.formValues[2]}\n商品剩余库存: ${item_data.amount}\n商品流水号: ${item_data.id}`);
                                         } else {
+                                            error("【交易市场】在覆写交易市场数据文件 market.json 时与NIAHttpBOT连接失败");
                                             this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ManageForm");
                                             MarketData = old_MarketData;
                                         }
@@ -644,7 +651,7 @@ const GUI = {
                     }
                 } else {
                     this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
-                    console.error("[NiaServer-Core] Dependency server connection failed!");
+                    error("【交易市场】在覆写玩家金币数据文件 market_temp_player_money.json 时与NIAHttpBOT连接失败");
                     temp_player_money = old_temp_player_money;
                 }
             })
@@ -702,7 +709,7 @@ world.afterEvents.playerSpawn.subscribe((event) => {
             if (event.player.getComponent("minecraft:inventory").container.getItem(i) != undefined && event.player.getComponent("minecraft:inventory").container.getItem(i).getLore()[event.player.getComponent("minecraft:inventory").container.getItem(i).getLore().length - 2] == "§c预览商品请勿进行其他操作！") {
                 event.player.getComponent("minecraft:inventory").container.setItem(i,undefined);
                 event.player.sendMessage("§c 未正常去除的预览商品已回收！");
-                log("Preview items not returned properly by the player have been automatically recalled!");
+                warn("【交易市场】玩家未正常回收预览商品已被系统回收");
             }
         }
     }

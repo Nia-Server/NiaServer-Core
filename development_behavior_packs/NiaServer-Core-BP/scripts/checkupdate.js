@@ -1,5 +1,5 @@
 import { world } from '@minecraft/server';
-import { log } from './customFunction.js'
+import { log,warn,error } from "./API/logger.js";
 import { http } from '@minecraft/server-net';
 import { VERSION } from './main.js';
 
@@ -14,15 +14,15 @@ world.afterEvents.worldInitialize.subscribe(() => {
     reqCheckUpdate.then((response) => {
         if (response.status == 200) {
             if (JSON.parse(response.body)[0].tag_name > VERSION) {
-                console.warn(`[NiaServer-Core] The current plugin package is not the latest version, the current version is: ${VERSION}, Github on the release of the latest version is: ${JSON.parse(response.body)[0].tag_name}. link: https://github.com/Nia-Server/NiaServer-Core/releases/tag/${JSON.parse(response.body)[0].tag_name}`);
-                log("Total time spent on this inspection update:" + (Date.now() - start) + " ms");
+                warn(`当前NiaServer-core不是最新版本： ${VERSION}, Github上release最新的版本为： ${JSON.parse(response.body)[0].tag_name}。 下载链接为: https://github.com/Nia-Server/NiaServer-Core/releases/tag/${JSON.parse(response.body)[0].tag_name}`);
+                log("本次自动检查更新用时 " + (Date.now() - start) + " ms");
             } else {
-                log("Automatic check for updates was successful! The current version is the latest version!");
-                log("Total time spent on this inspection update:" + (Date.now() - start) + " ms");
+                log("自动检查更新成功，当前使用版本为最新版本");
+                log("本次自动检查更新用时 " + (Date.now() - start) + " ms");
             }
         } else {
-            console.warn("[NiaServer-Core] Automatically checking for updates failed! Github server connection failed!");
-            log("Total time spent on this inspection update:" + (Date.now() - start) + " ms");
+            warn("自动检查更新失败，无法连接到Github服务器");
+            log("本次自动检查更新用时 " + (Date.now() - start) + " ms");
         }
     })
 })

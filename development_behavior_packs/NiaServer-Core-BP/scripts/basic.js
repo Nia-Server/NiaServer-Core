@@ -1,5 +1,6 @@
-import {system, world} from '@minecraft/server';
-import { Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution,log, GetShortTime} from './customFunction.js'
+import { system, world } from '@minecraft/server';
+import { log,warn,error } from "./API/logger.js";
+import { Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution, GetShortTime} from './customFunction.js'
 import { ExternalFS } from './API/http.js';
 import { LAST_UPGRATE,VERSION,CODE_BRANCH } from './main.js';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
@@ -11,7 +12,7 @@ const fs = new ExternalFS();
 system.beforeEvents.watchdogTerminate.subscribe((event) => {
     event.cancel = true;
     Broadcast(`§c§l[warn] NiaServer-Core运行出现异常，异常原因: ${event.terminateReason}，请及时联系腐竹！`);
-    console.error("[watchdog] Abnormal operation, reason for abnormality:" + event.terminateReason);
+    error("【watchdog】 NiaServer-Core运行出现异常，异常原因:" + event.terminateReason);
 })
 
 //服务器启动监听
@@ -20,18 +21,18 @@ world.afterEvents.worldInitialize.subscribe((event) => {
     //检测服务器是否初始化
     if (world.getDynamicProperty("state") == null) {
         //中文输出
-        log("NiaServer-Core is running on this server for the first time to start initialisation!")
+        log("NiaServer-Core 第一次在这个世界上运行，开始初始化...");
         AddScoreboard("UUID","玩家识别码");
         AddScoreboard("DATA","服务器数据");
         AddScoreboard("money","能源币");
         AddScoreboard("time","在线时间");
         AddScoreboard("menu","§6==NIA服务器==");
         AddScoreboard("CDK","CDK数据");
-        log("NiaServer-Core initialisation was successful!");
+        log("NiaServer-Core 初始化完成...");
         world.setDynamicProperty("state",true);
         world.setDynamicProperty("board_state",1);
     } else if (world.getDynamicProperty("state") == true) {
-        log("NiaServer-Core has completed initialization in this world!")
+        log("NiaServer-Core 已在这个世界上初始化过...");
     }
 
 })

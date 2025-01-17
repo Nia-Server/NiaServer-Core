@@ -1,5 +1,5 @@
-import {ActionFormData,ModalFormData,MessageFormData} from '@minecraft/server-ui'
-import {Tell,RunCmd,GetScore} from '../customFunction.js'
+import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
+import { Tell,RunCmd,GetScore } from '../customFunction.js'
 import { world } from '@minecraft/server'
 import { Main } from './main'
 

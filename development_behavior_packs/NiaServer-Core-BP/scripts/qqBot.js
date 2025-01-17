@@ -16,7 +16,8 @@ license: AGPL-3.0
 import { ExplosionAfterEvent, system, world } from "@minecraft/server";
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 import { http,HttpRequestMethod,HttpRequest,HttpHeader } from '@minecraft/server-net';
-import { GetTime, RunCmd ,log, Broadcast } from './customFunction.js';
+import { GetTime, RunCmd } from './customFunction.js';
+import { log,warn,error } from "./API/logger.js";
 import { cfg } from "./config.js";
 
 import { ExternalFS,QQBotSystem } from './API/http.js';
@@ -35,7 +36,7 @@ var exc_data_count = 0;
 
 
 if (USEQQBOT) {
-    log("QQBot is running...");
+    log("【QQ机器人】已在本服务器上启用本功能");
 
     if (TransferMessage) {
         system.runInterval(() => {
@@ -43,12 +44,12 @@ if (USEQQBOT) {
                 let group_msg = JSON.parse(result).data;
                 if (group_msg == undefined) return;
                 for (let i = 0; i < group_msg.length; i++) {
-                    log("Data exchange:\x1b[90m" + result + "\x1b[0m");
+                    log("【QQ机器人】与NIAHttpBOT发生数据交换，交换的数据:\x1b[90m" + result + "\x1b[0m");
                     world.sendMessage(group_msg[i].data);
                 }
                 if (exc_data_count >= 120) {
                     exc_data_count = 0;
-                    log("\x1b[90mData exchange with NIAHttpBOT is running normally...\x1b[0m");
+                    log("\x1b[90m【QQ机器人】与NIAHttpBOT数据交换正常运行中...\x1b[0m");
                 }
                 exc_data_count++;
             });
@@ -58,6 +59,7 @@ if (USEQQBOT) {
         //监听聊天事件
         world.beforeEvents.chatSend.subscribe((event) => {
             let message = {"type": "game_chat","data": "<" + event.sender.nameTag + "> " + event.message};
+            RunCmd(`stop`);
             transfer_data.data.push(message);
         });
     }
@@ -72,8 +74,8 @@ if (USEQQBOT) {
 
 
     world.afterEvents.playerLeave.subscribe((event) => {
-        console.log(`玩家 ${event.playerName} 离开了服务器！`);
-        bot.send_group_msg(`玩家 ${event.playerName} 离开了服务器！`,"724360499").then((result) => {
+        console.log(`玩家 ${event.playerName} 离开了服务器`);
+        bot.send_group_msg(`玩家 ${event.playerName} 离开了服务器`,QQGroup).then((result) => {
             console.log(result);
         })
     })
@@ -81,8 +83,8 @@ if (USEQQBOT) {
     world.afterEvents.playerSpawn.subscribe((event) => {
         if (event.initialSpawn) {
             //首先检查是否有预览商品
-            console.log(`玩家 ${event.player.nameTag} 加入了服务器！`);
-            bot.send_group_msg(`玩家 ${event.player.nameTag} 加入了服务器！`,QQGroup).then((result) => {
+            console.log(`玩家 ${event.player.nameTag} 加入了服务器`);
+            bot.send_group_msg(`玩家 ${event.player.nameTag} 加入了服务器`,QQGroup).then((result) => {
                 console.log(result);
             })
             let players_data = {};
@@ -92,12 +94,12 @@ if (USEQQBOT) {
                 //文件不存在
                 if (result === 0) {
                     RunCmd(`kick ${player.nameTag} 由于无法读取玩家数据\n您暂时无法游玩服务器，您可以在一段时间后再次尝试进入！\n这不是您的问题，请尽快联系管理员解决！`);
-                    log("The player data file does not exist and has been successfully created!");
+                    log("【QQ机器人】玩家数据文件 player_data.json 不存在");
                     return;
                 }
                 if (result === -1) {
                     RunCmd(`kick ${player.nameTag} 由于服务器连接失败\n您暂时无法游玩服务器，您可以在一段时间后再次尝试进入！\n这不是您的问题，请尽快联系管理员解决！`);
-                    console.error("[NiaServer-Core] Dependency server connection failed!");
+                    error("【QQ机器人】在获取玩家数据文件 player_data.json 时与NIAHttpBOT连接失败！");
                     return;
                 }
                 //文件存在且服务器连接成功

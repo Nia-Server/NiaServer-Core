@@ -1,13 +1,16 @@
 import { world } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
-import { Tell,RunCmd,GetScore,log } from '../customFunction.js'
+import { Tell,RunCmd,GetScore } from '../customFunction.js'
 import { Main } from './main.js';
 import { ExternalFS } from '../API/http.js';
+import { log,warn,error } from "../API/logger.js";
+import { cfg } from '../config.js';
 
 const fs = new ExternalFS();
 var SellData = [];
 var RecycleData = [];
-
+const MoneyShowName = cfg.MoneyShowName
+const MoneyScoreboardName = cfg.MoneyScoreboardName
 //商店数据读取
 
 //服务器启动监听&&获得商店数据
@@ -18,17 +21,17 @@ world.afterEvents.worldInitialize.subscribe(() => {
         if (result === 0) {
             fs.CreateNewJsonFile("shop_data.json",{"sell_data":[],"recycle_data":[]}).then((result) => {
                 if (result === "success") {
-                    console.warn("[NiaServer-Core] The shop data was not read successfully, the initialisation data file has been created successfully, please open shop_data.json to modify it and enter reload to reload it!");
+                    warn("【商店系统】在获取商店数据文件 shop_data.json 时发现文件不存在，已成功创建")
                 } else if (result === -1) {
-                    console.error("[NiaServer-Core] Dependency server connection failed!");
+                    error("【商店系统】在创建玩家货币数据文件 shop_data.json 时与NIAHttpBOT连接失败")
                 }
             });
         } else if (result === -1) {
-            console.error("[NiaServer-Core] Dependency server connection failed!");
+            error("【商店系统】在获取商店数据文件 shop_data.json 时与NIAHttpBOT连接失败")
         } else {
             SellData = result.sell_data;
             RecycleData = result.recycle_data;
-            log("The shop data acquired successfully!");
+            log(`【商店系统】商店系统数据文件 shop_data.json 获取成功`)
         }
     })
 })
@@ -37,11 +40,12 @@ const GUI = {
     ShopMain(player) {
         const ShopMainForm = new ActionFormData()
             .title("§e§l服务器商店")
-            .body("§l===========================\n§r§e欢迎光临服务器官方商店！\n目前服务器的物价指数为： §6§l" + GetScore("DATA","RN")/100 + "\n§r§e目前您的能源币余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§c请根据自己需求理性购物！\n§r§l===========================")
+            .body("§l===========================\n§r§e欢迎光临服务器官方商店！\n目前服务器的物价指数为： §6§l" + GetScore("DATA","RN")/100 + "\n§r§e目前您的" + MoneyShowName + "余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§c请根据自己需求理性购物！\n§r§l===========================")
             .button("§c返回上一级")
             .button("查看今日折扣商品\n§7立即查看现在的折扣商品！")
             .button("售卖物品商店\n§7在这里售卖各式各样的物品！")
             .button("回收物品商店\n§7在这里回收各式各样的物品！")
+            .button("称号商店\n§7在这里购买各种称号！")
         ShopMainForm.show(player).then((response) => {
             switch (response.selection) {
                 case 0:
@@ -55,6 +59,9 @@ const GUI = {
                     break;
                 case 3:
                     this.ShopRecycle(player);
+                    break;
+                case 4:
+                    this.ShopTitle(player);
                     break;
             }
         })
@@ -336,6 +343,11 @@ const GUI = {
                     break;
             }
         })
+    },
+
+    /////////////////////////////////////////////
+    ShopTitle(player) {
+
     }
 }
 

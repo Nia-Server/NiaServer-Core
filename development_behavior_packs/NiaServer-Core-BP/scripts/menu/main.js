@@ -1,6 +1,7 @@
 import { world,system } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
-import { Broadcast,Tell,log,RunCmd,GetScore,error} from '../customFunction.js';
+import { RunCmd,GetScore} from '../customFunction.js';
+import { log,warn,error } from "../API/logger.js";
 import { cfg } from '../config.js'
 
 import { SetupGUI } from './Setup.js';

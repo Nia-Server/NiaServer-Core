@@ -2,18 +2,6 @@ import {world} from '@minecraft/server';
 import {ActionFormData,ModalFormData,MessageFormData} from '@minecraft/server-ui'
 //一些自定义函数的注册
 
-export function log(info) {
-    console.log("\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] " + info + "\x1b[0m")
-}
-
-export function warn(info) {
-    console.warn("\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] " + info + "\x1b[0m")
-}
-
-export function error(info) {
-    console.error("\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] " + info + "\x1b[0m")
-}
-
 /**
  * 将Msg消息广播至整个游戏
  * @param {string} Msg
@@ -49,7 +37,7 @@ export function AddScoreboard(scoreboardName,showName) {
         world.scoreboard.addObjective(scoreboardName,showName);
         log(`计分板${scoreboardName}已被添加！`)
     } else {
-        console.error(`[NIA V4] 添加错误，计分板${scoreboardName}已存在！`)
+        error(`添加错误，计分板${scoreboardName}已存在！`)
     }
 }
 

@@ -1,5 +1,5 @@
 import { world, system } from "@minecraft/server";
-import { log } from "./customFunction";
+import { log,warn,error } from "./API/logger.js";
 
 
 
@@ -22,7 +22,7 @@ world.afterEvents.entityHitEntity.subscribe((event) => {
             //如果player_hit_entity对象中存在当前攻击者的信息，则判断当前时间戳与上一次攻击时间戳的差值是否小于50ms
             if (time - player_hit_entity[event.damagingEntity.nameTag].time < 60) {
                 //如果相同，则判定为疑似作弊行为
-                log(`[AntiCheats] ${event.damagingEntity.nameTag} 疑似作弊，作弊行为：连续点击！`);
+                log(`【反作弊系统】 ${event.damagingEntity.nameTag} 疑似作弊，作弊行为：连续点击！`);
                 //发送警告信息
                 event.damagingEntity.sendMessage("§c 检测到您的操作异常，请不要继续使用连点器！");
                 player_hit_entity[event.damagingEntity.nameTag] = {
@@ -65,7 +65,7 @@ system.runInterval(() => {
             let player_below_block = player.dimension.getBlock({x: player.location.x, y: player.location.y - 1, z: player.location.z});
             if (player_below_block.typeId == "minecraft:air") {
                 //判断玩家是否在飞行
-                log(`[AntiCheats] ${player.nameTag} 疑似作弊，作弊行为：飞行！`);
+                log(`【反作弊系统】 ${player.nameTag} 疑似作弊，作弊行为：飞行！`);
                 player.sendMessage("§c 检测到您的操作异常，请不要继续使用飞行作弊！");
                 //踢出玩家
                 world.getDimension("overworld").runCommandAsync(`kick ${player.nameTag} §c请规范您的游戏行为，请不要再次使用飞行作弊进行游戏！\n如果您认为这个封禁是一个误封，请联系管理员申诉！`);

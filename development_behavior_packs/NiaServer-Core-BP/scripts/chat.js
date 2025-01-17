@@ -1,7 +1,7 @@
 import {world,system, Player} from '@minecraft/server';
 import {cfg} from './config.js'
-import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution, GetTime, GetShortTime, log} from './customFunction.js'
-
+import {Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution, GetTime, GetShortTime} from './customFunction.js'
+import { log,warn,error } from "./API/logger.js";
 import { adler32 } from './API/cipher_system.js'
 import { ExternalFS } from './API/http.js';
 const fs = new ExternalFS();
@@ -147,22 +147,6 @@ world.beforeEvents.chatSend.subscribe(t => {
     //     return;
     // }
 
-
-    //开始判断头衔
-    switch (true) {
-        case t.sender.hasTag("show_op"):
-            t.cancel = true;
-            world.sendMessage(' [' + t.sender.nameTag + '] ' + t.message);
-            break;
-        case t.sender.hasTag("show_donator"):
-            t.cancel = true;
-            world.sendMessage(' [' + t.sender.nameTag + '] ' + t.message);
-            break;
-        default:
-            t.cancel = true;
-            world.sendMessage(' [' + t.sender.nameTag + '] ' + t.message);
-            break;
-    }
 
 
 
