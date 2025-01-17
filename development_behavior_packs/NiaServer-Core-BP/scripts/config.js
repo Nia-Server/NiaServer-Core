@@ -3,7 +3,7 @@ const config = {
     "MENUITEM": "minecraft:clock",
     "USERandomDATA": true,
     "MoneyScoreboardName": "money",
-    "MoneyShowName": "能源币",
+    "MoneyShowName": "金币",
     "USERandomDATA": true,
     "TimeScoreboardName":"time",
     "OPTAG": "op",

@@ -52,7 +52,7 @@ console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] NiaServer-Core 已经成�
 /_/ |_/_/\\__,_//____/\\___/_/    |___/\\___/_/         \\____/\\____/_/   \\___/\x1b[0m
 
     \x1b[33mversion: \x1b[32m${VERSION}\x1b[33m based on \x1b[32m${BDS_VERSION}\x1b[33m(last update:\x1b[32m${LAST_UPGRATE}\x1b[33m)\x1b[0m\n
-    \x1b[33mgithub: \x1b[32mhttps://github.com/Nia-Server/NiaServer-Core/\n`);
+    \x1b[33mgithub: \x1b[32mhttps://github.com/Nia-Server/NiaServer-Core/\x1b[0m`);
 console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] 作者: @Nia-Server(https://github.com/Nia-Server)\x1b[0m`);
 console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] 不知道如何部署？点击链接立即查看部署教程==>(\x1b[36mhttps://docs.mcnia.com/dev/\x1b[33m)\x1b[0m`);
-console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] 此项目基于 \x1b[31mAGPL-3.0\x1b[33m 开源协议!\x1b[0m`);
+console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] 此项目基于 \x1b[31mAGPL-3.0\x1b[33m 开源协议\x1b[0m`);

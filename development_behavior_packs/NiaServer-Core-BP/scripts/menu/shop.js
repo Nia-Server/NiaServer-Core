@@ -4,6 +4,7 @@ import { Tell,RunCmd,GetScore } from '../customFunction.js'
 import { Main } from './main.js';
 import { ExternalFS } from '../API/http.js';
 import { log,warn,error } from "../API/logger.js";
+import { TitleGUI } from '../playertitle.js';
 import { cfg } from '../config.js';
 
 const fs = new ExternalFS();
@@ -42,10 +43,10 @@ const GUI = {
             .title("§e§l服务器商店")
             .body("§l===========================\n§r§e欢迎光临服务器官方商店！\n目前服务器的物价指数为： §6§l" + GetScore("DATA","RN")/100 + "\n§r§e目前您的" + MoneyShowName + "余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§c请根据自己需求理性购物！\n§r§l===========================")
             .button("§c返回上一级")
-            .button("查看今日折扣商品\n§7立即查看现在的折扣商品！")
-            .button("售卖物品商店\n§7在这里售卖各式各样的物品！")
-            .button("回收物品商店\n§7在这里回收各式各样的物品！")
-            .button("称号商店\n§7在这里购买各种称号！")
+            .button("查看今日折扣商品\n立即查看现在的折扣商品！")
+            .button("售卖物品商店\n在这里售卖各式各样的物品！")
+            .button("回收物品商店\n在这里回收各式各样的物品！")
+            .button("称号商店\n在这里购买各种称号！")
         ShopMainForm.show(player).then((response) => {
             switch (response.selection) {
                 case 0:
@@ -61,7 +62,7 @@ const GUI = {
                     this.ShopRecycle(player);
                     break;
                 case 4:
-                    this.ShopTitle(player);
+                    TitleGUI.TitleShop(player);
                     break;
             }
         })
@@ -93,7 +94,7 @@ const GUI = {
         //定义商店售卖页面菜单
         const ShopPurchaseForm = new ActionFormData()
             .title("§e§l服务器商店")
-            .body("§l===========================\n§r§e欢迎光临服务器官方商店！\n目前服务器的物价指数为： §6§l" + GetScore("DATA","RN")/100 + "\n§r§e目前您的能源币余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§c请根据自己需求理性购物！\n§r§l===========================")
+            .body("§l===========================\n§r§e欢迎光临服务器官方商店！\n目前服务器的物价指数为： §6§l" + GetScore("DATA","RN")/100 + "\n§r§e目前您的" + MoneyShowName + "余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§c请根据自己需求理性购物！\n§r§l===========================")
             .button("§c返回上一级")
             for(let i = 0; i < SellData.length; i++) {
                 ShopPurchaseForm.button(SellData[i].name + "\n" + SellData[i].description,SellData[i].image)

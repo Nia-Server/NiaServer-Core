@@ -93,12 +93,16 @@ if (USEQQBOT) {
             fs.GetJSONFileData("player_data.json").then((result) => {
                 //文件不存在
                 if (result === 0) {
-                    RunCmd(`kick ${player.nameTag} 由于无法读取玩家数据\n您暂时无法游玩服务器，您可以在一段时间后再次尝试进入！\n这不是您的问题，请尽快联系管理员解决！`);
+                    system.runTimeout(() => {
+                        RunCmd(`kick ${player.nameTag} 由于无法读取玩家数据\n您暂时无法游玩服务器，您可以在一段时间后再次尝试进入！\n这不是您的问题，请尽快联系管理员解决！`);
+                    },10);
                     log("【QQ机器人】玩家数据文件 player_data.json 不存在");
                     return;
                 }
                 if (result === -1) {
-                    RunCmd(`kick ${player.nameTag} 由于服务器连接失败\n您暂时无法游玩服务器，您可以在一段时间后再次尝试进入！\n这不是您的问题，请尽快联系管理员解决！`);
+                    system.runTimeout(() => {
+                        RunCmd(`kick ${player.nameTag} 由于服务器连接失败\n您暂时无法游玩服务器，您可以在一段时间后再次尝试进入！\n这不是您的问题，请尽快联系管理员解决！`);
+                    },10);
                     error("【QQ机器人】在获取玩家数据文件 player_data.json 时与NIAHttpBOT连接失败！");
                     return;
                 }
@@ -111,14 +115,18 @@ if (USEQQBOT) {
                         //检查玩家状态
                         if (players_data[qqid].status != "normal") {
                             have_player = true;
-                            RunCmd(`kick ${player.nameTag} 由于您的账号状态异常\n您暂时无法游玩服务器，您的账号状态为：${players_data[qqid].status}\n如果您想要解决这个问题，请尽快联系管理员！`);
+                            system.runTimeout(() => {
+                                RunCmd(`kick ${player.nameTag} 由于您的账号状态异常\n您暂时无法游玩服务器，您的账号状态为：${players_data[qqid].status}\n如果您想要解决这个问题，请尽快联系管理员！`);
+                            },10);
                             return;
                         }
                         //检查玩家是否被封禁
                         if (players_data[qqid].ban_time != "0") {
                             //比对封禁时间
                             if (players_data[qqid].ban_time >= GetTime()) {
-                                RunCmd(`kick ${player.nameTag} 由于您的账号§c存在违规行为§r\n您已被§c封禁§r，封禁解除时间为：${players_data[qqid].ban_time}\n如果您认为这是一个误封，请尽快联系管理员！`);
+                                system.runTimeout(() => {
+                                    RunCmd(`kick ${player.nameTag} 由于您的账号§c存在违规行为§r\n您已被§c封禁§r，封禁解除时间为：${players_data[qqid].ban_time}\n如果您认为这是一个误封，请尽快联系管理员！`);
+                                },10);
                             } else {
                                 //发送欢迎消息
                                 player.sendMessage("§c 您的账号由于存在违规行为");
@@ -127,14 +135,18 @@ if (USEQQBOT) {
                             return;
                         }
                         //发送欢迎消息
-                        player.sendMessage("§a 欢迎回到服务器！");
+                        system.runTimeout(() => {
+                            player.sendMessage("§a 欢迎回到服务器！");
+                        },10);
                         have_player = true;
                         return;
                     }
                 }
                 //未找到玩家数据
                 if (!have_player) {
-                    RunCmd(`kick ${player.nameTag} 由于§c未找到您的相关数据§r，您暂时无法游玩服务器！\n为了服务器安全，您需要§c加入服务器官方QQ群并绑定XboxID§r才可以正常游玩！\n请您尽快加入服务器官方QQ群并自自助绑定XboxID！\n§e详情见服务器官方文档站:https://docs.mcnia.com`);
+                    system.runTimeout(() => {
+                        RunCmd(`kick ${player.nameTag} 由于§c未找到您的相关数据§r，您暂时无法游玩服务器！\n为了服务器安全，您需要§c加入服务器官方QQ群并绑定XboxID§r才可以正常游玩！\n请您尽快加入服务器官方QQ群并自自助绑定XboxID！\n§e详情见服务器官方文档站:https://docs.mcnia.com`);
+                    },10);
                 }
             })
         }

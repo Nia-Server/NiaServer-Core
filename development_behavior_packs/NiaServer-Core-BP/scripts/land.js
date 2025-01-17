@@ -2789,42 +2789,7 @@ world.afterEvents.worldInitialize.subscribe((event) => {
                 add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
                 LandNum++;
             }
-            log("【圈地系统】圈地数据文件 land.json 获取成功，本次读取用时：" + (Date.now() - start_1) + "ms，共加载 " + LandNum + " 块领地数据！" );
-            //索引值提前写入
-            // if (WRITE_INDEX_TO_FILE) {
-            //     fs.GetJSONFileData("land_index.json").then((result) => {
-            //         if (result === 0) {
-            //             //计算索引值
-            //             for (let Land in land_data) {
-            //                 add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
-            //             }
-            //             fs.CreateNewJsonFile("land_index.json",land_index).then((result) => {
-            //                 if (result === "success") {
-            //                     log("圈地系统索引文件不存在，已成功创建！");
-            //                 } else if (result === -1) {
-            //                     console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
-            //                 }
-            //             });
-            //         } else if (result === -1) {
-            //             console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
-            //         } else {
-            //             //文件存在且服务器连接成功
-            //             land_index = result;
-            //             let LandNum = 0;
-            //             for (let Land in land_data) {
-            //                 LandNum++;
-            //             }
-            //             log("圈地数据获取成功，本次读取用时：" + (Date.now() - start_1) + "ms，共加载 " + LandNum + " 块领地数据！" );
-            //         }
-            //     })
-            // } else {
-            //     let LandNum = 0;
-            //     for (let Land in land_data) {
-            //         add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
-            //         LandNum++;
-            //     }
-            //     log("圈地数据获取成功，本次读取用时：" + (Date.now() - start_1) + "ms，共加载&&计算 " + LandNum + " 块领地数据！" );
-            // }
+            log("【圈地系统】圈地数据文件 land.json 获取成功，本次读取用时：" + (Date.now() - start_1) + "ms，共加载 " + LandNum + " 块领地数据" );
         }
     })
 
