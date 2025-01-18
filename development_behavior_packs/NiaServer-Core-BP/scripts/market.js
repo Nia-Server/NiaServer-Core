@@ -23,7 +23,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
             fs.CreateNewJsonFile("market.json",[]).then((result) => {
                 if (result === "success") {
                     MarketData = [];
-                    log("【交易市场】交易市场数据文件 market.json 不存在，已成功创建");
+                    log("【交易市场】在获取交易市场数据文件 market.json 不存在，已成功创建");
                 } else if (result === -1) {
                     error("【交易市场】在创建交易市场数据文件 market.json 时与NIAHttpBOT连接失败");
                 }
@@ -41,7 +41,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
         if (result === 0) {
             fs.CreateNewJsonFile("market_temp_player_money.json",{}).then((result) => {
                 if (result === "success") {
-                    log("【交易市场】玩家货币数据文件 market_temp_player_money.json 不存在，已成功创建");
+                    log("【交易市场】在获取玩家货币数据文件 market_temp_player_money.json 不存在，已成功创建");
                 } else if (result === -1) {
                     error("【交易市场】在创建玩家货币数据文件 market_temp_player_money.json 时与NIAHttpBOT连接失败");
                 }

@@ -2,13 +2,13 @@ import { Player, world } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 import { Main } from './main';
 import { TpaGUI } from './Tpa';
+import { TitleGUI } from '../playertitle';
 
 const GUI = {
     SetupMain(player) {
         const SetupMainForm = new ActionFormData()
         .title("设置")
         .button("返回上一级菜单")
-        .button("游戏设置")
         .button("称号设置")
         .button("传送系统设置")
         .show(player).then((response) => {
@@ -17,13 +17,10 @@ const GUI = {
                     Main(player)
                     break;
                 case 1:
-                    this.PlayerSetupGUI(player)
+                    //称号设置
+                    TitleGUI.TitleSetUp(player)
                     break;
                 case 2:
-                    //称号设置
-
-                    break;
-                case 3:
                     TpaGUI.TpaSetup(player)
                     break;
             }
@@ -54,10 +51,7 @@ const GUI = {
                 this.SetupMain(player)
             }
         })
-    },
-
-    //称号设置
-    PlayerTitleSetup(player) {}
+    }
 }
 
 export const SetupGUI = GUI
