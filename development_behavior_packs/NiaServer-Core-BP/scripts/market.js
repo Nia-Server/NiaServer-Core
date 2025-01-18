@@ -1,6 +1,6 @@
 //玩家交易市场
 
-import { system, world, ItemStack } from '@minecraft/server';
+import { system, world, ItemStack, EnchantmentType } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui';
 import { GetTime, GetScore } from './customFunction';
 import { log,warn,error } from "./API/logger.js";
@@ -158,12 +158,17 @@ const GUI = {
                             //物品名字
                             //物品附魔属性
                             if (pre_item_data.Hasench) {
-                                let newench = preview_item.getComponent('enchantments');
-                                let enchList = newench.enchantments;
-                                for (let ench in pre_item_data.ench) {
-                                    enchList.addEnchantment(new Enchantment(ench,pre_item_data.ench[ench]));
+                                let enchList = [];
+                                for (let i = 0; i < pre_item_data.ench.length; i++) {
+                                    let new_ench = new EnchantmentType(pre_item_data.ench[i].type);
+                                    enchList.push({type: new_ench, level: pre_item_data.ench[i].level});
                                 }
-                                newench.enchantments = enchList;
+                                preview_item.getComponent("minecraft:enchantable").addEnchantments(enchList);
+                                // for (let ench in pre_item_data.ench) {
+                                //     let enchList = new EnchantmentType(ench);
+                                //     enchList.addEnchantment(new Enchantment(ench,pre_item_data.ench[ench]));
+                                // }
+                                // newench.enchantments = enchList;
                             }
                             //物品耐久值
                             if (pre_item_data.Hasdamage) {
@@ -338,13 +343,21 @@ const GUI = {
                         itemData.Hasdamage = false;
                     }
                     //判断是否有附魔组件
-                    if (item.hasComponent("minecraft:enchantments")) {
+                    if (item.hasComponent("minecraft:enchantable")) {
                         itemData.Hasench = true;
-                        let ench = item.getComponent('enchantments');
-                        itemData.ench = [...ench.enchantments].reduce(
-                            (obj, { type: { id }, level }) => Object.assign(obj, { [id]: level }),
-                            {}
-                        )
+                        itemData.ench = [];
+                        let ench = item.getComponent("minecraft:enchantable").getEnchantments().forEach((enchantment) => {
+                            //将物品的附魔信息转换为json格式[{"type":"minecraft:sharpness","level":1},{"type":"minecraft:unbreaking","level":1}]
+                            itemData.ench.push({"type":enchantment.type.id,"level":enchantment.level});
+                        });
+                        // let wood_sword = new ItemStack("minecraft:wooden_sword", 1);
+                        // const sharpness = new EnchantmentType("minecraft:sharpness");
+                        // wood_sword.getComponent("minecraft:enchantable").addEnchantments([{type: sharpness, level: 1}]);
+
+                        // //向控制台输出物品的附魔信息
+                        // wood_sword.getComponent("minecraft:enchantable").getEnchantments().forEach((enchantment) => {
+                        //     log(`附魔名称: ${enchantment.type.id}, 附魔等级: ${enchantment.level}`);
+                        // });
                     } else {
                         itemData.Hasench = false;
                     }

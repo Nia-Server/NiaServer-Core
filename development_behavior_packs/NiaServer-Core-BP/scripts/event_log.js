@@ -16,7 +16,7 @@ license: AGPL-3.0
 
 import { system, world } from "@minecraft/server";
 import { ExternalFS } from './API/http.js';
-import { GetTime, Broadcast } from "./customFunction";
+import { GetTime } from "./customFunction";
 import { log,warn,error } from "./API/logger.js";
 
 const fs = new ExternalFS();

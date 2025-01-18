@@ -74,19 +74,19 @@ if (USEQQBOT) {
 
 
     world.afterEvents.playerLeave.subscribe((event) => {
-        console.log(`玩家 ${event.playerName} 离开了服务器`);
-        bot.send_group_msg(`玩家 ${event.playerName} 离开了服务器`,QQGroup).then((result) => {
-            console.log(result);
-        })
+        log(`玩家 ${event.playerName} 离开了服务器`);
+        // bot.send_group_msg(`玩家 ${event.playerName} 离开了服务器`,QQGroup).then((result) => {
+        //     console.log(result);
+        // })
     })
 
     world.afterEvents.playerSpawn.subscribe((event) => {
         if (event.initialSpawn) {
             //首先检查是否有预览商品
-            console.log(`玩家 ${event.player.nameTag} 加入了服务器`);
-            bot.send_group_msg(`玩家 ${event.player.nameTag} 加入了服务器`,QQGroup).then((result) => {
-                console.log(result);
-            })
+            log(`玩家 ${event.player.nameTag} 加入了服务器`);
+            // bot.send_group_msg(`玩家 ${event.player.nameTag} 加入了服务器`,QQGroup).then((result) => {
+            //     console.log(result);
+            // })
             let players_data = {};
             let player = event.player;
             //读取player_data.json文件
@@ -127,17 +127,10 @@ if (USEQQBOT) {
                                 system.runTimeout(() => {
                                     RunCmd(`kick ${player.nameTag} 由于您的账号§c存在违规行为§r\n您已被§c封禁§r，封禁解除时间为：${players_data[qqid].ban_time}\n如果您认为这是一个误封，请尽快联系管理员！`);
                                 },10);
-                            } else {
-                                //发送欢迎消息
-                                player.sendMessage("§c 您的账号由于存在违规行为");
                             }
                             have_player = true;
                             return;
                         }
-                        //发送欢迎消息
-                        system.runTimeout(() => {
-                            player.sendMessage("§a 欢迎回到服务器！");
-                        },10);
                         have_player = true;
                         return;
                     }

@@ -15,6 +15,7 @@ system.beforeEvents.watchdogTerminate.subscribe((event) => {
     error("【watchdog】 NiaServer-Core运行出现异常，异常原因:" + event.terminateReason);
 })
 
+
 //服务器启动监听
 //服务器初始化
 world.afterEvents.worldInitialize.subscribe((event) => {
@@ -59,10 +60,12 @@ world.afterEvents.worldInitialize.subscribe((event) => {
 
 system.runInterval(() => {
     let TIME = new Date();
-    //每分钟更新一次
-    if (TIME.getMinutes() == 0 && TIME.getSeconds() == 0 ) {
+    if (TIME.getSeconds() == 0) {
         //增加在线时间
         RunCmd(`scoreboard players add @a time 1`);
+    }
+    if (TIME.getMinutes() == 0 && TIME.getSeconds() == 0 ) {
+
 
         let RN = parseInt(getNumberInNormalDistribution(100,20))
         //防止物价指数出现极端数值
@@ -73,15 +76,6 @@ system.runInterval(() => {
         RunCmd(`title @a title §c物价指数发生变动！`)
         RunCmd(`title @a subtitle §7物价指数由 §l§e${GetScore("DATA","RN") / 100} §r§7变为 §l§e${RN / 100}`)
         //自动备份
-        //Broadcast(`§e 服务器自动备份中！可能出现卡顿，请勿在此时进行较大负载活动！`);
-        //暂时不可用
-        // fs.Backup(`${cfg.MapFolder}`,`.${cfg.BackupFolder}\\${GetShortTime()}`).then((result) => {
-        //     if (result === "success") {
-        //         Broadcast(`§a 服务器自动备份成功！备份存档校验码：${GetShortTime()}`)
-        //     } else {
-        //         Broadcast("§c 服务器备份失败！失败错误码：" + result + " 请联系管理员！")
-        //     }
-        // })
         if (TIME.getHours() == 16) {
             let ScoreBoards = world.scoreboard.getObjectives()
             for (let i = 0; i < ScoreBoards.length; i++) {
