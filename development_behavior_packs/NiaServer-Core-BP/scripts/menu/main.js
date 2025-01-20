@@ -18,7 +18,7 @@ const ALL_GUI = ["MainGUI","SetupGUI","ShopGUI","TpaGUI","CdkGUI","TransferGUI",
 
 //注册scriptevent
 system.afterEvents.scriptEventReceive.subscribe((event) => {
-    if (event.id != "mcnia:openGUI") return;
+    if (event.id != "mcnia:nc_openGUI") return;
     //openGUI后的处理
     //event.message是一个object对象，格式形如{"GUI":"GUI名称","target":"目标玩家名称","data":{}}
     //解析event.message，判断传进的数据是否是一个object对象
@@ -225,39 +225,21 @@ export function Main(player) {
 }
 
 
-function OpenGUI(player,GUINAME) {
-    switch (GUINAME) {
-        case "MainGUI":
-            Main(player);
-            break;
-        case "SetupGUI":
-            SetupGUI.SetupMain(player);
-            break;
-        case "ShopGUI":
-            ShopGUI.ShopMain(player);
-            break;
-        case "TpaGUI":
-            TpaGUI.TpaMain(player);
-            break;
-        case "CdkGUI":
-            CDKGUI(player);
-            break;
-        case "TransferGUI":
-            TransferGUI.Transfer(player);
-            break;
-        case "OpGUI":
-            OpGUI.CheckOP(player);
-            break;
-        case "MarketGUI":
-            MarketGUI.Main(player);
-            break;
-        case "LandGUI":
-            LandGUI.Main(player);
-            break;
-        default:
-            player.sendMessage(`§c 未找到相应的GUI，请联系管理员！`);
-            break;
+function OpenGUI(player, GUINAME) {
+    const GUIs = {
+        MainGUI: () => Main(player),
+        SetupGUI: () => SetupGUI.SetupMain(player),
+        ShopGUI: () => ShopGUI.ShopMain(player),
+        TpaGUI: () => TpaGUI.TpaMain(player),
+        CdkGUI: () => CDKGUI(player),
+        TransferGUI: () => TransferGUI.Transfer(player),
+        OpGUI: () => OpGUI.CheckOP(player),
+        MarketGUI: () => MarketGUI.Main(player),
+        LandGUI: () => LandGUI.Main(player),
     }
+    ;(GUIs[GUINAME] || (() => {
+        player.sendMessage("§c 未找到相应的GUI，请联系管理员！")
+    }))()
 }
 
 //对于物品使用的检测
