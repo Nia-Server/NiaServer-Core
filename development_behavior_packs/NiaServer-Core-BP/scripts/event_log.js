@@ -78,9 +78,9 @@ const log_API = {
     WriteToLog(dimension,subject,x0,y0,z0,event,target,x1,y1,z1,extra) {
         fs.WriteLineToFile(log_file,`${GetTime()},${dimension},${subject},${x0},${y0},${z0},${event},${target},${x1},${y1},${z1},${extra}\n`).then((result) => {
             if (result === "success") {
-                log(`[log][${dimension}] ${subject} 在 ${GetTime()} 发生了 ${event} 事件，目标为 ${target}，附加信息为 ${extra}`);
+                log(`【日志】[${dimension}] ${subject} 在 ${GetTime()} 发生了 ${event} 事件，目标为 ${target}，附加信息为 ${extra}`);
             } else {
-                warn("Failed to write to log file!");
+                warn("【日志】写入日志时遇到了一些问题...");
             }
         })
     }

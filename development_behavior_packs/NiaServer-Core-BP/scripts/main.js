@@ -38,6 +38,7 @@ import './qqBot.js'
 //import './AntiCheats.js'
 import './playertitle.js'
 import './menu/register.js'
+import './basic/task.js'
 
 export const VERSION = "v1.5.0-pre-4";
 export const BDS_VERSION = "1.21.51.02";

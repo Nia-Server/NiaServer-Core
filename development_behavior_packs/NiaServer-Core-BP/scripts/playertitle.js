@@ -104,14 +104,14 @@ const GUI = {
                     const hasTag = player.hasTag(chk.value);
                     if (["==", "!="].includes(chk.operator)) {
                         const msg = chk.operator === "=="
-                            ? `拥有tag标签: §r§6${chk.value}§r ${hasTag ? "§a√" : "§c×"}§r\n`
-                            : `没有tag标签: §r§6${chk.value}§r ${!hasTag ? "§a√" : "§c×"}§r\n`;
+                            ? `拥有tag标签: §r§6${chk.value}§r ${hasTag ? "§a✔" : "§c✘"}§r\n`
+                            : `没有tag标签: §r§6${chk.value}§r ${!hasTag ? "§a✔" : "§c✘"}§r\n`;
                         body += msg;
                     } else {
                         body += `未知的tag操作符: §r§6${chk.operator}§r\n`;
                     }
                 } else if (chk.type === "scoreboard") {
-                    const passed = CheckScoreboard(player, chk.scoreboard, chk.value, chk.operator) ? "§a√" : "§c×";
+                    const passed = CheckScoreboard(player, chk.scoreboard, chk.value, chk.operator) ? "§a✔" : "§c✘";
                     switch (chk.operator) {
                         case ">=":
                             body += `§r§6${chk.scoreboard_show_name}§r 大于等于§r§6 ${chk.value} ${passed}§r\n`;
