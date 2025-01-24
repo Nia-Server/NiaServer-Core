@@ -1,4 +1,5 @@
 import {world} from '@minecraft/server';
+import {log,error,warn} from './API/logger.js';
 import {ActionFormData,ModalFormData,MessageFormData} from '@minecraft/server-ui'
 //一些自定义函数的注册
 
@@ -75,6 +76,27 @@ export function GetTime() {
         second = "0" + second
     }
     let timeStr = year + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second
+    return timeStr
+}
+
+export function GetDate() {
+    //创建一个Date对象
+    let nowTime = new Date()
+    //这里是获得北京时间
+    let addedTime = new Date(nowTime.getTime() + 28800000);
+    //获取年份
+    let year = addedTime.getFullYear ();
+    //获取月份（0-11，0代表1月）
+    let month = addedTime.getMonth () + 1;
+    if (month < 10) {
+        month = "0" + month
+    }
+    //获取日期（1-31）
+    let date = addedTime.getDate ();
+    if (date < 10) {
+        date = "0" + date
+    }
+    let timeStr = year + "-" + month + "-" + date
     return timeStr
 }
 

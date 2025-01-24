@@ -13,6 +13,8 @@ import { OpGUI } from './op.js';
 import { MarketGUI } from '../market.js';
 import { LandGUI } from '../land.js';
 
+const MoneyScoreboardName = cfg.MoneyScoreboardName;
+
 
 const ALL_GUI = ["MainGUI","SetupGUI","ShopGUI","TpaGUI","CdkGUI","TransferGUI","OpGUI","MarketGUI","LandGUI"];
 
@@ -68,7 +70,7 @@ const MainGUI = {
     "title": "服务器菜单",
     "body": "§l===========================\n"+
             "§eHi! §l§6%playername% §r§e欢迎回来！\n"+
-            "§e您目前能源币余额： §6§l*money*\n"+
+            "§e您目前金币余额： §6§l*money*\n"+
             "§r§e您目前在线总时长为： §6§l*time*\n"+
             "§r§e当前物价指数为： §6§l%RN%\n"+
             "§r§l===========================\n"+

@@ -33,7 +33,7 @@ import './checkupdate.js'
 import './market.js'
 import './land.js'
 import './basic.js'
-//import './log.js'
+import './event_log.js'
 import './qqBot.js'
 //import './AntiCheats.js'
 import './playertitle.js'
@@ -42,7 +42,7 @@ import './basic/task.js'
 
 export const VERSION = "v1.5.0-pre-4";
 export const BDS_VERSION = "1.21.51.02";
-export const LAST_UPGRATE = "2025/01/17";
+export const LAST_UPGRATE = "2025/01/25";
 export const CODE_BRANCH = "dev";
 
 

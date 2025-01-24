@@ -64,29 +64,29 @@ if (USEQQBOT) {
         });
     }
 
-    //服务器启动时发送消息
-    // world.afterEvents.worldInitialize.subscribe((event) => {
-    //     bot.send_group_msg(`服务器已与机器人成功连接！\nBDS版本:${BDS_VERSION}\nCore版本:${VERSION}\n上次更新时间:${LAST_UPGRATE}`,QQGroup).then((result) => {
-    //         console.log(result);
-    //     })
-    // })
+
+    world.afterEvents.worldInitialize.subscribe((event) => {
+        bot.send_group_msg(`服务器已与机器人成功连接！\nBDS版本:${BDS_VERSION}\nCore版本:${VERSION}\n上次更新时间:${LAST_UPGRATE}`,QQGroup).then((result) => {
+            console.log(result);
+        })
+    })
 
 
 
     world.afterEvents.playerLeave.subscribe((event) => {
         log(`玩家 ${event.playerName} 离开了服务器`);
-        // bot.send_group_msg(`玩家 ${event.playerName} 离开了服务器`,QQGroup).then((result) => {
-        //     console.log(result);
-        // })
+        bot.send_group_msg(`玩家 ${event.playerName} 离开了服务器`,QQGroup).then((result) => {
+            console.log(result);
+        })
     })
 
     world.afterEvents.playerSpawn.subscribe((event) => {
         if (event.initialSpawn) {
             //首先检查是否有预览商品
             log(`玩家 ${event.player.nameTag} 加入了服务器`);
-            // bot.send_group_msg(`玩家 ${event.player.nameTag} 加入了服务器`,QQGroup).then((result) => {
-            //     console.log(result);
-            // })
+            bot.send_group_msg(`玩家 ${event.player.nameTag} 加入了服务器`,QQGroup).then((result) => {
+                console.log(result);
+            })
             let players_data = {};
             let player = event.player;
             //读取player_data.json文件

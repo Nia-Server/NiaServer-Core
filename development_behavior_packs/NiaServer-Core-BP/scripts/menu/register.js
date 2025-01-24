@@ -8,11 +8,12 @@ const TimeScoreboardName = cfg.TimeScoreboardName;
 
 const first_join_message =
     "§b========================\n" +
-    "§6欢迎来到NiaServer V5！\n" +
+    "§6欢迎来到NiaServer V5 玩家内容共创版本！\n" +
+    "§6欢迎来到NiaServer V5 玩家内容共创版本！\n" +
     "§6服务器菜单使用的是§c钟表菜单\n" +
     "§6使用钟表右键（PC） && 手持钟表对着空气长按（手机）\n" +
     "§6即可打开服务器菜单进行一系列便捷操作\n" +
-    "§6服务器游玩任务指引，请使用§c任务指引卷轴§6进行查看\n" +
+    // "§6服务器游玩任务指引，请使用§c任务指引卷轴§6进行查看\n" +
     "§6如需更多详细关于服务器游玩指南\n" +
     "§6请前往服务器官网查看\n" +
     "§6服务器官网：§chttps://docs.mcnia.com\n" +
@@ -43,8 +44,9 @@ world.afterEvents.playerSpawn.subscribe((event) => {
                 wood_sword.getComponent("minecraft:enchantable").addEnchantments([{type: sharpness, level: 1}]);
                 wood_sword.nameTag = "§a新手之剑";
                 player.getComponent("minecraft:inventory").container.addItem(wood_sword);
+                player.setDynamicProperty("has_entered", true);
             } else {
-                player.sendMessage(" §6欢迎回到NiaServer V5！");
+                player.sendMessage(" §6欢迎来到NiaServer V5 玩家内容共创版本");
             }
         },100)
         //检查玩家是否第一次进入服务器

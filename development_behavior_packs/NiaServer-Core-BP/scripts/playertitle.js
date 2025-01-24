@@ -217,7 +217,8 @@ const GUI = {
         const form = new ActionFormData()
             .title("称号设置")
             .body("请选择您要使用的称号")
-            .button("返回上一级");
+            .button("返回上一级")
+            .button("取消佩戴");
         let button = "";
         for (const [tagKey, tagInfo] of Object.entries(title_data)) {
             if (player.hasTag(tagKey)) {
@@ -230,11 +231,21 @@ const GUI = {
         }
         form.show(player).then(response => {
             if (response.canceled || response.selection === 0) return SetupGUI.SetupMain(player);
+            if (response.selection === 1) {
+                let player_tags = player.getTags();
+                player_tags.forEach(tag => {
+                    if (tag.startsWith("show_title")) {
+                        player.removeTag(tag);
+                        player.sendMessage("§a 成功取消佩戴称号");
+                    }
+                });
+                return this.TitleSetUp(player);
+            }
 
             let index = 0;
             for (const [tagKey, tagInfo] of Object.entries(title_data)) {
                 if (player.hasTag(tagKey)) {index++} else {continue}
-                if (index === response.selection) {
+                if (index === response.selection - 1) {
                     let player_tags = player.getTags();
                     //移除前缀是show_title的所有tag
                     player_tags.forEach(tag => {
@@ -254,20 +265,21 @@ const GUI = {
 world.beforeEvents.chatSend.subscribe(event => {
     event.cancel = true;
     let player = event.sender;
-    let message = event.message;
+    let message =  `<${player.name}> ${event.message}`;
+    let title = "";
     let player_tags = player.getTags();
     player_tags.forEach(tag => {
         if (tag.startsWith("show_title")) {
             let tagKey = tag.replace("show_", "");
             let tagInfo = title_data[tagKey];
             if (tagInfo.type === "image") {
-                message = `${tagInfo.title} <${player.name}> ${message}`;
-            } else {
-                message = `[${tagInfo.title}§r] <${player.name}> ${message}`;
+                title = `${tagInfo.title}`;
+            } else if (tagInfo.type === "text") {
+                title = `[${tagInfo.title}§r]`;
             }
         }
     });
-    world.sendMessage(message);
+    world.sendMessage(title + message);
 })
 
 export const TitleGUI = GUI;
