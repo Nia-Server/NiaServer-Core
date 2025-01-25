@@ -206,6 +206,9 @@ function player_in_index(player) {
         //原来在领地中
         player.addTag("inland");
         if (land) {
+            if (!land.setup.ShowActionbar) {
+                return;
+            }
             if (in_allowlist(player,land)) {
                 player.onScreenDisplay.setActionBar(`§a欢迎回到 ${land.land_name} §r§a中！`);
             } else if (land.setup.ShowActionbar) {
@@ -725,7 +728,12 @@ const GUI = {
     ShowLand(player) {
         let land = pos_in_land([player.location.x, player.location.y,player.location.z],player.dimension.id);
         if (land) {
-            this.ManageLandDetail(player,adler32(land.get_time + land.create_owner + land.purchase_price));
+            if (land.owner == player.id) {
+                this.ManageLandDetail(player,adler32(land.get_time + land.create_owner + land.purchase_price));
+            } else {
+                player.sendMessage(`§b 您当前在 ${land.land_name} §r§b领地中，该领地的所有者是 ${land.owner_name}，您无权管理该领地！`);
+                this.Main(player);
+            }
         } else {
             player.sendMessage("§c 您当前不在任何领地中！");
             this.Main(player);

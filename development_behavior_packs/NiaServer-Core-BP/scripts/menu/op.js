@@ -3,6 +3,7 @@ import { RunCmd,GetScore } from '../customFunction.js'
 import { world } from '@minecraft/server'
 import { Main } from './main'
 import { cfg } from '../config.js'
+import { LandGUI } from '../land.js'
 
 
 const GUI = {
@@ -25,35 +26,19 @@ const GUI = {
         const OpMainForm = new ActionFormData()
         .title("管理员操作系统")
         .body("§r§l===========================" + "\n§eHi！ " + player.nameTag + " 欢迎使用！" + "\n§r§l===========================")
-        .button("封禁玩家")
-        .button("解封玩家")
+        .button("管理圈地系统")
         .button("添加CDK码")
         .button("管理CDK码")
-        .button("调节玩家游戏数值")
-        .button("调节物价指数")
-        .button("§c紧急预案Ⅰ")
         .show(player).then(result => {
             switch (result.selection) {
                 case 0:
-                    player.sendMessage("§c 开发中内容，敬请期待！")
+                    LandGUI.AdminMain(player);
                     break;
                 case 1:
-                    player.sendMessage("§c 开发中内容，敬请期待！")
+                    this.AddCDKMain(player);
                     break;
                 case 2:
-                    this.AddCDKMain(player)
-                    break;
-                case 3:
-                    this.SetCDK(player)
-                    break;
-                case 4:
-                    player.sendMessage("§c 开发中内容，敬请期待！")
-                    break;
-                case 5:
-                    player.sendMessage("§c 开发中内容，敬请期待！")
-                    break;
-                case 6:
-                    player.sendMessage("§c 开发中内容，敬请期待！")
+                    this.SetCDK(player);
                     break;
             }
         })

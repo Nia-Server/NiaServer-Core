@@ -82,7 +82,7 @@ const MainGUI = {
             "name": "立即回城\n点击后立即返回主城",
             "icon": "textures/blocks/chest_front",
             "type": "runCmd",
-            "content": "tp @a[name=%playername%] 184 79 114",
+            "content": "tp @a[name=%playername%] 233 64 667",
             "opMenu": false
         },
         {

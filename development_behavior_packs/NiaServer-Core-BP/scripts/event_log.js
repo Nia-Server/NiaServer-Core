@@ -14,7 +14,7 @@ license: AGPL-3.0
 
 */
 
-import { system, world } from "@minecraft/server";
+import { system, world, ItemStack } from "@minecraft/server";
 import { ExternalFS } from './API/http.js';
 import { GetTime,GetDate } from "./customFunction";
 import { log,warn,error } from "./API/logger.js";
@@ -89,7 +89,19 @@ const log_API = {
 world.beforeEvents.chatSend.subscribe((event) => {
     if (config.chat_send) {
         system.run(() => {
-            log_API.WriteToLog(event.sender.dimension.id,event.sender.nameTag,event.sender.location.x,event.sender.location.y,event.sender.location.z,"玩家聊天事件","","","","",event.message)
+            log_API.WriteToLog(
+                event.sender.dimension.id,
+                event.sender.nameTag,
+                event.sender.location.x,
+                event.sender.location.y,
+                event.sender.location.z,
+                "玩家聊天事件",
+                "",
+                "",
+                "",
+                "",
+                event.message
+            )
         })
     }
 })
@@ -108,27 +120,25 @@ world.afterEvents.playerSpawn.subscribe((event) => {
             "",
             "",
             "",
-            ""
+            event.player.id
         )
     }
 })
 
-world.beforeEvents.playerLeave.subscribe((event) => {
-    system.run(() => {
-        log_API.WriteToLog(
-            event.player.dimension.id,
-            event.player.nameTag,
-            event.player.location.x,
-            event.player.location.y,
-            event.player.location.z,
-            "玩家离开服务器事件",
-            "",
-            "",
-            "",
-            "",
-            ""
-        )
-    })
+world.afterEvents.playerLeave.subscribe((event) => {
+    log_API.WriteToLog(
+        "",
+        event.playerName,
+        "",
+        "",
+        "",
+        "玩家离开服务器事件",
+        "",
+        "",
+        "",
+        "",
+        event.playerId
+    )
 })
 
 world.afterEvents.playerPlaceBlock.subscribe((event) => {
@@ -146,6 +156,84 @@ world.afterEvents.playerPlaceBlock.subscribe((event) => {
         ""
     )
 })
+
+world.beforeEvents.playerBreakBlock.subscribe((event) => {
+    system.run(() => {
+        log_API.WriteToLog(
+            event.dimension.id,
+            event.player.nameTag,
+            event.player.location.x,
+            event.player.location.y,
+            event.player.location.z,
+            "玩家破坏方块事件",
+            event.block.typeId,
+            event.block.location.x,
+            event.block.location.y,
+            event.block.location.z,
+            ""
+        )
+    })
+})
+
+world.beforeEvents.playerGameModeChange.subscribe((event) => {
+    system.run(() => {
+        log_API.WriteToLog(
+            event.dimension.id,
+            event.player.nameTag,
+            event.player.location.x,
+            event.player.location.y,
+            event.player.location.z,
+            "玩家游戏模式变更事件",
+            "",
+            "",
+            "",
+            "",
+            event.fromGameMode + " -> " + event.toGameMode
+        )
+    })
+})
+
+
+world.afterEvents.itemUseOn.subscribe((event) => {
+    //定义一些可以被改变状态的方块
+    const blocks = [
+        "minecraft:chest","minecraft:trapped_chest","minecraft:ender_chest","minecraft:barrel","minecraft:frame","minecraft:anvil","minecraft:enchanting_table","minecraft:cartography_table","minecraft:smithing_table",
+        "minecraft:black_shulker_box","minecraft:blue_shulker_box","minecraft:brown_shulker_box","minecraft:cyan_shulker_box","minecraft:gray_shulker_box","minecraft:green_shulker_box","minecraft:light_blue_shulker_box","minecraft:lime_shulker_box","minecraft:orange_shulker_box",
+        "minecraft:pink_shulker_box","minecraft:purple_shulker_box","minecraft:red_shulker_box","minecraft:undyed_shulker_box","minecraft:white_shulker_box","minecraft:yellow_shulker_box"
+    ]
+    if (blocks.indexOf(event.block.typeId) !== -1) {
+        log_API.WriteToLog(
+            event.source.dimension.id,
+            event.source.nameTag,
+            event.source.location.x,
+            event.source.location.y,
+            event.source.location.z,
+            "玩家与箱子交互事件",
+            event.block.typeId,
+            event.block.location.x,
+            event.block.location.y,
+            event.block.location.z,
+            ""
+        )
+    }
+})
+
+// world.afterEvents.playerInteractWithBlock.subscribe((event) => {
+//     //定义一些可以被改变状态的方块
+//     // const blocks = [
+//     //     "minecraft:chest","minecraft:trapped_chest","minecraft:ender_chest","minecraft:barrel","minecraft:frame","minecraft:anvil","minecraft:enchanting_table","minecraft:cartography_table","minecraft:smithing_table",
+//     //     "minecraft:black_shulker_box","minecraft:blue_shulker_box","minecraft:brown_shulker_box","minecraft:cyan_shulker_box","minecraft:gray_shulker_box","minecraft:green_shulker_box","minecraft:light_blue_shulker_box","minecraft:lime_shulker_box","minecraft:orange_shulker_box",
+//     //     "minecraft:pink_shulker_box","minecraft:purple_shulker_box","minecraft:red_shulker_box","minecraft:undyed_shulker_box","minecraft:white_shulker_box","minecraft:yellow_shulker_box"
+//     // ]
+//     // if (blocks.indexOf(event.block.typeId) !== -1) {
+//         let beforeItemStack = event.beforeItemStack;
+//         log(`beforeItemStack: ${beforeItemStack.nameTag}`)
+//         let afterItemStack = event.itemStack;
+//         log(`afterItemStack: ${afterItemStack.nameTag}`)
+//     // }
+
+// })
+
 
 world.afterEvents.chatSend.subscribe((event) => {
     log_API.WriteToLog(
