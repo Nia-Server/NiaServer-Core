@@ -440,12 +440,6 @@ const GUI = {
 
 
 
-world.afterEvents.itemUse.subscribe(event => {
-    if (event.itemStack.typeId == "minecraft:stick") {
-        let player = event.source;
-        GUI.TaskSub(player,"ZHCN0100000");
-    }
-})
 
 
 

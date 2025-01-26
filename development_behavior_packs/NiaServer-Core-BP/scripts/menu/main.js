@@ -12,11 +12,12 @@ import { TransferGUI } from './Transfer.js';
 import { OpGUI } from './op.js';
 import { MarketGUI } from '../market.js';
 import { LandGUI } from '../land.js';
+import { HomeGUI } from '../basic/home.js';
 
 const MoneyScoreboardName = cfg.MoneyScoreboardName;
 
 
-const ALL_GUI = ["MainGUI","SetupGUI","ShopGUI","TpaGUI","CdkGUI","TransferGUI","OpGUI","MarketGUI","LandGUI"];
+const ALL_GUI = ["MainGUI","SetupGUI","ShopGUI","TpaGUI","CdkGUI","TransferGUI","OpGUI","MarketGUI","LandGUI","HomeGUI"];
 
 //注册scriptevent
 system.afterEvents.scriptEventReceive.subscribe((event) => {
@@ -82,7 +83,7 @@ const MainGUI = {
             "name": "立即回城\n点击后立即返回主城",
             "icon": "textures/blocks/chest_front",
             "type": "runCmd",
-            "content": "tp @a[name=%playername%] 233 64 667",
+            "content": "tp @a[name=%playername%] 233 65 667",
             "opMenu": false
         },
         {
@@ -104,6 +105,13 @@ const MainGUI = {
             "icon": "textures/ui/icon_blackfriday",
             "type": "openGUI",
             "GUI": "ShopGUI",
+            "opMenu": false
+        },
+        {
+            "name": "传送系统\n快速传送到你的家",
+            "icon": "textures/ui/icon_recipe_construction",
+            "type": "openGUI",
+            "GUI": "HomeGUI",
             "opMenu": false
         },
         {
@@ -238,6 +246,7 @@ function OpenGUI(player, GUINAME) {
         OpGUI: () => OpGUI.CheckOP(player),
         MarketGUI: () => MarketGUI.Main(player),
         LandGUI: () => LandGUI.Main(player),
+        HomeGUI: () => HomeGUI.HomeMain(player)
     }
     ;(GUIs[GUINAME] || (() => {
         player.sendMessage("§c 未找到相应的GUI，请联系管理员！")

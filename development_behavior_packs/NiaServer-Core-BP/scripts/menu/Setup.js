@@ -3,6 +3,7 @@ import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-
 import { Main } from './main';
 import { TpaGUI } from './Tpa';
 import { TitleGUI } from '../playertitle';
+import { HomeGUI } from '../basic/home';
 
 const GUI = {
     SetupMain(player) {
@@ -11,6 +12,7 @@ const GUI = {
         .button("返回上一级菜单")
         .button("称号设置")
         .button("传送系统设置")
+        .button("传送点设置")
         .show(player).then((response) => {
             switch (response.selection) {
                 case 0:
@@ -22,6 +24,9 @@ const GUI = {
                     break;
                 case 2:
                     TpaGUI.TpaSetup(player)
+                    break;
+                case 3:
+                    HomeGUI.AddPos(player);
                     break;
             }
         })
