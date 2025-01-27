@@ -16,17 +16,17 @@ const GUI = {
         .show(player).then((response) => {
             switch (response.selection) {
                 case 0:
-                    Main(player)
+                    Main(player);
                     break;
                 case 1:
                     //称号设置
-                    TitleGUI.TitleSetUp(player)
+                    TitleGUI.TitleSetUp(player);
                     break;
                 case 2:
-                    TpaGUI.TpaSetup(player)
+                    TpaGUI.TpaSetup(player);
                     break;
                 case 3:
-                    HomeGUI.AddPos(player);
+                    HomeGUI.SetUP(player);
                     break;
             }
         })
