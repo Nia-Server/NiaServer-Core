@@ -20,7 +20,7 @@ import { cfg } from "../config.js";
 import { ExternalFS,QQBotSystem } from '../API/http.js';
 import { VERSION,BDS_VERSION,LAST_UPGRATE,CODE_BRANCH } from "../main.js";
 
-const USEQQBOT = cfg.QQBotCfg.USEQQBOT;
+const USEQQBOT = cfg.USEQQBot;
 const QQGroup = cfg.QQBotCfg.QQGroup;
 const TransferMessage = cfg.QQBotCfg.TransferMessage;
 const bot = new QQBotSystem();
