@@ -41,6 +41,7 @@ jobs:
     needs: [zip]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Download the behavior_pack
         uses: actions/download-artifact@v4
         with:
@@ -52,7 +53,7 @@ jobs:
       - name: Create and upload release
         uses: ncipollo/release-action@v1.12.0
         with:
-          artifacts: "NiaServer-Core-BP-${{ github.ref_name }}.zip,NiaServer-Core-RP-${{ github.ref_name }}.zip"
+          artifacts: "NiaServer-Core-BP-${{ github.ref_name }}.zip,NiaServer-Core-RP-${{ github.ref_name }}.zip,world_behavior_packs.json,world_resource_packs.json"
           bodyFile: "CHANGELOG.md"
           generateReleaseNotes: false
           token: ${{ secrets.GITHUB_TOKEN }}
