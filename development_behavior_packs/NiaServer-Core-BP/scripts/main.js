@@ -47,10 +47,10 @@ import './qqBot/main.js'
 
 import { cfg } from './config.js'
 
-export const VERSION = "v1.5.0-pre-4";
+export const VERSION = "v1.5.0";
 export const BDS_VERSION = "1.21.51.02";
 export const LAST_UPGRATE = "2025/02/06";
-export const CODE_BRANCH = "dev";
+export const CODE_BRANCH = "main";
 
 
 console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] NiaServer-Core 已经成功在本服务器上成功启动！\x1b[36m\n

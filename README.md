@@ -44,12 +44,6 @@
 
 ## 开发计划
 
-**v1.5.0** 上线NIAHttpBOT的QQ机器人版本，支持QQ机器人的一系列操作
-
-**v1.5.1** 行为包添加QQ机器人联动功能
-
-**v1.6.0** 从NiaServer-Core主项目分离出NIAHttpBOT，NiaServer-ExtraFeatures作为子项目进行更新
-
 更多详细新特性开发计划&&bug修复请前往[NIA服务器开发计划](https://github.com/orgs/Nia-Server/projects/1/views/1?layout=board)查看...
 
 ## Addons功能&&特性
