@@ -52,7 +52,7 @@ jobs:
       - name: Create and upload release
         uses: ncipollo/release-action@v1.12.0
         with:
-          artifacts: "NiaServer-Core-BP-${{ github.ref_name }}.zip,NiaServer-Core-RP-${{ github.ref_name }}.zip,world_behavior_packs.json,world_resource_packs.json"
+          artifacts: "NiaServer-Core-BP-${{ github.ref_name }}.zip,NiaServer-Core-RP-${{ github.ref_name }}.zip"
           bodyFile: "CHANGELOG.md"
           generateReleaseNotes: false
           token: ${{ secrets.GITHUB_TOKEN }}
