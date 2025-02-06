@@ -20,7 +20,7 @@ const GUI = {
             "§r§l===========================\n"+
             "§r§e转账单笔10000"+ MoneyShowName + "以下不收取费用\n"+
             "单笔转账超出10000"+ MoneyShowName + "的收取%%0.5的服务费\n"+
-            "能源币单笔转账最大数量为100000"+ MoneyShowName +"\n"+
+            "金币单笔转账最大数量为100000"+ MoneyShowName +"\n"+
             "§r§l==========================="
         )
         .button(`${MoneyShowName}转账`)

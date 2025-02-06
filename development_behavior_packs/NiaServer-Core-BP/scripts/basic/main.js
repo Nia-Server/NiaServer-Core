@@ -2,6 +2,7 @@ import { system, world } from '@minecraft/server';
 import { log, warn, error } from "../API/logger.js";
 import { Broadcast, RunCmd, AddScoreboard, GetScore, getNumberInNormalDistribution, GetShortTime} from '../API/game.js';
 import { ExternalFS } from '../API/http.js';
+import { cfg } from '../config.js';
 
 const fs = new ExternalFS();
 
@@ -23,7 +24,7 @@ world.afterEvents.worldInitialize.subscribe((event) => {
         log("NiaServer-Core 第一次在这个世界上运行，开始初始化...");
         AddScoreboard("UUID","玩家识别码");
         AddScoreboard("DATA","服务器数据");
-        AddScoreboard("money","能源币");
+        AddScoreboard("money",cfg.MoneyShowName);
         AddScoreboard("time","在线时间");
         AddScoreboard("menu","§6==NIA服务器==");
         AddScoreboard("CDK","CDK数据");

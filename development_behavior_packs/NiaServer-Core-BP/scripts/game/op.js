@@ -72,7 +72,7 @@ const GUI = {
         const AddCDKSub1Form = new ModalFormData()
             .title("添加计分板形式CDK")
             .textField("请输入自定义CDK码","请勿重复、过长！")
-            .dropdown("请选择要改变分数的计分板",["自定义计分板名称","能源币(money)","氧气值(oxygen)"])
+            .dropdown("请选择要改变分数的计分板",["自定义计分板名称","金币(money)"])
             .textField("自定义计分板名称","请在上方选择自定义后填写")
             .textField("增加目标计分板的值","只能输入阿拉伯数字！")
             .textField("CDK可兑换的最大数量","只能输入阿拉伯数字！")
