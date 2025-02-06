@@ -1,7 +1,5 @@
 import { world, system } from "@minecraft/server";
-import { log,warn,error } from "./API/logger.js";
-
-
+import { log,warn,error } from "../API/logger.js";
 
 let player_hit_entity = {};
 

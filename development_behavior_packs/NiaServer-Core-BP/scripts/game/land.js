@@ -1,12 +1,12 @@
 //圈地系统
 import { system, world } from '@minecraft/server';
-import { ExternalFS } from './API/http.js';
-import { log,warn,error } from "./API/logger.js";
-import { Broadcast, GetScore, GetTime, RunCmd } from './customFunction';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
-import { adler32 } from './API/cipher_system';
-import { cfg } from './config';
-import { Main } from './menu/main';
+import { ExternalFS } from '../API/http.js';
+import { log,warn,error } from "../API/logger.js";
+import { Broadcast, GetScore, GetTime, RunCmd } from '../API/game.js';
+import { adler32 } from '../API/cipher_system.js';
+import { Main } from './main_menu.js';
+import { cfg } from '../config.js';
 
 //导入文件系统
 const fs = new ExternalFS();

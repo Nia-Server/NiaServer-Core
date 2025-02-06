@@ -4,12 +4,11 @@ const config = {
     "USERandomDATA": true,
     "MoneyScoreboardName": "money",
     "MoneyShowName": "金币",
-    "USERandomDATA": true,
     "TimeScoreboardName":"time",
     "OPTAG": "op",
     "OPMENUPassword": "123456",
-    "MapFolder":"..\\..\\..\\worlds\\NEWTEST",
-    "BackupFolder":"\\backup",
+    "USEQQBot": true,
+    "USEEventLog": true,
     "HttpCfg": {
         "IPAddress": "http://127.0.0.1",
         "Port": 10086
@@ -28,7 +27,6 @@ const config = {
         "BanItems" : ["minecraft:paper","minecraft:clock"]
     },
     "QQBotCfg": {
-        "USEQQBOT": true,
         "QQGroup": "724360499",
         "TransferMessage": true
     }

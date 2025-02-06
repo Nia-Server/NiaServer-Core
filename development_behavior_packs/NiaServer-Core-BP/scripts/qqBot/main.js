@@ -13,15 +13,12 @@ last update: 2025/01/10
 license: AGPL-3.0
 
 */
-import { ExplosionAfterEvent, system, world } from "@minecraft/server";
-import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
-import { http,HttpRequestMethod,HttpRequest,HttpHeader } from '@minecraft/server-net';
-import { GetTime, RunCmd } from './customFunction.js';
-import { log,warn,error } from "./API/logger.js";
-import { cfg } from "./config.js";
-
-import { ExternalFS,QQBotSystem } from './API/http.js';
-import { VERSION,BDS_VERSION,LAST_UPGRATE,CODE_BRANCH } from "./main.js";
+import { system, world } from "@minecraft/server";
+import { GetTime, RunCmd } from '../API/game.js';
+import { log,warn,error } from "../API/logger.js";
+import { cfg } from "../config.js";
+import { ExternalFS,QQBotSystem } from '../API/http.js';
+import { VERSION,BDS_VERSION,LAST_UPGRATE,CODE_BRANCH } from "../main.js";
 
 const USEQQBOT = cfg.QQBotCfg.USEQQBOT;
 const QQGroup = cfg.QQBotCfg.QQGroup;

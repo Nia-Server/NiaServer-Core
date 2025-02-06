@@ -1,18 +1,18 @@
 import { world,system } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
-import { RunCmd,GetScore} from '../customFunction.js';
+import { RunCmd,GetScore } from '../API/game.js';
 import { log,warn,error } from "../API/logger.js";
 import { cfg } from '../config.js'
 
-import { SetupGUI } from './Setup.js';
+import { SetupGUI } from './setup.js';
 import { ShopGUI } from './shop.js';
-import { TpaGUI } from './Tpa.js';
+import { TpaGUI } from './tpa.js';
 import { CDKGUI } from './cdk.js';
-import { TransferGUI } from './Transfer.js';
+import { TransferGUI } from './transfer.js';
 import { OpGUI } from './op.js';
-import { MarketGUI } from '../market.js';
-import { LandGUI } from '../land.js';
-import { HomeGUI } from '../basic/home.js';
+import { MarketGUI } from './market.js';
+import { LandGUI } from './land.js';
+import { HomeGUI } from './home.js';
 
 const MoneyScoreboardName = cfg.MoneyScoreboardName;
 

@@ -1,7 +1,8 @@
 import { world } from "@minecraft/server";
-import { Main } from "../menu/main";
-import { SetupGUI } from "../menu/Setup";
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
+import { Main } from "./main_menu.js";
+import { SetupGUI } from "./setup.js";
+
 
 const GUI = {
     HomeMain(player) {
@@ -13,8 +14,9 @@ const GUI = {
         }
         const HomeMainForm = new ActionFormData()
         .title("传送点设置")
-        .button("返回上一级菜单")
         .body("请选择你要传送的地点\n如果要添加传送点请前往设置页面进行添加")
+        .button("返回上一级菜单")
+        .button("添加/删除传送点")
         for (let i = 0; i < player_pos_data.length; i++) {
             HomeMainForm.button(player_pos_data[i].name + "\nx:" + player_pos_data[i].x + " y:" + player_pos_data[i].y + " z:" + player_pos_data[i].z);
         }
@@ -24,7 +26,11 @@ const GUI = {
                 Main(player);
                 return;
             }
-            let index = response.selection - 1;
+            if (response.selection == 1) {
+                this.SetUP(player);
+                return;
+            }
+            let index = response.selection - 2;
             //player.sendMessage(player_pos_data[index].x + " " + player_pos_data[index].y + " " + player_pos_data[index].z + " " + player_pos_data[index].dim);
             world.getDimension(player_pos_data[index].dim).runCommand("/tp " + player.nameTag +" " + player_pos_data[index].x + " " + player_pos_data[index].y + " " + player_pos_data[index].z);
             // player.teleport({
@@ -47,7 +53,7 @@ const GUI = {
         .show(player).then((response) => {
             if (response.canceled) return;
             if (response.selection == 0) {
-                SetupGUI.SetupMain(player);
+                this.HomeMain(player);
                 return;
             } else if (response.selection == 1) {
                 this.AddPos(player);

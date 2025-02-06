@@ -1,9 +1,9 @@
-import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
-import { RunCmd,GetScore } from '../customFunction.js'
 import { world } from '@minecraft/server'
-import { Main } from './main'
+import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
+import { RunCmd,GetScore } from '../API/game.js';
+import { Main } from './main_menu.js'
 import { cfg } from '../config.js'
-import { LandGUI } from '../land.js'
+import { LandGUI } from './land.js'
 
 
 const GUI = {

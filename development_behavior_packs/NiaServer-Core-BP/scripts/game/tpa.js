@@ -1,8 +1,8 @@
 import { world } from '@minecraft/server'
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
-import { RunCmd } from '../customFunction.js'
-import { Main } from './main.js'
-import { SetupGUI } from './Setup.js'
+import { RunCmd } from '../API/game.js'
+import { Main } from './main_menu.js'
+import { SetupGUI } from './setup.js'
 
 const GUI = {
     TpaMain(player) {

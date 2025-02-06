@@ -1,6 +1,6 @@
 import { world,ItemStack } from "@minecraft/server";
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui';
-import { log } from "../API/logger";
+import { log } from "../API/logger.js";
 
 
 const task_data = {

@@ -1,9 +1,7 @@
 import { system, world } from '@minecraft/server';
-import { log,warn,error } from "./API/logger.js";
-import { Broadcast,Tell,RunCmd,AddScoreboard,GetScore,getNumberInNormalDistribution, GetShortTime} from './customFunction.js'
-import { ExternalFS } from './API/http.js';
-import { LAST_UPGRATE,VERSION,CODE_BRANCH } from './main.js';
-import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
+import { log, warn, error } from "../API/logger.js";
+import { Broadcast, RunCmd, AddScoreboard, GetScore, getNumberInNormalDistribution, GetShortTime} from '../API/game.js';
+import { ExternalFS } from '../API/http.js';
 
 const fs = new ExternalFS();
 
@@ -39,25 +37,6 @@ world.afterEvents.worldInitialize.subscribe((event) => {
 })
 
 
-// world.afterEvents.playerSpawn.subscribe((event) => {
-//     if (event.initialSpawn) {
-//         system.runTimeout(() => {
-//             const player_first_form = new ActionFormData()
-//             .title("欢迎来到NiaServer！")
-//             .body("当前服务器版本：" + VERSION + " 代码分支：" + CODE_BRANCH + " 最后更新时间：" + LAST_UPGRATE+ event.player.id)
-//             .button("确定")
-//             .show(event.player).then(result => {
-//                 if (result.selection == 0) {
-//                     event.player.sendMessage("欢迎来到NiaServer！")
-//                     event.player.sendMessage("当前服务器版本：" + VERSION + " 代码分支：" + CODE_BRANCH + " 最后更新时间：" + LAST_UPGRATE)
-//                 }
-//             })
-//             event.player.sendMessage("欢迎来到NiaServer！")
-//             event.player.sendMessage("当前服务器版本：" + VERSION + " 代码分支：" + CODE_BRANCH + " 最后更新时间：" + LAST_UPGRATE)
-//         },10);
-//     }
-// });
-
 system.runInterval(() => {
     let TIME = new Date();
     if (TIME.getSeconds() == 0) {
@@ -65,8 +44,6 @@ system.runInterval(() => {
         RunCmd(`scoreboard players add @a time 1`);
     }
     if (TIME.getMinutes() == 0 && TIME.getSeconds() == 0 ) {
-
-
         let RN = parseInt(getNumberInNormalDistribution(100,20))
         //防止物价指数出现极端数值
         if (RN <= 20 || RN >= 180) {

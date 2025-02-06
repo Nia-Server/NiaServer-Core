@@ -1,7 +1,7 @@
 import { world } from '@minecraft/server';
-import { log,warn,error } from "./API/logger.js";
 import { http } from '@minecraft/server-net';
-import { VERSION } from './main.js';
+import { log, warn, error } from '../API/logger.js';
+import { VERSION } from '../main.js';
 
 
 //服务器启动监听

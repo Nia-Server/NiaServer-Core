@@ -2,11 +2,11 @@
 
 import { system, world, ItemStack, EnchantmentType } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui';
-import { GetTime, GetScore } from './customFunction';
-import { log,warn,error } from "./API/logger.js";
-import { adler32 } from './API/cipher_system';
-import { ExternalFS } from './API/http.js';
-import { Main } from './menu/main';
+import { GetTime, GetScore } from '../API/game.js';
+import { log,warn,error } from "../API/logger.js";
+import { adler32 } from '../API/cipher_system.js';
+import { ExternalFS } from '../API/http.js';
+import { Main } from './main_menu.js';
 
 //违禁物品，等后期接入配置文件
 const fs = new ExternalFS();

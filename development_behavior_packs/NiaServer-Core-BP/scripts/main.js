@@ -1,6 +1,7 @@
 /*
 
 Copyright (C) 2025 Nia-Server
+
 您必须接受 Minecraft 的最终用户许可协议 (EULA)。
 这意味着请勿将任何违反 EULA 的内容用于商业目的！
 接受此许可意味着您也接受 Minecraft EULA(https://account.mojang.com/terms)
@@ -14,6 +15,7 @@ Copyright (C) 2025 Nia-Server
 如果您在使用本项目时遇到任何问题，请联系作者。
 
 Copyright (C) 2025 Nia-Server
+
 You must accept Minecraft's End User Licence Agreement (EULA).
 It means please do not use any content that violates the EULA for commercial purposes!
 Accepting this licence means you also accept the Minecraft EULA(https://account.mojang.com/terms)
@@ -27,23 +29,27 @@ Project address: https://github.com/Nia-Server/NiaServer-Core/
 If you have any problems with this project, please contact the authors.
 
 */
-import './chat.js'
-import './menu/main.js'
-import './checkupdate.js'
-import './market.js'
-import './land.js'
-import './basic.js'
-import './event_log.js'
-import './qqBot.js'
-//import './AntiCheats.js'
-import './playertitle.js'
-import './menu/register.js'
-import './basic/task.js'
-import './basic/home.js'
+
+//basic
+import './basic/checkupdate.js'
+import './basic/main.js'
+
+//game
+// import './game/anticheats.js'
+import './game/cdk.js'
+import './game/chat.js'
+import './game/main_menu.js'
+import './game/register.js'
+
+//qqBot
+import './qqBot/main.js'
+
+
+import { cfg } from './config.js'
 
 export const VERSION = "v1.5.0-pre-4";
 export const BDS_VERSION = "1.21.51.02";
-export const LAST_UPGRATE = "2025/01/25";
+export const LAST_UPGRATE = "2025/02/06";
 export const CODE_BRANCH = "dev";
 
 
@@ -59,3 +65,10 @@ console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] NiaServer-Core 已经成�
 console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] 作者: @Nia-Server(https://github.com/Nia-Server)\x1b[0m`);
 console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] 不知道如何部署？点击链接立即查看部署教程==>(\x1b[36mhttps://docs.mcnia.com/dev/\x1b[33m)\x1b[0m`);
 console.log(`\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] 此项目基于 \x1b[31mAGPL-3.0\x1b[33m 开源协议\x1b[0m`);
+
+if (cfg.USEEventLog) {
+    import('./basic/event_log.js').catch(err => {
+        // 模块加载失败后的处理
+        console.error('\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] 【日志系统】加载失败：\x1b[0m' + err);
+    });
+}

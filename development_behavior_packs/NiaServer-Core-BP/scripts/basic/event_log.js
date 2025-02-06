@@ -1,23 +1,7 @@
-/*
-
-Copyright (C) 2025 Nia-Server
-
-filename: event_log.js
-
-authors: NIANIANKNIA
-
-version: v1.0.0
-
-last update: 2025/01/10
-
-license: AGPL-3.0
-
-*/
-
 import { system, world, ItemStack } from "@minecraft/server";
-import { ExternalFS } from './API/http.js';
-import { GetTime,GetDate } from "./customFunction";
-import { log,warn,error } from "./API/logger.js";
+import { ExternalFS } from '../API/http.js';
+import { GetTime,GetDate } from "../API/game.js";
+import { log,warn,error } from "../API/logger.js";
 
 const fs = new ExternalFS();
 
@@ -51,7 +35,7 @@ fs.CheckFile(`${log_file}`).then((result) => {
             }
         })
     } else if (result === -1) {
-        warn(`【日志系统】在检查日志文件 ${log_file_name} 时与NIAHttpBOT连接失败`);
+        error(`【日志系统】在获取日志文件 ${log_file_name} 时与NIAHttpBOT连接失败`);
     }
 })
 
@@ -157,28 +141,26 @@ world.afterEvents.playerPlaceBlock.subscribe((event) => {
     )
 })
 
-world.beforeEvents.playerBreakBlock.subscribe((event) => {
-    system.run(() => {
-        log_API.WriteToLog(
-            event.dimension.id,
-            event.player.nameTag,
-            event.player.location.x,
-            event.player.location.y,
-            event.player.location.z,
-            "玩家破坏方块事件",
-            event.block.typeId,
-            event.block.location.x,
-            event.block.location.y,
-            event.block.location.z,
-            ""
-        )
-    })
+world.afterEvents.playerBreakBlock.subscribe((event) => {
+    log_API.WriteToLog(
+        event.dimension.id,
+        event.player.nameTag,
+        event.player.location.x,
+        event.player.location.y,
+        event.player.location.z,
+        "玩家破坏方块事件",
+        event.brokenBlockPermutation.type.id,
+        event.block.location.x,
+        event.block.location.y,
+        event.block.location.z,
+        ""
+    )
 })
 
 world.beforeEvents.playerGameModeChange.subscribe((event) => {
     system.run(() => {
         log_API.WriteToLog(
-            event.dimension.id,
+            event.player.dimension.id,
             event.player.nameTag,
             event.player.location.x,
             event.player.location.y,

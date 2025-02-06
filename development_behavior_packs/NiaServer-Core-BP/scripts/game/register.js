@@ -1,6 +1,6 @@
 import { system, world,ItemStack,EnchantmentType } from "@minecraft/server";
-import { log, warn, error } from "../API/logger.js";
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
+import { log, warn, error } from "../API/logger.js";
 import { cfg } from "../config.js";
 
 const MoneyScoreboardName = cfg.MoneyScoreboardName;

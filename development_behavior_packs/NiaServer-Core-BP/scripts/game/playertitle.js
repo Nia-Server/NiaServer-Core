@@ -1,10 +1,10 @@
 import { world } from "@minecraft/server"
 import { ActionFormData,ModalFormData,MessageFormData } from "@minecraft/server-ui"
-import { log,warn,error } from "./API/logger";
-import { ShopGUI } from './menu/shop.js';
-import { SetupGUI } from './menu/Setup.js';
-import { cfg } from './config.js'
-import { ExternalFS } from "./API/http.js";
+import { log,warn,error } from "../API/logger.js";
+import { ShopGUI } from './shop.js';
+import { SetupGUI } from './setup.js';
+import { cfg } from '../config.js'
+import { ExternalFS } from "../API/http.js";
 
 const fs = new ExternalFS();
 const MoneyShowName = cfg.MoneyShowName;

@@ -1,9 +1,9 @@
 import { Player, world } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
-import { Main } from './main';
-import { TpaGUI } from './Tpa';
-import { TitleGUI } from '../playertitle';
-import { HomeGUI } from '../basic/home';
+import { Main } from './main_menu.js';
+import { TpaGUI } from './tpa.js';
+import { TitleGUI } from './playertitle.js';
+import { HomeGUI } from './home.js';
 
 const GUI = {
     SetupMain(player) {
