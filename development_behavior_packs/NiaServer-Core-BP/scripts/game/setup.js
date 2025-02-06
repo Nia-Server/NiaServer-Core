@@ -1,29 +1,32 @@
-import { world } from '@minecraft/server';
-import {ActionFormData,ModalFormData,MessageFormData} from '@minecraft/server-ui'
-import { Main } from './main';
-import { TpaGUI } from './Tpa';
+import { Player, world } from '@minecraft/server';
+import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
+import { Main } from './main_menu.js';
+import { TpaGUI } from './tpa.js';
+import { TitleGUI } from './playertitle.js';
+import { HomeGUI } from './home.js';
 
 const GUI = {
     SetupMain(player) {
         const SetupMainForm = new ActionFormData()
         .title("设置")
         .button("返回上一级菜单")
-        .button("游戏设置")
-        .button("标题栏设置")
+        .button("称号设置")
         .button("传送系统设置")
+        .button("传送点设置")
         .show(player).then((response) => {
             switch (response.selection) {
                 case 0:
-                    Main(player)
+                    Main(player);
                     break;
                 case 1:
-                    this.PlayerSetupGUI(player)
+                    //称号设置
+                    TitleGUI.TitleSetUp(player);
                     break;
                 case 2:
-                    this.ActionBarSetupGUI(player)
+                    TpaGUI.TpaSetup(player);
                     break;
                 case 3:
-                    TpaGUI.TpaSetup(player)
+                    HomeGUI.SetUP(player);
                     break;
             }
         })
@@ -49,28 +52,6 @@ const GUI = {
                     player.addTag("NightVision")
                     player.sendMessage("§a 夜视效果已开启！")
                 }
-            } else {
-                this.SetupMain(player)
-            }
-        })
-    },
-
-    ActionBarSetupGUI(player) {
-        const ActionBarForm = new ModalFormData()
-        ActionBarForm.title("§c§l设置标题栏")
-        if (player.hasTag("ShowActionbar")) {
-            ActionBarForm.toggle("标题栏提示信息显示",true);
-        } else {
-            ActionBarForm.toggle("标题栏提示信息显示",false);
-        }
-        ActionBarForm.show(player).then((result) => {
-            if (!result.canceled) {
-
-                player.removeTag("ShowActionbar")
-                if (result.formValues[0] == 1) {
-                    player.addTag("ShowActionbar")
-                }
-                player.sendMessage("§e 标题栏设置更改成功！")
             } else {
                 this.SetupMain(player)
             }

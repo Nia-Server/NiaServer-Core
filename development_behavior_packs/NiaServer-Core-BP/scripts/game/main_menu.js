@@ -1,23 +1,27 @@
 import { world,system } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
-import { Broadcast,Tell,log,RunCmd,GetScore,error} from '../customFunction.js';
+import { RunCmd,GetScore } from '../API/game.js';
+import { log,warn,error } from "../API/logger.js";
 import { cfg } from '../config.js'
 
-import { SetupGUI } from './Setup.js';
+import { SetupGUI } from './setup.js';
 import { ShopGUI } from './shop.js';
-import { TpaGUI } from './Tpa.js';
+import { TpaGUI } from './tpa.js';
 import { CDKGUI } from './cdk.js';
-import { TransferGUI } from './Transfer.js';
+import { TransferGUI } from './transfer.js';
 import { OpGUI } from './op.js';
-import { MarketGUI } from '../market.js';
-import { LandGUI } from '../land.js';
+import { MarketGUI } from './market.js';
+import { LandGUI } from './land.js';
+import { HomeGUI } from './home.js';
+
+const MoneyScoreboardName = cfg.MoneyScoreboardName;
 
 
-const ALL_GUI = ["MainGUI","SetupGUI","ShopGUI","TpaGUI","CdkGUI","TransferGUI","OpGUI","MarketGUI","LandGUI"];
+const ALL_GUI = ["MainGUI","SetupGUI","ShopGUI","TpaGUI","CdkGUI","TransferGUI","OpGUI","MarketGUI","LandGUI","HomeGUI"];
 
 //注册scriptevent
 system.afterEvents.scriptEventReceive.subscribe((event) => {
-    if (event.id != "mcnia:openGUI") return;
+    if (event.id != "mcnia:nc_openGUI") return;
     //openGUI后的处理
     //event.message是一个object对象，格式形如{"GUI":"GUI名称","target":"目标玩家名称","data":{}}
     //解析event.message，判断传进的数据是否是一个object对象
@@ -67,7 +71,7 @@ const MainGUI = {
     "title": "服务器菜单",
     "body": "§l===========================\n"+
             "§eHi! §l§6%playername% §r§e欢迎回来！\n"+
-            "§e您目前能源币余额： §6§l*money*\n"+
+            "§e您目前金币余额： §6§l*money*\n"+
             "§r§e您目前在线总时长为： §6§l*time*\n"+
             "§r§e当前物价指数为： §6§l%RN%\n"+
             "§r§l===========================\n"+
@@ -79,7 +83,7 @@ const MainGUI = {
             "name": "立即回城\n点击后立即返回主城",
             "icon": "textures/blocks/chest_front",
             "type": "runCmd",
-            "content": "tp @a[name=%playername%] 184 79 114",
+            "content": "tp @a[name=%playername%] 233 65 667",
             "opMenu": false
         },
         {
@@ -101,6 +105,13 @@ const MainGUI = {
             "icon": "textures/ui/icon_blackfriday",
             "type": "openGUI",
             "GUI": "ShopGUI",
+            "opMenu": false
+        },
+        {
+            "name": "传送系统\n快速传送到你的家",
+            "icon": "textures/ui/icon_recipe_construction",
+            "type": "openGUI",
+            "GUI": "HomeGUI",
             "opMenu": false
         },
         {
@@ -224,39 +235,22 @@ export function Main(player) {
 }
 
 
-function OpenGUI(player,GUINAME) {
-    switch (GUINAME) {
-        case "MainGUI":
-            Main(player);
-            break;
-        case "SetupGUI":
-            SetupGUI.SetupMain(player);
-            break;
-        case "ShopGUI":
-            ShopGUI.ShopMain(player);
-            break;
-        case "TpaGUI":
-            TpaGUI.TpaMain(player);
-            break;
-        case "CdkGUI":
-            CDKGUI(player);
-            break;
-        case "TransferGUI":
-            TransferGUI.Transfer(player);
-            break;
-        case "OpGUI":
-            OpGUI.CheckOP(player);
-            break;
-        case "MarketGUI":
-            MarketGUI.Main(player);
-            break;
-        case "LandGUI":
-            LandGUI.Main(player);
-            break;
-        default:
-            player.sendMessage(`§c 未找到相应的GUI，请联系管理员！`);
-            break;
+function OpenGUI(player, GUINAME) {
+    const GUIs = {
+        MainGUI: () => Main(player),
+        SetupGUI: () => SetupGUI.SetupMain(player),
+        ShopGUI: () => ShopGUI.ShopMain(player),
+        TpaGUI: () => TpaGUI.TpaMain(player),
+        CdkGUI: () => CDKGUI(player),
+        TransferGUI: () => TransferGUI.Transfer(player),
+        OpGUI: () => OpGUI.CheckOP(player),
+        MarketGUI: () => MarketGUI.Main(player),
+        LandGUI: () => LandGUI.Main(player),
+        HomeGUI: () => HomeGUI.HomeMain(player)
     }
+    ;(GUIs[GUINAME] || (() => {
+        player.sendMessage("§c 未找到相应的GUI，请联系管理员！")
+    }))()
 }
 
 //对于物品使用的检测

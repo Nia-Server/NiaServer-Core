@@ -1,14 +1,14 @@
-
 const config = {
+    "cfgVersion": "1.0.0",
     "MENUITEM": "minecraft:clock",
     "USERandomDATA": true,
     "MoneyScoreboardName": "money",
-    "MoneyShowName": "能源币",
+    "MoneyShowName": "金币",
     "TimeScoreboardName":"time",
     "OPTAG": "op",
     "OPMENUPassword": "123456",
-    "MapFolder":"..\\..\\..\\worlds\\NEWTEST",
-    "BackupFolder":"\\backup",
+    "USEQQBot": true,
+    "USEEventLog": true,
     "HttpCfg": {
         "IPAddress": "http://127.0.0.1",
         "Port": 10086
@@ -25,6 +25,10 @@ const config = {
     },
     "MarketCfg": {
         "BanItems" : ["minecraft:paper","minecraft:clock"]
+    },
+    "QQBotCfg": {
+        "QQGroup": "724360499",
+        "TransferMessage": true
     }
 }
 

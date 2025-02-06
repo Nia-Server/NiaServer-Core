@@ -1,8 +1,7 @@
-import {ActionFormData,ModalFormData,MessageFormData} from '@minecraft/server-ui'
-import {Tell,RunCmd,GetScore} from '../customFunction.js'
+import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 import { world } from '@minecraft/server'
-import { Main } from './main'
-
+import { Tell,RunCmd,GetScore } from '../API/game.js'
+import { Main } from './main_menu.js'
 import { cfg } from '../config.js'
 const MoneyShowName = cfg.MoneyShowName
 const MoneyScoreboardName = cfg.MoneyScoreboardName
@@ -21,7 +20,7 @@ const GUI = {
             "§r§l===========================\n"+
             "§r§e转账单笔10000"+ MoneyShowName + "以下不收取费用\n"+
             "单笔转账超出10000"+ MoneyShowName + "的收取%%0.5的服务费\n"+
-            "能源币单笔转账最大数量为100000"+ MoneyShowName +"\n"+
+            "金币单笔转账最大数量为100000"+ MoneyShowName +"\n"+
             "§r§l==========================="
         )
         .button(`${MoneyShowName}转账`)

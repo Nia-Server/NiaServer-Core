@@ -1,7 +1,7 @@
-import {ActionFormData,ModalFormData,MessageFormData} from '@minecraft/server-ui'
-import {Tell,RunCmd,GetScore} from '../customFunction.js'
+import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
+import { RunCmd,GetScore } from '../API/game.js'
 import { world } from '@minecraft/server'
-import { Main } from './main'
+import { Main } from './main_menu.js'
 
 //将在未来基于HTTP-BOT重构
 export function CDKGUI(player) {

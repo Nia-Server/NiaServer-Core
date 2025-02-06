@@ -1,11 +1,12 @@
 //圈地系统
 import { system, world } from '@minecraft/server';
-import { ExternalFS } from './API/filesystem';
-import { Broadcast, GetScore, GetTime, RunCmd, log } from './customFunction';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
-import { adler32 } from './API/cipher_system';
-import { cfg } from './config';
-import { Main } from './menu/main';
+import { ExternalFS } from '../API/http.js';
+import { log,warn,error } from "../API/logger.js";
+import { Broadcast, GetScore, GetTime, RunCmd } from '../API/game.js';
+import { adler32 } from '../API/cipher_system.js';
+import { Main } from './main_menu.js';
+import { cfg } from '../config.js';
 
 //导入文件系统
 const fs = new ExternalFS();
@@ -205,6 +206,9 @@ function player_in_index(player) {
         //原来在领地中
         player.addTag("inland");
         if (land) {
+            if (!land.setup.ShowActionbar) {
+                return;
+            }
             if (in_allowlist(player,land)) {
                 player.onScreenDisplay.setActionBar(`§a欢迎回到 ${land.land_name} §r§a中！`);
             } else if (land.setup.ShowActionbar) {
@@ -724,7 +728,12 @@ const GUI = {
     ShowLand(player) {
         let land = pos_in_land([player.location.x, player.location.y,player.location.z],player.dimension.id);
         if (land) {
-            this.ManageLandDetail(player,adler32(land.get_time + land.create_owner + land.purchase_price));
+            if (land.owner == player.id) {
+                this.ManageLandDetail(player,adler32(land.get_time + land.create_owner + land.purchase_price));
+            } else {
+                player.sendMessage(`§b 您当前在 ${land.land_name} §r§b领地中，该领地的所有者是 ${land.owner_name}，您无权管理该领地！`);
+                this.Main(player);
+            }
         } else {
             player.sendMessage("§c 您当前不在任何领地中！");
             this.Main(player);
@@ -2574,9 +2583,11 @@ system.runInterval(() => {
             player_in_index(player);
         }
     } catch (error) {
-        console.warn(`[NiaServer-Core] An error occurred in the LAND system, the cause of the error:${error}`);
-        Broadcast(" §c领地系统发生了一次错误，错误原因：" + error);
-        Broadcast(" §e服务器正在尝试自动修复中，请截图并联系在线管理员！");
+        warn("【圈地系统】圈地系统出现错误，错误原因：" + error);
+        world.sendMessage(" §c圈地系统发生了一次错误，错误原因：" + error);
+        world.sendMessage(" §e服务器正在尝试自动修复中，请截图并联系在线管理员！");
+        world.sendMessage(" §e请尽快联系在线管理员，否则可能会导致服务器崩溃！");
+        world.sendMessage(" §e开始自动修复中，请稍等...");
         //圈地系统文件
         let start_1 = Date.now();
         fs.GetJSONFileData("land.json").then((result) => {
@@ -2585,13 +2596,16 @@ system.runInterval(() => {
                 fs.CreateNewJsonFile("land.json",{}).then((result) => {
                     if (result === "success") {
                         land_data = {};
-                        Broadcast(" §e领地数据文件不存在，已成功创建！");
+                        world.sendMessage(" §e在读取圈地系统数据文件 land.json 时文件不存在，已成功创建");
+                        log("【圈地系统】在读取圈地系统数据文件 land.json 时文件不存在，已成功创建");
                     } else if (result === -1) {
-                        Broadcast(" §c依赖服务器连接失败！请截图并联系在线管理员！");
+                        world.sendMessage(" §c依赖服务器连接失败！请截图并联系在线管理员！");
+                        error("【圈地系统】在创建圈地系统数据文件 land.json 时与NIAHttpBOT连接失败");
                     }
                 });
             } else if (result === -1) {
                 Broadcast(" §c依赖服务器连接失败！请截图并联系在线管理员！");
+                error("【圈地系统】在获取圈地系统数据文件 land.json 时与NIAHttpBOT连接失败");
             } else {
                 //文件存在且服务器连接成功
                 land_data = result;
@@ -2602,6 +2616,7 @@ system.runInterval(() => {
                     add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
                     LandNum++;
                 }
+                log(`【圈地系统】领地数据自动重载成功，共获取到 ${LandNum} 块领地，本次读取用时：${Date.now() - start_1}ms`);
                 Broadcast(` §e领地数据自动重载成功，共获取到 ${LandNum} 块领地，本次读取用时：${Date.now() - start_1}ms`)
             }
         })
@@ -2613,16 +2628,20 @@ system.runInterval(() => {
                 fs.CreateNewJsonFile("land_temp_player_money.json",{}).then((result) => {
                     if (result === "success") {
                         Broadcast(` §e玩家${MONEY_SCOREBOARD_DISPLAY_NAME}数据文件不存在，已成功创建！`);
+                        log(`【圈地系统】在读取玩家货币数据文件 land_temp_player_money.json 时文件不存在，已成功创建`);
                     } else if (result === -1) {
                         Broadcast(" §c依赖服务器连接失败！请截图并联系在线管理员！");
+                        error("【圈地系统】在创建玩家货币数据文件 land_temp_player_money.json 时与NIAHttpBOT连接失败");
                     }
                 });
             } else if (result === -1) {
                 Broadcast(" §c依赖服务器连接失败！请截图并联系在线管理员！");
+                error("【圈地系统】在获取玩家货币数据文件 land_temp_player_money.json 时与NIAHttpBOT连接失败");
             } else {
                 //文件存在且服务器连接成功
                 temp_player_money = result;
                 Broadcast(` §e玩家${MONEY_SCOREBOARD_DISPLAY_NAME}数据自动重载成功，本次读取用时：${Date.now() - start_2}ms`)
+                log(`【圈地系统】玩家货币数据自动重载成功，本次读取用时：${Date.now() - start_2}ms`);
             }
         })
 
@@ -2631,6 +2650,7 @@ system.runInterval(() => {
         for (let key = 0;key < land_tickingarea.length;key++) {
             RunCmd(`tickingarea remove ${land_tickingarea[key]}`);
             Broadcast(` §7已删除常加载区块：${land_tickingarea[key]}`);
+            log(`【圈地系统】已删除常加载区块：${land_tickingarea[key]}`);
             world.setDynamicProperty("land_tickingarea",JSON.stringify(land_tickingarea));
         }
     }
@@ -2762,13 +2782,13 @@ world.afterEvents.worldInitialize.subscribe((event) => {
             fs.CreateNewJsonFile("land.json",{}).then((result) => {
                 if (result === "success") {
                     land_data = {};
-                    log("The land data file(land_data.json) does not exist and has been successfully created!");
+                    log("【圈地系统】在读取圈地系统数据文件 land.json 时文件不存在，已成功创建")
                 } else if (result === -1) {
-                    console.error("[NiaServer-Core] Dependency server connection failed!");
+                    error("【圈地系统】在创建圈地系统数据文件 land.json 时与NIAHttpBOT连接失败");
                 }
             });
         } else if (result === -1) {
-            console.error("[NiaServer-Core] Dependency server connection failed!");
+            error("【圈地系统】在获取圈地系统数据文件 land.json 时与NIAHttpBOT连接失败");
         } else {
             //文件存在且服务器连接成功
             land_data = result;
@@ -2777,42 +2797,7 @@ world.afterEvents.worldInitialize.subscribe((event) => {
                 add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
                 LandNum++;
             }
-            log("The land data acquired successfully, this read time: " + (Date.now() - start_1) + "ms,loaded a total of " + LandNum + " piece of land data" );
-            //索引值提前写入
-            // if (WRITE_INDEX_TO_FILE) {
-            //     fs.GetJSONFileData("land_index.json").then((result) => {
-            //         if (result === 0) {
-            //             //计算索引值
-            //             for (let Land in land_data) {
-            //                 add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
-            //             }
-            //             fs.CreateNewJsonFile("land_index.json",land_index).then((result) => {
-            //                 if (result === "success") {
-            //                     log("圈地系统索引文件不存在，已成功创建！");
-            //                 } else if (result === -1) {
-            //                     console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
-            //                 }
-            //             });
-            //         } else if (result === -1) {
-            //             console.error("[NIA V4] 依赖服务器连接失败！请检查依赖服务器是否成功启动，以及端口是否设置正确！");
-            //         } else {
-            //             //文件存在且服务器连接成功
-            //             land_index = result;
-            //             let LandNum = 0;
-            //             for (let Land in land_data) {
-            //                 LandNum++;
-            //             }
-            //             log("圈地数据获取成功，本次读取用时：" + (Date.now() - start_1) + "ms，共加载 " + LandNum + " 块领地数据！" );
-            //         }
-            //     })
-            // } else {
-            //     let LandNum = 0;
-            //     for (let Land in land_data) {
-            //         add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
-            //         LandNum++;
-            //     }
-            //     log("圈地数据获取成功，本次读取用时：" + (Date.now() - start_1) + "ms，共加载&&计算 " + LandNum + " 块领地数据！" );
-            // }
+            log("【圈地系统】圈地数据文件 land.json 获取成功，本次读取用时：" + (Date.now() - start_1) + "ms，共加载 " + LandNum + " 块领地数据" );
         }
     })
 
@@ -2821,17 +2806,17 @@ world.afterEvents.worldInitialize.subscribe((event) => {
         if (result === 0) {
             fs.CreateNewJsonFile("land_temp_player_money.json",{}).then((result) => {
                 if (result === "success") {
-                    log("(land)The player money data file(land_temp_player_money.json) does not exist and has been successfully created!");
+                    log(`【圈地系统】在读取玩家货币数据文件 land_temp_player_money.json 时文件不存在，已成功创建`);
                 } else if (result === -1) {
-                    console.error("[NiaServer-Core] Dependency server connection failed!");
+                    error("【圈地系统】在创建玩家货币数据文件 land_temp_player_money.json 时与NIAHttpBOT连接失败");
                 }
             });
         } else if (result === -1) {
-            console.error("[NiaServer-Core] Dependency server connection failed!");
+            error("【圈地系统】在获取玩家货币数据文件 land_temp_player_money.json 时与NIAHttpBOT连接失败");
         } else {
             //文件存在且服务器连接成功
             temp_player_money = result;
-            log("(land)The player money data acquired successfully!");
+            log("【圈地系统】玩家货币数据文件 land_temp_player_money.json 获取成功");
         }
     })
 
@@ -2843,7 +2828,7 @@ world.afterEvents.worldInitialize.subscribe((event) => {
         let land_tickingarea = JSON.parse(world.getDynamicProperty("land_tickingarea"));
         for (let key = 0;key < land_tickingarea.length;key++) {
             RunCmd(`tickingarea remove ${land_tickingarea[key]}`);
-            log("The temporary tickingarea block has been deleted:" + land_tickingarea[key]);
+            log("【圈地系统】已删除常加载区块：" + land_tickingarea[key]);
             world.setDynamicProperty("land_tickingarea",JSON.stringify(land_tickingarea));
         }
     }
@@ -2867,13 +2852,13 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
                         fs.CreateNewJsonFile("land.json",{}).then((result) => {
                             if (result === "success") {
                                 land_data = {};
-                                log("The land system data file(land_data.json) does not exist and has been successfully created!");
+                                log("【圈地系统】在读取圈地系统数据文件 land.json 时文件不存在，已成功创建")
                             } else if (result === -1) {
-                                console.error("[NiaServer-Core] Dependency server connection failed!");
+                                warn("【圈地系统】在创建圈地系统数据文件 land.json 时与NIAHttpBOT连接失败");
                             }
                         });
                     } else if (result === -1) {
-                        console.error("[NiaServer-Core] Dependency server connection failed!");
+                        error("【圈地系统】在获取圈地系统数据文件 land.json 时与NIAHttpBOT连接失败");
                     } else {
                         //文件存在且服务器连接成功
                         land_data = result;
@@ -2882,7 +2867,7 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
                             add_index(land_data[Land].pos1, land_data[Land].pos2, land_data[Land].dimid, Land);
                             LandNum++;
                         }
-                        log("The land data acquired successfully, this read time: " + (Date.now() - start) + "ms,loaded a total of " + LandNum + " piece of land data" );
+                        log("【圈地系统】圈地数据文件 land.json 获取成功，本次读取用时：" + (Date.now() - start) + "ms，共加载 " + LandNum + " 块领地数据！" );
                     }
                 })
 
@@ -2891,17 +2876,17 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
                     if (result === 0) {
                         fs.CreateNewJsonFile("land_temp_player_money.json",{}).then((result) => {
                             if (result === "success") {
-                                log("(land)The player money data file(land_temp_player_money.json) does not exist and has been successfully created!");
+                                log(`【圈地系统】在读取玩家货币数据文件 land_temp_player_money.json 时文件不存在，已成功创建`);
                             } else if (result === -1) {
-                                console.error("[NiaServer-Core] Dependency server connection failed!");
+                                error("【圈地系统】在创建玩家货币数据文件 land_temp_player_money.json 时与NIAHttpBOT连接失败");
                             }
                         });
                     } else if (result === -1) {
-                        console.error("[NiaServer-Core] Dependency server connection failed!");
+                        error("【圈地系统】在获取玩家货币数据文件 land_temp_player_money.json 时与NIAHttpBOT连接失败");
                     } else {
                         //文件存在且服务器连接成功
                         temp_player_money = result;
-                        log("(land)The player money data acquired successfully!");
+                        log("【圈地系统】玩家货币数据文件 land_temp_player_money.json 获取成功");
                     }
                 })
 
@@ -2909,7 +2894,7 @@ system.afterEvents.scriptEventReceive.subscribe((event) => {
                 let land_tickingarea = JSON.parse(world.getDynamicProperty("land_tickingarea"));
                 for (let key = 0;key < land_tickingarea.length;key++) {
                     RunCmd(`tickingarea remove ${land_tickingarea[key]}`);
-                    log("The temporary tickingarea block has been deleted:" + land_tickingarea[key]);
+                    log("【圈地系统】已删除常加载区块：" + land_tickingarea[key]);
                     world.setDynamicProperty("land_tickingarea",JSON.stringify(land_tickingarea));
                 }
                 break;

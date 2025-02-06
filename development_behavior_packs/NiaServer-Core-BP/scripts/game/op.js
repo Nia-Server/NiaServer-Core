@@ -1,8 +1,9 @@
-import {ActionFormData,ModalFormData,MessageFormData} from '@minecraft/server-ui'
-import {RunCmd,GetScore} from '../customFunction.js'
 import { world } from '@minecraft/server'
-import { Main } from './main'
+import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
+import { RunCmd,GetScore } from '../API/game.js';
+import { Main } from './main_menu.js'
 import { cfg } from '../config.js'
+import { LandGUI } from './land.js'
 
 
 const GUI = {
@@ -25,35 +26,19 @@ const GUI = {
         const OpMainForm = new ActionFormData()
         .title("管理员操作系统")
         .body("§r§l===========================" + "\n§eHi！ " + player.nameTag + " 欢迎使用！" + "\n§r§l===========================")
-        .button("封禁玩家")
-        .button("解封玩家")
+        .button("管理圈地系统")
         .button("添加CDK码")
         .button("管理CDK码")
-        .button("调节玩家游戏数值")
-        .button("调节物价指数")
-        .button("§c紧急预案Ⅰ")
         .show(player).then(result => {
             switch (result.selection) {
                 case 0:
-                    player.sendMessage("§c 开发中内容，敬请期待！")
+                    LandGUI.AdminMain(player);
                     break;
                 case 1:
-                    player.sendMessage("§c 开发中内容，敬请期待！")
+                    this.AddCDKMain(player);
                     break;
                 case 2:
-                    this.AddCDKMain(player)
-                    break;
-                case 3:
-                    this.SetCDK(player)
-                    break;
-                case 4:
-                    player.sendMessage("§c 开发中内容，敬请期待！")
-                    break;
-                case 5:
-                    player.sendMessage("§c 开发中内容，敬请期待！")
-                    break;
-                case 6:
-                    player.sendMessage("§c 开发中内容，敬请期待！")
+                    this.SetCDK(player);
                     break;
             }
         })
@@ -87,7 +72,7 @@ const GUI = {
         const AddCDKSub1Form = new ModalFormData()
             .title("添加计分板形式CDK")
             .textField("请输入自定义CDK码","请勿重复、过长！")
-            .dropdown("请选择要改变分数的计分板",["自定义计分板名称","能源币(money)","氧气值(oxygen)"])
+            .dropdown("请选择要改变分数的计分板",["自定义计分板名称","金币(money)"])
             .textField("自定义计分板名称","请在上方选择自定义后填写")
             .textField("增加目标计分板的值","只能输入阿拉伯数字！")
             .textField("CDK可兑换的最大数量","只能输入阿拉伯数字！")

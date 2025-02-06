@@ -1,26 +1,13 @@
 import {world} from '@minecraft/server';
-import {ActionFormData,ModalFormData,MessageFormData} from '@minecraft/server-ui'
+import {log,error,warn} from './logger.js';
 //一些自定义函数的注册
-
-export function log(info) {
-    console.log("\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] " + info + "\x1b[0m")
-}
-
-export function warn(info) {
-    console.warn("\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] " + info + "\x1b[0m")
-}
-
-export function error(info) {
-    console.error("\x1b[33m[\x1b[36mNiaServer-Core\x1b[33m] " + info + "\x1b[0m")
-}
 
 /**
  * 将Msg消息广播至整个游戏
  * @param {string} Msg
  */
 export function Broadcast(Msg) {
-    world.sendMessage(Msg)
-    // world.getDimension("overworld").runCommandAsync(`tellraw @a {\"rawtext\":[{\"text\":\"${Msg}\"}]}`);
+    world.sendMessage(Msg);
 }
 
 /**
@@ -50,7 +37,7 @@ export function AddScoreboard(scoreboardName,showName) {
         world.scoreboard.addObjective(scoreboardName,showName);
         log(`计分板${scoreboardName}已被添加！`)
     } else {
-        console.error(`[NIA V4] 添加错误，计分板${scoreboardName}已存在！`)
+        error(`添加错误，计分板${scoreboardName}已存在！`)
     }
 }
 
@@ -88,6 +75,27 @@ export function GetTime() {
         second = "0" + second
     }
     let timeStr = year + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second
+    return timeStr
+}
+
+export function GetDate() {
+    //创建一个Date对象
+    let nowTime = new Date()
+    //这里是获得北京时间
+    let addedTime = new Date(nowTime.getTime() + 28800000);
+    //获取年份
+    let year = addedTime.getFullYear ();
+    //获取月份（0-11，0代表1月）
+    let month = addedTime.getMonth () + 1;
+    if (month < 10) {
+        month = "0" + month
+    }
+    //获取日期（1-31）
+    let date = addedTime.getDate ();
+    if (date < 10) {
+        date = "0" + date
+    }
+    let timeStr = year + "-" + month + "-" + date
     return timeStr
 }
 
@@ -157,4 +165,3 @@ function randomNormalDistribution(){
 export function getNumberInNormalDistribution(mean,std_dev){
     return mean+(randomNormalDistribution()*std_dev);
 }
-

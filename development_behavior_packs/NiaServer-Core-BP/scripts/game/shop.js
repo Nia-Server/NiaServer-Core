@@ -1,13 +1,17 @@
 import { world } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
-import { Tell,RunCmd,GetScore,log } from '../customFunction.js'
-import { Main } from './main.js';
-import { ExternalFS } from '../API/filesystem';
+import { Tell,RunCmd,GetScore } from '../API/game.js';
+import { Main } from './main_menu.js';
+import { ExternalFS } from '../API/http.js';
+import { log,warn,error } from "../API/logger.js";
+import { TitleGUI } from './playertitle.js';
+import { cfg } from '../config.js';
 
 const fs = new ExternalFS();
 var SellData = [];
 var RecycleData = [];
-
+const MoneyShowName = cfg.MoneyShowName
+const MoneyScoreboardName = cfg.MoneyScoreboardName
 //商店数据读取
 
 //服务器启动监听&&获得商店数据
@@ -18,17 +22,17 @@ world.afterEvents.worldInitialize.subscribe(() => {
         if (result === 0) {
             fs.CreateNewJsonFile("shop_data.json",{"sell_data":[],"recycle_data":[]}).then((result) => {
                 if (result === "success") {
-                    console.warn("[NiaServer-Core] The shop data was not read successfully, the initialisation data file has been created successfully, please open shop_data.json to modify it and enter reload to reload it!");
+                    warn("【商店系统】在获取商店数据文件 shop_data.json 时发现文件不存在，已成功创建")
                 } else if (result === -1) {
-                    console.error("[NiaServer-Core] Dependency server connection failed!");
+                    error("【商店系统】在创建玩家货币数据文件 shop_data.json 时与NIAHttpBOT连接失败")
                 }
             });
         } else if (result === -1) {
-            console.error("[NiaServer-Core] Dependency server connection failed!");
+            error("【商店系统】在获取商店数据文件 shop_data.json 时与NIAHttpBOT连接失败")
         } else {
             SellData = result.sell_data;
             RecycleData = result.recycle_data;
-            log("The shop data acquired successfully!");
+            log(`【商店系统】商店系统数据文件 shop_data.json 获取成功`)
         }
     })
 })
@@ -37,12 +41,14 @@ const GUI = {
     ShopMain(player) {
         const ShopMainForm = new ActionFormData()
             .title("§e§l服务器商店")
-            .body("§l===========================\n§r§e欢迎光临服务器官方商店！\n目前服务器的物价指数为： §6§l" + GetScore("DATA","RN")/100 + "\n§r§e目前您的能源币余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§c请根据自己需求理性购物！\n§r§l===========================")
+            .body("§l===========================\n§r§e欢迎光临服务器官方商店！\n目前服务器的物价指数为： §6§l" + GetScore("DATA","RN")/100 + "\n§r§e目前您的" + MoneyShowName + "余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§c请根据自己需求理性购物！\n§r§l===========================")
             .button("§c返回上一级")
-            .button("查看今日折扣商品\n§7立即查看现在的折扣商品！")
-            .button("售卖物品商店\n§7在这里售卖各式各样的物品！")
-            .button("回收物品商店\n§7在这里回收各式各样的物品！")
+            .button("查看今日折扣商品\n立即查看现在的折扣商品！")
+            .button("售卖物品商店\n在这里售卖各式各样的物品！")
+            .button("回收物品商店\n在这里回收各式各样的物品！")
+            .button("称号商店\n在这里购买各种称号！")
         ShopMainForm.show(player).then((response) => {
+            if (response.canceled) return;
             switch (response.selection) {
                 case 0:
                     Main(player);
@@ -55,6 +61,9 @@ const GUI = {
                     break;
                 case 3:
                     this.ShopRecycle(player);
+                    break;
+                case 4:
+                    TitleGUI.TitleShop(player);
                     break;
             }
         })
@@ -86,7 +95,7 @@ const GUI = {
         //定义商店售卖页面菜单
         const ShopPurchaseForm = new ActionFormData()
             .title("§e§l服务器商店")
-            .body("§l===========================\n§r§e欢迎光临服务器官方商店！\n目前服务器的物价指数为： §6§l" + GetScore("DATA","RN")/100 + "\n§r§e目前您的能源币余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§c请根据自己需求理性购物！\n§r§l===========================")
+            .body("§l===========================\n§r§e欢迎光临服务器官方商店！\n目前服务器的物价指数为： §6§l" + GetScore("DATA","RN")/100 + "\n§r§e目前您的" + MoneyShowName + "余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§c请根据自己需求理性购物！\n§r§l===========================")
             .button("§c返回上一级")
             for(let i = 0; i < SellData.length; i++) {
                 ShopPurchaseForm.button(SellData[i].name + "\n" + SellData[i].description,SellData[i].image)
@@ -104,7 +113,7 @@ const GUI = {
         //定义商店售卖二级页面
         const ShopPurchaseSubForm = new ActionFormData()
             .title("§e§l服务器商店")
-            .body("§l===========================\n§r§e欢迎光临服务器官方商店！\n目前服务器的物价指数为： §6§l" + GetScore("DATA","RN")/100 + "\n§r§e目前您的能源币余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§c请根据自己需求理性购物！\n§r§l===========================")
+            .body("§l===========================\n§r§e欢迎光临服务器官方商店！\n目前服务器的物价指数为： §6§l" + GetScore("DATA","RN")/100 + "\n§r§e目前您的" + MoneyShowName + "余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§c请根据自己需求理性购物！\n§r§l===========================")
             .button("§c返回上一级")
         for(let i = 0; i < SellData[index1].content.length; i++) {
             if (SellData[index1].content[i].discount == 1) {
@@ -148,22 +157,29 @@ const GUI = {
     ShopBuySub(player,i,j,num) {
         const ShopBuySubForm = new MessageFormData()
             .title("§c§l确认购买 " + SellData[i].content[j].name)
-            .body("§e您确定要以 §l" + parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num + "§r§e 能源币，购买 §l" + num + " §r§e个" + SellData[i].content[j].name + "?\n§c§l注意：所有商品一旦售出概不退换！")
+            .body("§e您确定要以 §l" +
+                parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num +
+                "§r§e "+ MoneyShowName + "，购买 §l" + num + " §r§e个" + SellData[i].content[j].name +
+                "?\n§c§l注意：所有商品一旦售出概不退换！")
             .button1("§c§l取消")
             .button2("§a§l确定")
         ShopBuySubForm.show(player).then((result) => {
+            if (result.canceled) return;
             switch(result.selection) {
                 case 1:
                     if (GetScore("money",player.nameTag) >= parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num) {
                         RunCmd(`give "${player.nameTag}" ${SellData[i].content[j].type} ${num} ${SellData[i].content[j].data}`)
                         RunCmd(`scoreboard players add @a[name="${player.nameTag}"] money -${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num}`)
-                        Tell("§a 购买成功！§e您以 §l" + parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num + "§r§e 能源币，成功购买 §l" + num + " §r§e个" + SellData[i].content[j].name + "!期待您的下次光临！",player.nameTag)
+                        player.sendMessage("§a 购买成功！§e您以 §l" + parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num + "§r§e " + MoneyShowName + "，成功购买 §l" + num + " §r§e个" + SellData[i].content[j].name + "!期待您的下次光临！")
                     } else {
-                        Tell(`§c 购买失败！余额不足，您的余额为 ${GetScore("money",player.nameTag)} 能源币，而本次购买需要 ${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num} 能源币，您还缺少 ${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num - GetScore("money",player.nameTag)} 能源币，请在攒够足够能源币后尝试再次购买！`,player.nameTag)
+                        player.sendMessage(`§c 购买失败！余额不足，您的余额为 ${GetScore("money",player.nameTag)} ${MoneyShowName}，
+                        而本次购买需要 ${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num} ${MoneyShowName}，
+                        您还缺少 ${parseInt(SellData[i].content[j].price * SellData[i].content[j].discount * GetScore("DATA","RN") / 100) * num - GetScore("money",player.nameTag)} ${MoneyShowName}，
+                        请在攒够足够${MoneyShowName}后尝试再次购买！`)
                     }
                     break;
                 case 0:
-                    Tell("§c 购买失败！原因是您自己取消了本次购买！",player.nameTag)
+                    player.sendMessage("§c 购买失败！原因是您自己取消了本次购买！")
                     break;
             }
         })
@@ -174,7 +190,7 @@ const GUI = {
         //定义商店回收页面菜单
         const ShopRecycleForm = new ActionFormData()
             .title("§e§l回收商店")
-            .body("§l===========================\n§r§e欢迎光临服务器官方回收商店！\n目前服务器的物价指数为： §6§l" + GetScore("DATA","RN")/100 + "\n§r§e目前您的能源币余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§l===========================")
+            .body("§l===========================\n§r§e欢迎光临服务器官方回收商店！\n目前服务器的物价指数为： §6§l" + GetScore("DATA","RN")/100 + "\n§r§e目前您的" + MoneyShowName + "余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§l===========================")
             .button("§c返回上一级")
             for(let i = 0; i < RecycleData.length; i++) {
                 ShopRecycleForm.button(RecycleData[i].name + "\n" + RecycleData[i].description,RecycleData[i].image)
@@ -192,7 +208,7 @@ const GUI = {
         //定义商店回收的二级页面
         const ShopRecycleSubForm = new ActionFormData()
             .title("§e§l回收商店")
-            .body("§l===========================\n§r§e欢迎光临服务器官方回收商店！\n目前服务器的物价指数为： §6§l" + GetScore("DATA","RN")/100 + "\n§r§e目前您的能源币余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§l===========================")
+            .body("§l===========================\n§r§e欢迎光临服务器官方回收商店！\n目前服务器的物价指数为： §6§l" + GetScore("DATA","RN")/100 + "\n§r§e目前您的" + MoneyShowName + "余额为： §6§l" + GetScore("money",player.nameTag) + "\n§r§l===========================")
             .button("§c返回上一级")
         for(let i = 0; i < RecycleData[index1].content.length; i++) {
             if (RecycleData[index1].content[i].lim == false) {
@@ -278,12 +294,13 @@ const GUI = {
                     .button1("§c退出")
                     .button2("§a返回上一级菜单")
                     ShopSellLimForm.show(player).then(result => {
+                        if (result.canceled) return;
                         switch (result.selection) {
                             case 1:
                                 this.ShopRecycleSub(player,index1);
                                 break;
                             case 0:
-                                Tell("§c 回收失败！原因是该物品已达到本日回收最大数量，请明天再次尝试回收哦！",player.nameTag)
+                                player.sendMessage("§c 回收失败！原因是该物品已达到本日回收最大数量，请明天再次尝试回收哦！")
                                 break;
                         }
                     })
@@ -297,12 +314,13 @@ const GUI = {
                 .button1("§c退出")
                 .button2("§a返回上一级菜单")
                 ShopSellNoItemForm.show(player).then(result => {
+                    if (result.canceled) return;
                     switch (result.selection) {
                         case 1:
                             this.ShopRecycleSub(player,index1);
                             break;
                         case 0:
-                            Tell("§c 回收失败！原因是没有在您的背包中找到相应物品！请检查背包后再次尝试！",player.nameTag)
+                            player.sendMessage("§c 回收失败！原因是没有在您的背包中找到相应物品！请检查背包后再次尝试！")
                             break;
                     }
                 })
@@ -314,7 +332,7 @@ const GUI = {
     ShopSellSub(player,index1,index2,num) {
         const ShopSellSubForm = new MessageFormData()
             .title("§c§l确认回收 " + RecycleData[index1].content[index2].name)
-            .body("§e您确定要以 §l" + parseInt(RecycleData[index1].content[index2].price *  GetScore("DATA","RN") / 100) * num + "§r§e 能源币的报酬，回收 §l" + num + " §r§e个" + RecycleData[index1].content[index2].name + "?\n§c§l注意：所有商品一旦回收无法逆转！")
+            .body("§e您确定要以 §l" + parseInt(RecycleData[index1].content[index2].price *  GetScore("DATA","RN") / 100) * num + "§r§e " + MoneyShowName + "的报酬，回收 §l" + num + " §r§e个" + RecycleData[index1].content[index2].name + "?\n§c§l注意：所有商品一旦回收无法逆转！")
             .button1("§c§l取消")
             .button2("§a§l确定")
             ShopSellSubForm.show(player).then((result) => {
@@ -329,10 +347,10 @@ const GUI = {
                     RunCmd(`clear @a[name="${player.nameTag}"] ${RecycleData[index1].content[index2].type} ${RecycleData[index1].content[index2].data} ${num}`)
                     //然后执行加钱的操作！
                     RunCmd(`scoreboard players add @a[name="${player.nameTag}"] money ${parseInt(RecycleData[index1].content[index2].price * GetScore("DATA","RN") / 100) * num}`)
-                    Tell(`§a 回收成功！您成功回收 §l${num}§r§a 个 §l${RecycleData[index1].content[index2].name}§r§a，并获得了 §l${parseInt(RecycleData[index1].content[index2].price * GetScore("DATA","RN") / 100) * num} §r§a能源币！期待您的下次光临！`,player.nameTag)
+                    player.sendMessage(`§a 回收成功！您成功回收 §l${num}§r§a 个 §l${RecycleData[index1].content[index2].name}§r§a，并获得了 §l${parseInt(RecycleData[index1].content[index2].price * GetScore("DATA","RN") / 100) * num} §r§a${MoneyShowName}！期待您的下次光临！`)
                     break;
                 case 0:
-                    Tell("§c 回收失败！原因是您自己取消了本次回收！",player.nameTag)
+                    player.sendMessage("§c 回收失败！原因是您自己取消了本次回收！")
                     break;
             }
         })
