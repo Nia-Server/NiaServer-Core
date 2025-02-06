@@ -15,26 +15,26 @@ jobs:
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          directory: 'development_behavior_packs/NIA_V4.0_BP'
+          directory: 'development_behavior_packs/NiaServer-Core'
           path: '.'
           filename: NiaServer-Core-BP-${{ github.ref_name }}.zip
       - name: Upload the behavior_pack
         uses: actions/upload-artifact@v4
         with:
           name: NiaServer-Core-BP-${{ github.ref_name }}.zip
-          path: ./development_behavior_packs/NIA_V4.0_BP/NiaServer-Core-BP-${{ github.ref_name }}.zip
+          path: ./development_behavior_packs/NiaServer-Core/NiaServer-Core-BP-${{ github.ref_name }}.zip
       - name: Archive Release2
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          directory: 'development_resource_packs/NIA_V4.0_RP'
+          directory: 'development_resource_packs/NiaServer-Core'
           path: '.'
           filename: NiaServer-Core-RP-${{ github.ref_name }}.zip
       - name: Upload the resource_pack
         uses: actions/upload-artifact@v4
         with:
           name: NiaServer-Core-RP-${{ github.ref_name }}.zip
-          path: ./development_resource_packs/NIA_V4.0_RP/NiaServer-Core-RP-${{ github.ref_name }}.zip
+          path: ./development_resource_packs/NiaServer-Core/NiaServer-Core-RP-${{ github.ref_name }}.zip
 
   release:
     needs: [zip]
