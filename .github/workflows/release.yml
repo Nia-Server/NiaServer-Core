@@ -32,7 +32,7 @@ jobs:
           path: '.'
           filename: NiaServer-Core-RP-${{ github.ref_name }}.zip
       - name: Upload the zip file2
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: NiaServer-Core-RP-${{ github.ref_name }}.zip
           path: ./development_resource_packs/NiaServer-Core/NiaServer-Core-RP-${{ github.ref_name }}.zip
