@@ -40,6 +40,7 @@ import './game/cdk.js'
 import './game/chat.js'
 import './game/main_menu.js'
 import './game/register.js'
+import './game/builder.js'
 
 //qqBot
 import './qqBot/main.js'

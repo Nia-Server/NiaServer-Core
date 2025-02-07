@@ -23,28 +23,8 @@ const task_data = {
             "",
             "                          §b-鸽子腐竹"
         ],
-        "checkmode": "or",
-        "check":[
-            {
-                "type": "item",
-                "item": "minecraft:iron_pickaxe",
-                "count": 1,
-                "fail_info": "\n\n\n\n\n§c背包里要求拥有§e一个铁镐\n\n§c请在获取铁镐后再次提交任务\n\n\n\n\n\n"
-            },
-            {
-                "type": "scoreboard",
-                "scoreboard": "money",
-                "operator": ">=",
-                "value": 0,
-                "fail_info": "\n\n\n\n\n§c要求金币余额大于等于0\n\n§c请在获取足够金币后再次提交任务\n\n\n\n\n\n"
-            },
-            {
-                "type": "tag",
-                "tag": "test",
-                "operator": "==",
-                "fail_info": "\n\n\n\n\n§c你还没有获得管理员权限\n\n§c请联系管理员获取权限后再次提交任务\n\n\n\n\n\n"
-            }
-        ],
+        "checkmode": "none",
+        "check":[],
         "reward": [
             {
                 "type": "scoreboard",
@@ -55,20 +35,14 @@ const task_data = {
             },
             {
                 "type": "tag",
-                "tag": "test",
+                "tag": "title_start",
                 "operator": "add",
-                "description": "XX称号",
+                "description": "称号-梦开始的地方",
             },
             {
                 "type": "item",
                 "item": "minecraft:iron_sword",
                 "count": 1,
-                "description": "铁剑一个"
-            },
-            {
-                "type": "command",
-                "dimension": "minecraft:overworld",
-                "command": "give @s minecraft:iron_sword 1",
                 "description": "铁剑一个"
             }
         ],
