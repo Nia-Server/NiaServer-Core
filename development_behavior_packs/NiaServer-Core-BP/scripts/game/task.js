@@ -217,7 +217,7 @@ const GUI = {
                                 switch (check.type) {
                                     case "item":
                                         let item_count = 0;
-                                        for (let i = 0; i < 35; i++) {
+                                        for (let i = 0; i < 36; i++) {
                                             let item = player.getComponent("minecraft:inventory").container.getItem(i);
                                             if (item != undefined && item.typeId == check.item) {
                                                 item_count = item.amount + item_count;
@@ -264,7 +264,7 @@ const GUI = {
                                 switch (check.type) {
                                     case "item":
                                         let item_count = 0;
-                                        for (let i = 0; i < 35; i++) {
+                                        for (let i = 0; i < 36; i++) {
                                             let item = player.getComponent("minecraft:inventory").container.getItem(i);
                                             if (item != undefined && item.typeId == check.item) {
                                                 item_count = item.amount + item_count;

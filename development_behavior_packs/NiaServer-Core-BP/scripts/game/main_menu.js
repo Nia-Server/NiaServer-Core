@@ -108,6 +108,13 @@ const MainGUI = {
             "opMenu": false
         },
         {
+            "name": "武器铺\n在这里强化你的元素武器!",
+            "icon": "textures/ui/smithing_icon",
+            "type": "runCmd",
+            "content": "scriptevent mcnia:nx_openGUI {\"GUI\":\"EQGUI\",\"target\":\"%playername%\",\"data\":{}}",
+            "opMenu": false
+        },
+        {
             "name": "传送系统\n快速传送到你的家",
             "icon": "textures/ui/icon_recipe_construction",
             "type": "openGUI",
