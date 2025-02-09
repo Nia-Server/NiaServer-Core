@@ -280,7 +280,7 @@ export class QQBotSystem {
     }
 
     exchange_data(data) {
-        const req_exchange_data = new HttpRequest(`${server_url}:${port}/exchange_data`)
+        const req_exchange_data = new HttpRequest(`${server_url}:10086/exchange_data`)
             .setBody(JSON.stringify(data))
             .setMethod(HttpRequestMethod.Post)
             .addHeader("Content-Type", "text/plain")
