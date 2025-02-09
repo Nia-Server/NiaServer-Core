@@ -11,7 +11,7 @@ const config = {
     "USEEventLog": true,
     "HttpCfg": {
         "IPAddress": "http://127.0.0.1",
-        "Port": 10086
+        "Port": 2333
     },
     "LandCfg": {
         "Distance": 100,

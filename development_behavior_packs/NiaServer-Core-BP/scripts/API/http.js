@@ -1,9 +1,10 @@
 import { http,HttpRequestMethod,HttpRequest } from '@minecraft/server-net';
 import { world } from '@minecraft/server';
+import { cfg } from '../config.js';
 
-const port = 10086;
+const port = cfg.HttpCfg.Port;
 const qqbot_port = 10023;
-const server_url = "http://127.0.0.1";
+const server_url = cfg.HttpCfg.IPAddress;
 
 export class ExternalFS {
 

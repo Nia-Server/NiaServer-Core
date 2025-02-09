@@ -57,7 +57,7 @@ system.runInterval(() => {
 },100)
 
 //启动检测特定文件是否存在
-const log_API = {
+export const log_API = {
     WriteToLog(dimension,subject,x0,y0,z0,event,target,x1,y1,z1,extra) {
         fs.WriteLineToFile(log_file,`${GetTime()},${dimension},${subject},${x0},${y0},${z0},${event},${target},${x1},${y1},${z1},${extra}\n`).then((result) => {
             if (result === "success") {

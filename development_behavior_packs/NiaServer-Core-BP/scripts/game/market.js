@@ -7,6 +7,7 @@ import { log,warn,error } from "../API/logger.js";
 import { adler32 } from '../API/cipher_system.js';
 import { ExternalFS } from '../API/http.js';
 import { Main } from './main_menu.js';
+import { log_API } from '../basic/event_log.js';
 
 //违禁物品，等后期接入配置文件
 const fs = new ExternalFS();
@@ -225,14 +226,15 @@ const GUI = {
                     let item_lores = item_data.Lores;
                     let new_item = new ItemStack(item_data.typeid);
                     new_item.setLore(item_lores);
-                    //物品名字()
-                    new_item.nameTag = item_data.name;
+                    //物品名字
+                    if (item_data.nameTag != "") new_item.nameTag = item_data.nameTag;
                     //物品数量
                     new_item.amount = response.formValues[0];
                     //物品附魔属性
-
                     if (item_data.Hasench) {
-                        new_item.getComponent(ItemComponentTypes.Enchantable).addEnchantments(item_data.ench);
+                        item_data.ench.forEach((enchantment) => {
+                            new_item.getComponent(ItemComponentTypes.Enchantable).addEnchantment({type: new EnchantmentType(enchantment.type), level: enchantment.level});
+                        });
                     }
                     //物品耐久值
                     if (item_data.Hasdamage) {
@@ -321,7 +323,7 @@ const GUI = {
                     let itemData = {};
                     itemData.state = true;
                     itemData.slot = HaveItemIndex[response.formValues[0] - 1];
-                    if (item.nameTag == "") {
+                    if (item.nameTag == undefined) {
                         itemData.nameTag = "";
                     } else {
                         itemData.nameTag = item.nameTag;
@@ -399,7 +401,7 @@ const GUI = {
                             MarketData = temp_MarketData;
                             let receipt = new ItemStack("minecraft:paper");
                             receipt.nameTag = "§c§l上架凭证";
-                            receipt.setLore(["服务器官方交易市场", "§e上架商品凭证","上架商品名称:§b" + itemData.name, "上架人:§b" + player.nameTag,"流水号:§b" + id.substring(1,10),"§7要想查看上架商品更详细信息","§7请将凭证拿在手中后聊天栏发送+info即可"]);
+                            receipt.setLore(["服务器官方交易市场", "§e上架商品凭证","上架商品名称:§b" + itemData.name, "上架人:§b" + player.nameTag,"流水号:§b" + id.substring(1,10)]);
                             player.getComponent(EntityComponentTypes.Inventory).container.setItem(itemData.slot,receipt);
                             this.Success(player,`\n[商品上架成功]\n商品名称: ${itemData.name} (${itemData.typeid}) \n商品简介: ${itemData.description} \n商品单价: ${itemData.price}\n商品剩余库存: ${itemData.amount}\n商品流水号: ${itemData.id}`);
                             //查询玩家金币缓存是否存在
@@ -454,7 +456,8 @@ const GUI = {
             .body("§c欢迎来到管理商品界面\n§c请注意，此处的操作将会直接影响到市场中的商品！")
             .button("返回上一级")
             for (let i = 0; i < MarketData.length; i++) {
-                if (MarketData[i].playerid == player.id && MarketData[i].state) {
+                if (MarketData[i].playerid != player.id ) continue;
+                if (MarketData[i].state) {
                     ManageForm.button(MarketData[i].name + "\n单价: " + MarketData[i].price + " 库存数量: " + MarketData[i].amount);
                     ManageData.push(MarketData[i]);
                 } else {
@@ -465,7 +468,9 @@ const GUI = {
             ManageForm.show(player).then((response) => {
                 if (response.canceled || response.selection == 0) {
                     this.Main(player);
-                } else if (!ManageData[response.selection - 1].state) {
+                    return;
+                }
+                if (!ManageData[response.selection - 1].state) {
                     //商品状态为不可用状态直接下架
                     //首先检查玩家背包是否有空余空间
                     let has_empty_slot = false;
@@ -479,18 +484,15 @@ const GUI = {
                         let item_lores = item_data.Lores;
                         let new_item = new ItemStack(item_data.typeid);
                         new_item.setLore(item_lores);
-                        //物品名字()
-                        new_item.nameTag = item_data.name;
+                        //物品名字
+                        if (item_data.nameTag != "") new_item.nameTag = item_data.nameTag;
                         //物品数量
                         new_item.amount = item_data.amount;
                         //物品附魔属性
                         if (item_data.Hasench) {
-                            let newench = new_item.getComponent('enchantments');
-                            let enchList = newench.enchantments;
-                            for (let ench in item_data.ench) {
-                                enchList.addEnchantment(new Enchantment(ench,item_data.ench[ench]));
-                            }
-                            newench.enchantments = enchList;
+                            item_data.ench.forEach((enchantment) => {
+                                new_item.getComponent(ItemComponentTypes.Enchantable).addEnchantment({type: new EnchantmentType(enchantment.type), level: enchantment.level});
+                            });
                         }
                         //物品耐久值
                         if (item_data.Hasdamage) {
@@ -505,6 +507,7 @@ const GUI = {
                                 break;
                             }
                         }
+
                         //开始连接服务器
                         fs.OverwriteJsonFile("market.json",MarketData).then((result) => {
                             if (result === "success") {
@@ -522,7 +525,6 @@ const GUI = {
                         //玩家背包没有空间，则直接报错提醒玩家
                         this.Error(player,"§c您的背包没有多余的空间来放置下架的商品，请清空后重试！","104","ManageForm");
                     }
-
                 } else {
                     //商品状态为可用状态可以进行修改
                     let item_data = ManageData[response.selection - 1];
@@ -548,18 +550,15 @@ const GUI = {
                                     let item_lores = item_data.Lores;
                                     let new_item = new ItemStack(item_data.typeid);
                                     new_item.setLore(item_lores);
-                                    //物品名字()
-                                    new_item.nameTag = item_data.name;
+                                    //物品名字
+                                    if (item_data.nameTag != "") new_item.nameTag = item_data.nameTag;
                                     //物品数量
                                     new_item.amount = response.formValues[0];
                                     //物品附魔属性
                                     if (item_data.Hasench) {
-                                        let newench = new_item.getComponent('enchantments');
-                                        let enchList = newench.enchantments;
-                                        for (let ench in item_data.ench) {
-                                            enchList.addEnchantment(new Enchantment(ench,item_data.ench[ench]));
-                                        }
-                                        newench.enchantments = enchList;
+                                        item_data.ench.forEach((enchantment) => {
+                                            new_item.getComponent(ItemComponentTypes.Enchantable).addEnchantment({type: new EnchantmentType(enchantment.type), level: enchantment.level});
+                                        });
                                     }
                                     //物品耐久值
                                     if (item_data.Hasdamage) {
@@ -593,7 +592,7 @@ const GUI = {
                                         fs.OverwriteJsonFile("market.json",MarketData).then((result) => {
                                             if (result === "success") {
                                                 //覆写成功
-                                                this.Success(player,`[商品修改成功]\n商品名称: ${response.formValues[1]} (${item_data.typeid}) \n商品简介: ${response.formValues[3]} \n商品单价: ${response.formValues[2]}\n商品剩余库存: ${item_data.amount - response.formValues[0]}\n商品流水号: ${item_data.id}`);
+                                                this.Success(player,`[商品修改成功]\n商品名称: ${response.formValues[1]} (${item_data.typeid}) \n商品简介: ${response.formValues[3]} \n商品单价: ${response.formValues[2]}\n商品剩余库存: ${item_data.amount}\n商品流水号: ${item_data.id}`);
                                                 //发送物品
                                                 player.getComponent(EntityComponentTypes.Inventory).container.addItem(new_item);
                                             } else {
@@ -646,6 +645,19 @@ const GUI = {
                     if (old_temp_player_money[player.id] != 0) {
                         world.scoreboard.getObjective("money").addScore(player,old_temp_player_money[player.id])
                         player.sendMessage("§e 您有一笔来自玩家交易市场的 " + old_temp_player_money[player.id] + " 金币已到账！请注意查收！");
+                        log_API.WriteToLog(
+                            player.dimension.id,
+                            player.nameTag,
+                            player.location.x,
+                            player.location.y,
+                            player.location.z,
+                            "获得交易市场收益事件",
+                            "手动获取收益",
+                            "",
+                            "",
+                            "",
+                            old_temp_player_money[player.id]
+                        )
                     }  else {
                         player.sendMessage("§e 您目前没有任何玩家交易市场收益，尝试售卖物品来获得收益！");
                     }
@@ -710,9 +722,54 @@ world.afterEvents.playerSpawn.subscribe((event) => {
                 event.player.getComponent(EntityComponentTypes.Inventory).container.setItem(i,undefined);
                 event.player.sendMessage("§c 未正常去除的预览商品已回收！");
                 warn("【交易市场】玩家未正常回收预览商品已被系统回收");
+                log_API.WriteToLog(
+                    event.player.dimension.id,
+                    event.player.nameTag,
+                    event.player.location.x,
+                    event.player.location.y,
+                    event.player.location.z,
+                    "未正常回收预览商品事件",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                )
             }
         }
     }
+
+    system.runTimeout(() => {
+        let player = event.player;
+        if (temp_player_money.hasOwnProperty(player.id)) {
+            let old_temp_player_money = JSON.parse(JSON.stringify(temp_player_money));
+            //重置缓存
+            temp_player_money[player.id] = 0;
+            //连接服务器覆写文件
+            fs.OverwriteJsonFile("market_temp_player_money.json",temp_player_money).then((result) => {
+                if (result === "success") {
+                    //存在，给钱
+                    if (old_temp_player_money[player.id] != 0) {
+                        world.scoreboard.getObjective("money").addScore(player,old_temp_player_money[player.id])
+                        player.sendMessage("§e 您有一笔来自玩家交易市场的 " + old_temp_player_money[player.id] + " 金币已到账！请注意查收！");
+                        log_API.WriteToLog(
+                            player.dimension.id,
+                            player.nameTag,
+                            player.location.x,
+                            player.location.y,
+                            player.location.z,
+                            "获得交易市场收益事件",
+                            "上线自动发放",
+                            "",
+                            "",
+                            "",
+                            old_temp_player_money[player.id]
+                        )
+                    }
+                }
+            })
+        }
+    }, 100)
 
 })
 
