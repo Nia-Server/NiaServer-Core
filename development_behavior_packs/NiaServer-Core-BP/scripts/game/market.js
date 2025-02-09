@@ -1,6 +1,6 @@
 //玩家交易市场
 
-import { system, world, ItemStack, EnchantmentType } from '@minecraft/server';
+import { system, world, ItemStack, EnchantmentType, ItemComponentTypes, EntityComponentTypes } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui';
 import { GetTime, GetScore } from '../API/game.js';
 import { log,warn,error } from "../API/logger.js";
@@ -163,7 +163,7 @@ const GUI = {
                                     let new_ench = new EnchantmentType(pre_item_data.ench[i].type);
                                     enchList.push({type: new_ench, level: pre_item_data.ench[i].level});
                                 }
-                                preview_item.getComponent("minecraft:enchantable").addEnchantments(enchList);
+                                preview_item.getComponent(ItemComponentTypes.Enchantable).addEnchantments(enchList);
                                 // for (let ench in pre_item_data.ench) {
                                 //     let enchList = new EnchantmentType(ench);
                                 //     enchList.addEnchantment(new Enchantment(ench,pre_item_data.ench[ench]));
@@ -172,13 +172,13 @@ const GUI = {
                             }
                             //物品耐久值
                             if (pre_item_data.Hasdamage) {
-                                preview_item.getComponent("minecraft:durability").damage = pre_item_data.damage;
+                                preview_item.getComponent(ItemComponentTypes.Durability).damage = pre_item_data.damage;
                             }
                             //检查背包是否还有空余空间
                             let has_empty_slot = false;
                             for (let i = 9; i < 36; i++) {
-                                if (player.getComponent("minecraft:inventory").container.getItem(i) == undefined) {
-                                    player.getComponent("minecraft:inventory").container.setItem(i,preview_item);
+                                if (player.getComponent(EntityComponentTypes.Inventory).container.getItem(i) == undefined) {
+                                    player.getComponent(EntityComponentTypes.Inventory).container.setItem(i,preview_item);
                                     has_empty_slot = true;
                                     break;
                                 }
@@ -190,8 +190,8 @@ const GUI = {
                                 system.runTimeout(()=>{
                                     try {
                                         for (let i = 9 ; i < 36; i++) {
-                                            if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined && player.getComponent("minecraft:inventory").container.getItem(i).getLore()[player.getComponent("minecraft:inventory").container.getItem(i).getLore().length - 2] == "§c预览商品请勿进行其他操作！") {
-                                                player.getComponent("minecraft:inventory").container.setItem(i,undefined);
+                                            if (player.getComponent(EntityComponentTypes.Inventory).container.getItem(i) != undefined && player.getComponent(EntityComponentTypes.Inventory).container.getItem(i).getLore()[player.getComponent(EntityComponentTypes.Inventory).container.getItem(i).getLore().length - 2] == "§c预览商品请勿进行其他操作！") {
+                                                player.getComponent(EntityComponentTypes.Inventory).container.setItem(i,undefined);
                                                 player.sendMessage("§e 预览时间已到，物品已自动收回！");
                                             }
                                         }
@@ -230,21 +230,17 @@ const GUI = {
                     //物品数量
                     new_item.amount = response.formValues[0];
                     //物品附魔属性
+
                     if (item_data.Hasench) {
-                        let newench = new_item.getComponent('enchantments');
-                        let enchList = newench.enchantments;
-                        for (let ench in item_data.ench) {
-                            enchList.addEnchantment(new Enchantment(ench,item_data.ench[ench]));
-                        }
-                        newench.enchantments = enchList;
+                        new_item.getComponent(ItemComponentTypes.Enchantable).addEnchantments(item_data.ench);
                     }
                     //物品耐久值
                     if (item_data.Hasdamage) {
-                        new_item.getComponent("minecraft:durability").damage = item_data.damage;
+                        new_item.getComponent(ItemComponentTypes.Durability).damage = item_data.damage;
                     }
                     //检查背包是否还有空余空间
                     let has_empty_slot = false;
-                    if (player.getComponent("minecraft:inventory").container.emptySlotsCount != 0) {
+                    if (player.getComponent(EntityComponentTypes.Inventory).container.emptySlotsCount != 0) {
                         has_empty_slot = true;
                     }
                     if (!has_empty_slot) {
@@ -270,7 +266,7 @@ const GUI = {
                                                 //扣除玩家金币
                                                 world.scoreboard.getObjective("money").setScore(player,GetScore("money",player.nameTag) - (response.formValues[0] * item_data.price));
                                                 //发送物品
-                                                player.getComponent("minecraft:inventory").container.addItem(new_item);
+                                                player.getComponent(EntityComponentTypes.Inventory).container.addItem(new_item);
                                             } else {
                                                 this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","MainfForm");
                                                 error("【交易市场】在修改玩家金币数据文件 market_temp_player_money.json 时与NIAHttpBOT连接失败");
@@ -302,12 +298,12 @@ const GUI = {
             .title("请选择要上架的物品")
             let HaveItemIndex = []
             for (let i = 0; i < 36; i++) {
-                if (player.getComponent("minecraft:inventory").container.getItem(i) != undefined) {
-                    if (player.getComponent("minecraft:inventory").container.getItem(i).nameTag != undefined) {
-                        InventoryData.push("§c槽id：" + i + " §r" + player.getComponent("minecraft:inventory").container.getItem(i).nameTag)
+                if (player.getComponent(EntityComponentTypes.Inventory).container.getItem(i) != undefined) {
+                    if (player.getComponent(EntityComponentTypes.Inventory).container.getItem(i).nameTag != undefined) {
+                        InventoryData.push("§c槽id：" + i + " §r" + player.getComponent(EntityComponentTypes.Inventory).container.getItem(i).nameTag)
                         HaveItemIndex.push(i)
                     } else {
-                        InventoryData.push("§c槽id：" + i + " §r" + player.getComponent("minecraft:inventory").container.getItem(i).typeId)
+                        InventoryData.push("§c槽id：" + i + " §r" + player.getComponent(EntityComponentTypes.Inventory).container.getItem(i).typeId)
                         HaveItemIndex.push(i)
                     }
                 }
@@ -321,7 +317,7 @@ const GUI = {
                 } else if (response.formValues[0] == 0 || response.formValues[1] == "" || response.formValues[2] == "") {
                     this.Error(player,"§c错误的数据格式，请重新填写！","101","ShelfForm");
                 } else {
-                    let item = player.getComponent("minecraft:inventory").container.getItem(HaveItemIndex[response.formValues[0] - 1]);
+                    let item = player.getComponent(EntityComponentTypes.Inventory).container.getItem(HaveItemIndex[response.formValues[0] - 1]);
                     let itemData = {};
                     itemData.state = true;
                     itemData.slot = HaveItemIndex[response.formValues[0] - 1];
@@ -336,28 +332,19 @@ const GUI = {
                     itemData.keepOnDeath = item.keepOnDeath;
                     itemData.maxAmount = item.maxAmount;
                     //判断是否有耐久
-                    if (item.hasComponent("minecraft:durability")) {
+                    if (item.hasComponent(ItemComponentTypes.Durability)) {
                         itemData.Hasdamage = true;
-                        itemData.damage = item.getComponent("minecraft:durability").damage;
+                        itemData.damage = item.getComponent(ItemComponentTypes.Durability).damage;
                     } else {
                         itemData.Hasdamage = false;
                     }
                     //判断是否有附魔组件
-                    if (item.hasComponent("minecraft:enchantable")) {
+                    if (item.hasComponent(ItemComponentTypes.Enchantable)) {
                         itemData.Hasench = true;
                         itemData.ench = [];
-                        let ench = item.getComponent("minecraft:enchantable").getEnchantments().forEach((enchantment) => {
-                            //将物品的附魔信息转换为json格式[{"type":"minecraft:sharpness","level":1},{"type":"minecraft:unbreaking","level":1}]
+                        let ench = item.getComponent(ItemComponentTypes.Enchantable).getEnchantments().forEach((enchantment) => {
                             itemData.ench.push({"type":enchantment.type.id,"level":enchantment.level});
                         });
-                        // let wood_sword = new ItemStack("minecraft:wooden_sword", 1);
-                        // const sharpness = new EnchantmentType("minecraft:sharpness");
-                        // wood_sword.getComponent("minecraft:enchantable").addEnchantments([{type: sharpness, level: 1}]);
-
-                        // //向控制台输出物品的附魔信息
-                        // wood_sword.getComponent("minecraft:enchantable").getEnchantments().forEach((enchantment) => {
-                        //     log(`附魔名称: ${enchantment.type.id}, 附魔等级: ${enchantment.level}`);
-                        // });
                     } else {
                         itemData.Hasench = false;
                     }
@@ -413,7 +400,7 @@ const GUI = {
                             let receipt = new ItemStack("minecraft:paper");
                             receipt.nameTag = "§c§l上架凭证";
                             receipt.setLore(["服务器官方交易市场", "§e上架商品凭证","上架商品名称:§b" + itemData.name, "上架人:§b" + player.nameTag,"流水号:§b" + id.substring(1,10),"§7要想查看上架商品更详细信息","§7请将凭证拿在手中后聊天栏发送+info即可"]);
-                            player.getComponent("minecraft:inventory").container.setItem(itemData.slot,receipt);
+                            player.getComponent(EntityComponentTypes.Inventory).container.setItem(itemData.slot,receipt);
                             this.Success(player,`\n[商品上架成功]\n商品名称: ${itemData.name} (${itemData.typeid}) \n商品简介: ${itemData.description} \n商品单价: ${itemData.price}\n商品剩余库存: ${itemData.amount}\n商品流水号: ${itemData.id}`);
                             //查询玩家金币缓存是否存在
                             if (temp_player_money[player.id] == undefined) {
@@ -438,14 +425,14 @@ const GUI = {
                         } else {
                             //覆写成功
                             MarketData = temp_MarketData;
-                            let newItem = player.getComponent("minecraft:inventory").container.getItem(itemData.slot);
+                            let newItem = player.getComponent(EntityComponentTypes.Inventory).container.getItem(itemData.slot);
                             newItem.amount = newItem.amount - response.formValues[0];
                             itemData.amount = response.formValues[0];
-                            player.getComponent("minecraft:inventory").container.setItem(itemData.slot,newItem);
+                            player.getComponent(EntityComponentTypes.Inventory).container.setItem(itemData.slot,newItem);
                             let receipt = new ItemStack("minecraft:paper");
                             receipt.nameTag = "§c§l上架凭证";
                             receipt.setLore(["服务器官方交易市场", "§e上架商品凭证","上架商品名称:§b" + itemData.name, "上架人:§b" + player.nameTag,"流水号:§b" + id.substring(1,10),"§7要想查看上架商品更详细信息","§7请将凭证拿在手中后聊天栏发送+info即可"]);
-                            player.getComponent("minecraft:inventory").container.addItem(receipt);
+                            player.getComponent(EntityComponentTypes.Inventory).container.addItem(receipt);
                             this.Success(player,`\n[商品上架成功]\n商品名称: ${itemData.name} (${itemData.typeid}) \n商品简介: ${itemData.description} \n商品单价: ${itemData.price}\n商品剩余库存: ${itemData.amount}\n商品流水号: ${itemData.id}`);
                             //查询玩家金币缓存是否存在
                             if (temp_player_money[player.id] == undefined) {
@@ -482,7 +469,7 @@ const GUI = {
                     //商品状态为不可用状态直接下架
                     //首先检查玩家背包是否有空余空间
                     let has_empty_slot = false;
-                    if (player.getComponent("minecraft:inventory").container.emptySlotsCount != 0) {
+                    if (player.getComponent(EntityComponentTypes.Inventory).container.emptySlotsCount != 0) {
                         has_empty_slot = true;
                     }
                     //如果玩家背包有空间
@@ -507,7 +494,7 @@ const GUI = {
                         }
                         //物品耐久值
                         if (item_data.Hasdamage) {
-                            new_item.getComponent("minecraft:durability").damage = item_data.damage;
+                            new_item.getComponent(ItemComponentTypes.Durability).damage = item_data.damage;
                         }
                         //首先将旧的MarketData缓存起来
                         let old_MarketData = JSON.parse(JSON.stringify(MarketData));
@@ -524,7 +511,7 @@ const GUI = {
                                 //覆写成功
                                 this.Success(player,`[商品下架成功]\n商品名称: ${item_data.name} (${item_data.typeid}) \n商品简介: ${item_data.description} \n商品单价: ${item_data.price}\n商品剩余库存: ${item_data.amount}\n商品流水号: ${item_data.id}`);
                                 //发送物品
-                                player.getComponent("minecraft:inventory").container.addItem(new_item);
+                                player.getComponent(EntityComponentTypes.Inventory).container.addItem(new_item);
                             } else {
                                 this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ManageForm");
                                 error("【交易市场】在覆写交易市场数据文件 market.json 时与NIAHttpBOT连接失败");
@@ -576,11 +563,11 @@ const GUI = {
                                     }
                                     //物品耐久值
                                     if (item_data.Hasdamage) {
-                                        new_item.getComponent("minecraft:durability").damage = item_data.damage;
+                                        new_item.getComponent(ItemComponentTypes.Durability).damage = item_data.damage;
                                     }
                                     //检查背包是否还有空余空间
                                     let has_empty_slot = false;
-                                    if (player.getComponent("minecraft:inventory").container.emptySlotsCount != 0) {
+                                    if (player.getComponent(EntityComponentTypes.Inventory).container.emptySlotsCount != 0) {
                                         has_empty_slot = true;
                                     }
                                     //如果没有空间
@@ -608,7 +595,7 @@ const GUI = {
                                                 //覆写成功
                                                 this.Success(player,`[商品修改成功]\n商品名称: ${response.formValues[1]} (${item_data.typeid}) \n商品简介: ${response.formValues[3]} \n商品单价: ${response.formValues[2]}\n商品剩余库存: ${item_data.amount - response.formValues[0]}\n商品流水号: ${item_data.id}`);
                                                 //发送物品
-                                                player.getComponent("minecraft:inventory").container.addItem(new_item);
+                                                player.getComponent(EntityComponentTypes.Inventory).container.addItem(new_item);
                                             } else {
                                                 error("【交易市场】在覆写交易市场数据文件 market.json 时与NIAHttpBOT连接失败");
                                                 this.Error(player,"§c依赖服务器连接超时，如果你看到此提示请联系腐竹！","103","ManageForm");
@@ -719,8 +706,8 @@ world.afterEvents.playerSpawn.subscribe((event) => {
     if (event.initialSpawn) {
         //首先检查是否有预览商品
         for (let i = 9 ; i < 36; i++) {
-            if (event.player.getComponent("minecraft:inventory").container.getItem(i) != undefined && event.player.getComponent("minecraft:inventory").container.getItem(i).getLore()[event.player.getComponent("minecraft:inventory").container.getItem(i).getLore().length - 2] == "§c预览商品请勿进行其他操作！") {
-                event.player.getComponent("minecraft:inventory").container.setItem(i,undefined);
+            if (event.player.getComponent(EntityComponentTypes.Inventory).container.getItem(i) != undefined && event.player.getComponent(EntityComponentTypes.Inventory).container.getItem(i).getLore()[event.player.getComponent(EntityComponentTypes.Inventory).container.getItem(i).getLore().length - 2] == "§c预览商品请勿进行其他操作！") {
+                event.player.getComponent(EntityComponentTypes.Inventory).container.setItem(i,undefined);
                 event.player.sendMessage("§c 未正常去除的预览商品已回收！");
                 warn("【交易市场】玩家未正常回收预览商品已被系统回收");
             }

@@ -40,7 +40,7 @@ import './game/cdk.js'
 import './game/chat.js'
 import './game/main_menu.js'
 import './game/register.js'
-import './game/builder.js'
+// import './game/builder.js'
 
 //qqBot
 import './qqBot/main.js'
@@ -48,9 +48,9 @@ import './qqBot/main.js'
 
 import { cfg } from './config.js'
 
-export const VERSION = "v1.5.0";
+export const VERSION = "v1.5.1";
 export const BDS_VERSION = "1.21.51.02";
-export const LAST_UPGRATE = "2025/02/06";
+export const LAST_UPGRATE = "2025/02/09";
 export const CODE_BRANCH = "main";
 
 
