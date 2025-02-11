@@ -9,16 +9,20 @@ const GUI = {
         let player_pos_data = player.getDynamicProperty("pos_data");
         if (player_pos_data == undefined) {
             player.setDynamicProperty("pos_data", []);
+            player_pos_data = [];
         } else {
             player_pos_data = JSON.parse(player_pos_data);
         }
         const HomeMainForm = new ActionFormData()
         .title("传送点设置")
         .body("请选择你要传送的地点\n如果要添加传送点请前往设置页面进行添加")
-        .button("返回上一级菜单")
-        .button("添加/删除传送点")
+        .button("返回上一级菜单","textures/ui/wysiwyg_reset")
+        .button("添加/删除传送点","textures/ui/paste")
         for (let i = 0; i < player_pos_data.length; i++) {
-            HomeMainForm.button(player_pos_data[i].name + "\nx:" + player_pos_data[i].x + " y:" + player_pos_data[i].y + " z:" + player_pos_data[i].z);
+            HomeMainForm.button(player_pos_data[i].name +
+                "\nx:" + player_pos_data[i].x +
+                " y:" + player_pos_data[i].y +
+                " z:" + player_pos_data[i].z);
         }
         HomeMainForm.show(player).then((response) => {
             if (response.canceled) return;
@@ -31,16 +35,13 @@ const GUI = {
                 return;
             }
             let index = response.selection - 2;
-            //player.sendMessage(player_pos_data[index].x + " " + player_pos_data[index].y + " " + player_pos_data[index].z + " " + player_pos_data[index].dim);
-            world.getDimension(player_pos_data[index].dim).runCommand("/tp " + player.nameTag +" " + player_pos_data[index].x + " " + player_pos_data[index].y + " " + player_pos_data[index].z);
-            // player.teleport({
-            //     x: player_pos_data[index].x,
-            //     y: player_pos_data[index].y,
-            //     z: player_pos_data[index].z
-            // },{
-            //     dimension: world.getDimension(player_pos_data[index].dim
-            //     )});
-            player.sendMessage("§a传送成功！");
+            player.teleport({
+                x: Number(player_pos_data[index].x),
+                y: Number(player_pos_data[index].y),
+                z: Number(player_pos_data[index].z)
+            },{
+                dimension: world.getDimension(player_pos_data[index].dim)});
+            player.sendMessage(" §a已成功将您传送至传送点: " + player_pos_data[index].name);
         })
 
     },
@@ -115,5 +116,11 @@ const GUI = {
         })
     }
 }
+
+world.afterEvents.itemUse.subscribe(event => {
+    if (event.itemStack.typeId == "minecraft:stick" && event.itemStack.nameTag == "home") {
+        GUI.HomeMain(event.source);
+    }
+})
 
 export const HomeGUI = GUI;
