@@ -219,16 +219,12 @@ const GUI = {
                         button_content = button_content + "§c[限时优惠]§r"
                         discount = merchandise.discount;
                     }
-                    //判断是否有"lim"属性
-                    if (merchandise.lim) {
+                    if (merchandise.lim_num) {
                         button_content = button_content + "§c[单日限购]§r"
                     }
                     button_content = button_content + merchandise.name + "\n"
                     if (merchandise.lim_num) {
                         button_content = button_content + "限购§9" + merchandise.lim_num + "§r个 "
-                    } else if (merchandise.lim) {
-                        button_content = button_content + "限购§91§r个 "
-                        merchandise.lim_num = 1;
                     }
 
                     if (influence_by_RN) price = price * basic_RN * single_RN[merchandise.item_type];
@@ -271,7 +267,7 @@ const GUI = {
         price *= discount;
 
         let can_buy_num = Math.floor(GetScore("money", player.nameTag) / price);
-        if (merchandise.lim) {
+        if (merchandise.lim_num) {
             let shopPlayerData = JSON.parse(world.getDynamicProperty("shop_player_data"));
             let remaining = merchandise.lim_num;
             if (shopPlayerData.shop[player.nameTag]?.[merchandise.type_id]) {
@@ -342,7 +338,7 @@ const GUI = {
                         }
                         if (merchandise.damage) item.getComponent(ItemComponentTypes.Durability).damage = merchandise.damage;
                         if (merchandise.name_tag) item.nameTag = merchandise.name_tag;
-                        if (merchandise.lim) {
+                        if (merchandise.lim_num) {
                             let shop_player_data = JSON.parse(world.getDynamicProperty("shop_player_data"));
                             if (!shop_player_data.shop[player.nameTag]) shop_player_data.shop[player.nameTag] = {};
                             if (!shop_player_data.shop[player.nameTag][merchandise.type_id]) shop_player_data.shop[player.nameTag][merchandise.type_id] = 0;
@@ -355,7 +351,7 @@ const GUI = {
                         player.sendMessage(`§a 购买成功！您以§e§l${price * num}§r§a${MoneyShowName}，成功购买§e§l${num}§r§a个§e${merchandise.name}§r§a!期待您的下次光临！`);
                         break;
                     case "special_item":
-                        if (merchandise.lim) {
+                        if (merchandise.lim_num) {
                             let shop_player_data = JSON.parse(world.getDynamicProperty("shop_player_data"));
                             if (!shop_player_data.shop[player.nameTag]) shop_player_data.shop[player.nameTag] = {};
                             if (!shop_player_data.shop[player.nameTag][merchandise.type_id]) shop_player_data.shop[player.nameTag][merchandise.type_id] = 0;
@@ -428,21 +424,16 @@ const GUI = {
             //判断type
             switch(recycle_item.type) {
                 case "item":
-                    //判断是否有"influence_by_RN"属性
                     if (!recycle_item.influence_by_RN) {
                         button_content = "§c◆§r"
                         influence_by_RN = false;
                     }
-                    //判断是否有"lim"属性
-                    if (recycle_item.lim) {
+                    if (recycle_item.lim_num) {
                         button_content = button_content + "§c[单日回收数量限制]§r"
                     }
                     button_content = button_content + recycle_item.name + "\n"
                     if (recycle_item.lim_num) {
                         button_content = button_content + "单日回收限制§9" + recycle_item.lim_num + "§r个 "
-                    } else if (recycle_item.lim) {
-                        button_content = button_content + "单日回收限制§91§r个 "
-                        recycle_item.lim_num = 1;
                     }
 
                     if (influence_by_RN) price = price * basic_RN * single_RN[recycle_item.item_type];
@@ -480,7 +471,7 @@ const GUI = {
                         can_recycle_num = can_recycle_num + player.getComponent(EntityComponentTypes.Inventory).container.getItem(i).amount;
                     }
                 }
-                if (recycle_item.lim) {
+                if (recycle_item.lim_num) {
                     let recycle_data = JSON.parse(world.getDynamicProperty("shop_player_data")).recycle;
                     let remaining = recycle_item.lim_num;
                     if (recycle_data[player.nameTag]?.[recycle_item.type_id]) {
@@ -539,7 +530,7 @@ const GUI = {
                         switch(result.selection) {
                             case 1:
                                 //首先进行判断是否有限制，有限制就直接写入相关数据
-                                if (recycle_item.lim) {
+                                if (recycle_item.lim_num) {
                                     let recycle_data = JSON.parse(world.getDynamicProperty("shop_player_data")).recycle;
                                     if (!recycle_data[player.nameTag]) recycle_data[player.nameTag] = {};
                                     if (!recycle_data[player.nameTag][recycle_item.type_id]) recycle_data[player.nameTag][recycle_item.type_id] = 0;
