@@ -4,8 +4,8 @@
 	  "name": "NiaServer-Core-1.5.0 BP",
 	  "description": "§bCopyright (C) 2025 Nia-Server\n版本：v1.0.0\n项目地址：https://github.com/Nia-Server/NiaServer-Core",
 	  "uuid": "cab0bbe3-eb10-465e-b1de-b09facc076c8",
-	  "version": [ 1, 5, 0 ],
-	  "min_engine_version": [ 1, 21, 50 ]
+	  "version": [ 1, 5, 1 ],
+	  "min_engine_version": [ 1, 21, 60 ]
 	},
 	"modules": [
 		{
@@ -14,13 +14,13 @@
 			"description": "gametest module",
 			"uuid": "92cd3fe1-e764-425a-aa40-a7e4d7760922",
 			"entry": "scripts/main.js",
-			"version": [ 1, 5, 0 ]
+			"version": [ 1, 5, 1 ]
 		}
 	],
 	"dependencies": [
 		{
 			"module_name": "@minecraft/server",
-			"version": "1.17.0-beta"
+			"version": "1.18.0-beta"
 		},
 		{
 			"module_name": "@minecraft/server-ui",

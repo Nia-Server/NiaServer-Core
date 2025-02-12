@@ -39,30 +39,26 @@ world.afterEvents.worldInitialize.subscribe((event) => {
 
 
 system.runInterval(() => {
-    let TIME = new Date();
-    if (TIME.getSeconds() == 0) {
         //增加在线时间
         RunCmd(`scoreboard players add @a time 1`);
-    }
-    if (TIME.getMinutes() == 0 && TIME.getSeconds() == 0 ) {
-        let RN = parseInt(getNumberInNormalDistribution(100,20))
-        //防止物价指数出现极端数值
-        if (RN <= 20 || RN >= 180) {
-            RN = 100
-        }
-        RunCmd(`scoreboard players set RN DATA ${RN}`);
-        RunCmd(`title @a title §c物价指数发生变动！`)
-        RunCmd(`title @a subtitle §7物价指数由 §l§e${GetScore("DATA","RN") / 100} §r§7变为 §l§e${RN / 100}`)
-        //自动备份
-        if (TIME.getHours() == 16) {
-            let ScoreBoards = world.scoreboard.getObjectives()
-            for (let i = 0; i < ScoreBoards.length; i++) {
-                if (ScoreBoards[i].id.slice(0,2) == "R:") {
-                    RunCmd(`scoreboard objectives remove "${ScoreBoards[i].id}"`)
-                }
-            }
-            Broadcast(`§a 服务器时间已更新！`)
-        }
-    }
-},40)
+    // if (TIME.getMinutes() == 0 && TIME.getSeconds() == 0 ) {
+    //     let RN = parseInt(getNumberInNormalDistribution(100,20))
+    //     //防止物价指数出现极端数值
+    //     if (RN <= 20 || RN >= 180) {
+    //         RN = 100
+    //     }
+    //     RunCmd(`scoreboard players set RN DATA ${RN}`);
+    //     RunCmd(`title @a title §c物价指数发生变动！`)
+    //     RunCmd(`title @a subtitle §7物价指数由 §l§e${GetScore("DATA","RN") / 100} §r§7变为 §l§e${RN / 100}`)
+    //     if (TIME.getHours() == 16) {
+    //         let ScoreBoards = world.scoreboard.getObjectives()
+    //         for (let i = 0; i < ScoreBoards.length; i++) {
+    //             if (ScoreBoards[i].id.slice(0,2) == "R:") {
+    //                 RunCmd(`scoreboard objectives remove "${ScoreBoards[i].id}"`)
+    //             }
+    //         }
+    //         Broadcast(`§a 服务器时间已更新！`)
+    //     }
+    // }
+},1200)
 

@@ -15,7 +15,7 @@ const GUI = {
         }
         const HomeMainForm = new ActionFormData()
         .title("传送点设置")
-        .body("请选择你要传送的地点\n如果要添加传送点请前往设置页面进行添加")
+        .body("请选择你要传送的地点")
         .button("返回上一级菜单","textures/ui/wysiwyg_reset")
         .button("添加/删除传送点","textures/ui/paste")
         for (let i = 0; i < player_pos_data.length; i++) {
