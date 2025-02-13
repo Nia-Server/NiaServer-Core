@@ -35,34 +35,6 @@ world.afterEvents.worldInitialize.subscribe(() => {
             SellData = result.sell_data;
             RecycleData = result.recycle_data;
             log(`【商店系统】商店系统数据文件 shop_data.json 获取成功`)
-            // //遍历SellData数据
-            // for(let i = 0; i < SellData.length; i++) {
-            //     for(let j = 0; j < SellData[i].content.length; j++) {
-            //         //删除其中的data键
-            //         delete SellData[i].content[j].data;
-            //         //添加type键
-            //         SellData[i].content[j].type = "item";
-            //         //添加influence_by_RN键
-            //         SellData[i].content[j].influence_by_RN = true;
-            //         //添加item_type键
-            //         SellData[i].content[j].item_type = "default";
-            //     }
-            // }
-            // //遍历RecycleData数据
-            // for(let i = 0; i < RecycleData.length; i++) {
-            //     for(let j = 0; j < RecycleData[i].content.length; j++) {
-            //         //删除其中的lim键
-            //         delete RecycleData[i].content[j].lim;
-            //         //添加type键
-            //         RecycleData[i].content[j].type = "item";
-            //         //添加influence_by_RN键
-            //         RecycleData[i].content[j].influence_by_RN = true;
-            //         //添加item_type键
-            //         RecycleData[i].content[j].item_type = "default";
-            //     }
-            // }
-
-            // fs.OverwriteJsonFile("shop_data.json",{"sell_data":SellData,"recycle_data":RecycleData})
         }
     })
 })
@@ -297,12 +269,17 @@ const GUI = {
 
         let can_buy_num = Math.floor(GetScore("money", player.nameTag) / price);
         if (merchandise.lim_num) {
-            let shopPlayerData = JSON.parse(world.getDynamicProperty("shop_player_data"));
+            let shopPlayerData = JSON.parse(world.getDynamicProperty("shop_player_data")).shop;
             let remaining = merchandise.lim_num;
-            if (shopPlayerData.shop[player.nameTag]?.[merchandise.type_id]) {
-                remaining -= shopPlayerData.shop[player.nameTag][merchandise.type_id];
+            if (shopPlayerData[player.nameTag]?.[merchandise.type_id]) {
+                remaining -= shopPlayerData[player.nameTag][merchandise.type_id];
             }
             can_buy_num = Math.min(can_buy_num, remaining);
+        }
+        if (can_buy_num <= 0) {
+            player.sendMessage(`§c 购买失败！原因是您的${MoneyShowName}不足或达到了购买上限！`);
+            system.runTimeout(() => this.ShopPurchaseSub(player, index1), 20);
+            return;
         }
 
         const ShopBuyForm = new ModalFormData()
@@ -369,11 +346,12 @@ const GUI = {
                         if (merchandise.damage) item.getComponent(ItemComponentTypes.Durability).damage = merchandise.damage;
                         if (merchandise.name_tag) item.nameTag = merchandise.name_tag;
                         if (merchandise.lim_num) {
-                            let shop_player_data = JSON.parse(world.getDynamicProperty("shop_player_data"));
-                            if (!shop_player_data.shop[player.nameTag]) shop_player_data.shop[player.nameTag] = {};
-                            if (!shop_player_data.shop[player.nameTag][merchandise.type_id]) shop_player_data.shop[player.nameTag][merchandise.type_id] = 0;
-                            shop_player_data.shop[player.nameTag][merchandise.type_id] += num;
-                            world.setDynamicProperty("shop_player_data", JSON.stringify(shop_player_data));
+                            let shop_data = JSON.parse(world.getDynamicProperty("shop_player_data")).shop;
+                            let recycle_data = JSON.parse(world.getDynamicProperty("shop_player_data")).recycle;
+                            if (!shop_data[player.nameTag]) shop_data[player.nameTag] = {};
+                            if (!shop_data[player.nameTag][merchandise.type_id]) shop_data[player.nameTag][merchandise.type_id] = 0;
+                            shop_data[player.nameTag][merchandise.type_id] += num;
+                            world.setDynamicProperty("shop_player_data", JSON.stringify({"shop": shop_data, "recycle": recycle_data}));
                         }
                         let fullStacks = Math.floor(num / item.maxAmount);
                         for (let i = 0; i < fullStacks; i++) {
@@ -389,14 +367,16 @@ const GUI = {
                         }
                         world.scoreboard.getObjective(MoneyScoreboardName).addScore(player, -price * num);
                         player.sendMessage(`§a 购买成功！您以§e§l${price * num}§r§a${MoneyShowName}，成功购买§e§l${num}§r§a个§e${merchandise.name}§r§a!期待您的下次光临！`);
+                        system.runTimeout(() => this.ShopPurchaseSub(player, i), 20);
                         break;
                     case "special_item":
                         if (merchandise.lim_num) {
-                            let shop_player_data = JSON.parse(world.getDynamicProperty("shop_player_data"));
-                            if (!shop_player_data.shop[player.nameTag]) shop_player_data.shop[player.nameTag] = {};
-                            if (!shop_player_data.shop[player.nameTag][merchandise.type_id]) shop_player_data.shop[player.nameTag][merchandise.type_id] = 0;
-                            shop_player_data.shop[player.nameTag][merchandise.type_id] += num;
-                            world.setDynamicProperty("shop_player_data", JSON.stringify(shop_player_data));
+                            let shop_data = JSON.parse(world.getDynamicProperty("shop_player_data")).shop;
+                            let recycle_data = JSON.parse(world.getDynamicProperty("shop_player_data")).recycle;
+                            if (!shop_data[player.nameTag]) shop_data[player.nameTag] = {};
+                            if (!shop_data[player.nameTag][merchandise.type_id]) shop_data[player.nameTag][merchandise.type_id] = 0;
+                            shop_data[player.nameTag][merchandise.type_id] += num;
+                            world.setDynamicProperty("shop_player_data", JSON.stringify({"shop": shop_data, "recycle": recycle_data}));
                         }
                         world.scoreboard.getObjective(MoneyScoreboardName).addScore(player, -price * num);
                         let cmd = `give "${player.nameTag}" ${merchandise.type_id} ${num}`;
@@ -405,6 +385,7 @@ const GUI = {
                             merchandise.hasOwnProperty("item_json")) cmd += ` ${merchandise.item_json}`;
                         RunCmd(cmd);
                         player.sendMessage(`§a 购买成功！您以§e§l${price * num}§r§a${MoneyShowName}，成功购买§e§l${num}§r§a个§e${merchandise.name}§r§a!期待您的下次光临！`);
+                        system.runTimeout(() => this.ShopPurchaseSub(player, i), 20);
                         break;
                     default:
                         player.sendMessage("§c 购买失败！原因是商品类型解析出错，请联系管理员处理！")
@@ -574,10 +555,11 @@ const GUI = {
                                 //首先进行判断是否有限制，有限制就直接写入相关数据
                                 if (recycle_item.lim_num) {
                                     let recycle_data = JSON.parse(world.getDynamicProperty("shop_player_data")).recycle;
+                                    let shop_data = JSON.parse(world.getDynamicProperty("shop_player_data")).shop;
                                     if (!recycle_data[player.nameTag]) recycle_data[player.nameTag] = {};
                                     if (!recycle_data[player.nameTag][recycle_item.type_id]) recycle_data[player.nameTag][recycle_item.type_id] = 0;
                                     recycle_data[player.nameTag][recycle_item.type_id] += num;
-                                    world.setDynamicProperty("shop_player_data", JSON.stringify({recycle: recycle_data}));
+                                    world.setDynamicProperty("shop_player_data", JSON.stringify({"shop": shop_data, "recycle": recycle_data}));
                                 }
                                 //然后进行扣除物品的操作
                                 if (recycle_item.item_data) {
@@ -588,6 +570,7 @@ const GUI = {
                                 //最后进行给予货币的操作
                                 world.scoreboard.getObjective(MoneyScoreboardName).addScore(player, price * num);
                                 player.sendMessage(`§a 回收成功！您以§e§l${price * num}§r§a${MoneyShowName}，成功回收§e§l${num}§r§a个§e${recycle_item.name}§r§a!期待您的下次光临！`);
+                                system.runTimeout(() => this.ShopRecycleSub(player, index1), 20);
                                 break;
                             case 0:
                                 player.sendMessage("§c 回收失败！原因是您自己取消了本次回收！")
