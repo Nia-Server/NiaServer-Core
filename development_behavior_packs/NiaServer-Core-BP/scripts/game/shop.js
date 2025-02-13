@@ -35,6 +35,34 @@ world.afterEvents.worldInitialize.subscribe(() => {
             SellData = result.sell_data;
             RecycleData = result.recycle_data;
             log(`【商店系统】商店系统数据文件 shop_data.json 获取成功`)
+            // //遍历SellData数据
+            // for(let i = 0; i < SellData.length; i++) {
+            //     for(let j = 0; j < SellData[i].content.length; j++) {
+            //         //删除其中的data键
+            //         delete SellData[i].content[j].data;
+            //         //添加type键
+            //         SellData[i].content[j].type = "item";
+            //         //添加influence_by_RN键
+            //         SellData[i].content[j].influence_by_RN = true;
+            //         //添加item_type键
+            //         SellData[i].content[j].item_type = "default";
+            //     }
+            // }
+            // //遍历RecycleData数据
+            // for(let i = 0; i < RecycleData.length; i++) {
+            //     for(let j = 0; j < RecycleData[i].content.length; j++) {
+            //         //删除其中的lim键
+            //         delete RecycleData[i].content[j].lim;
+            //         //添加type键
+            //         RecycleData[i].content[j].type = "item";
+            //         //添加influence_by_RN键
+            //         RecycleData[i].content[j].influence_by_RN = true;
+            //         //添加item_type键
+            //         RecycleData[i].content[j].item_type = "default";
+            //     }
+            // }
+
+            // fs.OverwriteJsonFile("shop_data.json",{"sell_data":SellData,"recycle_data":RecycleData})
         }
     })
 })
@@ -53,6 +81,7 @@ var single_RN = {
     "prop": 1.0,//道具
     "default": 1.0//默认
 }
+
 
 system.runInterval(() => {
     if (world.getDynamicProperty("shop_TIME") == undefined) {
@@ -304,8 +333,9 @@ const GUI = {
                 system.runTimeout(() => this.ShopBuy(player, index1, index2), 20);
                 return;
             }
-            if (player.getComponent(EntityComponentTypes.Inventory).container.emptySlotsCount < input / 64) {
-                player.sendMessage(`§c 购买失败！您的背包空间不足，请至少清理 ${Math.ceil(input / 64)} 格后再次尝试购买！`);
+            let item = new ItemStack(merchandise.type_id);
+            if (player.getComponent(EntityComponentTypes.Inventory).container.emptySlotsCount < input / item.maxAmount) {
+                player.sendMessage(`§c 购买失败！您的背包空间不足，请至少清理 ${Math.ceil(input / item.maxAmount)} 格后再次尝试购买！`);
                 return;
             }
             this.ShopBuySub(player, index1, index2, input, price);
@@ -345,9 +375,19 @@ const GUI = {
                             shop_player_data.shop[player.nameTag][merchandise.type_id] += num;
                             world.setDynamicProperty("shop_player_data", JSON.stringify(shop_player_data));
                         }
-                        if (num != 1) item.amount = num;
+                        let fullStacks = Math.floor(num / item.maxAmount);
+                        for (let i = 0; i < fullStacks; i++) {
+                            const fullItem = item.clone();
+                            fullItem.amount = item.maxAmount;
+                            player.getComponent(EntityComponentTypes.Inventory).container.addItem(fullItem);
+                        }
+                        const remainder = num % item.maxAmount;
+                        if (remainder > 0) {
+                            const remainderItem = item.clone();
+                            remainderItem.amount = remainder;
+                            player.getComponent(EntityComponentTypes.Inventory).container.addItem(remainderItem);
+                        }
                         world.scoreboard.getObjective(MoneyScoreboardName).addScore(player, -price * num);
-                        player.getComponent(EntityComponentTypes.Inventory).container.addItem(item);
                         player.sendMessage(`§a 购买成功！您以§e§l${price * num}§r§a${MoneyShowName}，成功购买§e§l${num}§r§a个§e${merchandise.name}§r§a!期待您的下次光临！`);
                         break;
                     case "special_item":
@@ -415,12 +455,11 @@ const GUI = {
                 "§r§c§l带有◆的商品价格不受物价指数影响\n"+
                 "§r§l===========================")
             .button("返回上一级","textures/ui/wysiwyg_reset")
-        let price = 0;
         for(let i = 0; i < RecycleData[index1].content.length; i++) {
             let button_content = "";
             let influence_by_RN = true;
             let recycle_item = RecycleData[index1].content[i];
-            price = recycle_item.price;
+            let price = recycle_item.price;
             //判断type
             switch(recycle_item.type) {
                 case "item":
@@ -454,12 +493,12 @@ const GUI = {
             if (response.selection == 0) {
                 this.ShopRecycle(player)
             } else {
-                this.ShopSell(player,index1,response.selection - 1,price)
+                this.ShopSell(player,index1,response.selection - 1)
             }
         })
     },
 
-    ShopSell(player,index1,index2,price) {
+    ShopSell(player,index1,index2) {
         let recycle_item = RecycleData[index1].content[index2];
         switch(recycle_item.type) {
             case "item":
@@ -492,15 +531,15 @@ const GUI = {
                         const input = parseInt(result.formValues[0]);
                         if (isNaN(input) || input <= 0) {
                             player.sendMessage(`§c 错误数字格式，请重新输入！`);
-                            system.runTimeout(() => this.ShopSell(player, index1, index2, price), 20);
+                            system.runTimeout(() => this.ShopSell(player, index1, index2), 20);
                             return;
                         }
                         if (input > can_recycle_num) {
                             player.sendMessage(`§c 回收数量超过可回收上限，原因可能是达到回收上限或背包中物品数量不够，请重新输入！`);
-                            system.runTimeout(() => this.ShopSell(player, index1, index2, price), 20);
+                            system.runTimeout(() => this.ShopSell(player, index1, index2), 20);
                             return;
                         }
-                        this.ShopSellSub(player, index1, index2, input, price);
+                        this.ShopSellSub(player, index1, index2, input);
                     })
                 } else {
                     player.sendMessage("§c 回收失败！原因是没有在您的背包中找到相应物品或达到了物品单日回收上限！")
@@ -514,10 +553,13 @@ const GUI = {
     },
 
     //开始发送确认回收的表单
-    ShopSellSub(player,index1,index2,num,price) {
+    ShopSellSub(player,index1,index2,num) {
         let recycle_item = RecycleData[index1].content[index2];
         switch(recycle_item.type) {
             case "item":
+                let price = recycle_item.price;
+                let influence_by_RN = recycle_item.hasOwnProperty("influence_by_RN") ? recycle_item.influence_by_RN : true;
+                if (influence_by_RN) price = recycle_item.price * basic_RN * single_RN[recycle_item.item_type];
                 const ShopSellSubForm = new MessageFormData()
                     .title("§c§l确认回收 " + recycle_item.name)
                     .body("§e您确定要以 §l" + price * num + "§r§e " +
@@ -559,6 +601,7 @@ const GUI = {
         }
     }
 }
+
 
 export const ShopGUI = GUI
 
