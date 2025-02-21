@@ -819,7 +819,9 @@ const GUI = {
         .toggle("其他玩家可以摧毁方块",land_data[LandUUID].setup.DestroyBlock)
         .toggle("其他玩家可以放置方块",land_data[LandUUID].setup.PlaceBlock)
         .toggle("其他玩家可以使用物品",land_data[LandUUID].setup.UseItem)
-        .toggle("（暂时没用）",land_data[LandUUID].setup.AttackEntity)
+        .toggle("其他玩家可以与方块交互",land_data[LandUUID].setup.InteractBlock)
+        .toggle("其他玩家可以与实体交互",land_data[LandUUID].setup.InteractEntity)
+        .toggle("暂时没用-等待mj更新API",land_data[LandUUID].setup.AttackEntity)
         .toggle("其他玩家可以打开箱子",land_data[LandUUID].setup.OpenChest)
         .toggle("在领地内是否可以发生爆炸",land_data[LandUUID].setup.Expoplosion)
         .toggle("自己处于领地内时显示标题",land_data[LandUUID].setup.ShowActionbar)
@@ -836,11 +838,13 @@ const GUI = {
                 land_data[LandUUID].setup.DestroyBlock = response.formValues[1];
                 land_data[LandUUID].setup.PlaceBlock = response.formValues[2];
                 land_data[LandUUID].setup.UseItem = response.formValues[3];
-                land_data[LandUUID].setup.AttackEntity = response.formValues[4];
-                land_data[LandUUID].setup.OpenChest = response.formValues[5];
-                land_data[LandUUID].setup.Expoplosion = response.formValues[6];
-                land_data[LandUUID].setup.ShowActionbar = response.formValues[7];
-                land_data[LandUUID].setup.VirtualFence = response.formValues[8];
+                land_data[LandUUID].setup.InteractBlock = response.formValues[4];
+                land_data[LandUUID].setup.InteractEntity = response.formValues[5];
+                land_data[LandUUID].setup.AttackEntity = response.formValues[6];
+                land_data[LandUUID].setup.OpenChest = response.formValues[7];
+                land_data[LandUUID].setup.Expoplosion = response.formValues[8];
+                land_data[LandUUID].setup.ShowActionbar = response.formValues[9];
+                land_data[LandUUID].setup.VirtualFence = response.formValues[10];
                 //开始覆写文件land.json
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     if (result === "success") {
@@ -1584,6 +1588,8 @@ const GUI = {
                     "DestroyBlock":false,
                     "PlaceBlock":false,
                     "UseItem":false,
+                    "InteractBlock":false,
+                    "InteractEntity":false,
                     "AttackEntity":false,
                     "OpenChest":false,
                     "Expoplosion": false,
@@ -1711,6 +1717,8 @@ const GUI = {
                     "DestroyBlock":false,
                     "PlaceBlock":false,
                     "UseItem":false,
+                    "InteractBlock":false,
+                    "InteractEntity":false,
                     "AttackEntity":false,
                     "OpenChest":false,
                     "Expoplosion": false,
@@ -1920,7 +1928,9 @@ const GUI = {
         .toggle("是否可以破坏方块",land.setup.DestroyBlock)
         .toggle("是否可以放置方块",land.setup.PlaceBlock)
         .toggle("是否可以使用物品",land.setup.UseItem)
-        .toggle("是否可以攻击实体",land.setup.AttackEntity)
+        .toggle("是否可以与方块交互",land.setup.InteractBlock)
+        .toggle("是否可以与实体交互",land.setup.InteractEntity)
+        .toggle("暂时没用",land.setup.AttackEntity)
         .toggle("是否可以打开箱子",land.setup.OpenChest)
         .toggle("是否可以引爆方块",land.setup.Expoplosion)
         .toggle("是否显示actionbar",land.setup.ShowActionbar)
@@ -1937,10 +1947,12 @@ const GUI = {
                 land.setup.DestroyBlock = response.formValues[2];
                 land.setup.PlaceBlock = response.formValues[3];
                 land.setup.UseItem = response.formValues[4];
-                land.setup.AttackEntity = response.formValues[5];
-                land.setup.OpenChest = response.formValues[6];
-                land.setup.Expoplosion = response.formValues[7];
-                land.setup.ShowActionbar = response.formValues[8];
+                land.setup.InteractBlock = response.formValues[5];
+                land.setup.InteractEntity = response.formValues[6];
+                land.setup.AttackEntity = response.formValues[7];
+                land.setup.OpenChest = response.formValues[8];
+                land.setup.Expoplosion = response.formValues[9];
+                land.setup.ShowActionbar = response.formValues[10];
                 //开始写入数据
                 fs.OverwriteJsonFile("land.json",land_data).then((result) => {
                     //先判断领地名称是否为空
@@ -2703,6 +2715,17 @@ world.beforeEvents.itemUseOn.subscribe((event) => {
         "minecraft:water_bucket","minecraft:lava_bucket","minecraft:cod_bucket","minecraft:salmon_bucket","minecraft:tropical_fish_bucket","minecraft:pufferfish_bucket","minecraft:powder_snow_bucket","minecraft:axolotl_bucket","minecraft:tadpole_bucket",
         "minecraft:flint_and_steel","minecraft:shears","minecraft:hopper"
     ]
+    let land = pos_in_land([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
+    if (land && !event.source.hasTag(cfg.OPTAG) && !in_allowlist(event.source,land) && !land.setup.UseItem) {
+        if (tools.includes(event.itemStack.typeId)) {
+            event.cancel = true;
+            event.source.sendMessage("§c 您没有相关权限在此处使用物品！");
+        }
+    }
+})
+
+//玩家与方块交互
+world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
     //定义一些可以被改变状态的方块
     const blocks = [
         "minecraft:wooden_door","minecraft:spruce_door","minecraft:mangrove_door","minecraft:birch_door","minecraft:jungle_door","minecraft:acacia_door","minecraft:dark_oak_door","minecraft:crimson_door","minecraft:iron_door","minecraft:warped_door",
@@ -2710,31 +2733,39 @@ world.beforeEvents.itemUseOn.subscribe((event) => {
         "minecraft:fence_gate","minecraft:spruce_fence_gate","minecraft:birch_fence_gate","minecraft:jungle_fence_gate","minecraft:acacia_fence_gate","minecraft:dark_oak_fence_gate","minecraft:mangrove_fence_gate","minecraft:crimson_fence_gate","minecraft:warped_fence_gate",
         "minecraft:lever","minecraft:unpowered_repeater","minecraft:unpowered_comparator","minecraft:wooden_button"
     ]
-    let land = pos_in_land([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
-    if (land && !event.source.hasTag(cfg.OPTAG) && !in_allowlist(event.source,land) && !land.setup.UseItem) {
-        if (tools.includes(event.itemStack.typeId) || blocks.includes(event.block.typeId)) {
-            event.cancel = true;
-            event.source.sendMessage("§c 您没有相关权限在此处使用物品！");
-        }
-    }
-})
-
-// 玩家使用物品
-world.beforeEvents.itemUseOn.subscribe((event) => {
-    //定义一些可以被改变状态的方块
-    const blocks = [
+    const chests = [
         "minecraft:chest","minecraft:trapped_chest","minecraft:ender_chest","minecraft:barrel","minecraft:frame","minecraft:anvil","minecraft:enchanting_table","minecraft:cartography_table","minecraft:smithing_table",
         "minecraft:black_shulker_box","minecraft:blue_shulker_box","minecraft:brown_shulker_box","minecraft:cyan_shulker_box","minecraft:gray_shulker_box","minecraft:green_shulker_box","minecraft:light_blue_shulker_box","minecraft:lime_shulker_box","minecraft:orange_shulker_box",
         "minecraft:pink_shulker_box","minecraft:purple_shulker_box","minecraft:red_shulker_box","minecraft:undyed_shulker_box","minecraft:white_shulker_box","minecraft:yellow_shulker_box"
     ]
     let land = pos_in_land([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
-    if (land && !event.source.hasTag(cfg.OPTAG) && !in_allowlist(event.source,land) && !land.setup.OpenChest) {
-        if (blocks.includes(event.block.typeId)) {
+    if (land && !event.player.hasTag(cfg.OPTAG) && !in_allowlist(event.player,land)) {
+        if (!land.setup.InteractBlock && blocks.includes(event.block.typeId)) {
             event.cancel = true;
-            event.source.sendMessage("§c 您没有相关权限在此处进行相关交互动作！");
+            event.player.sendMessage("§c 您没有相关权限在此处与方块交互！");
+        }
+        if (!land.setup.OpenChest && chests.includes(event.block.typeId)) {
+            event.cancel = true;
+            event.player.sendMessage("§c 您没有相关权限在此处打开箱子！");
         }
     }
 })
+
+
+world.beforeEvents.playerInteractWithEntity.subscribe((event) => {
+    log(event.target.typeId);
+    const entities = [
+        "minecraft:villager_v2,minecraft:armor_stand"
+    ]
+    let land = pos_in_land([event.target.location.x,event.target.location.y,event.target.location.z],event.target.dimension.id);
+    if (land && !event.player.hasTag(cfg.OPTAG) && !in_allowlist(event.player,land) && !land.setup.InteractEntity) {
+        if (entities.includes(event.target.typeId)) {
+            event.cancel = true;
+            event.player.sendMessage("§c 您没有相关权限在此处与实体交互！");
+        }
+    }
+})
+
 
 //对于物品使用的检测
 world.afterEvents.itemUse.subscribe(event => {

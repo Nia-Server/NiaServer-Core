@@ -1023,8 +1023,94 @@ const GUI = {
                 player.sendMessage("§c 回收失败！原因是商品类型解析出错，请联系管理员处理！")
                 break;
         }
-    }
+    },
+
+    AdminMain(player) {
+        const AdminMainForm = new ActionFormData()
+        .title("服务器商店管理系统")
+        .body("§l===========================\n"+
+            "§r§e欢迎使用服务器商店管理系统\n"+
+            "§r§c请勿在未授权前提下修改自行商店\n"+
+            "§r§l===========================")
+        .button("返回上一级","textures/ui/wysiwyg_reset")
+        .button("物价指数管理\n管理服务器的物价指数", "textures/ui/worldsIcon")
+        .button("商店物品管理\n管理服务器的商店物品", "textures/ui/store_home_icon")
+        .button("回收物品管理\n管理服务器的回收物品", "textures/ui/icon_deals")
+        .button("玩家称号管理\n管理服务器的玩家称号", "textures/ui/icon_armor")
+        AdminMainForm.show(player).then((response) => {
+            if (response.canceled) return;
+            switch (response.selection) {
+                case 0:
+                    Main(player);
+                    break;
+                case 1:
+                    this.AdminRN(player);
+                    break;
+                case 2:
+                    this.AdminShop(player);
+                    break;
+                case 3:
+                    this.AdminRecycle(player);
+                    break;
+                case 4:
+                    TitleGUI.AdminTitle(player);
+                    break;
+            }
+        })
+    },
+
+    AdminShop(player) {
+        const AdminShopForm = new ActionFormData()
+        .title("服务器商店物品管理")
+        .body("§l===========================\n"+
+            "§r§e欢迎使用服务器商店物品管理系统\n"+
+            "§r§c请勿在未授权前提下修改自行商店\n"+
+            "§r§l===========================")
+        .button("返回上一级","textures/ui/wysiwyg_reset")
+        .button("添加商店品类","textures/ui/store_home_icon")
+        .button("修改商店品类","textures/ui/store_home_icon")
+        .button("删除商店品类","textures/ui/store_home_icon")
+        .button("添加商店物品","textures/ui/store_home_icon")
+        .button("修改商店物品","textures/ui/store_home_icon")
+        .button("删除商店物品","textures/ui/store_home_icon")
+        AdminShopForm.show(player).then((response) => {
+            if (response.canceled) return;
+            switch (response.selection) {
+                case 0:
+                    this.AdminMain(player);
+                    break;
+                case 1:
+                    this.AdminAddType(player);
+                    break;
+                case 2:
+                    this.AdminEditType(player);
+                    break;
+                case 3:
+                    this.AdminDelType(player);
+                    break;
+                case 4:
+                    this.AdminAddItem(player);
+                    break;
+                case 5:
+                    this.AdminEditItem(player);
+                    break;
+                case 6:
+                    this.AdminDelItem(player);
+                    break;
+            }
+        })
+    },
+
+    AdminAddType(player) {
+        
+    },
 }
+
+world.afterEvents.itemUse.subscribe(event => {
+    if (event.itemStack.typeId == "minecraft:stick" && event.itemStack.nameTag == "shop") {
+        GUI.AdminMain(event.source);
+    }
+})
 
 
 export const ShopGUI = GUI
