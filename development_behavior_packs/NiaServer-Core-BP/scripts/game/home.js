@@ -1,5 +1,6 @@
 import { world } from "@minecraft/server";
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
+import { log } from "../API/logger.js";
 import { Main } from "./main_menu.js";
 import { SetupGUI } from "./setup.js";
 
@@ -7,8 +8,9 @@ import { SetupGUI } from "./setup.js";
 const GUI = {
     HomeMain(player) {
         let player_pos_data = player.getDynamicProperty("pos_data");
+        log(player_pos_data)
         if (player_pos_data == undefined) {
-            player.setDynamicProperty("pos_data", []);
+            player.setDynamicProperty("pos_data", JSON.stringify([]));
             player_pos_data = [];
         } else {
             player_pos_data = JSON.parse(player_pos_data);
@@ -48,7 +50,7 @@ const GUI = {
     SetUP(player) {
         const SetupForm = new ActionFormData()
         .title("传送点设置")
-        .button("返回上一级菜单")
+        .button("返回上一级菜单","textures/ui/wysiwyg_reset")
         .button("添加传送点")
         .button("删除传送点")
         .show(player).then((response) => {
