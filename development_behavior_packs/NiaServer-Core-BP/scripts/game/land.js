@@ -2726,15 +2726,18 @@ world.beforeEvents.itemUseOn.subscribe((event) => {
 
 //玩家与方块交互
 world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
+    log(event.block.typeId);
     //定义一些可以被改变状态的方块
     const blocks = [
         "minecraft:wooden_door","minecraft:spruce_door","minecraft:mangrove_door","minecraft:birch_door","minecraft:jungle_door","minecraft:acacia_door","minecraft:dark_oak_door","minecraft:crimson_door","minecraft:iron_door","minecraft:warped_door",
         "minecraft:trapdoor","minecraft:spruce_trapdoor","minecraft:birch_trapdoor","minecraft:jungle_trapdoor","minecraft:acacia_trapdoor","minecraft:dark_oak_trapdoor","minecraft:mangrove_trapdoor","minecraft:iron_trapdoor","minecraft:crimson_trapdoor","minecraft:warped_trapdoor",
         "minecraft:fence_gate","minecraft:spruce_fence_gate","minecraft:birch_fence_gate","minecraft:jungle_fence_gate","minecraft:acacia_fence_gate","minecraft:dark_oak_fence_gate","minecraft:mangrove_fence_gate","minecraft:crimson_fence_gate","minecraft:warped_fence_gate",
-        "minecraft:lever","minecraft:unpowered_repeater","minecraft:unpowered_comparator","minecraft:wooden_button"
+        "minecraft:lever","minecraft:unpowered_repeater","minecraft:unpowered_comparator","minecraft:wooden_button",
+        "minecraft:stone_button","minecraft:stone_pressure_plate","minecraft:light_weighted_pressure_plate","minecraft:heavy_weighted_pressure_plate","minecraft:polished_blackstone_pressure_plate","minecraft:polished_blackstone_button","minecraft:polished_blackstone_button",
+        "minecraft:frame","minecraft:glow_frame"
     ]
     const chests = [
-        "minecraft:chest","minecraft:trapped_chest","minecraft:ender_chest","minecraft:barrel","minecraft:frame","minecraft:anvil","minecraft:enchanting_table","minecraft:cartography_table","minecraft:smithing_table",
+        "minecraft:chest","minecraft:trapped_chest","minecraft:ender_chest","minecraft:barrel","minecraft:anvil","minecraft:enchanting_table","minecraft:cartography_table","minecraft:smithing_table",
         "minecraft:black_shulker_box","minecraft:blue_shulker_box","minecraft:brown_shulker_box","minecraft:cyan_shulker_box","minecraft:gray_shulker_box","minecraft:green_shulker_box","minecraft:light_blue_shulker_box","minecraft:lime_shulker_box","minecraft:orange_shulker_box",
         "minecraft:pink_shulker_box","minecraft:purple_shulker_box","minecraft:red_shulker_box","minecraft:undyed_shulker_box","minecraft:white_shulker_box","minecraft:yellow_shulker_box"
     ]
@@ -2753,9 +2756,8 @@ world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
 
 
 world.beforeEvents.playerInteractWithEntity.subscribe((event) => {
-    log(event.target.typeId);
     const entities = [
-        "minecraft:villager_v2,minecraft:armor_stand"
+        "minecraft:villager_v2","minecraft:armor_stand"
     ]
     let land = pos_in_land([event.target.location.x,event.target.location.y,event.target.location.z],event.target.dimension.id);
     if (land && !event.player.hasTag(cfg.OPTAG) && !in_allowlist(event.player,land) && !land.setup.InteractEntity) {
