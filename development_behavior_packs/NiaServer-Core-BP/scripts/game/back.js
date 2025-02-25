@@ -26,7 +26,7 @@ world.beforeEvents.chatSend.subscribe((event) => {
     if (event.message == "back") {
         event.cancel = true;
         let player = event.sender;
-        let player_death_data = JSON.parse(player.getDynamicProperty("death_data"));
+        let player_death_data = player.getDynamicProperty("death_data");
         if (player_death_data == undefined) {
             player.sendMessage(" §c你还没有死亡记录");
             return;
@@ -36,6 +36,7 @@ world.beforeEvents.chatSend.subscribe((event) => {
             return;
         }
         system.run(() =>{
+            player_death_data = JSON.parse(player_death_data);
             world.scoreboard.getObjective(cfg.MoneyScoreboardName).addScore(player, -50);
             player.teleport({
                 x: Number(player_death_data.x),
