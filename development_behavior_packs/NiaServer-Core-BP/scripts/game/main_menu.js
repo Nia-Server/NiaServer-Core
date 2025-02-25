@@ -6,6 +6,7 @@ import { cfg } from '../config.js'
 
 import { SetupGUI } from './setup.js';
 import { ShopGUI } from './shop.js';
+import { NewShopGUI } from './new_shop.js';
 import { TpaGUI } from './tpa.js';
 import { CDKGUI } from './cdk.js';
 import { TransferGUI } from './transfer.js';
@@ -13,11 +14,12 @@ import { OpGUI } from './op.js';
 import { MarketGUI } from './market.js';
 import { LandGUI } from './land.js';
 import { HomeGUI } from './home.js';
+import { RankingGUI } from './ranking.js';
 
 const MoneyScoreboardName = cfg.MoneyScoreboardName;
 
 
-const ALL_GUI = ["MainGUI","SetupGUI","ShopGUI","TpaGUI","CdkGUI","TransferGUI","OpGUI","MarketGUI","LandGUI","HomeGUI"];
+const ALL_GUI = ["MainGUI","SetupGUI","ShopGUI","TpaGUI","CdkGUI","TransferGUI","OpGUI","MarketGUI","LandGUI","HomeGUI","NewShopGUI","RankingGUI"];
 
 //注册scriptevent
 system.afterEvents.scriptEventReceive.subscribe((event) => {
@@ -94,6 +96,13 @@ const MainGUI = {
             "opMenu": false
         },
         {
+            "name": "排行榜\n又到了我最喜欢的赛博斗蛐蛐时间",
+            "icon": "textures/ui/MCoin",
+            "type": "openGUI",
+            "GUI": "RankingGUI",
+            "opMenu": false
+        },
+        {
             "name": "设置\n在这里修改所有设置",
             "icon": "textures/ui/automation_glyph_color",
             "type": "openGUI",
@@ -105,6 +114,13 @@ const MainGUI = {
             "icon": "textures/ui/icon_blackfriday",
             "type": "openGUI",
             "GUI": "ShopGUI",
+            "opMenu": false
+        },
+        {
+            "name": "测试版商店\n引入全新的市场调控算法全新商店",
+            "icon": "textures/ui/icon_blackfriday",
+            "type": "openGUI",
+            "GUI": "NewShopGUI",
             "opMenu": false
         },
         {
@@ -247,13 +263,15 @@ function OpenGUI(player, GUINAME) {
         MainGUI: () => Main(player),
         SetupGUI: () => SetupGUI.SetupMain(player),
         ShopGUI: () => ShopGUI.ShopMain(player),
+        NewShopGUI: () => NewShopGUI.ShopMain(player),
         TpaGUI: () => TpaGUI.TpaMain(player),
         CdkGUI: () => CDKGUI(player),
         TransferGUI: () => TransferGUI.Transfer(player),
         OpGUI: () => OpGUI.CheckOP(player),
         MarketGUI: () => MarketGUI.Main(player),
         LandGUI: () => LandGUI.Main(player),
-        HomeGUI: () => HomeGUI.HomeMain(player)
+        HomeGUI: () => HomeGUI.HomeMain(player),
+        RankingGUI: () => RankingGUI.Main(player)
     }
     ;(GUIs[GUINAME] || (() => {
         player.sendMessage("§c 未找到相应的GUI，请联系管理员！")

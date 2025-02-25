@@ -1,5 +1,5 @@
 //圈地系统
-import { system, world } from '@minecraft/server';
+import { EntityComponentTypes, system, world } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 import { ExternalFS } from '../API/http.js';
 import { log,warn,error } from "../API/logger.js";
@@ -2726,7 +2726,6 @@ world.beforeEvents.itemUseOn.subscribe((event) => {
 
 //玩家与方块交互
 world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
-    log(event.block.typeId);
     //定义一些可以被改变状态的方块
     const blocks = [
         "minecraft:wooden_door","minecraft:spruce_door","minecraft:mangrove_door","minecraft:birch_door","minecraft:jungle_door","minecraft:acacia_door","minecraft:dark_oak_door","minecraft:crimson_door","minecraft:iron_door","minecraft:warped_door",
@@ -2764,6 +2763,22 @@ world.beforeEvents.playerInteractWithEntity.subscribe((event) => {
         if (entities.includes(event.target.typeId)) {
             event.cancel = true;
             event.player.sendMessage("§c 您没有相关权限在此处与实体交互！");
+        }
+    }
+})
+
+world.afterEvents.entityHitEntity.subscribe((event) => {
+    const entities = [
+        "minecraft:villager_v2","minecraft:armor_stand"
+    ]
+    let land = pos_in_land([event.hitEntity.location.x,event.hitEntity.location.y,event.hitEntity.location.z],event.hitEntity.dimension.id);
+    if (event.damagingEntity.typeId != "minecraft:player") {
+        return;
+    }
+    if (land && !event.damagingEntity.hasTag(cfg.OPTAG) && !in_allowlist(event.damagingEntity.typeId,land) && !land.setup.InteractEntity) {
+        if (entities.includes(event.hitEntity.typeId)) {
+            event.hitEntity.getComponent(EntityComponentTypes.Health).resetToMaxValue();
+            event.damagingEntity.sendMessage("§c 您没有相关权限在此处攻击实体！");
         }
     }
 })

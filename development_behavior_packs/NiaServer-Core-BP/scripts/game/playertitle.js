@@ -262,7 +262,11 @@ const GUI = {
 
 }
 
+
+const command = ["back"]
+
 world.beforeEvents.chatSend.subscribe(event => {
+    if (command.includes(event.message)) return;
     event.cancel = true;
     let player = event.sender;
     let message =  `<${player.name}> ${event.message}`;
