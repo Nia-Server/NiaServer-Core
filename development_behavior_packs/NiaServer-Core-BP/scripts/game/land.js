@@ -2728,17 +2728,181 @@ world.beforeEvents.itemUseOn.subscribe((event) => {
 world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
     //定义一些可以被改变状态的方块
     const blocks = [
-        "minecraft:wooden_door","minecraft:spruce_door","minecraft:mangrove_door","minecraft:birch_door","minecraft:jungle_door","minecraft:acacia_door","minecraft:dark_oak_door","minecraft:crimson_door","minecraft:iron_door","minecraft:warped_door",
-        "minecraft:trapdoor","minecraft:spruce_trapdoor","minecraft:birch_trapdoor","minecraft:jungle_trapdoor","minecraft:acacia_trapdoor","minecraft:dark_oak_trapdoor","minecraft:mangrove_trapdoor","minecraft:iron_trapdoor","minecraft:crimson_trapdoor","minecraft:warped_trapdoor",
-        "minecraft:fence_gate","minecraft:spruce_fence_gate","minecraft:birch_fence_gate","minecraft:jungle_fence_gate","minecraft:acacia_fence_gate","minecraft:dark_oak_fence_gate","minecraft:mangrove_fence_gate","minecraft:crimson_fence_gate","minecraft:warped_fence_gate",
-        "minecraft:lever","minecraft:unpowered_repeater","minecraft:unpowered_comparator","minecraft:wooden_button",
-        "minecraft:stone_button","minecraft:stone_pressure_plate","minecraft:light_weighted_pressure_plate","minecraft:heavy_weighted_pressure_plate","minecraft:polished_blackstone_pressure_plate","minecraft:polished_blackstone_button","minecraft:polished_blackstone_button",
-        "minecraft:frame","minecraft:glow_frame"
+        //按钮
+        "minecraft:acacia_button",
+        "minecraft:bamboo_button",
+        "minecraft:birch_button",
+        "minecraft:cherry_button",
+        "minecraft:crimson_button",
+        "minecraft:dark_oak_button",
+        "minecraft:jungle_button",
+        "minecraft:mangrove_button",
+        "minecraft:wooden_button",
+        "minecraft:pale_oak_button",
+        "minecraft:polished_blackstone_button",
+        "minecraft:spruce_button",
+        "minecraft:stone_button",
+        "minecraft:warped_button",
+        //压力板
+        // "minecraft:acacia_pressure_plate",
+        // "minecraft:bamboo_pressure_plate",
+        // "minecraft:birch_pressure_plate",
+        // "minecraft:cherry_pressure_plate",
+        // "minecraft:crimson_pressure_plate",
+        // "minecraft:dark_oak_pressure_plate",
+        // "minecraft:heavy_weighted_pressure_plate",
+        // "minecraft:jungle_pressure_plate",
+        // "minecraft:light_weighted_pressure_plate",
+        // "minecraft:mangrove_pressure_plate",
+        // "minecraft:oak_pressure_plate",
+        // "minecraft:pale_oak_pressure_plate",
+        // "minecraft:polished_blackstone_pressure_plate",
+        // "minecraft:spruce_pressure_plate",
+        // "minecraft:stone_pressure_plate",
+        // "minecraft:warped_pressure_plate",
+        //门
+        "minecraft:acacia_door",
+        "minecraft:bamboo_door",
+        "minecraft:birch_door",
+        "minecraft:cherry_door",
+        "minecraft:crimson_door",
+        "minecraft:dark_oak_door",
+        "minecraft:iron_door",
+        "minecraft:jungle_door",
+        "minecraft:mangrove_door",
+        "minecraft:oak_door",
+        "minecraft:pale_oak_door",
+        "minecraft:spruce_door",
+        "minecraft:wooden_door",
+        "minecraft:warped_door",
+        "minecraft:copper_door",
+        "minecraft:exposed_copper_door",
+        "minecraft:oxidized_copper_door",
+        "minecraft:waxed_copper_door",
+        "minecraft:waxed_exposed_copper_door",
+        "minecraft:waxed_oxidized_copper_door",
+        "minecraft:waxed_weathered_copper_door",
+        "minecraft:weathered_copper_door",
+        //栅栏门
+        "minecraft:acacia_fence_gate",
+        "minecraft:bamboo_fence_gate",
+        "minecraft:birch_fence_gate",
+        "minecraft:cherry_fence_gate",
+        "minecraft:crimson_fence_gate",
+        "minecraft:dark_oak_fence_gate",
+        "minecraft:jungle_fence_gate",
+        "minecraft:mangrove_fence_gate",
+        "minecraft:oak_fence_gate",
+        "minecraft:pale_oak_fence_gate",
+        "minecraft:spruce_fence_gate",
+        "minecraft:fence_gate",
+        "minecraft:warped_fence_gate",
+        //活板门
+        "minecraft:acacia_trapdoor",
+        "minecraft:bamboo_trapdoor",
+        "minecraft:birch_trapdoor",
+        "minecraft:cherry_trapdoor",
+        "minecraft:crimson_trapdoor",
+        "minecraft:dark_oak_trapdoor",
+        "minecraft:iron_trapdoor",
+        "minecraft:jungle_trapdoor",
+        "minecraft:mangrove_trapdoor",
+        "minecraft:oak_trapdoor",
+        "minecraft:pale_oak_trapdoor",
+        "minecraft:spruce_trapdoor",
+        "minecraft:trapdoor",
+        "minecraft:warped_trapdoor",
+        "minecraft:copper_trapdoor",
+        "minecraft:exposed_copper_trapdoor",
+        "minecraft:oxidized_copper_trapdoor",
+        "minecraft:waxed_copper_trapdoor",
+        "minecraft:waxed_exposed_copper_trapdoor",
+        "minecraft:waxed_oxidized_copper_trapdoor",
+        "minecraft:waxed_weathered_copper_trapdoor",
+        "minecraft:weathered_copper_trapdoor",
+        //酿造台
+        "minecraft:brewing_stand",
+        //工作台
+        "minecraft:crafting_table",
+        //制图台
+        "minecraft:cartography_table",
+        //锻造台
+        "minecraft:smithing_table",
+        //熔炉
+        "minecraft:furnace",
+        //高炉
+        "minecraft:blast_furnace",
+        //烟熏炉
+        "minecraft:smoker",
+        //铁砧
+        "minecraft:anvil",
+        //开裂的铁砧
+        "minecraft:chipped_anvil",
+        //损坏的铁砧
+        "minecraft:damaged_anvil",
+        //砂轮
+        "minecraft:grindstone",
+        //附魔台
+        "minecraft:enchanting_table",
+        //唱片机
+        "minecraft:jukebox",
+        //音符盒
+        "minecraft:noteblock",
+        //炼药锅
+        "minecraft:cauldron",
+        //讲台
+        "minecraft:lectern",
+        //堆肥桶
+        "minecraft:composter",
+        //合成器
+        "minecraft:crafter",
+        //织布机
+        "minecraft:loom",
+        //漏斗
+        "minecraft:hopper",
+        //发射器
+        "minecraft:dispenser",
+        //投掷器
+        "minecraft:dropper",
+        //拉杆
+        "minecraft:lever",
+        //红石比较器
+        "minecraft:unpowered_comparator",
+        //红石中继器
+        "minecraft:unpowered_repeater",
+        //阳光探测器
+        "minecraft:daylight_detector_inverted",
+        "minecraft:daylight_detector",
+        //展示框
+        "minecraft:frame"
     ]
     const chests = [
-        "minecraft:chest","minecraft:trapped_chest","minecraft:ender_chest","minecraft:barrel","minecraft:anvil","minecraft:enchanting_table","minecraft:cartography_table","minecraft:smithing_table",
-        "minecraft:black_shulker_box","minecraft:blue_shulker_box","minecraft:brown_shulker_box","minecraft:cyan_shulker_box","minecraft:gray_shulker_box","minecraft:green_shulker_box","minecraft:light_blue_shulker_box","minecraft:lime_shulker_box","minecraft:orange_shulker_box",
-        "minecraft:pink_shulker_box","minecraft:purple_shulker_box","minecraft:red_shulker_box","minecraft:undyed_shulker_box","minecraft:white_shulker_box","minecraft:yellow_shulker_box"
+        //箱子
+        "minecraft:chest",
+        //陷阱箱
+        "minecraft:trapped_chest",
+        //末地箱
+        "minecraft:ender_chest",
+        //桶
+        "minecraft:barrel",
+        //潜影盒
+        "minecraft:black_shulker_box",
+        "minecraft:blue_shulker_box",
+        "minecraft:brown_shulker_box",
+        "minecraft:cyan_shulker_box",
+        "minecraft:gray_shulker_box",
+        "minecraft:green_shulker_box",
+        "minecraft:light_blue_shulker_box",
+        "minecraft:light_gray_shulker_box",
+        "minecraft:lime_shulker_box",
+        "minecraft:magenta_shulker_box",
+        "minecraft:orange_shulker_box",
+        "minecraft:pink_shulker_box",
+        "minecraft:purple_shulker_box",
+        "minecraft:red_shulker_box",
+        "minecraft:undyed_shulker_box",
+        "minecraft:white_shulker_box",
+        "minecraft:yellow_shulker_box"
     ]
     let land = pos_in_land([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
     if (land && !event.player.hasTag(cfg.OPTAG) && !in_allowlist(event.player,land)) {
@@ -2758,31 +2922,27 @@ world.beforeEvents.playerInteractWithEntity.subscribe((event) => {
     const entities = [
         "minecraft:villager_v2","minecraft:armor_stand"
     ]
+    if (!entities.includes(event.target.typeId)) return;
     let land = pos_in_land([event.target.location.x,event.target.location.y,event.target.location.z],event.target.dimension.id);
     if (land && !event.player.hasTag(cfg.OPTAG) && !in_allowlist(event.player,land) && !land.setup.InteractEntity) {
-        if (entities.includes(event.target.typeId)) {
-            event.cancel = true;
-            event.player.sendMessage("§c 您没有相关权限在此处与实体交互！");
-        }
+        event.cancel = true;
+        event.player.sendMessage("§c 您没有相关权限在此处与实体交互！");
     }
 })
 
-world.afterEvents.entityHitEntity.subscribe((event) => {
-    const entities = [
-        "minecraft:villager_v2","minecraft:armor_stand"
-    ]
-    let land = pos_in_land([event.hitEntity.location.x,event.hitEntity.location.y,event.hitEntity.location.z],event.hitEntity.dimension.id);
-    if (event.damagingEntity.typeId != "minecraft:player") {
-        return;
-    }
-    if (land && !event.damagingEntity.hasTag(cfg.OPTAG) && !in_allowlist(event.damagingEntity.typeId,land) && !land.setup.InteractEntity) {
-        if (entities.includes(event.hitEntity.typeId)) {
-            event.hitEntity.getComponent(EntityComponentTypes.Health).resetToMaxValue();
-            event.damagingEntity.sendMessage("§c 您没有相关权限在此处攻击实体！");
-        }
-    }
-})
+// world.beforeEvents.entityRemove.subscribe((event) => {
+//     const entities = [
+//         "minecraft:villager_v2","minecraft:armor_stand"
+//     ]
+//     let entity = event.removedEntity;
+//     if (!entities.includes(entity.typeId)) return;
+//     let land = pos_in_land([entity.location.x,entity.location.y,entity.location.z],entity.dimension.id)
+//     if (land && !land.setup.InteractEntity) {
+//         event.cancel = true;
+//         entity.getComponent(EntityComponentTypes.Health).resetToMaxValue
 
+//     }
+// })
 
 //对于物品使用的检测
 world.afterEvents.itemUse.subscribe(event => {
