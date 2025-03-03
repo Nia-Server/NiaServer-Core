@@ -143,7 +143,7 @@ function delete_index(pos1, pos2, dimid, LandUUID) {
  * @param {number} dimid
  * @returns {object} 如果不在返回false，如果在则返回所在的领地数据
  */
-function pos_in_land(pos,dimid) {
+export function pos_in_land(pos,dimid) {
     //根据传入的坐标计算出相应的区块编号
     let posX = parseInt(pos[0]);
     let posY = parseInt(pos[1]);
@@ -253,7 +253,7 @@ function player_in_index(player) {
  * @param {object} player
  * @returns {boolean}
  */
-function in_allowlist(player,target_land) {
+export function in_allowlist(player,target_land) {
     if (target_land.owner == player.id) {
         return true;
     }

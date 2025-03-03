@@ -3,7 +3,7 @@ import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-
 import { log } from "../API/logger.js";
 import { Main } from "./main_menu.js";
 import { SetupGUI } from "./setup.js";
-
+import { pos_in_land,in_allowlist } from "./land.js";
 
 const GUI = {
     HomeMain(player) {
@@ -37,6 +37,15 @@ const GUI = {
                 return;
             }
             let index = response.selection - 2;
+            let land_result = pos_in_land(
+                [player_pos_data[index].x,
+                player_pos_data[index].y,
+                player_pos_data[index].z],
+                player_pos_data[index].dim);
+            if (land_result && !in_allowlist(player, land_result)) {
+                player.sendMessage(" §c您不能传送到位置处于他人领地内的传送点！");
+                return;
+            }
             player.teleport({
                 x: Number(player_pos_data[index].x),
                 y: Number(player_pos_data[index].y),
@@ -82,6 +91,11 @@ const GUI = {
             if (response.canceled) return;
             if (response.formValues[0] == "") {
                 player.sendMessage("§c传送点名称不能为空！");
+                return;
+            }
+            let land_result = pos_in_land([player.location.x, player.location.y, player.location.z], player.dimension.id);
+            if (land_result && !in_allowlist(player, land_result)) {
+                player.sendMessage(" §c您不能在不属于您的领地内设置传送点！");
                 return;
             }
             player_pos_data.push({name: response.formValues[0], x: player.location.x.toFixed(2), y: player.location.y.toFixed(2), z: player.location.z.toFixed(2), dim: player.dimension.id});
