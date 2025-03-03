@@ -198,10 +198,10 @@ function final_show(player, actual_min_pos, actual_max_pos) {
 
 
 //对于物品使用的检测
-world.afterEvents.itemUse.subscribe(event => {
-    if (event.itemStack.typeId == "minecraft:stick") {
-        let player = event.source;
-        GUI.MainForm(player);
-    }
-})
+// world.afterEvents.itemUse.subscribe(event => {
+//     if (event.itemStack.typeId == "minecraft:stick") {
+//         let player = event.source;
+//         GUI.MainForm(player);
+//     }
+// })
 

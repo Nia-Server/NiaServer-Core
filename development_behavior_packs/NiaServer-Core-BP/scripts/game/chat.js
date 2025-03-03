@@ -9,13 +9,13 @@ import { back_to_last_deaath } from './back.js';
 const fs = new ExternalFS();
 const USEQQBOT = cfg.USEQQBot;
 
-
 const BAN_WORDS = [
     "女装"
 ];
 
 const command_list = [
-    "back"
+    "back",
+    "kill"
 ]
 
 var mute_list = {};

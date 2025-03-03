@@ -42,7 +42,7 @@ import './game/main_menu.js'
 import './game/register.js'
 import './game/ranking.js'
 import './game/back.js'
-import './game/bank.js'
+// import './game/bank.js'
 // import './game/builder.js'
 
 //qqBot
@@ -53,7 +53,7 @@ import { cfg } from './config.js'
 
 export const VERSION = "v1.6.0";
 export const BDS_VERSION = "1.21.60.10";
-export const LAST_UPGRATE = "2025/03/01";
+export const LAST_UPGRATE = "2025/03/03";
 export const CODE_BRANCH = "main";
 
 
