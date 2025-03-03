@@ -263,15 +263,11 @@ const GUI = {
 }
 
 
-const command = ["back"]
+// const command = ["back"]
 
-world.beforeEvents.chatSend.subscribe(event => {
-    if (command.includes(event.message)) return;
-    event.cancel = true;
-    let player = event.sender;
-    let message =  `<${player.name}> ${event.message}`;
-    let title = "";
+export function get_player_title(player) {
     let player_tags = player.getTags();
+    let title = "";
     player_tags.forEach(tag => {
         if (tag.startsWith("show_title")) {
             let tagKey = tag.replace("show_", "");
@@ -283,8 +279,29 @@ world.beforeEvents.chatSend.subscribe(event => {
             }
         }
     });
-    world.sendMessage(title + message);
-})
+    return title;
+}
+
+// world.beforeEvents.chatSend.subscribe(event => {
+//     if (command.includes(event.message)) return;
+//     event.cancel = true;
+//     let player = event.sender;
+//     let message =  `<${player.name}> ${event.message}`;
+//     let title = "";
+//     let player_tags = player.getTags();
+//     player_tags.forEach(tag => {
+//         if (tag.startsWith("show_title")) {
+//             let tagKey = tag.replace("show_", "");
+//             let tagInfo = title_data[tagKey];
+//             if (tagInfo.type === "image") {
+//                 title = `${tagInfo.title}`;
+//             } else if (tagInfo.type === "text") {
+//                 title = `[${tagInfo.title}§r]`;
+//             }
+//         }
+//     });
+//     world.sendMessage(title + message);
+// })
 
 export const TitleGUI = GUI;
 

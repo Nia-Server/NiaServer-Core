@@ -26,7 +26,7 @@ const TransferMessage = cfg.QQBotCfg.TransferMessage;
 const bot = new QQBotSystem();
 const fs = new ExternalFS();
 
-var transfer_data = {"time":GetTime(),"data":[]};
+export var transfer_data = {"time":GetTime(),"data":[]};
 var exc_data_count = 0;
 
 
@@ -53,12 +53,11 @@ if (USEQQBOT) {
             transfer_data = {"time":GetTime(),"data":[]};
         },20);
 
-        //监听聊天事件
-        world.beforeEvents.chatSend.subscribe((event) => {
-            let message = {"type": "game_chat","data": "<" + event.sender.nameTag + "> " + event.message};
-            RunCmd(`stop`);
-            transfer_data.data.push(message);
-        });
+        // //监听聊天事件
+        // world.beforeEvents.chatSend.subscribe((event) => {
+        //     let message = {"type": "game_chat","data": "<" + event.sender.nameTag + "> " + event.message};
+        //     transfer_data.data.push(message);
+        // });
     }
 
 
@@ -79,7 +78,6 @@ if (USEQQBOT) {
 
     world.afterEvents.playerSpawn.subscribe((event) => {
         if (event.initialSpawn) {
-            //首先检查是否有预览商品
             log(`玩家 ${event.player.nameTag} 加入了服务器`);
             bot.send_group_msg(`玩家 ${event.player.nameTag} 加入了服务器`,QQGroup).then((result) => {
                 console.log(result);

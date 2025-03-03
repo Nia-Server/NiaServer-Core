@@ -3,7 +3,6 @@ import { log } from "../API/logger.js";
 import { GetScore } from "../API/game.js";
 import { cfg } from "../config.js";
 
-
 world.afterEvents.entityDie.subscribe((event) => {
     if (event.deadEntity.typeId != "minecraft:player") return;
     let player = event.deadEntity;
@@ -22,36 +21,29 @@ world.afterEvents.entityDie.subscribe((event) => {
     );
 })
 
-world.beforeEvents.chatSend.subscribe((event) => {
-    if (event.message == "back") {
-        event.cancel = true;
-        let player = event.sender;
-        let player_death_data = player.getDynamicProperty("death_data");
-        if (player_death_data == undefined) {
-            player.sendMessage(" §c你还没有死亡记录");
-            return;
-        }
-        if (GetScore(cfg.MoneyScoreboardName,player.nameTag) < 50) {
-            player.sendMessage(` §c你的${cfg.MoneyShowName}不足50，无法传送到上一个死亡地点`);
-            return;
-        }
-        system.run(() =>{
-            player_death_data = JSON.parse(player_death_data);
-            world.scoreboard.getObjective(cfg.MoneyScoreboardName).addScore(player, -50);
-            player.teleport({
-                x: Number(player_death_data.x),
-                y: Number(player_death_data.y),
-                z: Number(player_death_data.z)
-            },{
-                dimension: world.getDimension(player_death_data.dim)});
-            player.sendMessage(" §a已将你成功传送至上一次死亡地点: §c" +
-                player_death_data.x.toFixed(2) + " " +
-                player_death_data.y.toFixed(2) + " " +
-                player_death_data.z.toFixed(2)
-            );
-        })
-
+export function back_to_last_deaath(player) {
+    let player_death_data = player.getDynamicProperty("death_data");
+    if (player_death_data == undefined) {
+        player.sendMessage(" §c你还没有死亡记录");
+        return;
     }
-})
-
-// world.beforeEvents.entityRemove.subscribe((event) => {});
+    if (GetScore(cfg.MoneyScoreboardName,player.nameTag) < 50) {
+        player.sendMessage(` §c你的${cfg.MoneyShowName}不足50，无法传送到上一个死亡地点`);
+        return;
+    }
+    system.run(() =>{
+        player_death_data = JSON.parse(player_death_data);
+        world.scoreboard.getObjective(cfg.MoneyScoreboardName).addScore(player, -50);
+        player.teleport({
+            x: Number(player_death_data.x),
+            y: Number(player_death_data.y),
+            z: Number(player_death_data.z)
+        },{
+            dimension: world.getDimension(player_death_data.dim)});
+        player.sendMessage(" §a已将你成功传送至上一次死亡地点: §c" +
+            player_death_data.x.toFixed(2) + " " +
+            player_death_data.y.toFixed(2) + " " +
+            player_death_data.z.toFixed(2)
+        );
+    })
+}
