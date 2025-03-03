@@ -70,7 +70,7 @@ world.beforeEvents.chatSend.subscribe(event => {
     message =  `<${player.name}> ${event.message}`;
     world.sendMessage(get_player_title(player) + message);
     if (USEQQBOT) {
-        let new_message = {"type": "game_chat","data": "<" + player.nameTag + "> " + message};
+        let new_message = {"type": "game_chat","data": message};
         transfer_data.data.push(new_message);
     }
 
