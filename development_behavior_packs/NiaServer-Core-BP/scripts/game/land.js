@@ -44,7 +44,7 @@ const PRICE_2D = 300;
 const PRICE_3D = 3;
 //坐标限制范围
 const X_RANGE = [-100000,100000];
-const Y_RANGE = [-64,256];
+const Y_RANGE = [-64,312];
 const Z_RANGE = [-100000,100000];
 //金币计分板名称
 const MONEY_SCOREBOARD_NAME = "money";
