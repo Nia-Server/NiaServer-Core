@@ -8,7 +8,6 @@ import { pos_in_land,in_allowlist } from "./land.js";
 const GUI = {
     HomeMain(player) {
         let player_pos_data = player.getDynamicProperty("pos_data");
-        log(player_pos_data)
         if (player_pos_data == undefined) {
             player.setDynamicProperty("pos_data", JSON.stringify([]));
             player_pos_data = [];

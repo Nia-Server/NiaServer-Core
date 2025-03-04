@@ -195,13 +195,20 @@ export function pos_in_land(pos,dimid) {
  * @param {object} player
  */
 function player_in_index(player) {
+    let last_pos = player.getDynamicProperty("last_pos");
+    if (last_pos == undefined) {
+        last_pos = {
+            x: cfg.MainCityPos[0],
+            y: cfg.MainCityPos[1],
+            z: cfg.MainCityPos[2],
+            dimension: cfg.MainCityPos[3]
+        }
+        player.setDynamicProperty("last_pos",JSON.stringify(last_pos));
+    } else {
+        last_pos = JSON.parse(last_pos);
+    }
+
     let land = pos_in_land([player.location.x, player.location.y,player.location.z],player.dimension.id);
-    //获取玩家矢量速度
-    let player_velocity = player.getVelocity();
-    //获取玩家当前坐标
-    let player_pos = player.location;
-    //根据矢量速度推测玩家上一刻的坐标
-    let player_last_pos = {"x":player_pos.x - player_velocity.x * 10,"y":player_pos.y - player_velocity.y * 10,"z":player_pos.z - player_velocity.z * 10};
     if (player.hasTag("inland")) {
         //原来在领地中
         player.addTag("inland");
@@ -224,28 +231,41 @@ function player_in_index(player) {
         //原来不在领地中
         if (land) {
             //现在在领地中
-            player.addTag("inland");
             if (!in_allowlist(player,land)) {
                 if (!player.hasTag(cfg.OPTAG) && land.setup.VirtualFence) {
-                    player.teleport(player_last_pos);
+                    player.teleport({
+                        x: Number(last_pos.x),
+                        y: Number(last_pos.y),
+                        z: Number(last_pos.z)
+                    },{dimension: world.getDimension(last_pos.dimension)});
                     RunCmd(`title "${player.name}" title §e== ${land.land_name} §r§e==`);
                     RunCmd(`title "${player.name}" subtitle §c无法进入该领地！`);
                     player.playSound("random.levelup");
                 } else {
+                    player.addTag("inland");
                     RunCmd(`title "${player.name}" title §e== ${land.land_name} §r§e==`);
                     RunCmd(`title "${player.name}" subtitle §b您已进入他人领地之中！`);
                     if (player.hasTag(cfg.OPTAG)) {
                         player.sendMessage(`§c 尊敬的管理员，您正在玩家 ${land.owner_name} 的领地中，由于您是管理员，所以在领地中不会受到任何限制，但请注意不要破坏玩家领地！`);
                     }
+                    player.onScreenDisplay.setActionBar(`§b您正在 ${land.land_name} §r§b中`);
                     player.playSound("random.levelup");
                 }
             } else if (land.setup.ShowActionbar) {
+                player.addTag("inland");
                 RunCmd(`title "${player.name}" title §e== ${land.land_name} §r§e==`);
                 RunCmd(`title "${player.name}" subtitle §b欢迎回家 ╰(*°▽°*)╯`);
+                player.onScreenDisplay.setActionBar(`§a欢迎回到 ${land.land_name} §r§a中！`);
                 player.playSound("random.levelup");
             }
         }
     }
+    player.setDynamicProperty("last_pos",JSON.stringify({
+        x: player.location.x,
+        y: player.location.y,
+        z: player.location.z,
+        dimension: player.dimension.id
+    }));
 }
 
 /**
@@ -2667,7 +2687,7 @@ system.runInterval(() => {
         }
     }
 
-},1)
+},10)
 
 
 //玩家破坏方块监听
