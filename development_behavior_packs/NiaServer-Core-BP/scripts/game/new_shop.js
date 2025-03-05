@@ -545,12 +545,12 @@ const GUI = {
                     Main(player);
                     break;
                 case 1:
-                    player.sendMessage("§c您不在本次测试白名单之中，暂时无法使用！")
-                    // this.ShopPurchase(player);
+                    // player.sendMessage("§c您不在本次测试白名单之中，暂时无法使用！")
+                    this.ShopPurchase(player);
                     break;
                 case 2:
-                    player.sendMessage("§c您不在本次测试白名单之中，暂时无法使用！")
-                    // this.ShopRecycle(player);
+                    // player.sendMessage("§c您不在本次测试白名单之中，暂时无法使用！")
+                    this.ShopRecycle(player);
                     break;
             }
         })

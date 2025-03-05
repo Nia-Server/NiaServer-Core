@@ -22,7 +22,7 @@ var taskid = {"actionbar":{},"particle":{}};
 //领地系统性能部分配置
 //领地计算索引值基准距离
 //为了保证服务器的流畅运行,DISTANSE参数应满足：DISTANSE * DISTANCE 等于或稍稍小于 MAX_SQUARE，否则可能会导致插件包运行超时而引发“hang”报错
-const DISTANCE = 100;
+const DISTANCE = 150;
 //领地索引值是否将计算结果写入文件
 //评估中功能，暂时不启用
 //(推荐)不写入文件，每次启动服务器都会重新计算索引值，这样可以保证索引值的准确性，但是会增加服务器启动计算时间，可能触发watchdog
@@ -32,9 +32,9 @@ const DISTANCE = 100;
 
 //领地系统基础配置
 //单人最多圈地数量
-const MAX_LAND_NUM = 5;
+const MAX_LAND_NUM = 10;
 //2d/3d领地最大面积(两者均只计算xz平面所占面积)
-const MAX_SQUARE = 10000;
+const MAX_SQUARE = 22500;
 //2d/3d领地最小面积(两者均只计算xz平面所占面积)
 const MIN_SQUARE = 100;
 //领地价格计算指数
