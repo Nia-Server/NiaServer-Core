@@ -117,7 +117,7 @@ const MainGUI = {
             "opMenu": false
         },
         {
-            "name": "测试版商店\n引入全新的市场调控算法全新商店",
+            "name": "商店\n引入全新的市场调控算法全新商店",
             "icon": "textures/ui/icon_blackfriday",
             "type": "openGUI",
             "GUI": "NewShopGUI",

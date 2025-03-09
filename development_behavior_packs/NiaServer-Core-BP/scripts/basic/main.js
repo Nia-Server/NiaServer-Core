@@ -41,10 +41,10 @@ world.afterEvents.worldInitialize.subscribe((event) => {
 
 })
 
-world.beforeEvents.explosion.subscribe((event) => {
-    event.cancel = true;
-    world.sendMessage("§7腐竹拼劲全力阻止了一次爆炸...");
-})
+// world.beforeEvents.explosion.subscribe((event) => {
+//     event.cancel = true;
+//     world.sendMessage("§7腐竹拼劲全力阻止了一次爆炸...");
+// })
 
 
 system.runInterval(() => {
