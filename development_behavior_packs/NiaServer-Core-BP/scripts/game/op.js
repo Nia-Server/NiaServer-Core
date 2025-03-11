@@ -29,6 +29,7 @@ const GUI = {
         .button("管理圈地系统")
         .button("添加CDK码")
         .button("管理CDK码")
+        .button("管理玩家背包")
         .show(player).then(result => {
             switch (result.selection) {
                 case 0:
@@ -40,6 +41,10 @@ const GUI = {
                 case 2:
                     this.SetCDK(player);
                     break;
+                case 3:
+                    this.CheckPlayerBag(player);
+                    break;
+                
             }
         })
     },

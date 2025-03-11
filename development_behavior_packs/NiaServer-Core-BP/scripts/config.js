@@ -8,7 +8,7 @@ const config = {
     "OPTAG": "op",
     "OPMENUPassword": "123456",
     "USEQQBot": true,
-    "USEEventLog": true,
+    "USEEventLog": false,
     "MainCityPos": [233, 66, 667, "minecrft:overworld"],
     "HttpCfg": {
         "IPAddress": "http://127.0.0.1",

@@ -32,6 +32,7 @@ world.afterEvents.worldInitialize.subscribe(() => {
         } else if (result === -1) {
             error("【商店系统】在获取商店数据文件 shop_data.json 时与NIAHttpBOT连接失败")
         } else {
+            log(result)
             SellData = result.sell_data;
             RecycleData = result.recycle_data;
             log(`【商店系统】商店系统数据文件 shop_data.json 获取成功`)
@@ -373,7 +374,6 @@ var event = [
         "weights": 1,
         "description": "神秘国度开启带动基础与矿物齐涨",
         "influence_RN": {
-          "basic": [0.15, 0.25, 0.4, 1.6],
           "mineral": [0.1, 0.2, 0.4, 1.6]
         }
       },
@@ -381,55 +381,48 @@ var event = [
         "weights": 1,
         "description": "末影之门能量衰退导致武器与装备需求猛增",
         "influence_RN": {
-          "weapon": [0.2, 0.3, 0.4, 1.6],
-          "equipment": [0.2, 0.35, 0.4, 1.6]
+          "weapon": [0.2, 0.3, 0.4, 1.6]
         }
       },
       {
         "weights": 1,
         "description": "环保法案限制大型农业流水线，植物与红石类受损",
         "influence_RN": {
-          "vegetative": [-0.2, -0.1, 0.4, 1.6],
-          "redstone": [-0.25, -0.15, 0.4, 1.6]
+          "vegetative": [-0.2, -0.1, 0.4, 1.6]
         }
       },
       {
         "weights": 1,
-        "description": "高能附魔技术泄露引发附魔书与武器价格波动",
+        "description": "高能附魔技术泄露引发附魔书价格波动",
         "influence_RN": {
-          "enchanted_book": [0.15, 0.25, 0.4, 1.6],
-          "weapon": [-0.1, -0.05, 0.4, 1.6]
+          "enchanted_book": [0.15, 0.25, 0.4, 1.6]
         }
       },
       {
         "weights": 1,
         "description": "史诗级超级工程开启，方块与道具需求大增",
         "influence_RN": {
-          "block": [0.3, 0.5, 0.4, 1.6],
-          "prop": [0.2, 0.3, 0.4, 1.6]
+          "block": [0.3, 0.5, 0.4, 1.6]
         }
       },
       {
         "weights": 1,
         "description": "红石大战结束，剩余红石装备抛售导致崩盘",
         "influence_RN": {
-          "redstone": [-0.4, -0.2, 0.4, 1.6],
-          "equipment": [-0.2, -0.1, 0.4, 1.6]
+          "redstone": [-0.4, -0.2, 0.4, 1.6]
         }
       },
       {
         "weights": 2,
-        "description": "大规模怪物反攻，实体与武器类物品全面涨价",
+        "description": "大规模怪物反攻，实体类物品全面涨价",
         "influence_RN": {
-          "entity": [0.3, 0.5, 0.4, 1.6],
-          "weapon": [0.25, 0.4, 0.4, 1.6]
+          "entity": [0.3, 0.5, 0.4, 1.6]
         }
       },
       {
         "weights": 1,
         "description": "服务器极度内卷，基础与默认类物价均下滑",
         "influence_RN": {
-          "basic": [-0.3, -0.15, 0.4, 1.6],
           "default": [-0.2, -0.1, 0.4, 1.6]
         }
       }

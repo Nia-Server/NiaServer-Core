@@ -10,7 +10,8 @@ const fs = new ExternalFS();
 const USEQQBOT = cfg.USEQQBot;
 
 const BAN_WORDS = [
-    "女装"
+    "女装",
+    "tp"
 ];
 
 const command_list = [

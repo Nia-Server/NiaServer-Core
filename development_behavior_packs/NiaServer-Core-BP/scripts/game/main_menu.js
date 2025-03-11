@@ -6,7 +6,7 @@ import { cfg } from '../config.js'
 
 import { SetupGUI } from './setup.js';
 import { ShopGUI } from './shop.js';
-import { NewShopGUI } from './new_shop.js';
+// import { NewShopGUI } from './new_shop.js';
 import { TpaGUI } from './tpa.js';
 import { CDKGUI } from './cdk.js';
 import { TransferGUI } from './transfer.js';
@@ -19,7 +19,7 @@ import { RankingGUI } from './ranking.js';
 const MoneyScoreboardName = cfg.MoneyScoreboardName;
 
 
-const ALL_GUI = ["MainGUI","SetupGUI","ShopGUI","TpaGUI","CdkGUI","TransferGUI","OpGUI","MarketGUI","LandGUI","HomeGUI","NewShopGUI","RankingGUI"];
+const ALL_GUI = ["MainGUI","SetupGUI","ShopGUI","TpaGUI","CdkGUI","TransferGUI","OpGUI","MarketGUI","LandGUI","HomeGUI","RankingGUI"];
 
 //注册scriptevent
 system.afterEvents.scriptEventReceive.subscribe((event) => {
@@ -114,13 +114,6 @@ const MainGUI = {
             "icon": "textures/ui/icon_blackfriday",
             "type": "openGUI",
             "GUI": "ShopGUI",
-            "opMenu": false
-        },
-        {
-            "name": "商店\n引入全新的市场调控算法全新商店",
-            "icon": "textures/ui/icon_blackfriday",
-            "type": "openGUI",
-            "GUI": "NewShopGUI",
             "opMenu": false
         },
         {
@@ -263,7 +256,6 @@ function OpenGUI(player, GUINAME) {
         MainGUI: () => Main(player),
         SetupGUI: () => SetupGUI.SetupMain(player),
         ShopGUI: () => ShopGUI.ShopMain(player),
-        NewShopGUI: () => NewShopGUI.ShopMain(player),
         TpaGUI: () => TpaGUI.TpaMain(player),
         CdkGUI: () => CDKGUI(player),
         TransferGUI: () => TransferGUI.Transfer(player),
