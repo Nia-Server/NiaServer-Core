@@ -33,6 +33,7 @@ If you have any problems with this project, please contact the authors.
 //basic
 import './basic/checkupdate.js'
 import './basic/main.js'
+import './basic/enter_server.js'
 
 //game
 import './game/anticheats.js'

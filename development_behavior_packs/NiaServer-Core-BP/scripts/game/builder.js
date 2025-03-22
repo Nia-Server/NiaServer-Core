@@ -36,7 +36,7 @@ const GUI = {
             }
         })
     }
-} 
+}
 
 
 function particle_framework_x_z(player, min_pos, max_pos, base_pos) {

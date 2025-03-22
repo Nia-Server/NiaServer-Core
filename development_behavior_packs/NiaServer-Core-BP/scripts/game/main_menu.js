@@ -89,11 +89,25 @@ const MainGUI = {
             "opMenu": false
         },
         {
+            "name": "立即回城（仅OP）\n点击后立即返回全新主城",
+            "icon": "textures/blocks/chest_front",
+            "type": "runCmd",
+            "content": "tp @a[name=%playername%] 99735 55 284",
+            "opMenu": true
+        },
+        {
             "name": "调节生存模式\n不调节生存你怎么开始玩？",
             "icon": "textures/ui/controller_glyph_color",
             "type": "runCmd",
             "content": "gamemode s %playername%",
             "opMenu": false
+        },
+        {
+            "name": "调节观察者模式\n观察玩家吗，有意思",
+            "icon": "textures/ui/controller_glyph_color",
+            "type": "runCmd",
+            "content": "gamemode spectator %playername%",
+            "opMenu": true
         },
         {
             "name": "排行榜\n又到了我最喜欢的赛博斗蛐蛐时间",
