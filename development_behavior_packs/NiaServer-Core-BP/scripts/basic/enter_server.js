@@ -39,9 +39,38 @@ fs.GetJSONFileData("player_sign_in.json").then((response) => {
     }
 })
 
+//读取公告数据
+let announcement = {
+    "update_time": "20190128",
+    "content": [
+        "默认公告内容"
+    ]
+}
+
+fs.GetJSONFileData("announcement.json").then((response) => {
+    if (response === 0) {
+        fs.CreateNewJsonFile("announcement.json", announcement).then((result) => {
+            if (result === "success") {
+                log("【公告系统】在获取公告数据文件 announcement.json 不存在，已成功创建");
+            } else if (result === -1) {
+                error("【公告系统】在创建公告数据文件 announcement.json 时与NIAHttpBOT连接失败");
+            }
+        });
+    } else if (response === -1) {
+        error("【公告系统】在获取公告数据文件 announcement.json 时与NIAHttpBOT连接失败");
+    } else {
+        announcement = response;
+        log("【公告系统】成功获取公告数据文件 announcement.json");
+    }
+})
+
 world.afterEvents.playerSpawn.subscribe((event) => {
     if (event.initialSpawn) {
-        GUI.sign_in(event.player);
+        if (event.player.getDynamicProperty("has_read_announcement") != announcement.update_time) {
+            GUI.announcement(event.player);
+        } else {
+            GUI.sign_in(event.player);
+        }
     }
 })
 
@@ -205,9 +234,27 @@ const GUI = {
         })
     },
 
-    
+    announcement(player) {
+        let body_str = "";
+        announcement.content.forEach((line) => {
+            body_str += line + "\n";
+        })
+        const AnnouncementForm = new ActionFormData();
+        AnnouncementForm.title("公告");
+        AnnouncementForm.body(body_str);
+        AnnouncementForm.button("下一次不再显示");
+        AnnouncementForm.show(player).then((response) => {
+            if (response.cancelationReason == "UserBusy") {
+                this.announcement(player);
+            }
+            if (response.selection == 0) {
+                player.setDynamicProperty("has_read_announcement", announcement.update_time);
+                GUI.sign_in(player);
+            }
+        })
+    },
 
-    welcome_form(player) {
+    welcome(player) {
         const WelcomeForm = new ActionFormData();
         WelcomeForm.title("数据同步中提醒");
         WelcomeForm.body("\n\n\n您的玩家数据正在与其他服务器数据进行同步中，请稍后...\n\n\n" + system.currentTick);
@@ -220,8 +267,8 @@ const GUI = {
     }
 }
 
-world.afterEvents.itemUse.subscribe(event => {
-    if (event.itemStack.typeId == "minecraft:stick") {
-        GUI.sign_in(event.source);
-    }
-})
+// world.afterEvents.itemUse.subscribe(event => {
+//     if (event.itemStack.typeId == "minecraft:stick") {
+//         GUI.sign_in(event.source);
+//     }
+// })
