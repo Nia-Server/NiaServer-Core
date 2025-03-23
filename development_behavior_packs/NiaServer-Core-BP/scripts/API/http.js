@@ -6,6 +6,8 @@ const port = cfg.HttpCfg.Port;
 const qqbot_port = 10023;
 const server_url = cfg.HttpCfg.IPAddress;
 
+
+
 export class ExternalFS {
 
     /**
@@ -170,6 +172,29 @@ export class ExternalFS {
      * @return {String | Number} 覆写成功返回success，覆写失败返回0，服务器连接失败返回-1
      */
     OverwriteJsonFile(filename,filecontent) {
+        const reqOverwriteJsonFile = new HttpRequest(`${server_url}:${port}/OverwriteJsonFile`)
+        .setBody(JSON.stringify({"fileName":filename,"content":filecontent}))
+        .setMethod(HttpRequestMethod.Post)
+        .addHeader("Content-Type", "text/plain");
+        return new Promise(async (resolve) => {
+            const response = await http.request(reqOverwriteJsonFile);
+            if (response.status == 200) {
+                resolve(response.body);
+            } else if (response.status == 400) {
+                resolve(0);
+            } else {
+                resolve(-1);
+            }
+        })
+    }
+
+    /**
+     * 覆写json文件(BETA)
+     * @param {String} filename
+     * @param {Object} filecontent
+     * @return {String | Number} 覆写成功返回success，覆写失败返回0，服务器连接失败返回-1
+     */
+    OverwriteJsonFileBETA(filename,filecontent) {
         const reqOverwriteJsonFile = new HttpRequest(`${server_url}:${port}/OverwriteJsonFile`)
         .setBody(JSON.stringify({"fileName":filename,"content":filecontent}))
         .setMethod(HttpRequestMethod.Post)

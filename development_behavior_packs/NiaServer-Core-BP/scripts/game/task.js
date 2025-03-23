@@ -6,7 +6,7 @@ import { log } from "../API/logger.js";
 const task_data = {
     "ZHCN0100000":{
         "type": "text",
-        "name": "第一章 重生之我是鱼人",
+        "name": "第一章 如何在这个世界活下去？",
         "format": "center",
         "description": [
             "§b========================",

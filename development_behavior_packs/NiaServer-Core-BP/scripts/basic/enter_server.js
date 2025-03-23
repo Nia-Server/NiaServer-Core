@@ -1,6 +1,10 @@
-import { SignSide, system, world } from "@minecraft/server";
+import { system, world, ItemStack } from "@minecraft/server";
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui';
+import { ExternalFS } from "../API/http";
+import { log, error } from "../API/logger";
+import { cfg } from "../config";
 
+const fs = new ExternalFS();
 
 const player_data = {
     "scoreboard": {
@@ -15,9 +19,25 @@ const player_data = {
 
 }
 
-const player_sign_in = {
-    "NIANIANKNIA": []
-}
+let player_sign_in = {}
+
+fs.GetJSONFileData("player_sign_in.json").then((response) => {
+    if (response === 0) {
+        fs.CreateNewJsonFile("player_sign_in.json", {}).then((result) => {
+            if (result === "success") {
+                player_sign_in = {};
+                log("【签到系统】在获取签到系统数据文件 player_sign_in.json 不存在，已成功创建");
+            } else if (result === -1) {
+                error("【签到系统】在创建签到系统数据文件 player_sign_in.json 时与NIAHttpBOT连接失败");
+            }
+        });
+    } else if (response === -1) {
+        error("【签到系统】在获取签到系统数据文件 player_sign_in.json 时与NIAHttpBOT连接失败");
+    } else {
+        player_sign_in = response;
+        log("【签到系统】成功获取签到系统数据文件 player_sign_in.json");
+    }
+})
 
 world.afterEvents.playerSpawn.subscribe((event) => {
     if (event.initialSpawn) {
@@ -25,8 +45,11 @@ world.afterEvents.playerSpawn.subscribe((event) => {
     }
 })
 
-function generateCalendar() {
-    const date = new Date();
+
+function generateCalendar(player) {
+
+    const nowdate = new Date()
+    const date = new Date(nowdate.getTime() + 28800000);
     const currentYear = date.getFullYear();
     const currentMonth = date.getMonth(); // 0-11
     const currentDay = date.getDate();
@@ -52,7 +75,7 @@ function generateCalendar() {
 
     // 创建日期网格
     let dayCount = 1;
-    let weekStr = "         §c";
+    let weekStr = "         ";
 
     // 添加第一行前的空格
     for (let i = 0; i < firstDay; i++) {
@@ -64,11 +87,16 @@ function generateCalendar() {
         // 格式化日期，确保两位数
         const dayStr = dayCount < 10 ? "0" + dayCount : dayCount.toString();
 
-        // 给当天日期添加高亮
-        if (dayCount === currentDay) {
-            weekStr += `§e${dayStr}`;
+        if (player_sign_in[player.name] &&
+            player_sign_in[player.name][currentYear] &&
+            player_sign_in[player.name][currentYear][currentMonth + 1] &&
+            player_sign_in[player.name][currentYear][currentMonth + 1].includes(dayStr)) {
+            // 判断是否已签到
+            weekStr += `§a${dayStr}§r`;
+        } else if (dayCount === currentDay) {
+            weekStr += `§e${dayStr}§r`;
         } else {
-            weekStr += dayStr;
+            weekStr += `§c${dayStr}§r`;
         }
 
         // 添加空格或换行
@@ -85,19 +113,21 @@ function generateCalendar() {
 
     // 填充剩余周
     while (dayCount <= daysInMonth) {
-        weekStr = "         §c";
+        weekStr = "         ";
 
         for (let i = 0; i < 7 && dayCount <= daysInMonth; i++) {
             const dayStr = dayCount < 10 ? "0" + dayCount : dayCount.toString();
 
-            // 给当天日期添加高亮
-            if (dayCount === currentDay) {
-                weekStr += `§e${dayStr}`;
-            } else if (dayCount % 7 === 0 || dayCount % 7 === 6) {
-                // 周末使用不同颜色
-                weekStr += `§a${dayStr}`;
+            if (player_sign_in[player.name] &&
+                player_sign_in[player.name][currentYear] &&
+                player_sign_in[player.name][currentYear][currentMonth + 1] &&
+                player_sign_in[player.name][currentYear][currentMonth + 1].includes(dayStr)) {
+                // 判断是否已签到
+                weekStr += `§a${dayStr}§r`;
+            } else if (dayCount === currentDay) {
+                weekStr += `§e${dayStr}§r`;
             } else {
-                weekStr += dayStr;
+                weekStr += `§c${dayStr}§r`;
             }
 
             // 添加空格或换行
@@ -121,17 +151,61 @@ const GUI = {
     sign_in(player) {
         const SignForm = new ActionFormData();
         SignForm.title("§b每日签到");
-        SignForm.body(generateCalendar() +
-            "§6       今日签到奖励：" +
-            "§b 金币：233\n"
+        SignForm.body(generateCalendar(player) +
+            "§6       今日签到奖励： " +
+            "§b 金币 * 233 " +
+            "§b 钻石 * 1"
         );
         SignForm.button("签到")
         SignForm.show(player).then((response) => {
             if (response.cancelationReason == "UserBusy") {
-                GUI.sign_in(player);
+                this.sign_in(player);
+            }
+            if (response.selection == 0) {
+                let nowdate = new Date()
+                let date = new Date(nowdate.getTime() + 28800000);
+                let currentYear = date.getFullYear();
+                let currentMonth = date.getMonth(); // 0-11
+                let currentDay = date.getDate();
+                //确保日期是两位数
+                currentDay = currentDay < 10 ? "0" + currentDay : currentDay.toString();
+                if (player_sign_in[player.name] &&
+                    player_sign_in[player.name][currentYear] &&
+                    player_sign_in[player.name][currentYear][currentMonth + 1] &&
+                    player_sign_in[player.name][currentYear][currentMonth + 1].includes(currentDay)) {
+                    player.sendMessage("§c 您今天已经签到过了哦~");
+                    return;
+                } else {
+                    let old_player_sign_in = JSON.parse(JSON.stringify(player_sign_in));
+                    if (!player_sign_in[player.name]) {
+                        player_sign_in[player.name] = {};
+                    }
+                    if (!player_sign_in[player.name][currentYear]) {
+                        player_sign_in[player.name][currentYear] = {};
+                    }
+                    if (!player_sign_in[player.name][currentYear][currentMonth + 1]) {
+                        player_sign_in[player.name][currentYear][currentMonth + 1] = [];
+                    }
+                    player_sign_in[player.name][currentYear][currentMonth + 1].push(currentDay);
+                    fs.OverwriteJsonFile("player_sign_in.json", player_sign_in).then((response) => {
+                        if (response === "success") {
+                            player.sendMessage("§a 签到成功！祝您今日游戏愉快~");
+                            world.scoreboard.getObjective(cfg.MoneyScoreboardName).addScore(player, 233);
+                            let diamond = new ItemStack("minecraft:diamond", 1);
+                            diamond.setLore(["§6签到获得"]);
+                            player.getComponent("minecraft:inventory").container.addItem(diamond);
+                        } else {
+                            player.sendMessage("§a 签到失败，这不是您的错误，请联系管理员处理...");
+                            player_sign_in = old_player_sign_in;
+                        }
+                    })
+                }
+
             }
         })
     },
+
+    
 
     welcome_form(player) {
         const WelcomeForm = new ActionFormData();
@@ -146,8 +220,8 @@ const GUI = {
     }
 }
 
-// world.afterEvents.itemUse.subscribe(event => {
-//     if (event.itemStack.typeId == "minecraft:stick") {
-//         GUI.sign_in(event.source);
-//     }
-// })
+world.afterEvents.itemUse.subscribe(event => {
+    if (event.itemStack.typeId == "minecraft:stick") {
+        GUI.sign_in(event.source);
+    }
+})
