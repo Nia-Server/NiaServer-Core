@@ -89,6 +89,13 @@ const MainGUI = {
             "opMenu": false
         },
         {
+            "name": "任务系统\n教你如何玩转服务器",
+            "icon": "textures/ui/csb_purchase_amazondevicewarning",
+            "type": "runCmd",
+            "content": "tp @a[name=%playername%] 99735 55 284",
+            "opMenu": false
+        },
+        {
             "name": "调节生存模式\n不调节生存你怎么开始玩？",
             "icon": "textures/ui/controller_glyph_color",
             "type": "runCmd",
@@ -110,8 +117,15 @@ const MainGUI = {
             "opMenu": false
         },
         {
-            "name": "排行榜\n又到了我最喜欢的赛博斗蛐蛐时间",
+            "name": "服务器银行\n服务器官方银行提供一系列金融玩法",
             "icon": "textures/ui/MCoin",
+            "type": "openGUI",
+            "GUI": "RankingGUI",
+            "opMenu": false
+        },
+        {
+            "name": "排行榜\n又到了我最喜欢的赛博斗蛐蛐时间",
+            "icon": "textures/ui/csb_faq_pig",
             "type": "openGUI",
             "GUI": "RankingGUI",
             "opMenu": false

@@ -1,8 +1,11 @@
-import { world,Scoreboard } from "@minecraft/server";
+import { world,Scoreboard, system } from "@minecraft/server";
 import { ActionFormData,ModalFormData } from "@minecraft/server-ui";
 import { log } from "../API/logger.js";
 import { Main } from "./main_menu.js";
+import { cfg } from "../config.js";
 
+
+let n_coin = 200;
 
 const GUI = {
     Main(player) {
@@ -58,11 +61,82 @@ const GUI = {
             }
 
         })
+    },
+
+    BuyNCoin(player) {
+        //计算可以购买的最大N币数量
+        let can_buy_n_coin_num = Math.floor(world.scoreboard.getObjective(cfg.MoneyScoreboardName).getScore(player) / n_coin);
+        const BuyNCoinForm = new ModalFormData()
+        .title("N币购买")
+        .dropdown("§6请选择购买N币的类型：",["定期存法","活期存法"])
+        .toggle("§6购买美联储财产安心险", false)
+        .textField(`\n当前N币价格为：§e${n_coin}${cfg.MoneyShowName}§r每个\n您当前实际最多可以购买§e${can_buy_n_coin_num}§r个N币\n\n§6请输入您要购买的N币数量：`,`N币数量要求为正整数`)
+        .textField("\n§c定期存法§r请输入存入的具体时间\n"+
+            "§c活期存法§r§e可选§r输入保险时间，将在您设定的时间到达之后§c自动结算§r，在此之前您可以随意取出\n"+
+            "§c注意§r最少存入/保险时间为§c3h§r\n\n"+
+            "§6请输入存入/保险时间(单位：小时)：","时间要求为正整数")
+        .submitButton("确认购买信息")
+        .show(player).then((response) => {
+            if (response.canceled) {
+                player.sendMessage(" §c本次N币购买进程已取消");
+                return;
+            }
+            //开始数据合理性检查
+            if (response.formValues[2] == "") {
+                player.sendMessage(" §c您没有输入要购买的N币数量");
+                system.runTimeout(() => {this.BuyNCoin(player)},25)
+                return;
+            }
+            if (isNaN(response.formValues[2]) || response.formValues[2] <=0 || !Number.isInteger(Number(response.formValues[2]))) {
+                player.sendMessage(" §c您输入的N币数量格式不是正整数");
+                system.runTimeout(() => {this.BuyNCoin(player)},25)
+                return;
+            }
+            if (response.formValues[2] > can_buy_n_coin_num) {
+                player.sendMessage(" §c您购买的N币数量超过了您实际可以购买的最大数量");
+                system.runTimeout(() => {this.BuyNCoin(player)},25)
+                return;
+            }
+            if (response.formValues[3] == "" && response.formValues[0] == 0) {
+                player.sendMessage(" §c您没有输入存入时间");
+                system.runTimeout(() => {this.BuyNCoin(player)},25)
+                return;
+            }
+            if (isNaN(response.formValues[3]) || response.formValues[3] <=0) {
+                player.sendMessage(" §c您输入的存入/保险时间格式不是正数");
+                system.runTimeout(() => {this.BuyNCoin(player)},25)
+                return;
+            }
+            if (response.formValues[3] < 3) {
+                player.sendMessage(" §c您输入的存入/保险时间小于3h");
+                system.runTimeout(() => {this.BuyNCoin(player)},25)
+                return;
+            }
+            this.BuyNCoinConfirm(player, response.formValues[2], response.formValues[0] == 0 ? "定期存法" : "活期存法", response.formValues[3], response.formValues[1]);
+        })
+    },
+
+    //购买信息确认表单
+    BuyNCoinConfirm(player, n_coin_num, type, time, insurance) {
+        const BuyNCoinForm = new ActionFormData()
+        .title("N币购买信息确认")
+        .body(`§6您本次购买的N币数量为：§e${n_coin_num}§r个\n本次购买的存入方式为：§e${type}§r\n本次购买的存入/保险时间为：§e${time}§r小时\n本次购买是否购买美联储财产安心险：§e${insurance?"是":"否"}§r`)
+        .button("确认购买")
+        .button("取消购买")
+        .show(player).then((response) => {
+            if (response.canceled) {
+                player.sendMessage(" §c本次N币购买进程已取消");
+                return;
+            }
+            if (response.submitted) {
+                player.sendMessage(" §a您的N币购买信息已提交，正在处理中，请稍后");
+            }
+        })
     }
 }
 
 world.afterEvents.itemUse.subscribe(event => {
     if (event.itemStack.typeId == "minecraft:stick") {
-        GUI.Main(event.source);
+        GUI.BuyNCoin(event.source);
     }
 })

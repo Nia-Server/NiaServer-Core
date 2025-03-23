@@ -717,7 +717,7 @@ const GUI = {
                 return;
             }
             const input = parseInt(result.formValues[0]);
-            if (isNaN(input) || input <= 0) {
+            if (isNaN(input) || input <= 0 || !Number.isInteger(Number(input))) {
                 player.sendMessage(`§c 错误数字格式，请重新输入！`);
                 system.runTimeout(() => this.ShopBuy(player, index1, index2), 20);
                 return;
@@ -937,7 +937,7 @@ const GUI = {
                             return;
                         }
                         const input = parseInt(result.formValues[0]);
-                        if (isNaN(input) || input <= 0) {
+                        if (isNaN(input) || input <= 0 || !Number.isInteger(Number(input))) {
                             player.sendMessage(`§c 错误数字格式，请重新输入！`);
                             system.runTimeout(() => this.ShopSell(player, index1, index2), 20);
                             return;
