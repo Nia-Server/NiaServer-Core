@@ -97,21 +97,37 @@ const GUI = {
                 system.runTimeout(() => {this.BuyNCoin(player)},25)
                 return;
             }
-            if (response.formValues[3] == "" && response.formValues[0] == 0) {
-                player.sendMessage(" §c您没有输入存入时间");
-                system.runTimeout(() => {this.BuyNCoin(player)},25)
-                return;
+            if (response.formValues[0] == 0) {
+                if (response.formValues[3] == "" && response.formValues[0] == 0) {
+                    player.sendMessage(" §c您没有输入存入时间");
+                    system.runTimeout(() => {this.BuyNCoin(player)},25)
+                    return;
+                }
+                if (isNaN(response.formValues[3]) || response.formValues[3] <=0) {
+                    player.sendMessage(" §c您输入的存入时间格式不是正数");
+                    system.runTimeout(() => {this.BuyNCoin(player)},25)
+                    return;
+                }
+                if (response.formValues[3] < 3) {
+                    player.sendMessage(" §c您输入的存入时间小于3h");
+                    system.runTimeout(() => {this.BuyNCoin(player)},25)
+                    return;
+                }
             }
-            if (isNaN(response.formValues[3]) || response.formValues[3] <=0) {
-                player.sendMessage(" §c您输入的存入/保险时间格式不是正数");
-                system.runTimeout(() => {this.BuyNCoin(player)},25)
-                return;
+            if (response.formValues[0] == 1) {
+                if (response.formValues[3] == "") return;
+                if (isNaN(response.formValues[3]) || response.formValues[3] <=0) {
+                    player.sendMessage(" §c您输入的保险时间格式不是正数");
+                    system.runTimeout(() => {this.BuyNCoin(player)},25)
+                    return;
+                }
+                if (response.formValues[3] < 3) {
+                    player.sendMessage(" §c您输入的保险时间小于3h");
+                    system.runTimeout(() => {this.BuyNCoin(player)},25)
+                    return;
+                }
             }
-            if (response.formValues[3] < 3) {
-                player.sendMessage(" §c您输入的存入/保险时间小于3h");
-                system.runTimeout(() => {this.BuyNCoin(player)},25)
-                return;
-            }
+
             this.BuyNCoinConfirm(player, response.formValues[2], response.formValues[0] == 0 ? "定期存法" : "活期存法", response.formValues[3], response.formValues[1]);
         })
     },
@@ -120,7 +136,7 @@ const GUI = {
     BuyNCoinConfirm(player, n_coin_num, type, time, insurance) {
         const BuyNCoinForm = new ActionFormData()
         .title("N币购买信息确认")
-        .body(`§6您本次购买的N币数量为：§e${n_coin_num}§r个\n本次购买的存入方式为：§e${type}§r\n本次购买的存入/保险时间为：§e${time}§r小时\n本次购买是否购买美联储财产安心险：§e${insurance?"是":"否"}§r`)
+        .body(`\n§r您本次购买的N币数量为：§e${n_coin_num}§r个\n\n本次购买的存入方式为：§e${type}§r\n\n本次购买的存入/保险时间为：§e${time}§r小时\n\n本次购买是否购买美联储财产安心险：§e${insurance?"是":"否"}§r`)
         .button("确认购买")
         .button("取消购买")
         .show(player).then((response) => {

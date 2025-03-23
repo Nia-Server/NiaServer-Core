@@ -14,7 +14,6 @@ world.afterEvents.worldInitialize.subscribe((event) => {
 
 })
 
-
 const side_bar = [
     {
         "type" : "text",
