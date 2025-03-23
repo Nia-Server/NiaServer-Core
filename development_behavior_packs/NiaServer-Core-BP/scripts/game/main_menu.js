@@ -15,6 +15,7 @@ import { MarketGUI } from './market.js';
 import { LandGUI } from './land.js';
 import { HomeGUI } from './home.js';
 import { RankingGUI } from './ranking.js';
+import { EnterGUI } from '../basic/enter_server.js';
 
 const MoneyScoreboardName = cfg.MoneyScoreboardName;
 
@@ -75,25 +76,17 @@ const MainGUI = {
             "§eHi! §l§6%playername% §r§e欢迎回来！\n"+
             "§e您目前金币余额： §6§l*money*\n"+
             "§r§e您目前在线总时长为： §6§l*time*\n"+
-            "§r§e当前物价指数为： §6§l%RN%\n"+
             "§r§l===========================\n"+
             "§r§c§l游玩中有问题找腐竹反馈！\n"+
             "祝您游玩愉快！\n"+
             "§r§l===========================",
     "buttons": [
         {
-            "name": "立即回城\n点击后立即返回主城",
-            "icon": "textures/blocks/chest_front",
-            "type": "runCmd",
-            "content": "tp @a[name=%playername%] 233 65 667",
-            "opMenu": false
-        },
-        {
-            "name": "立即回城（仅OP）\n点击后立即返回全新主城",
+            "name": "立即回城\n点击后立即返回全新主城",
             "icon": "textures/blocks/chest_front",
             "type": "runCmd",
             "content": "tp @a[name=%playername%] 99735 55 284",
-            "opMenu": true
+            "opMenu": false
         },
         {
             "name": "调节生存模式\n不调节生存你怎么开始玩？",
@@ -103,24 +96,24 @@ const MainGUI = {
             "opMenu": false
         },
         {
-            "name": "调节观察者模式\n观察玩家吗，有意思",
-            "icon": "textures/ui/controller_glyph_color",
-            "type": "runCmd",
-            "content": "gamemode spectator %playername%",
-            "opMenu": true
+            "name": "服务器公告\n查看最新的服务器公告",
+            "icon": "textures/ui/comment",
+            "type": "openGUI",
+            "GUI": "AnnouncementGUI",
+            "opMenu": false
+        },
+        {
+            "name": "每日签到\n签到领取每日奖励",
+            "icon": "textures/ui/icon_cake",
+            "type": "openGUI",
+            "GUI": "SignInGUI",
+            "opMenu": false
         },
         {
             "name": "排行榜\n又到了我最喜欢的赛博斗蛐蛐时间",
             "icon": "textures/ui/MCoin",
             "type": "openGUI",
             "GUI": "RankingGUI",
-            "opMenu": false
-        },
-        {
-            "name": "设置\n在这里修改所有设置",
-            "icon": "textures/ui/automation_glyph_color",
-            "type": "openGUI",
-            "GUI": "SetupGUI",
             "opMenu": false
         },
         {
@@ -151,13 +144,7 @@ const MainGUI = {
             "GUI": "TpaGUI",
             "opMenu": false
         },
-        {
-            "name": "兑换码系统\n礼品码在这里输入后即可兑换",
-            "icon": "textures/ui/gift_square",
-            "type": "openGUI",
-            "GUI": "CdkGUI",
-            "opMenu": false
-        },
+
         {
             "name": "交易市场\n随心所欲，自由交易！",
             "icon": "textures/ui/enable_editor",
@@ -177,6 +164,20 @@ const MainGUI = {
             "icon": "textures/ui/icon_best3",
             "type": "openGUI",
             "GUI": "TransferGUI",
+            "opMenu": false
+        },
+        {
+            "name": "兑换码系统\n礼品码在这里输入后即可兑换",
+            "icon": "textures/ui/gift_square",
+            "type": "openGUI",
+            "GUI": "CdkGUI",
+            "opMenu": false
+        },
+        {
+            "name": "设置\n在这里修改所有设置",
+            "icon": "textures/ui/automation_glyph_color",
+            "type": "openGUI",
+            "GUI": "SetupGUI",
             "opMenu": false
         },
         {
@@ -277,7 +278,9 @@ function OpenGUI(player, GUINAME) {
         MarketGUI: () => MarketGUI.Main(player),
         LandGUI: () => LandGUI.Main(player),
         HomeGUI: () => HomeGUI.HomeMain(player),
-        RankingGUI: () => RankingGUI.Main(player)
+        RankingGUI: () => RankingGUI.Main(player),
+        SignInGUI: () => EnterGUI.SignIn(player),
+        AnnouncementGUI: () => EnterGUI.Announcement(player)
     }
     ;(GUIs[GUINAME] || (() => {
         player.sendMessage("§c 未找到相应的GUI，请联系管理员！")

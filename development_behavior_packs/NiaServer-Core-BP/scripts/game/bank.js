@@ -61,8 +61,8 @@ const GUI = {
     }
 }
 
-// world.afterEvents.itemUse.subscribe(event => {
-//     if (event.itemStack.typeId == "minecraft:stick") {
-//         GUI.Main(event.source);
-//     }
-// })
+world.afterEvents.itemUse.subscribe(event => {
+    if (event.itemStack.typeId == "minecraft:stick") {
+        GUI.Main(event.source);
+    }
+})

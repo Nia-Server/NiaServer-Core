@@ -44,7 +44,7 @@ import './game/register.js'
 import './game/ranking.js'
 import './game/back.js'
 import './game/shop.js'
-// import './game/bank.js'
+import './game/bank.js'
 // import './game/builder.js'
 
 //qqBot

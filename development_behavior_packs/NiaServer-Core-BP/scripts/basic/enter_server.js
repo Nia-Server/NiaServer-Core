@@ -67,9 +67,9 @@ fs.GetJSONFileData("announcement.json").then((response) => {
 world.afterEvents.playerSpawn.subscribe((event) => {
     if (event.initialSpawn) {
         if (event.player.getDynamicProperty("has_read_announcement") != announcement.update_time) {
-            GUI.announcement(event.player);
+            EnterGUI.Announcement(event.player);
         } else {
-            GUI.sign_in(event.player);
+            EnterGUI.SignIn(event.player);
         }
     }
 })
@@ -176,8 +176,8 @@ function generateCalendar(player) {
     return calendarStr;
 }
 
-const GUI = {
-    sign_in(player) {
+export const EnterGUI = {
+    SignIn(player) {
         const SignForm = new ActionFormData();
         SignForm.title("§b每日签到");
         SignForm.body(generateCalendar(player) +
@@ -188,7 +188,7 @@ const GUI = {
         SignForm.button("签到")
         SignForm.show(player).then((response) => {
             if (response.cancelationReason == "UserBusy") {
-                this.sign_in(player);
+                this.SignIn(player);
             }
             if (response.selection == 0) {
                 let nowdate = new Date()
@@ -234,7 +234,7 @@ const GUI = {
         })
     },
 
-    announcement(player) {
+    Announcement(player) {
         let body_str = "";
         announcement.content.forEach((line) => {
             body_str += line + "\n";
@@ -245,16 +245,16 @@ const GUI = {
         AnnouncementForm.button("下一次不再显示");
         AnnouncementForm.show(player).then((response) => {
             if (response.cancelationReason == "UserBusy") {
-                this.announcement(player);
+                this.Announcement(player);
             }
             if (response.selection == 0) {
                 player.setDynamicProperty("has_read_announcement", announcement.update_time);
-                GUI.sign_in(player);
+                EnterGUI.SignIn(player);
             }
         })
     },
 
-    welcome(player) {
+    Welcome(player) {
         const WelcomeForm = new ActionFormData();
         WelcomeForm.title("数据同步中提醒");
         WelcomeForm.body("\n\n\n您的玩家数据正在与其他服务器数据进行同步中，请稍后...\n\n\n" + system.currentTick);

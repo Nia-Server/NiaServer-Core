@@ -59,8 +59,8 @@ const GUI = {
         const SetupForm = new ActionFormData()
         .title("传送点设置")
         .button("返回上一级菜单","textures/ui/wysiwyg_reset")
-        .button("添加传送点")
-        .button("删除传送点")
+        .button("添加传送点", "textures/ui/color_plus")
+        .button("删除传送点", "textures/ui/trash")
         .show(player).then((response) => {
             if (response.canceled) return;
             if (response.selection == 0) {
