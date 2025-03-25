@@ -80,7 +80,7 @@ const GUI = {
                 MarketData = result;
                 const MainForm = new ActionFormData()
                     .title("§e§l服务器交易市场")
-                    .body("§c欢迎光临服务器交易市场\n市场中所有物品均由玩家自主上架，定价！")
+                    .body("§c欢迎光临服务器交易市场\n市场中所有物品均由玩家自主上架，定价！\n请勿上架潜影箱，因此造成的物品丢失概不负责！")
                     .button("浏览市场")
                     .button("上架商品")
                     .button("管理商品")

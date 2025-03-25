@@ -4,6 +4,7 @@ import { RunCmd,GetScore } from '../API/game.js';
 import { Main } from './main_menu.js'
 import { cfg } from '../config.js'
 import { LandGUI } from './land.js'
+import { WarpGUI } from './warp.js';
 
 
 const GUI = {
@@ -27,6 +28,7 @@ const GUI = {
         .title("管理员操作系统")
         .body("§r§l===========================" + "\n§eHi！ " + player.nameTag + " 欢迎使用！" + "\n§r§l===========================")
         .button("管理圈地系统")
+        .button("管理公共传送点")
         .button("添加CDK码")
         .button("管理CDK码")
         .button("管理玩家背包")
@@ -36,12 +38,15 @@ const GUI = {
                     LandGUI.AdminMain(player);
                     break;
                 case 1:
-                    this.AddCDKMain(player);
+                    WarpGUI.SetUP(player);
                     break;
                 case 2:
-                    this.SetCDK(player);
+                    this.AddCDKMain(player);
                     break;
                 case 3:
+                    this.SetCDK(player);
+                    break;
+                case 4:
                     this.CheckPlayerBag(player);
                     break;
                 

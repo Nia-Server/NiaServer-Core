@@ -240,7 +240,6 @@ function player_in_index(player) {
                     },{dimension: world.getDimension(last_pos.dimension)});
                     RunCmd(`title "${player.name}" title §e== ${land.land_name} §r§e==`);
                     RunCmd(`title "${player.name}" subtitle §c无法进入该领地！`);
-                    player.playSound("random.levelup");
                 } else {
                     player.addTag("inland");
                     RunCmd(`title "${player.name}" title §e== ${land.land_name} §r§e==`);

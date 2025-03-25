@@ -6,7 +6,6 @@ import { cfg } from '../config.js'
 
 import { SetupGUI } from './setup.js';
 import { ShopGUI } from './shop.js';
-// import { NewShopGUI } from './new_shop.js';
 import { TpaGUI } from './tpa.js';
 import { CDKGUI } from './cdk.js';
 import { TransferGUI } from './transfer.js';
@@ -16,6 +15,8 @@ import { LandGUI } from './land.js';
 import { HomeGUI } from './home.js';
 import { RankingGUI } from './ranking.js';
 import { EnterGUI } from '../basic/enter_server.js';
+import { BankGUI } from './bank.js';
+import { WarpGUI } from './warp.js';
 
 const MoneyScoreboardName = cfg.MoneyScoreboardName;
 
@@ -82,10 +83,10 @@ const MainGUI = {
             "§r§l===========================",
     "buttons": [
         {
-            "name": "立即回城\n点击后立即返回全新主城",
-            "icon": "textures/blocks/chest_front",
-            "type": "runCmd",
-            "content": "tp @a[name=%playername%] 99735 55 284",
+            "name": "公共传送点\n传送到服务器的公共传送点",
+            "icon": "textures/ui/accessibility_glyph_color",
+            "type": "openGUI",
+            "GUI": "WarpGUI",
             "opMenu": false
         },
         {
@@ -120,7 +121,7 @@ const MainGUI = {
             "name": "服务器银行\n服务器官方银行提供一系列金融玩法",
             "icon": "textures/ui/MCoin",
             "type": "openGUI",
-            "GUI": "RankingGUI",
+            "GUI": "BankGUI",
             "opMenu": false
         },
         {
@@ -294,7 +295,9 @@ function OpenGUI(player, GUINAME) {
         HomeGUI: () => HomeGUI.HomeMain(player),
         RankingGUI: () => RankingGUI.Main(player),
         SignInGUI: () => EnterGUI.SignIn(player),
-        AnnouncementGUI: () => EnterGUI.Announcement(player)
+        AnnouncementGUI: () => EnterGUI.Announcement(player),
+        BankGUI: () => BankGUI.Main(player),
+        WarpGUI: () => WarpGUI.Main(player)
     }
     ;(GUIs[GUINAME] || (() => {
         player.sendMessage("§c 未找到相应的GUI，请联系管理员！")

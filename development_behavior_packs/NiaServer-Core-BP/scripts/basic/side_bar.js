@@ -7,9 +7,6 @@ world.afterEvents.worldInitialize.subscribe((event) => {
         world.scoreboard.addObjective("side_bar","§b==§1N§2i§3aS§4e§5r§6v§7e§8r§b==")
         world.setDynamicProperty("state",true);
         world.scoreboard.setObjectiveAtDisplaySlot("Sidebar",{"objective": world.scoreboard.getObjective("side_bar")});
-    } else if (world.getDynamicProperty("state") == true) {
-        world.scoreboard.addObjective("side_bar","§b==§1N§2i§3aS§4e§5r§6v§7e§8r§b==")
-        world.scoreboard.setObjectiveAtDisplaySlot("Sidebar",{"objective": world.scoreboard.getObjective("side_bar")});
     }
 
 })
@@ -29,7 +26,6 @@ let now_time = Date.now();
 system.runInterval(()=>{
     if (Date.now()-now_time<1000) return;
     world.scoreboard.removeObjective("side_bar");
-    // Create an array of color sequences for the rainbow effect
     const colorPatterns = [
         "§4N§ci§6a§eS§2e§ar§bv§3e§1r",
         "§1N§4i§ca§6S§ee§2r§av§be§3r",
@@ -50,13 +46,10 @@ system.runInterval(()=>{
     world.scoreboard.getObjective("side_bar").setScore("   §c-§b----------§c-",0);
     world.scoreboard.getObjective("side_bar").setScore("§b      V8-海洋生存",1);
     world.scoreboard.getObjective("side_bar").setScore("§b   ------------",2);
-    //时间
     let tick = system.currentTick;
     world.scoreboard.getObjective("side_bar").setScore("§e      TPS： §c"+((tick-last_tick)/((Date.now()-now_time)/1000)).toFixed(2),3);
     now_time = Date.now();
     last_tick = tick;
-
-    //显示 当前几点几分几秒,形式如 00:00:00
     let now_date = new Date();
     let date = new Date(now_date.getTime() + 28800000);
     let hour = date.getHours();

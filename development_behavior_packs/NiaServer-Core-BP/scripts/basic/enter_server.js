@@ -219,6 +219,7 @@ export const EnterGUI = {
                     fs.OverwriteJsonFile("player_sign_in.json", player_sign_in).then((response) => {
                         if (response === "success") {
                             player.sendMessage("§a 签到成功！祝您今日游戏愉快~");
+                            player.playSound("random.levelup");
                             world.scoreboard.getObjective(cfg.MoneyScoreboardName).addScore(player, 233);
                             let diamond = new ItemStack("minecraft:diamond", 1);
                             diamond.setLore(["§6签到获得"]);
@@ -242,17 +243,20 @@ export const EnterGUI = {
         const AnnouncementForm = new ActionFormData();
         AnnouncementForm.title("公告");
         AnnouncementForm.body(body_str);
+        AnnouncementForm.button("我知道了");
         AnnouncementForm.button("下一次不再显示");
         AnnouncementForm.show(player).then((response) => {
             if (response.cancelationReason == "UserBusy") {
                 this.Announcement(player);
             }
-            if (response.selection == 0) {
+            if (response.selection == 1) {
                 player.setDynamicProperty("has_read_announcement", announcement.update_time);
                 EnterGUI.SignIn(player);
             }
         })
     },
+
+
 
     Welcome(player) {
         const WelcomeForm = new ActionFormData();

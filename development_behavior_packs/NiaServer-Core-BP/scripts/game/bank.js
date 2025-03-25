@@ -3,17 +3,43 @@ import { ActionFormData,ModalFormData } from "@minecraft/server-ui";
 import { log } from "../API/logger.js";
 import { Main } from "./main_menu.js";
 import { cfg } from "../config.js";
+import { GetTime } from "../API/game.js";
 
 
 let n_coin = 200;
 
-const GUI = {
+
+let money_list = {
+    "NIANIANKNIA" : 1
+}
+
+let n_coin_data = {
+    "NIANIANKNIA" : {
+        "type": "活期存法",
+        "save_time": 3.5,
+        "buy_coin_num": 100,
+        "insurance": false,
+        "buy_time": "2025-03-25 16:00:00",
+        "change_log" : [
+            {
+                "time": "2025-03-25 16:12:00",
+                "raw_coin_num": 100,
+                "random_num": 1.5,
+                "after_change_coin_num": 150
+            }
+        ]
+    }
+}
+
+export const BankGUI = {
     Main(player) {
         const MainForm = new ActionFormData()
         .title("NIA服务器人民银行")
         .body("腐竹提醒您：投资有风险，入市需谨慎")
         .button("返回上一页")
-        .button("购买虚拟货币N币\n三小时起存，设定时间自动结算！")
+        .button("查看理财盈亏榜")
+        .button("购买N币\n三小时起存，设定时间自动结算！")
+        .button("结算N币\n结算后将会获得相应的金币")
         .show(player).then((response) => {
             if (response.canceled) return;
             if (response.selection == 0){
@@ -21,6 +47,15 @@ const GUI = {
                 return;
             }
             if (response.selection == 1){
+                this.Ranking(player);
+                return;
+            }
+            if (response.selection == 2){
+                //检查是否有N币数据
+                if (n_coin_data[player.name] != undefined) {
+                    player.sendMessage(" §c您有未结算的N币数据，请先结算后再返回");
+                    return;
+                }
                 this.BuyNCoinInfo(player);
                 return;
             }
@@ -144,12 +179,30 @@ const GUI = {
                 player.sendMessage(" §c本次N币购买进程已取消");
                 return;
             }
-            if (response.submitted) {
-                player.sendMessage(" §a您的N币购买信息已提交，正在处理中，请稍后");
+            if (response.selection == 0) {
+                //扣除金币
+                world.scoreboard.getObjective(cfg.MoneyScoreboardName).addScore(player, -n_coin_num * n_coin);
+                //建立N币数据
+                n_coin_data[player.name] = {
+                    "type": type,
+                    "save_time": time,
+                    "buy_coin_num": n_coin_num,
+                    "insurance": insurance,
+                    "buy_time": GetTime(),
+                    "change_log" : []
+                }
+                player.sendMessage(` §c您已成功购买${n_coin_num}个N币，存入方式为${type}，存入时间为${time}小时，是否购买美联储财产安心险：${insurance?"是":"否"}`);
             }
         })
-    }
+    },
+
+    //购买N币
 }
+
+
+system.runInterval(() => {
+
+},)
 
 world.afterEvents.itemUse.subscribe(event => {
     if (event.itemStack.typeId == "minecraft:stick") {
