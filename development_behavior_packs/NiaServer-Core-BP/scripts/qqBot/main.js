@@ -61,7 +61,7 @@ if (USEQQBOT) {
     }
 
 
-    world.afterEvents.worldInitialize.subscribe((event) => {
+    system.run((event) => {
         bot.send_group_msg(`服务器已与机器人成功连接！\nBDS版本:${BDS_VERSION}\nCore版本:${VERSION}\n上次更新时间:${LAST_UPGRATE}`,QQGroup).then((result) => {
             console.log(result);
         })

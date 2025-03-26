@@ -437,124 +437,124 @@ export const BankGUI = {
 let count = 0;
 let average = 0;
 
-system.runInterval(() => {
-    //遍历所有N币数据
-    //获取N币数据
-    let player_n_coin_data = n_coin_data["123456"];
-    //获取当前时间
-    let now_time = Date.now();
-    //获取当时购买时间
-    let buy_time = player_n_coin_data.buy_time;
-    //获取存入时间（小时）
-    let save_time = player_n_coin_data.save_time;
-    //计算存入的总时间（小时）
-    // let total_time = (now_time - buy_time) / 3600000;
-    let total_time = 3;
+// system.runInterval(() => {
+//     //遍历所有N币数据
+//     //获取N币数据
+//     let player_n_coin_data = n_coin_data["123456"];
+//     //获取当前时间
+//     let now_time = Date.now();
+//     //获取当时购买时间
+//     let buy_time = player_n_coin_data.buy_time;
+//     //获取存入时间（小时）
+//     let save_time = player_n_coin_data.save_time;
+//     //计算存入的总时间（小时）
+//     // let total_time = (now_time - buy_time) / 3600000;
+//     let total_time = 3;
 
-    if (player_n_coin_data == undefined) {
-        player.sendMessage(" §c您当前没有在进行结算的N币，请先购买N币后再来查看");
-        system.runTimeout(() => {this.Main(player)},25);
-        return;
-    }
+//     if (player_n_coin_data == undefined) {
+//         player.sendMessage(" §c您当前没有在进行结算的N币，请先购买N币后再来查看");
+//         system.runTimeout(() => {this.Main(player)},25);
+//         return;
+//     }
 
-    //计算剩余结算次数
-    let total_count = 0;
-    //save_time为-1表示活期存法且不设定保险时间
-    if (total_time < save_time || save_time == -1) {
-        total_count = Math.floor(total_time / 0.2);
-    } else {
-        total_count = Math.floor(save_time / 0.2);
-        player_n_coin_data.status = "finsh";
-    }
-    //读取变动记录，看看已经结算了多少次，然后进行剩余次数的结算
-    total_count = total_count - player_n_coin_data.change_log.length;
-    //开始三个小时内的结算
-    let count_3h = 0;
-    let random_num = 0;
-    if (player_n_coin_data.change_log.length <= 15) {
-        count_3h = 15 - player_n_coin_data.change_log.length;
-        if (count_3h > total_count) count_3h = total_count;
-        for (let i = 0; i < count_3h; i++) {
-            if (player_n_coin_data.status == "break") break;
-            random_num = Math.random() * 1.999 + 0.001;
-            // log(`当前随机数为${random_num}`);
-            player_n_coin_data.change_log.push({
-                "before_coin_num": player_n_coin_data.now_coin_num,
-                "after_coin_num": player_n_coin_data.now_coin_num * random_num});
-            player_n_coin_data.now_coin_num = player_n_coin_data.now_coin_num * random_num;
-            if (random_num < 0.05) player_n_coin_data.status = "break";
-        }
-    }
-    //剩余次数的结算（三个小时后的）
-    total_count = total_count - count_3h;
-    for (let i = 0; i < total_count; i++) {
-        if (player_n_coin_data.status == "break") break;
-        // let Z = Math.ceil((now_time - buy_time) / 3600000 - 3);
-        let Z = Math.ceil(i / 4) / 2;
-        if (player_n_coin_data.type == "活期存法") Z = Z / 2;
-        if (Z == 0) Z = 1;
-        // log(`Z值为${Z}`);
-        //计算Y值
-        //计算各区间的概率调整
-        //基础概率是50%(0.5)对半分
-        //每过一小时，[0,1]区间概率增加8%，[1,2+Z]区间相应减少
-        let base_rate = 0.5;
+//     //计算剩余结算次数
+//     let total_count = 0;
+//     //save_time为-1表示活期存法且不设定保险时间
+//     if (total_time < save_time || save_time == -1) {
+//         total_count = Math.floor(total_time / 0.2);
+//     } else {
+//         total_count = Math.floor(save_time / 0.2);
+//         player_n_coin_data.status = "finsh";
+//     }
+//     //读取变动记录，看看已经结算了多少次，然后进行剩余次数的结算
+//     total_count = total_count - player_n_coin_data.change_log.length;
+//     //开始三个小时内的结算
+//     let count_3h = 0;
+//     let random_num = 0;
+//     if (player_n_coin_data.change_log.length <= 15) {
+//         count_3h = 15 - player_n_coin_data.change_log.length;
+//         if (count_3h > total_count) count_3h = total_count;
+//         for (let i = 0; i < count_3h; i++) {
+//             if (player_n_coin_data.status == "break") break;
+//             random_num = Math.random() * 2;
+//             // log(`当前随机数为${random_num}`);
+//             player_n_coin_data.change_log.push({
+//                 "before_coin_num": player_n_coin_data.now_coin_num,
+//                 "after_coin_num": player_n_coin_data.now_coin_num * random_num});
+//             player_n_coin_data.now_coin_num = player_n_coin_data.now_coin_num * random_num;
+//             if (random_num < 0.05) player_n_coin_data.status = "break";
+//         }
+//     }
+//     //剩余次数的结算（三个小时后的）
+//     total_count = total_count - count_3h;
+//     for (let i = 0; i < total_count; i++) {
+//         if (player_n_coin_data.status == "break") break;
+//         // let Z = Math.ceil((now_time - buy_time) / 3600000 - 3);
+//         let Z = Math.ceil(i / 4) / 2;
+//         if (player_n_coin_data.type == "活期存法") Z = Z / 2;
+//         if (Z == 0) Z = 1;
+//         // log(`Z值为${Z}`);
+//         //计算Y值
+//         //计算各区间的概率调整
+//         //基础概率是50%(0.5)对半分
+//         //每过一小时，[0,1]区间概率增加8%，[1,2+Z]区间相应减少
+//         let base_rate = 0.5;
 
-        //计算经过整数小时的概率调整
-        let hour = Math.floor(i * 0.2);
-        if (hour > 0) {
-            if (player_n_coin_data.type == "活期存法") base_rate = Math.min(1,base_rate + 0.1 * (hour));
-            if (player_n_coin_data.type == "定期存法") base_rate = Math.min(1,base_rate + 0.08 * (hour));
-        }
-        // log(`当前概率为${base_rate}`);
-        //根据调整后的概率计算Y值
-        if (Math.random() < base_rate) {
-            //在 [0.001, 0.8] 区间内随机取值
-            if (player_n_coin_data.type == "活期存法") random_num = Math.random() * 0.79999 + 0.00001;
-            //在 [0.001, 1] 区间内随机取值
-            if (player_n_coin_data.type == "定期存法") random_num = Math.random() * 0.99999 + 0.00001;
-            // log(`高：当前随机数为${random_num}`);
-            player_n_coin_data.change_log.push({
-                "before_coin_num": player_n_coin_data.now_coin_num,
-                "after_coin_num": player_n_coin_data.now_coin_num * random_num});
-            player_n_coin_data.now_coin_num = player_n_coin_data.now_coin_num * random_num;
-        } else {
-            //在[0.8, 2+Z] 区间内随机取值
-            if (player_n_coin_data.type == "活期存法") random_num = Math.random() * (1 + Z) + 0.8;
-            //在 [1, 2+Z] 区间内随机取值
-            if (player_n_coin_data.type == "定期存法") random_num = Math.random() * (1 + Z) + 1;
-            // log(`低：当前随机数为${random_num}`);
-            player_n_coin_data.change_log.push({
-                "before_coin_num": player_n_coin_data.now_coin_num,
-                "after_coin_num": player_n_coin_data.now_coin_num * random_num});
-            player_n_coin_data.now_coin_num = player_n_coin_data.now_coin_num * random_num;
-        }
-        if (random_num < 0.05) player_n_coin_data.status = "break";
-    }
+//         //计算经过整数小时的概率调整
+//         let hour = Math.floor(i * 0.2);
+//         if (hour > 0) {
+//             if (player_n_coin_data.type == "活期存法") base_rate = Math.min(1,base_rate + 0.1 * (hour));
+//             if (player_n_coin_data.type == "定期存法") base_rate = Math.min(1,base_rate + 0.08 * (hour));
+//         }
+//         // log(`当前概率为${base_rate}`);
+//         //根据调整后的概率计算Y值
+//         if (Math.random() < base_rate) {
+//             //在 [0.001, 0.8] 区间内随机取值
+//             if (player_n_coin_data.type == "活期存法") random_num = Math.random() * 0.79999 + 0.00001;
+//             //在 [0.001, 1] 区间内随机取值
+//             if (player_n_coin_data.type == "定期存法") random_num = Math.random() * 0.99999 + 0.00001;
+//             // log(`高：当前随机数为${random_num}`);
+//             player_n_coin_data.change_log.push({
+//                 "before_coin_num": player_n_coin_data.now_coin_num,
+//                 "after_coin_num": player_n_coin_data.now_coin_num * random_num});
+//             player_n_coin_data.now_coin_num = player_n_coin_data.now_coin_num * random_num;
+//         } else {
+//             //在[0.8, 2+Z] 区间内随机取值
+//             if (player_n_coin_data.type == "活期存法") random_num = Math.random() * (1 + Z) + 0.8;
+//             //在 [1, 2+Z] 区间内随机取值
+//             if (player_n_coin_data.type == "定期存法") random_num = Math.random() * (1 + Z) + 1;
+//             // log(`低：当前随机数为${random_num}`);
+//             player_n_coin_data.change_log.push({
+//                 "before_coin_num": player_n_coin_data.now_coin_num,
+//                 "after_coin_num": player_n_coin_data.now_coin_num * random_num});
+//             player_n_coin_data.now_coin_num = player_n_coin_data.now_coin_num * random_num;
+//         }
+//         if (random_num < 0.05) player_n_coin_data.status = "break";
+//     }
 
-    // if (player_n_coin_data.status == "normal") {
-    //     log(`正常\n` + player_n_coin_data.now_coin_num);
-    // } else if (player_n_coin_data.status == "break") {
-    //     log(`爆仓\n` + player_n_coin_data.now_coin_num);
-    // }
+//     // if (player_n_coin_data.status == "normal") {
+//     //     log(`正常\n` + player_n_coin_data.now_coin_num);
+//     // } else if (player_n_coin_data.status == "break") {
+//     //     log(`爆仓\n` + player_n_coin_data.now_coin_num);
+//     // }
 
-    //计算平均值
-    count++;
-    average = average * (count - 1) / count + player_n_coin_data.now_coin_num / count;
-    log(`[无保险|3h]共模拟${count}次，当前平均值为${average.toFixed(2)}，比率为${(average / 3000000).toFixed(2)} || ${player_n_coin_data.now_coin_num}`);
-    n_coin_data = {
-        "123456": {
-            "type": "定期存法",
-            "status": "normal",
-            "save_time": "10",
-            "buy_coin_num": "3000000",
-            "now_coin_num": "3000000",
-            "insurance": false,
-            "buy_time": 1742908511656,
-            "change_log": []
-        },
-    }
-},1)
+//     //计算平均值
+//     count++;
+//     average = average * (count - 1) / count + player_n_coin_data.now_coin_num / count;
+//     log(`[无保险|3h]共模拟${count}次，当前平均值为${average.toFixed(2)}，比率为${(average / 3000000).toFixed(2)} || ${player_n_coin_data.now_coin_num}`);
+//     n_coin_data = {
+//         "123456": {
+//             "type": "定期存法",
+//             "status": "normal",
+//             "save_time": "10",
+//             "buy_coin_num": "3000000",
+//             "now_coin_num": "3000000",
+//             "insurance": false,
+//             "buy_time": 1742908511656,
+//             "change_log": []
+//         },
+//     }
+// },1)
 
 world.afterEvents.itemUse.subscribe(event => {
     if (event.itemStack.typeId == "minecraft:stick") {
