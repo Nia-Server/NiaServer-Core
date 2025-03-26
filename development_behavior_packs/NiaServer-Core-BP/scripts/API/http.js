@@ -21,10 +21,11 @@ export class ExternalFS {
         .setMethod(HttpRequestMethod.Post)
         .addHeader("Content-Type", "text/plain");
         return new Promise(async (resolve) => {
-            const response = await http.request(reqRunCmd);
-            if (response.status == 200) {
-                resolve(response.body);
-            } else {
+            try {
+                const response = await http.request(reqRunCmd);
+                if (response.status == 200) resolve(response.body);
+            }
+            catch (e) {
                 resolve(-1);
             }
         })
@@ -41,12 +42,15 @@ export class ExternalFS {
         .setMethod(HttpRequestMethod.Post)
         .addHeader("Content-Type", "text/plain");
         return new Promise(async (resolve) => {
-            const response = await http.request(reqCheckFile);
-            if (response.status == 200) {
-                resolve(response.body);
-            } else if (response.status == 400) {
-                resolve(0);
-            } else {
+            try {
+                const response = await http.request(reqCheckFile);
+                if (response.status == 200) {
+                    resolve(response.body);
+                } else if (response.status == 400) {
+                    resolve(0);
+                }
+            }
+            catch (e) {
                 resolve(-1);
             }
         })
@@ -63,12 +67,15 @@ export class ExternalFS {
         .setMethod(HttpRequestMethod.Post)
         .addHeader("Content-Type", "text/plain");
         return new Promise(async (resolve) => {
-            const response = await http.request(reqGetFileData);
-            if (response.status == 200) {
-                resolve(JSON.parse(response.body));
-            } else if (response.status == 400) {
-                resolve(0);
-            } else {
+            try {
+                const response = await http.request(reqGetFileData);
+                if (response.status == 200) {
+                    resolve(response.body);
+                } else if (response.status == 400) {
+                    resolve(0);
+                }
+            }
+            catch (e) {
                 resolve(-1);
             }
         })
@@ -85,12 +92,15 @@ export class ExternalFS {
         .setMethod(HttpRequestMethod.Post)
         .addHeader("Content-Type", "text/plain");
         return new Promise(async (resolve) => {
-            const response = await http.request(reqGetJsonFileData);
-            if (response.status == 200) {
-                resolve(JSON.parse(response.body));
-            } else if (response.status == 400) {
-                resolve(0);
-            } else {
+            try {
+                const response = await http.request(reqGetJsonFileData);
+                if (response.status == 200) {
+                    resolve(JSON.parse(response.body));
+                } else if (response.status == 400) {
+                    resolve(0);
+                }
+            }
+            catch (e) {
                 resolve(-1);
             }
         })
@@ -108,12 +118,15 @@ export class ExternalFS {
         .setMethod(HttpRequestMethod.Post)
         .addHeader("Content-Type", "text/plain")
         return new Promise(async (resolve) => {
-            const response = await http.request(reqCreateNewFile);
-            if (response.status == 200) {
-                resolve(response.body);
-            } else if (response.status == 400) {
-                resolve(0);
-            } else {
+            try {
+                const response = await http.request(reqCreateNewFile);
+                if (response.status == 200) {
+                    resolve(response.body);
+                } else if (response.status == 400) {
+                    resolve(0);
+                }
+            }
+            catch (e) {
                 resolve(-1);
             }
         });
@@ -131,12 +144,15 @@ export class ExternalFS {
         .setMethod(HttpRequestMethod.Post)
         .addHeader("Content-Type", "text/plain")
         return new Promise(async (resolve) => {
-            const response = await http.request(reqCreateNewJsonFile);
-            if (response.status == 200) {
-                resolve(response.body);
-            } else if (response.status == 400) {
-                resolve(0);
-            } else {
+            try {
+                const response = await http.request(reqCreateNewJsonFile);
+                if (response.status == 200) {
+                    resolve(response.body);
+                } else if (response.status == 400) {
+                    resolve(0);
+                }
+            }
+            catch (e) {
                 resolve(-1);
             }
         });
@@ -154,12 +170,15 @@ export class ExternalFS {
         .setMethod(HttpRequestMethod.Post)
         .addHeader("Content-Type", "text/plain");
         return new Promise(async (resolve) => {
-            const response = await http.request(reqOverwriteFile);
-            if (response.status == 200) {
-                resolve(response.body);
-            } else if (response.status == 400) {
-                resolve(0);
-            } else {
+            try {
+                const response = await http.request(reqOverwriteFile);
+                if (response.status == 200) {
+                    resolve(response.body);
+                } else if (response.status == 400) {
+                    resolve(0);
+                }
+            }
+            catch (e) {
                 resolve(-1);
             }
         })
@@ -177,39 +196,20 @@ export class ExternalFS {
         .setMethod(HttpRequestMethod.Post)
         .addHeader("Content-Type", "text/plain");
         return new Promise(async (resolve) => {
-            const response = await http.request(reqOverwriteJsonFile);
-            if (response.status == 200) {
-                resolve(response.body);
-            } else if (response.status == 400) {
-                resolve(0);
-            } else {
+            try {
+                const response = await http.request(reqOverwriteJsonFile);
+                if (response.status == 200) {
+                    resolve(response.body);
+                } else if (response.status == 400) {
+                    resolve(0);
+                }
+            }
+            catch (e) {
                 resolve(-1);
             }
         })
     }
 
-    /**
-     * 覆写json文件(BETA)
-     * @param {String} filename
-     * @param {Object} filecontent
-     * @return {String | Number} 覆写成功返回success，覆写失败返回0，服务器连接失败返回-1
-     */
-    OverwriteJsonFileBETA(filename,filecontent) {
-        const reqOverwriteJsonFile = new HttpRequest(`${server_url}:${port}/OverwriteJsonFile`)
-        .setBody(JSON.stringify({"fileName":filename,"content":filecontent}))
-        .setMethod(HttpRequestMethod.Post)
-        .addHeader("Content-Type", "text/plain");
-        return new Promise(async (resolve) => {
-            const response = await http.request(reqOverwriteJsonFile);
-            if (response.status == 200) {
-                resolve(response.body);
-            } else if (response.status == 400) {
-                resolve(0);
-            } else {
-                resolve(-1);
-            }
-        })
-    }
 
     /**
      * 向特定文件写入一行内容
@@ -223,12 +223,15 @@ export class ExternalFS {
         .setMethod(HttpRequestMethod.Post)
         .addHeader("Content-Type", "text/plain");
         return new Promise(async (resolve) => {
-            const response = await http.request(reqWriteLineToFile);
-            if (response.status == 200) {
-                resolve(response.body);
-            } else if (response.status == 400) {
-                resolve(0);
-            } else {
+            try {
+                const response = await http.request(reqWriteLineToFile);
+                if (response.status == 200) {
+                    resolve(response.body);
+                } else if (response.status == 400) {
+                    resolve(0);
+                }
+            }
+            catch (e) {
                 resolve(-1);
             }
         })
@@ -246,12 +249,15 @@ export class ExternalFS {
         .setMethod(HttpRequestMethod.Post)
         .addHeader("Content-Type", "text/plain");
         return new Promise(async (resolve) => {
-            const response = await http.request(reqCopyFolder);
-            if (response.status == 200) {
-                resolve(response.body);
-            } else if (response.status == 400) {
-                resolve(0);
-            } else {
+            try {
+                const response = await http.request(reqCopyFolder);
+                if (response.status == 200) {
+                    resolve(response.body);
+                } else if (response.status == 400) {
+                    resolve(0);
+                }
+            }
+            catch (e) {
                 resolve(-1);
             }
         })
@@ -264,16 +270,16 @@ export class ExternalFS {
      * @return {String | Number} 备份成功返回success，备份失败返回0，服务器连接失败返回-1
      */
     Backup(From,To) {
-        world.getDimension("overworld").runCommandAsync("save hold");
+        world.getDimension("overworld").runCommand("save hold");
         return new Promise(async (resolve) => {
             this.RunCmd(`mkdir ${To}`).then((result) => {
                 if (result === "success") {
                     this.CopyFolder(From, To).then((result) => {
-                        world.getDimension("overworld").runCommandAsync("save resume");
+                        world.getDimension("overworld").runCommand("save resume");
                         resolve(result);
                     })
                 } else {
-                    world.getDimension("overworld").runCommandAsync("save resume");
+                    world.getDimension("overworld").runCommand("save resume");
                     resolve(result)
                 }
             })
@@ -295,10 +301,10 @@ export class QQBotSystem {
             .setMethod(HttpRequestMethod.Post)
             .addHeader("Content-Type", "text/plain")
         return new Promise(async (resolve) => {
-            const response = await http.request(req_send_group_msg);
-            if (response.status == 200) {
-                resolve(response.body);
-            } else {
+            try {
+                const response = await http.request(req_send_group_msg);
+                if (response.status == 200) resolve(response.body);
+            } catch (e) {
                 resolve(-1);
             }
         });
@@ -310,10 +316,13 @@ export class QQBotSystem {
             .setMethod(HttpRequestMethod.Post)
             .addHeader("Content-Type", "text/plain")
         return new Promise(async (resolve) => {
-            const response = await http.request(req_exchange_data);
-            if (response.status == 200) {
-                resolve(response.body);
-            } else {
+            try {
+                const response = await http.request(req_exchange_data);
+                if (response.status == 200) {
+                    resolve(response.body);
+                }
+            }
+            catch (e) {
                 resolve(-1);
             }
         });
