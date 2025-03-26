@@ -17,7 +17,7 @@ var temp_player_money = {};
 
 
 //服务器启动监听&&获得玩家市场数据
-world.afterEvents.worldInitialize.subscribe(() => {
+system.run(() => {
     fs.GetJSONFileData("market.json").then((result) => {
         //文件不存在
         if (result === 0) {

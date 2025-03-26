@@ -1,11 +1,12 @@
 import { world } from '@minecraft/server';
 import { http } from '@minecraft/server-net';
 import { log, warn, error } from '../API/logger.js';
-import { VERSION } from '../main.js';
+// import { VERSION } from '../main.js';
 
+const VERSION = "1.0.0";
 
 //服务器启动监听
-world.afterEvents.worldInitialize.subscribe(() => {
+world.afterEvents.worldLoad.subscribe(() => {
 
     const start = Date.now();
 

@@ -1,16 +1,5 @@
 import { world,system } from "@minecraft/server";
 
-world.afterEvents.worldInitialize.subscribe((event) => {
-
-    //检测服务器是否初始化
-    if (world.getDynamicProperty("state") == null) {
-        world.scoreboard.addObjective("side_bar","§b==§1N§2i§3aS§4e§5r§6v§7e§8r§b==")
-        world.setDynamicProperty("state",true);
-        world.scoreboard.setObjectiveAtDisplaySlot("Sidebar",{"objective": world.scoreboard.getObjective("side_bar")});
-    }
-
-})
-
 const side_bar = [
     {
         "type" : "text",
@@ -25,6 +14,10 @@ let now_time = Date.now();
 
 system.runInterval(()=>{
     if (Date.now()-now_time<1000) return;
+    if (world.scoreboard.getObjective("side_bar") == undefined) {
+        world.scoreboard.addObjective("side_bar","§b==§1N§2i§3aS§4e§5r§6v§7e§8r§b==")
+        world.scoreboard.setObjectiveAtDisplaySlot("Sidebar",{"objective": world.scoreboard.getObjective("side_bar")});
+    }
     world.scoreboard.removeObjective("side_bar");
     const colorPatterns = [
         "§4N§ci§6a§eS§2e§ar§bv§3e§1r",

@@ -20,24 +20,27 @@ const config = {
 var log_file = log_folder + log_file_name;
 
 //创建日志文件夹
-fs.RunCmd(`mkdir "${log_folder}"`)
+system.run(() => {
+    fs.RunCmd(`mkdir "${log_folder}"`)
 
-//检查日志文件是否存在，如果不存在则创建
-fs.CheckFile(`${log_file}`).then((result) => {
-    if (result === "true") {
-        log(`【日志系统】 ${log_file} 已经存在，无需重复创建`);
-    } else if (result === "false") {
-        fs.CreateNewFile(log_file,"时间,维度,主体,X,Y,Z,事件,目标,x,y,z,附加信息\n").then((result) => {
-            if (result === "success") {
-                log(`【日志系统】 ${log_file_name} 已经成功创建`);
-            } else {
-                warn("【日志系统】 创建日志文件时遇到了一些问题...");
-            }
-        })
-    } else if (result === -1) {
-        error(`【日志系统】在获取日志文件 ${log_file_name} 时与NIAHttpBOT连接失败`);
-    }
+    //检查日志文件是否存在，如果不存在则创建
+    fs.CheckFile(`${log_file}`).then((result) => {
+        if (result === "true") {
+            log(`【日志系统】 ${log_file} 已经存在，无需重复创建`);
+        } else if (result === "false") {
+            fs.CreateNewFile(log_file,"时间,维度,主体,X,Y,Z,事件,目标,x,y,z,附加信息\n").then((result) => {
+                if (result === "success") {
+                    log(`【日志系统】 ${log_file_name} 已经成功创建`);
+                } else {
+                    warn("【日志系统】 创建日志文件时遇到了一些问题...");
+                }
+            })
+        } else if (result === -1) {
+            error(`【日志系统】在获取日志文件 ${log_file_name} 时与NIAHttpBOT连接失败`);
+        }
+    })
 })
+
 
 //判断时间日期是否切换
 system.runInterval(() => {
@@ -176,7 +179,7 @@ world.beforeEvents.playerGameModeChange.subscribe((event) => {
 })
 
 
-world.afterEvents.itemUseOn.subscribe((event) => {
+world.afterEvents.itemStartUseOn.subscribe((event) => {
     //定义一些可以被改变状态的方块
     const blocks = [
         "minecraft:chest","minecraft:trapped_chest","minecraft:ender_chest","minecraft:barrel","minecraft:frame","minecraft:anvil","minecraft:enchanting_table","minecraft:cartography_table","minecraft:smithing_table",

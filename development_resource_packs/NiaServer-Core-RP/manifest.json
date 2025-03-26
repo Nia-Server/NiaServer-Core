@@ -1,18 +1,18 @@
 {
 	"format_version": 2,
 	"header": {
-		"description": "§bCopyright (C) 2025 Nia-Server\n版本：v1.5.0\n项目地址：https://github.com/Nia-Server/NiaServer-Core",
+		"description": "§bCopyright (C) 2025 Nia-Server\n版本：v1.6.0\n项目地址：https://github.com/Nia-Server/NiaServer-Core",
 		"name": "NiaServer-Core-1.5.0 RP",
 		"uuid": "981f1ce2-370b-4f58-99d9-9c504a118ec0",
-		"min_engine_version": [1, 21, 50],
-		"version": [1, 5, 0]
+		"min_engine_version": [1, 21, 70],
+		"version": [1, 6, 0]
 	},
 	"modules": [
 		{
 			"description": "NIANIANKNIA",
 			"type": "resources",
 			"uuid": "7e41869f-82f7-40f5-87c0-4dcfbc61d91b",
-			"version": [1, 5, 0]
+			"version": [1, 6, 0]
 		}
 	],
 	"metadata": {

@@ -1,4 +1,4 @@
-import { world } from "@minecraft/server"
+import { system, world } from "@minecraft/server"
 import { ActionFormData,ModalFormData,MessageFormData } from "@minecraft/server-ui"
 import { log,warn,error } from "../API/logger.js";
 import { ShopGUI } from './shop.js';
@@ -12,7 +12,7 @@ const MoneyScoreboardName = cfg.MoneyScoreboardName;
 
 let title_data = {};
 
-world.afterEvents.worldInitialize.subscribe(() => {
+system.run(() => {
     fs.GetJSONFileData("title_data.json").then((result) => {
         //文件不存在
         if (result === 0) {

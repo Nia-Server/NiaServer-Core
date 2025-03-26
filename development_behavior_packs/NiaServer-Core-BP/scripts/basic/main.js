@@ -21,7 +21,7 @@ system.beforeEvents.watchdogTerminate.subscribe((event) => {
 
 //服务器启动监听
 //服务器初始化
-world.afterEvents.worldInitialize.subscribe((event) => {
+world.afterEvents.worldLoad.subscribe((event) => {
     //检测服务器是否初始化
     if (world.getDynamicProperty("state") == null) {
         //中文输出

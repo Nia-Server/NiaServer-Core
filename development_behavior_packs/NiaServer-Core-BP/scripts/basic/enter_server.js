@@ -21,23 +21,43 @@ const player_data = {
 
 let player_sign_in = {}
 
-fs.GetJSONFileData("player_sign_in.json").then((response) => {
-    if (response === 0) {
-        fs.CreateNewJsonFile("player_sign_in.json", {}).then((result) => {
-            if (result === "success") {
-                player_sign_in = {};
-                log("【签到系统】在获取签到系统数据文件 player_sign_in.json 不存在，已成功创建");
-            } else if (result === -1) {
-                error("【签到系统】在创建签到系统数据文件 player_sign_in.json 时与NIAHttpBOT连接失败");
-            }
-        });
-    } else if (response === -1) {
-        error("【签到系统】在获取签到系统数据文件 player_sign_in.json 时与NIAHttpBOT连接失败");
-    } else {
-        player_sign_in = response;
-        log("【签到系统】成功获取签到系统数据文件 player_sign_in.json");
-    }
+system.run(() => {
+    fs.GetJSONFileData("player_sign_in.json").then((response) => {
+        if (response === 0) {
+            fs.CreateNewJsonFile("player_sign_in.json", {}).then((result) => {
+                if (result === "success") {
+                    player_sign_in = {};
+                    log("【签到系统】在获取签到系统数据文件 player_sign_in.json 不存在，已成功创建");
+                } else if (result === -1) {
+                    error("【签到系统】在创建签到系统数据文件 player_sign_in.json 时与NIAHttpBOT连接失败");
+                }
+            });
+        } else if (response === -1) {
+            error("【签到系统】在获取签到系统数据文件 player_sign_in.json 时与NIAHttpBOT连接失败");
+        } else {
+            player_sign_in = response;
+            log("【签到系统】成功获取签到系统数据文件 player_sign_in.json");
+        }
+    })
+    fs.GetJSONFileData("announcement.json").then((response) => {
+        if (response === 0) {
+            fs.CreateNewJsonFile("announcement.json", announcement).then((result) => {
+                if (result === "success") {
+                    log("【公告系统】在获取公告数据文件 announcement.json 不存在，已成功创建");
+                } else if (result === -1) {
+                    error("【公告系统】在创建公告数据文件 announcement.json 时与NIAHttpBOT连接失败");
+                }
+            });
+        } else if (response === -1) {
+            error("【公告系统】在获取公告数据文件 announcement.json 时与NIAHttpBOT连接失败");
+        } else {
+            announcement = response;
+            log("【公告系统】成功获取公告数据文件 announcement.json");
+        }
+    })
 })
+
+
 
 //读取公告数据
 let announcement = {
@@ -47,22 +67,6 @@ let announcement = {
     ]
 }
 
-fs.GetJSONFileData("announcement.json").then((response) => {
-    if (response === 0) {
-        fs.CreateNewJsonFile("announcement.json", announcement).then((result) => {
-            if (result === "success") {
-                log("【公告系统】在获取公告数据文件 announcement.json 不存在，已成功创建");
-            } else if (result === -1) {
-                error("【公告系统】在创建公告数据文件 announcement.json 时与NIAHttpBOT连接失败");
-            }
-        });
-    } else if (response === -1) {
-        error("【公告系统】在获取公告数据文件 announcement.json 时与NIAHttpBOT连接失败");
-    } else {
-        announcement = response;
-        log("【公告系统】成功获取公告数据文件 announcement.json");
-    }
-})
 
 world.afterEvents.playerSpawn.subscribe((event) => {
     if (event.initialSpawn) {

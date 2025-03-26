@@ -16,7 +16,7 @@ export function Broadcast(Msg) {
  * @param {string} PlayerName
  */
 export function Tell(Msg,PlayerName) {
-    world.getDimension("overworld").runCommandAsync(`tellraw @a[name="${PlayerName}"] {\"rawtext\":[{\"text\":\"${Msg}\"}]}`);
+    world.getDimension("overworld").runCommand(`tellraw @a[name="${PlayerName}"] {\"rawtext\":[{\"text\":\"${Msg}\"}]}`);
 }
 
 /**
@@ -24,7 +24,7 @@ export function Tell(Msg,PlayerName) {
  * @param {string} Cmd
  */
 export function RunCmd(Cmd) {
-    world.getDimension("overworld").runCommandAsync(`${Cmd}`);
+    world.getDimension("overworld").runCommand(Cmd)
 }
 
 /**

@@ -511,7 +511,6 @@ function have_other_land(pos1, pos2, dimid, LandUUID) {
     return false;
 }
 
-world.setDynamicProperty("land_tickingarea","[]");
 
 //圈地相关API
 const LandAPI = {
@@ -2725,23 +2724,6 @@ world.beforeEvents.explosion.subscribe((event) => {
     }
 })
 
-//玩家使用物品
-world.beforeEvents.itemUseOn.subscribe((event) => {
-    //定义一些可以改变物品地形的工具
-    const tools = [
-        "minecraft:wooden_hoe","minecraft:stone_hoe","minecraft:iron_hoe","minecraft:golden_hoe","minecraft:diamond_hoe","minecraft:netherite_hoe",
-        "minecraft:wooden_shovel","minecraft:stone_shovel","minecraft:iron_shovel","minecraft:golden_shovel","minecraft:diamond_shovel","minecraft:netherite_shovel",
-        "minecraft:water_bucket","minecraft:lava_bucket","minecraft:cod_bucket","minecraft:salmon_bucket","minecraft:tropical_fish_bucket","minecraft:pufferfish_bucket","minecraft:powder_snow_bucket","minecraft:axolotl_bucket","minecraft:tadpole_bucket",
-        "minecraft:flint_and_steel","minecraft:shears","minecraft:hopper"
-    ]
-    let land = pos_in_land([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
-    if (land && !event.source.hasTag(cfg.OPTAG) && !in_allowlist(event.source,land) && !land.setup.UseItem) {
-        if (tools.includes(event.itemStack.typeId)) {
-            event.cancel = true;
-            event.source.sendMessage("§c 您没有相关权限在此处使用物品！");
-        }
-    }
-})
 
 //玩家与方块交互
 world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
@@ -2923,6 +2905,14 @@ world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
         "minecraft:white_shulker_box",
         "minecraft:yellow_shulker_box"
     ]
+    //定义一些可以改变物品地形的工具
+    const tools = [
+        "minecraft:wooden_hoe","minecraft:stone_hoe","minecraft:iron_hoe","minecraft:golden_hoe","minecraft:diamond_hoe","minecraft:netherite_hoe",
+        "minecraft:wooden_shovel","minecraft:stone_shovel","minecraft:iron_shovel","minecraft:golden_shovel","minecraft:diamond_shovel","minecraft:netherite_shovel",
+        "minecraft:water_bucket","minecraft:lava_bucket","minecraft:cod_bucket","minecraft:salmon_bucket","minecraft:tropical_fish_bucket","minecraft:pufferfish_bucket","minecraft:powder_snow_bucket","minecraft:axolotl_bucket","minecraft:tadpole_bucket",
+        "minecraft:flint_and_steel","minecraft:shears","minecraft:hopper"
+    ]
+
     let land = pos_in_land([event.block.x,event.block.y,event.block.z],event.block.dimension.id);
     if (land && !event.player.hasTag(cfg.OPTAG) && !in_allowlist(event.player,land)) {
         if (!land.setup.InteractBlock && blocks.includes(event.block.typeId)) {
@@ -2932,6 +2922,10 @@ world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
         if (!land.setup.OpenChest && chests.includes(event.block.typeId)) {
             event.cancel = true;
             event.player.sendMessage("§c 您没有相关权限在此处打开箱子！");
+        }
+        if (tools.includes(event.itemStack.typeId)) {
+            event.cancel = true;
+            event.player.sendMessage("§c 您没有相关权限在此处使用工具！");
         }
     }
 })
@@ -3000,7 +2994,9 @@ world.afterEvents.playerLeave.subscribe((player) => {
 })
 
 //服务器启动监听&&获得玩家市场数据
-world.afterEvents.worldInitialize.subscribe((event) => {
+system.run(() => {
+    //初始化动态属性
+    world.setDynamicProperty("land_tickingarea","[]");
     //圈地系统文件
     let start_1 = Date.now();
     fs.GetJSONFileData("land.json").then((result) => {

@@ -17,7 +17,7 @@ const USE_RN_SYSTEM = true;
 //商店数据读取
 
 //服务器启动监听&&获得商店数据
-world.afterEvents.worldInitialize.subscribe(() => {
+system.run(() => {
     const start = Date.now();
     fs.GetJSONFileData("shop_data.json").then((result) => {
         //文件不存在
