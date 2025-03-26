@@ -295,7 +295,7 @@ function OpenGUI(player, GUINAME) {
         HomeGUI: () => HomeGUI.HomeMain(player),
         RankingGUI: () => RankingGUI.Main(player),
         SignInGUI: () => EnterGUI.SignIn(player),
-        AnnouncementGUI: () => EnterGUI.Announcement(player),
+        AnnouncementGUI: () => EnterGUI.AnnouncementInMainMenu(player),
         BankGUI: () => BankGUI.Main(player),
         WarpGUI: () => WarpGUI.Main(player)
     }

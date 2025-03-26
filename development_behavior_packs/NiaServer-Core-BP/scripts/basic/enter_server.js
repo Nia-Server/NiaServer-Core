@@ -3,6 +3,7 @@ import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-
 import { ExternalFS } from "../API/http";
 import { log, error } from "../API/logger";
 import { cfg } from "../config";
+import { Main } from "../game/main_menu";
 
 const fs = new ExternalFS();
 
@@ -253,6 +254,9 @@ export const EnterGUI = {
             if (response.cancelationReason == "UserBusy") {
                 this.Announcement(player);
             }
+            if (response.selection == 0) {
+                EnterGUI.SignIn(player);
+            }
             if (response.selection == 1) {
                 player.setDynamicProperty("has_read_announcement", announcement.update_time);
                 EnterGUI.SignIn(player);
@@ -260,7 +264,24 @@ export const EnterGUI = {
         })
     },
 
-
+    AnnouncementInMainMenu(player) {
+        let body_str = "";
+        announcement.content.forEach((line) => {
+            body_str += line + "\n";
+        })
+        const AnnouncementForm = new ActionFormData();
+        AnnouncementForm.title("公告");
+        AnnouncementForm.body(body_str);
+        AnnouncementForm.button("返回上一页");
+        AnnouncementForm.show(player).then((response) => {
+            if (response.cancelationReason == "UserBusy") {
+                this.Announcement(player);
+            }
+            if (response.selection == 0) {
+               Main(player);
+            }
+        })
+    },
 
     Welcome(player) {
         const WelcomeForm = new ActionFormData();

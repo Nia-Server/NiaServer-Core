@@ -37,6 +37,7 @@ export const WarpGUI = {
                 z: Number(world_pos_data[index].z)
             },{
                 dimension: world.getDimension(world_pos_data[index].dim)});
+            player.playSound("random.levelup");
             player.sendMessage(" §a已成功将您传送至传送点: " + world_pos_data[index].name);
         })
     },
