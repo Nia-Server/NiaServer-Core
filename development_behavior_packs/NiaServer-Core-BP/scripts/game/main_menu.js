@@ -80,6 +80,8 @@ const MainGUI = {
             "§r§l===========================\n"+
             "§r§c§l游玩中有问题找腐竹反馈！\n"+
             "祝您游玩愉快！\n"+
+            "§e带有beta标识为测试版系统\n"+
+            "§e数值随时可能修改，介意者请勿使用\n"+
             "§r§l===========================",
     "buttons": [
         {
@@ -93,7 +95,7 @@ const MainGUI = {
             "name": "任务系统\n教你如何玩转服务器",
             "icon": "textures/ui/csb_purchase_amazondevicewarning",
             "type": "runCmd",
-            "content": "tp @a[name=%playername%] 99735 55 284",
+            "content": "title %playername% actionbar §a§l任务系统出现重大BUG正在修复中...",
             "opMenu": false
         },
         {
@@ -118,7 +120,7 @@ const MainGUI = {
             "opMenu": false
         },
         {
-            "name": "服务器银行\n服务器官方银行提供一系列金融玩法",
+            "name": "§c[BETA]§r服务器银行\n服务器官方银行提供一系列金融玩法",
             "icon": "textures/ui/MCoin",
             "type": "openGUI",
             "GUI": "BankGUI",
