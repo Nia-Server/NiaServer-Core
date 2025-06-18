@@ -4,7 +4,7 @@
 		"description": "§bCopyright (C) 2025 Nia-Server\n版本：v1.6.0\n项目地址：https://github.com/Nia-Server/NiaServer-Core",
 		"name": "NiaServer-Core-1.5.0 RP",
 		"uuid": "981f1ce2-370b-4f58-99d9-9c504a118ec0",
-		"min_engine_version": [1, 21, 70],
+		"min_engine_version": [1, 21, 90],
 		"version": [1, 6, 0]
 	},
 	"modules": [

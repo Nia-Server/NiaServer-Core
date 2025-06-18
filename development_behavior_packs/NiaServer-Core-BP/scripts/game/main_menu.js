@@ -1,4 +1,4 @@
-import { world,system } from '@minecraft/server';
+import { world,system,CustomCommandRegistry,CustomCommandParamType, CustomCommandStatus, CommandPermissionLevel } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 import { RunCmd,GetScore } from '../API/game.js';
 import { log,warn,error } from "../API/logger.js";
@@ -22,6 +22,31 @@ const MoneyScoreboardName = cfg.MoneyScoreboardName;
 
 
 const ALL_GUI = ["MainGUI","SetupGUI","ShopGUI","TpaGUI","CdkGUI","TransferGUI","OpGUI","MarketGUI","LandGUI","HomeGUI","RankingGUI"];
+
+//注册自定义指令
+system.beforeEvents.startup.subscribe((init) => {
+
+    const menuCommand = {
+        name: "mcnia:m",
+        description: "打开服务器菜单",
+        permissionLevel: CommandPermissionLevel.Any
+    };
+    init.customCommandRegistry.registerCommand(menuCommand, (origin) => {
+        if (origin.sourceType != "Entity") return {
+            status: CustomCommandStatus.Failure,
+            message: "§c此命令只能玩家使用",
+        }
+
+        let player = origin.sourceEntity;
+        system.run(() => {
+            Main(player);
+        })
+        return {
+            status: CustomCommandStatus.Success
+        }
+    });
+
+})
 
 //注册scriptevent
 system.afterEvents.scriptEventReceive.subscribe((event) => {

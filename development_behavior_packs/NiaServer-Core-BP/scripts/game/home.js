@@ -1,9 +1,36 @@
-import { world } from "@minecraft/server";
+import { world,system,CustomCommandRegistry,CustomCommandParamType, CustomCommandStatus, CommandPermissionLevel  } from "@minecraft/server";
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 import { log } from "../API/logger.js";
 import { Main } from "./main_menu.js";
 import { SetupGUI } from "./setup.js";
 import { pos_in_land,in_allowlist } from "./land.js";
+
+
+//注册自定义指令
+system.beforeEvents.startup.subscribe((init) => {
+
+    const homeCommand = {
+        name: "mcnia:home",
+        description: "打开个人传送点菜单",
+        permissionLevel: CommandPermissionLevel.Any
+    };
+    init.customCommandRegistry.registerCommand(homeCommand, (origin) => {
+        if (origin.sourceType != "Entity") return {
+            status: CustomCommandStatus.Failure,
+            message: "§c此命令只能玩家使用",
+        }
+
+        let player = origin.sourceEntity;
+        system.run(() => {
+            GUI.HomeMain(player);
+        })
+        return {
+            status: CustomCommandStatus.Success
+        }
+    });
+
+})
+
 
 const GUI = {
     HomeMain(player) {

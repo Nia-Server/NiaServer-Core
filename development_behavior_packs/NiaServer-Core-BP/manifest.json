@@ -5,7 +5,7 @@
 	  "description": "§bCopyright (C) 2025 Nia-Server\n版本：v1.6.0\n项目地址：https://github.com/Nia-Server/NiaServer-Core",
 	  "uuid": "cab0bbe3-eb10-465e-b1de-b09facc076c8",
 	  "version": [ 1, 6, 0 ],
-	  "min_engine_version": [ 1, 21, 70 ]
+	  "min_engine_version": [ 1, 21, 90 ]
 	},
 	"modules": [
 		{
@@ -20,11 +20,11 @@
 	"dependencies": [
 		{
 			"module_name": "@minecraft/server",
-			"version": "2.0.0-beta"
+			"version": "2.1.0-beta"
 		},
 		{
 			"module_name": "@minecraft/server-ui",
-			"version": "2.0.0-beta"
+			"version": "2.1.0-beta"
 		},
 		{
 			"module_name": "@minecraft/server-net",

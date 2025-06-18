@@ -1,4 +1,5 @@
-import { ItemStack, system, world, ItemComponentTypes,EnchantmentType, EntityComponentTypes } from '@minecraft/server';
+import { ItemStack, system, world, ItemComponentTypes,EnchantmentType, EntityComponentTypes,
+    CustomCommandRegistry,CustomCommandParamType, CustomCommandStatus, CommandPermissionLevel  } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 import { Tell,RunCmd,GetScore, GetTime,GetDate } from '../API/game.js';
 import { Main } from './main_menu.js';
@@ -14,6 +15,35 @@ var RecycleData = [];
 const MoneyShowName = cfg.MoneyShowName
 const MoneyScoreboardName = cfg.MoneyScoreboardName
 const USE_RN_SYSTEM = true;
+
+
+//注册自定义指令
+system.beforeEvents.startup.subscribe((init) => {
+
+    const shopCommand = {
+        name: "mcnia:shop",
+        description: "打开服务器商店菜单",
+        permissionLevel: CommandPermissionLevel.Any
+    };
+    init.customCommandRegistry.registerCommand(shopCommand, (origin) => {
+        if (origin.sourceType != "Entity") return {
+            status: CustomCommandStatus.Failure,
+            message: "§c此命令只能玩家使用",
+        }
+
+        let player = origin.sourceEntity;
+        system.run(() => {
+            GUI.ShopMain(player);
+        })
+        return {
+            status: CustomCommandStatus.Success
+        }
+    });
+
+})
+
+
+
 //商店数据读取
 
 //服务器启动监听&&获得商店数据

@@ -1,7 +1,32 @@
-import { world } from "@minecraft/server";
+import { world, system, CustomCommandRegistry,CustomCommandParamType, CustomCommandStatus, CommandPermissionLevel  } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
 import { Main } from "./main_menu";
 import { OpGUI } from "./op";
+
+//注册自定义指令
+system.beforeEvents.startup.subscribe((init) => {
+
+    const warpCommand = {
+        name: "mcnia:warp",
+        description: "打开服务器公共传送点菜单",
+        permissionLevel: CommandPermissionLevel.Any
+    };
+    init.customCommandRegistry.registerCommand(warpCommand, (origin) => {
+        if (origin.sourceType != "Entity") return {
+            status: CustomCommandStatus.Failure,
+            message: "§c此命令只能玩家使用",
+        }
+
+        let player = origin.sourceEntity;
+        system.run(() => {
+            WarpGUI.Main(player);
+        })
+        return {
+            status: CustomCommandStatus.Success
+        }
+    });
+
+})
 
 
 export const WarpGUI = {

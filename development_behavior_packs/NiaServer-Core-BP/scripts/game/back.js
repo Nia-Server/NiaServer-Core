@@ -1,7 +1,33 @@
-import { system, world } from "@minecraft/server";
+import { system, world ,CustomCommandRegistry ,CustomCommandParamType, CustomCommandStatus, CommandPermissionLevel  } from "@minecraft/server";
 import { log } from "../API/logger.js";
 import { GetScore } from "../API/game.js";
 import { cfg } from "../config.js";
+
+
+//注册自定义指令
+system.beforeEvents.startup.subscribe((init) => {
+
+    const backCommand = {
+        name: "mcnia:back",
+        description: "返回上一个死亡地点",
+        permissionLevel: CommandPermissionLevel.Any
+    };
+    init.customCommandRegistry.registerCommand(backCommand, (origin) => {
+        if (origin.sourceType != "Entity") return {
+            status: CustomCommandStatus.Failure,
+            message: "§c此命令只能玩家使用",
+        }
+        let player = origin.sourceEntity;
+        system.run(() => {
+            back_to_last_deaath(player);
+        })
+        return {
+            status: CustomCommandStatus.Success
+        }
+    });
+
+})
+
 
 world.afterEvents.entityDie.subscribe((event) => {
     if (event.deadEntity.typeId != "minecraft:player") return;

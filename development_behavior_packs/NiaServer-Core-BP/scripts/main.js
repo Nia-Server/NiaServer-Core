@@ -55,8 +55,8 @@ import './qqBot/main.js'
 import { cfg } from './config.js'
 
 export const VERSION = "v1.6.0";
-export const BDS_VERSION = "1.21.70.04";
-export const LAST_UPGRATE = "2025/03/26";
+export const BDS_VERSION = "1.21.90.4";
+export const LAST_UPGRATE = "2025/06/18";
 export const CODE_BRANCH = "main";
 
 

@@ -1,5 +1,5 @@
 //圈地系统
-import { EntityComponentTypes, system, world } from '@minecraft/server';
+import { EntityComponentTypes, system, world, CustomCommandRegistry,CustomCommandParamType, CustomCommandStatus, CommandPermissionLevel  } from '@minecraft/server';
 import { ActionFormData,ModalFormData,MessageFormData } from '@minecraft/server-ui'
 import { ExternalFS } from '../API/http.js';
 import { log,warn,error } from "../API/logger.js";
@@ -49,6 +49,32 @@ const Z_RANGE = [-100000,100000];
 //金币计分板名称
 const MONEY_SCOREBOARD_NAME = "money";
 const MONEY_SCOREBOARD_DISPLAY_NAME = "金币";
+
+//注册自定义指令
+system.beforeEvents.startup.subscribe((init) => {
+
+    const landCommand = {
+        name: "mcnia:land",
+        description: "打开领地系统菜单",
+        permissionLevel: CommandPermissionLevel.Any
+    };
+    init.customCommandRegistry.registerCommand(landCommand, (origin) => {
+        if (origin.sourceType != "Entity") return {
+            status: CustomCommandStatus.Failure,
+            message: "§c此命令只能玩家使用",
+        }
+
+        let player = origin.sourceEntity;
+        system.run(() => {
+            GUI.Main(player);
+        })
+        return {
+            status: CustomCommandStatus.Success
+        }
+    });
+
+})
+
 
 
 /**
