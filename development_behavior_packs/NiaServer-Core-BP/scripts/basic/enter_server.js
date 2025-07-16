@@ -71,9 +71,12 @@ let announcement = {
 
 world.afterEvents.playerSpawn.subscribe((event) => {
     if (event.initialSpawn) {
-        if (event.player.getDynamicProperty("has_read_announcement") != announcement.update_time) {
+        if (event.player.getDynamicProperty("has_read_announcement")
+            != announcement.update_time) {
             EnterGUI.Announcement(event.player);
-        } else {
+        }
+        if (!checkSignIn(event.player)) {
+            log("【签到系统】玩家 " + event.player.name + " 已经签到，跳过签到界面")
             EnterGUI.SignIn(event.player);
         }
     }
@@ -181,6 +184,19 @@ function generateCalendar(player) {
     return calendarStr;
 }
 
+function checkSignIn(player) {
+    const nowdate = new Date();
+    const date = new Date(nowdate.getTime() + 28800000);
+    const currentYear = date.getFullYear();
+    const currentMonth = date.getMonth(); // 0-11
+    const currentDay = date.getDate();
+    //确保日期是两位数
+    return player_sign_in[player.name] &&
+        player_sign_in[player.name][currentYear] &&
+        player_sign_in[player.name][currentYear][currentMonth + 1] &&
+        player_sign_in[player.name][currentYear][currentMonth + 1].includes(currentDay < 10 ? "0" + currentDay : currentDay.toString());
+}
+
 export const EnterGUI = {
     SignIn(player) {
         const SignForm = new ActionFormData();
@@ -203,10 +219,7 @@ export const EnterGUI = {
                 let currentDay = date.getDate();
                 //确保日期是两位数
                 currentDay = currentDay < 10 ? "0" + currentDay : currentDay.toString();
-                if (player_sign_in[player.name] &&
-                    player_sign_in[player.name][currentYear] &&
-                    player_sign_in[player.name][currentYear][currentMonth + 1] &&
-                    player_sign_in[player.name][currentYear][currentMonth + 1].includes(currentDay)) {
+                if (checkSignIn(player)) {
                     player.sendMessage("§c 您今天已经签到过了哦~");
                     return;
                 } else {
@@ -255,11 +268,12 @@ export const EnterGUI = {
                 this.Announcement(player);
             }
             if (response.selection == 0) {
-                EnterGUI.SignIn(player);
+                if (!checkSignIn(player)) EnterGUI.SignIn(player);
             }
             if (response.selection == 1) {
                 player.setDynamicProperty("has_read_announcement", announcement.update_time);
-                EnterGUI.SignIn(player);
+                player.sendMessage("§a 直到下次公告内容更新前，您将不会再看到此公告");
+                if (!checkSignIn(player)) EnterGUI.SignIn(player);
             }
         })
     },

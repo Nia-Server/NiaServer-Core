@@ -37,8 +37,8 @@ const GUI = {
 
         const TpaSubForm = new ModalFormData()
             .title("传送系统")
-            .dropdown("请选择本次传送的模式：",["将自己传送至目标玩家","将目标玩家传送至自己这里"],0)
-            .dropdown("请选择要传送的玩家：",playersName,0)
+            .dropdown("请选择本次传送的模式：",["将自己传送至目标玩家","将目标玩家传送至自己这里"])
+            .dropdown("请选择要传送的玩家：",playersName)
             TpaSubForm.show(player).then(result => {
                 if (result.canceled) {
                     this.TpaMain(player)
@@ -171,8 +171,8 @@ const GUI = {
             } else {
                 TpaSetupForm.toggle("禁止别人向你发送传送申请",false)
             }
-            TpaSetupForm.dropdown("添加传送黑名单",playersName,0)
-            TpaSetupForm.dropdown("删除传送黑名单",BanList,0)
+            TpaSetupForm.dropdown("添加传送黑名单",playersName)
+            TpaSetupForm.dropdown("删除传送黑名单",BanList)
             TpaSetupForm.show(player).then(result => {
                 player.removeTag("BanTpa")
                 if (result.canceled) {

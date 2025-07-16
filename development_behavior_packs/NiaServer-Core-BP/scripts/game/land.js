@@ -1473,7 +1473,7 @@ const GUI = {
         }
         const ChangePOSForm = new ModalFormData()
         ChangePOSForm.title("手动改变圈地坐标")
-        ChangePOSForm.dropdown("请选择圈地所在维度",["主世界","下界","末地"],id)
+        ChangePOSForm.dropdown("请选择圈地所在维度",["主世界","下界","末地"],{"defaultValueIndex":id})
         //这里判断一下pos1和pos2是否为空，如果为空则不显示预置数据
         if (pos1.length == 0) {
             ChangePOSForm.textField("请输入框选点坐标1的X坐标","只能输入数字！");
@@ -2095,13 +2095,13 @@ const GUI = {
         }
         const AdminChangeLandPOSForm = new ModalFormData()
         .title(`修改 ${land.land_name} 坐标范围`)
-        .dropdown("请选择领地维度",["主世界","下界","末地"],id)
-        .textField("请输入框选点坐标1的x坐标","请填写数字！",land.pos1[0].toString())
-        .textField("请输入框选点坐标1的y坐标","请填写数字！",land.pos1[1].toString())
-        .textField("请输入框选点坐标1的z坐标","请填写数字！",land.pos1[2].toString())
-        .textField("请输入框选点坐标2的x坐标","请填写数字！",land.pos2[0].toString())
-        .textField("请输入框选点坐标2的y坐标","请填写数字！",land.pos2[1].toString())
-        .textField("请输入框选点坐标2的z坐标","请填写数字！",land.pos2[2].toString())
+        .dropdown("请选择领地维度",["主世界","下界","末地"],{"defaultValueIndex":id})
+        .textField("请输入框选点坐标1的x坐标","请填写数字！",{"defaultValueIndex":land.pos1[0].toString()})
+        .textField("请输入框选点坐标1的y坐标","请填写数字！",{"defaultValueIndex":land.pos1[1].toString()})
+        .textField("请输入框选点坐标1的z坐标","请填写数字！",{"defaultValueIndex":land.pos1[2].toString()})
+        .textField("请输入框选点坐标2的x坐标","请填写数字！",{"defaultValueIndex":land.pos2[0].toString()})
+        .textField("请输入框选点坐标2的y坐标","请填写数字！",{"defaultValueIndex":land.pos2[1].toString()})
+        .textField("请输入框选点坐标2的z坐标","请填写数字！",{"defaultValueIndex":land.pos2[2].toString()})
         .show(player).then((response) => {
             if (!response.canceled) {
                 //判断是否为空
